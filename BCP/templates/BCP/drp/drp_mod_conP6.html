@@ -1,0 +1,23 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <aa><strong>MODIFICA DATOS DE CONTACTO DRP</strong></aa>
+	</ul>
+	{% endblock %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

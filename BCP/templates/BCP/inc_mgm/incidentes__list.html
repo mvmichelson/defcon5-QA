@@ -1,0 +1,73 @@
+<!Programa HTML>
+<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{%extends "base_generic.html"%}
+
+
+{% block content %}
+
+	{% block encabezado2 %}
+	<ul class="encabezado_C">
+		<p class='blink'>
+    		 <strong><am>*** ADMINISTRACION DE INCIDENTES ***</am></strong></p>
+	</ul>
+	{% endblock %}
+	
+	{%block lista%}
+	<ul class="scr">  
+                         
+		{% if incidentes %}
+
+			{% for inc in incidentes.all %}
+			
+				<p> 
+				<!**********************>
+				<!* Despliega Opciones *>
+				<!**********************>
+			
+
+				<! Incluir condicion para que solo los integrantes del Comite de Crisis puedan operar>
+				
+				<!Opcion Reporte Perfil>
+	
+				<a href="{% url 'Perfil-Incidente' inc.pk %}"><rr><strong>&#128196</strong></rr></a>
+				                        
+			   	<!Opcion Modifica>
+			
+				<a href="{% url 'Modifica-Incidente' inc.pk %}"><rr><bb>&#128222</bb></rr></a>
+			   	
+        		   	<!Opcion Borra>
+			   	&#128465
+                        
+
+				<!*****************************************>
+				<!* Despliega codigo y nombre del Proceso *>
+				<!*****************************************>
+			 	 <aa>  &emsp;{{inc.codigo}}</aa>
+				 <aa>  &emsp; /:
+				 <aa>  {{inc.descripcion}}</aa>
+			
+				</p>
+      		 	
+			{% endfor %}
+
+		{% else %}
+      			<p>No hay Incidentes Reportados</p>
+    		{% endif %}
+		
+	</ul>
+	{%endblock%}
+
+
+	{%block pie%}
+	<ul class="encabezado_C">
+    		<strong>&#10010</strong> :Crear Proceso -<strong><rr>&#8476<rr></strong> :Asignar RACI - <strong><rr>&#128270</rr></strong> :Revisar - <strong>&#128065</strong> :Consultar - <strong>&#128465</strong> :Borra
+		-<strong><rr>&#128477<rr></strong> :Aprobar-<strong>&#10004</strong> :Aprobado
+	</ul>
+	{% endblock %}
+
+{%endblock%}
+

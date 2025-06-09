@@ -1,0 +1,33 @@
+<!Programa en HTML>
+<!Mensaje de error >
+<!Programado por Marco A. Villalobos Michelson>
+
+
+{%extends "base_generic.html"%}
+
+
+{% block content %}
+
+
+	<h1>defcon-5 / BCP</h1>
+	<br/>
+	
+	<p> <strong>Error en ingreso de datos al Fornulario......:</strong> &emsp;<aa>{{mensaje}}</aa></p>
+	
+	
+	{% for error in form.field_name.errors %}
+
+		{% if form.non_field_errors %}
+		<div class="non-field-errors">
+			{% for err in form.non_field_errors %}
+				<p class="form-error">{{ err }}</p>		
+			{% endfor %}
+		</div>
+		{% endif %}
+
+	{%endfor%}
+
+
+	<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+{% endblock %}

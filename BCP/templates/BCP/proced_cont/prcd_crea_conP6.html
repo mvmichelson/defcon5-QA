@@ -1,0 +1,62 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <aa><strong>5. INGRESO DE CONTACTOS</strong></aa>
+	</ul>
+	{% endblock %}
+
+	{% block C %}
+	<h5><strong>6. Indice de Contactos</strong>( Registre  todos los datos de contacto de los responsables indicados en el Procedimiento)</h5>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Telefono laboral</th>
+			<th scope="col">Celular</th>
+		
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if contactos %}
+		    {%for con in contactos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{con.nombre}}<bb></th>
+			<th scope="row"><bb>{{con.correo}}<bb></th>
+			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
+			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+
+
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

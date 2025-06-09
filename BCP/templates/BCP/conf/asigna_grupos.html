@@ -1,0 +1,52 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_E">
+        <p><am><strong>FORMULARIO DE ASIGNACION DE GRUPOS A USUARIOS GESTORES:</strong></am></strong></p>
+	</ul>
+	{% endblock %}
+
+	
+	{% block d_asigna_recu %}
+	<h5><strong>DATOS DE LA CUENTA</strong></h5>
+	<!=======================================>
+
+	<ul class="Fondo_C">
+	  <p><strong>Nombre Usuario...:</strong> &emsp;{{ usuario.username}}</p>
+	  <p><strong>Nombre.................:</strong> &emsp;{{ usuario.last_name}},&emsp;{{usuario.first_name }}</p>
+	  <p><strong>Activo?................:</strong> &emsp;	{%if usuario.is_active %} <aa>Si</aa> {%else%} <rr>No</rr> {%endif%}</p>
+	</ul>
+	{% endblock %}
+
+	{% block asigna_proc %}
+	<h5><strong>ASIGNACION DE GRUPOS </strong></h5>
+	<!===================================================>
+	<ul class="scr3">
+	<P>Seleccione del cuadro de la izquierda aquellos Servicios o Recursos que son indispensables para la 
+	operacion del Proceso&emsp;<strong> {{proceso.nombre}}</strong>&emsp; en analisis</p>
+	
+    	<form action="" method="post">
+        	{% csrf_token %}
+       		{{form.media}}
+        	<p>{{form.grupos}}</p>
+		<br/>
+		<p><span style='font-size:20px;'>&#128231&emsp;</span>Notifica?..:{{ form.notifica}}</p>
+       		<br/>	
+        	<p><input type="submit" value="Registrar y Salir" /></p>
+    	</form>
+
+
+
+	</ul>
+
+
+
+	{% endblock %}
+
+{% endblock %}

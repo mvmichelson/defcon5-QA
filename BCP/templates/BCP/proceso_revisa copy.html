@@ -1,0 +1,83 @@
+<!Programa HTML>
+<!Despliega el formulario para la revision de un Proceso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+
+{% block encabezado_Revisa %}
+<ul class="encabezado_B">
+<p><aa><strong>FORMULARIO DE REVISION DE PROCESO :</aa></strong></p>
+</ul>
+<ul class='encabezado_SB'>
+<p><aa>{{proceso.path}} </strong></aa></p>
+</ul>
+{% endblock %}
+
+{%block listado%}
+<h5><strong>1.&emsp;OBSERVACIONES</strong></h5>
+<!=======================================>
+<ul class="scr2">
+<p>El siguiente cuadro muestra las observaciones realizadas a la definicion del Proceso</p>
+<br/>
+
+<table class="lta">
+
+    <thead class='encabezado_D'>
+      <tr>
+	<th scope="col">Fecha</th>
+	<th scope="col">Item/Dato</th>
+	<th scope="col">Observacion</th>
+	<th scope="col">Gestor</th>
+
+      </tr> 
+    </thead>
+
+   <tbody>
+    
+       {%for log_auth in proceso.log_auth.all %}
+	<tr>
+      	  <th scope="row"><bb>{{log_auth.fecha}}</bb></th>
+	  <th scope="row"><bb>{{log_auth.item}}</bb></th>
+	  <th scope="row"><bb>{{log_auth.observacion}}</bb></th>
+	  <th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
+	</tr>
+        {% if not forloop.last %}
+        {%endif%}
+      {%endfor%}
+    
+    
+  </tbody>
+
+</table>
+</ul>
+ 
+{%endblock%}
+
+{% block Formulario %}
+<h5><strong>2.&emsp;REVISION DATOS</strong></h5>
+<!============================================>
+ 
+      <form action="" method="post">
+        {% csrf_token %}
+	<ul class="scr2">
+          
+           <p><strong>Nombre..:</strong>&emsp; {{ form.nombre }}</p>
+	   <p><strong>Objetivo..:</strong>&emsp; {{ form.objetivo }}</p>
+	   <br/>
+	   <p>&emsp;<strong>Gestor [R]esponsable ............:</strong>&emsp; {{ form.gestor_R }}</p>
+ 	   <p>&emsp;<strong>Gestor [A]utorizador ..............:</strong>&emsp; {{ form.gestor_A }}</p>
+	   <p>&emsp;<strong>Persona [I]nteresada ..............:</strong>&emsp; {{ form.gestor_R }}</p>
+	   <br/>
+          <input type="submit" value="Registrar y salir" />
+	
+      </form>
+   
+   
+{% endblock %}
+
+{% endblock %}

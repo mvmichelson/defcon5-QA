@@ -1,0 +1,388 @@
+<!Programa HTML                                           >
+<!Despliega Diagrama Metodologico  >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+<ul class="encabezado_B">
+    <yy><strong>PLAN DE CONTINUIDAD DE NEGOCIOS (BCP/DRP) - MAPA METODOLOGICO</strong></yy>
+</ul>
+
+<ul class="encabezado_B" style="background: blue; color: white;">
+    <yy><strong>COMITE DE GESTION DE CONTINGENCIAS (CGC)</strong></yy>
+</ul>
+
+<!-- Bloque 1 -->
+<!--------------------------------------------------------------------------------------->
+
+<div class="flex-container">
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 1 ( )-->
+
+    </div> <!-- Fin Sector 1 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 2 ( ) -->
+
+    </div><!-- Fin Sector 2 (flecha)-->
+
+    <div class="flex-text" style="width: 10%; text-align: center;"><!-- Sector 3 ( )-->
+        <div class="circle-3d" style="color:white; background: rgb(225, 200, 34);">
+        <div class="text">
+        <a href="{% url 'Mapa-RIA' %}" style="color:white">Analisis de Riesgos (RIA)</a>
+        </div>
+        </div>
+        <img src="/static/img/flecha-negra-abajo.jpg" width="70" height="60"></img>
+
+    </div> <!-- Fin Sector 3 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 4 ( ) -->
+
+    </div><!-- Fin Sector 4 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 5 (Servicios Ctcos)-->
+        <img src="/static/img/Recursos_TI.jpg" width="70" height="60"></img> (Servicios)
+        <img src="/static/img/flecha-negra-abajo.jpg" width="70" height="60"></img>
+
+    </div> <!-- Fin Sector 5 -->
+
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 6 (Flecha) -->
+
+    </div><!-- Fin Sector 6 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 7 (Servicios Ctcos)-->
+
+    </div> <!-- Fin Sector 7 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 8 (Flecha) -->
+
+    </div><!-- Fin Sector 8 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 9 (Circulo RIA )-->
+
+    </div> <!-- Fin Sector 9 -->
+
+
+</div><!-- Fin Bloque 1 -->
+<!--------------------------------------------------------------------------------------->
+
+<!-- Bloque 2 ---------------------------------------------------------------------------->
+<ul class="encabezado_B" style="border: 1.5px dashed black; text-align: left;">
+<h5><strong>Fase I - Evaluacion Procesos</strong></h5>
+<br/>
+<div class="flex-container">
+
+    <div class="flex-text"><!-- Sector 1 (Circulo Proceso)-->
+        <div class="circle-3d" style="color:white">
+            <div class="text">
+                <a href="{% url 'Lista-Procesos' %}" style="color:white">Identificacion Procesos</a>
+                
+            </div>
+        </div>
+    </div> <!-- Fin Sector 1 -->
+
+    <div class="flex-text"><!-- Sector 2 (Flecha) -->
+        <br/>
+        <img src="/static/img/flecha-negra-de.jpg" width="60" height="60" alt="Importar desde Excel"></img>
+    </div><!-- Fin Sector 2 (flecha)-->
+
+    <div class="flex-text"><!-- Sector 3 (Caja BIA)-->
+        <div class="rectangle-3d">
+            <div class="text">
+                <a href="{% url 'Lista-Evaluaciones' %}" style="color:white">Analisis de Impacto (BIA)</a>
+            </div>
+        </div>
+    </div> <!-- Fin Sector 3 -->
+
+    <div class="flex-text"><!-- Sector 4 (Flecha) -->
+        <br/>
+        <img src="/static/img/flecha_roja.webp" width="70" height="60"></img>
+    </div><!-- Fin Sector 4 (flecha)-->
+
+    <div class="flex-text"><!-- Sector 5 (Servicios Ctcos)-->
+        <div class="rectangle-3d">
+            <div class="text">
+                <a href="{% url 'Lista-Recursos' %}" style="color:white">Asocia Servicios Criticos</a>
+            </div>
+        </div>
+    </div> <!-- Fin Sector 5 -->
+
+
+    <div class="flex-text"><!-- Sector 6 (Flecha) -->
+        <br/>
+        <img src="/static/img/flecha_roja.webp" width="70" height="60"></img>
+    </div><!-- Fin Sector 6 (flecha)-->
+
+    <div class="flex-text"><!-- Sector 7 (Servicios Ctcos)-->
+        <div class="rectangle-3d">
+            <div class="text">
+                <a href="{% url 'Lista-Escenarios' %}" style="color:white">Asocia Escenarios de Riesgo</a>
+            </div>
+        </div>
+    </div> <!-- Fin Sector 7 -->
+
+    
+    <div class="flex-text"><!-- Sector 8 (Flecha) -->
+        <br/>
+        <img src="/static/img/flecha-negra-iz.jpg" width="60" height="60"></img>
+    </div><!-- Fin Sector 8 (flecha)-->
+
+    <div class="flex-text"><!-- Sector 9 (Circulo RIA )-->
+        <div class="circle-3d" style="color:white; background: rgb(225, 200, 34);">
+            <div class="text">
+                <a href="{% url 'Mapa-RIA' %}" style="color:white">Analisis de Riesgos (RIA)</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                
+            </div>
+        </div>
+    </div> <!-- Fin Sector 9 -->
+
+
+</div>
+<br/>
+</ul><!-- Fin Bloque 2 ----------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------->
+
+<!-- Bloque 3 -->
+<!--------------------------------------------------------------------------------------->
+
+<div class="flex-container">
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 1 ( )-->
+
+    </div> <!-- Fin Sector 1 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 2 (  ) -->
+
+
+    </div><!-- Fin Sector 2 (flecha)-->
+
+    <div class="flex-text" style="width: 10%; text-align: center;"><!-- Sector 3 (Indicadores de Recuperacion )-->
+        <img src="/static/img/flecha-negra-arriba.png" width="60" height="60"></img>
+        <div class="circle-3d" style="color:white; background: blue;">
+            <div class="text">
+                <a href="{% url 'En-Construccion' %}" style="color:white">Indicadores de Recuperacion</a>
+                
+            </div>
+        </div>
+
+    </div> <!-- Fin Sector 3 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 4 ( ) -->
+
+    </div><!-- Fin Sector 4 (flecha)-->
+
+    <div class="flex-text" style="width: 20%; text-align: center;"><!-- Sector 5 (Servicios Ctcos)-->
+    <br/>
+    <br/>
+    (Procesos Criticos)
+    &nbsp;<img src="/static/img/flecha-roja-abajo.jpg" width="70" height="60"></img>
+    
+
+    </div> <!-- Fin Sector 5 -->
+
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 6 (Flecha) -->
+
+    </div><!-- Fin Sector 6 (flecha)-->
+
+    <div class="flex-text" style="width: 10%; text-align: center;"><!-- Sector 7 (Servicios Ctcos)-->
+
+    </div> <!-- Fin Sector 7 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 8 (Flecha) -->
+
+    </div><!-- Fin Sector 8 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 9 (Circulo RIA )-->
+
+    </div> <!-- Fin Sector 9 -->
+
+
+</div><!-- Fin Bloque 3 -->
+<!--------------------------------------------------------------------------------------->
+
+<!-- Bloque 4 ---------------------------------------------------------------------------->
+<br/>
+<ul class="encabezado_B" style="border: 1.5px dashed black; text-align: left;">
+<h5><strong> Fase II - Diseño/Implementacion Procedimientos de Contingencia</strong></h5>
+
+<br/>
+<div class="flex-container" style="text-align: center;">
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 1 (Circulo Proceso)-->
+
+    </div> <!-- Fin Sector 1 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 2 (Circulo Proceso)-->
+        <div class="circle-3d" style="color:white; background: red;">
+            <div class="text">
+                <a href="{% url 'Lista-Proced' %}" style="color:white; ">Procesos Evaluados</a>
+                
+            </div>
+        </div>
+    </div> <!-- Fin Sector 2 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 3 (Flecha) -->
+        <br/>
+        <img src="/static/img/flecha-negra-de.jpg" width="60" height="60"></img>
+    </div><!-- Fin Sector 3 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 3 (Caja BIA)-->
+        <div class="rectangle-3d" style="background: orange;">
+            <div class="text">
+                <a href="{% url 'Lista-Proced' %}" style="color:white; ">Diseño e Implementacion de Procedimiento de Contingencia (BCP)</a>
+            </div>
+        </div>
+    </div> <!-- Fin Sector 3 -->
+
+    <div class="flex-text" style="width: 30%;"><!-- Sector 4 (Flecha) -->
+        <br/>
+        <img src="/static/img/flecha_roja.webp" width="70" height="60"></img>
+    </div><!-- Fin Sector 4 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 5 (Servicios Ctcos)-->
+        <div class="rectangle-3d" style="background: orange;">
+            <div class="text">
+                <a href="{% url 'Lista-DRP' %}" style="color:white">Diseño e Implementacion de Procedimiento de Recuperacion del Procesamiento (DRP)</a>
+            </div>
+        </div>
+    </div> <!-- Fin Sector 5 -->
+
+    <div class="flex-text" style="width: 40%;"><!-- Sector 4 (Flecha) -->
+
+    </div><!-- Fin Sector 4 (flecha)-->
+
+</div>
+<br/>
+</ul><!-- Fin Bloque 4 ----------------------------------------------------------------->
+<!--------------------------------------------------------------------------------------->
+
+<!-- Bloque 5 -->
+<!--------------------------------------------------------------------------------------->
+
+<div class="flex-container">
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 1 ( )-->
+        <br/>
+        <div class="circle-3d" style="color:white; background: green; width: 150px;">
+            <div class="text">
+                <a href="{% url 'Declara-Incidente' %}" style="color:white; ">Sistema Gestion de Incidentes (IMS)</a>
+            </div>
+        </div>
+
+
+    </div> <!-- Fin Sector 1 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 2 ( ) -->
+
+    </div><!-- Fin Sector 2 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 3 ( )-->
+
+    </div> <!-- Fin Sector 3 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 4 ( ) -->
+
+    </div><!-- Fin Sector 4 (flecha)-->
+
+    <div class="flex-text" style="width: 35%; text-align: center;"><!-- Sector 5 (Servicios Ctcos)-->
+
+    (Procedimientos Contingencia - PC / DRP)
+    &nbsp;<img src="/static/img/flecha-roja-abajo.jpg" width="70" height="60"></img>
+    
+
+    </div> <!-- Fin Sector 5 -->
+
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 6 (Flecha) -->
+
+    </div><!-- Fin Sector 6 (flecha)-->
+
+    <div class="flex-text" style="width: 10%; text-align: center;"><!-- Sector 7 (Servicios Ctcos)-->
+
+    </div> <!-- Fin Sector 7 -->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 8 (Flecha) -->
+
+    </div><!-- Fin Sector 8 (flecha)-->
+
+    <div class="flex-text" style="width: 10%;"><!-- Sector 9 (Circulo RIA )-->
+
+    </div> <!-- Fin Sector 9 -->
+
+
+</div><!-- Fin Bloque 5 -->
+<!--------------------------------------------------------------------------------------->
+
+<div class="flex-container" style="width: 100%;"><!----- Bloque 6 -->
+
+    <div class="flex-text" style="text-align: center;"><!--- Seccion 1 / Bloque 6 -->
+        <br/>
+        <p><img src="/static/img/reporte_incidente.png" width="60" height="60"></img></p>
+        <p>Incidente Catastrofico</p>
+        
+        <p><img src="/static/img/flecha-negra-abajo-der.png" width="60" height="60"></img></p>
+    </div> <!--- Seccion 1 / Bloque 6 -->
+
+    <div class="flex-text"><!-------- Seccion 2 / Bloque 6 -------->
+        <ul class="encabezado_B" style="background: blue; color: white;">
+            <yy><strong>COMITE DE MANEJO DE CRISIS (CMC)</strong></yy>
+        </ul>
+        
+        <!-- Bloque 1 / Seccion 2 ---------------------------------------------------------------------------->
+        <ul class="encabezado_B" style="border: 1.5px dashed black; text-align: left;">
+     
+        <div class="flex-container">
+
+        <h5><strong> Administracion de la Contingencia</strong></h5>
+        <br/>
+
+            <div class="flex-text" style="text-align: center;"><!-- Sector 3 (Manuale) -->
+                <br/>
+                <img src="/static/img/manual_procedimientos.png" width="120" height="140"></img>
+                <p>(Manuales PC)</p>
+            </div><!-- Fin Sector 3 (flecha)-->
+
+            <div class="flex-text" style="text-align: center;"><!-- Sector 3 (Flecha negra)-->
+                <br/>
+                <br/>
+                <img src="/static/img/flecha-negra-de.jpg" width="60" height="60"></img>
+            </div> <!-- Fin Sector 3 -->
+
+            <div class="flex-text" style="text-align: center;"><!-- Sector 4 (Flecha) -->
+                <br/>
+                <div class="circle-3d" style="color:white; background: red;">
+                    <div class="text">
+                        <a href="{% url 'Lista-Incidentes' %}" style="color:white; ">Administracion Incidentes</a>
+                    </div>
+                </div>
+            </div><!-- Fin Sector 4 (flecha)-->
+
+            <div class="flex-text" style="width: 5%; text-align: center;"><!-- Sector 5 (Flecha negra)-->
+                <br/>
+                <br/>
+                <img src="/static/img/flecha-negra-iz.jpg" width="60" height="60"></img>
+            </div> <!-- Fin Sector 5 -->
+
+            <div class="flex-text" style="width: 40%; text-align: center;"><!-- Sector 5 (DRPs)-->
+                        <p>Plan de Recuperacion del </p> 
+                        <a href="{% url 'Lista-DRP' %}" style="color:white">
+                        <img src="/static/img/drp.jpg" width="120" height="140"></img></a>
+                        <p>Procesamiento (DRP)</p>
+                    </div>
+                </div>
+            </div> <!-- Fin Sector 5 -->
+
+    
+        <br/>
+        </ul>
+    </div>
+    <!-- Fin Bloque 6.2 ----------------------------------------------------------------->
+    <!--------------------------------------------------------------------------------------->
+
+</div> <!-- Fin Bloque 6 -->
+
+
+{% endblock %}

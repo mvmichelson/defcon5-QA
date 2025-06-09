@@ -1,0 +1,461 @@
+<! Programa HTML>
+<! Autorizacion de Procedimiento de Contingencia>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block encabezado_auth_esc %}
+	<ul class="encabezado_A">
+        <p><aa><strong>FORMULARIO DE AUTORIZACION DE PROCEDIMIENTO DE CONTINGENCIA (PC)</aa>
+	</ul>
+	<ul class='encabezado_SB'>
+	<p><aa>PROCESO&emsp;:&emsp;{{proceso.path}} </strong></aa>
+	</ul>
+	{% endblock %}
+
+    <!---------------------------------- Bloque A ------------------------------------------>
+	<div class="flex-container">
+	
+	<!--------- Seccion Datos --------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<ul class='encabezado_SB'>
+	<h5><strong>Procedimiento de Recuperacion (PC)</strong></h5>
+	</ul>
+
+	<ul class="scr4">
+	<p><strong>2.0. Codigo ...: &emsp;</strong> {{proced.codigo}}</p>	
+	<p><strong>2.1. Nombre ...: &emsp;</strong> {{proced.nombre}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Nombre del PC ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar el Nombre del  :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+	<p><strong>2.2. Tipo ..: &emsp;</strong> {{proced.tipo}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar el Tipo de PC ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar el Tipo de PC :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+	<p><strong>2.3. Fecha de creacion.................: &emsp;</strong> {{proced.fecha_c}}</p>
+	<p><strong>2.4. Version....................................: &emsp;</strong> {{proced.version}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar version asignada al PC ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar version del PC :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+	<p><strong>3.5. Fecha de ultima modificacion..: </strong> {{proced.fecha_ult_mod}}</p>
+
+
+	</ul>
+
+	<br/>
+	<ul class='encabezado_SB'>
+	<h5><strong>Estrategia</strong></h5>
+	</ul>
+	<ul class="scr4">
+	<p><strong>3.1. Escenario(s) a cubrir................: &emsp;</strong> {{proced.escenarios}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar el (los) Escerarios a cubrir por el PC ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Escenario(s) declarados :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+	<p><strong>3.2. Estrategia del Procedimiento...: &emsp;</strong> {{proced.estrategia}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar la Estrategia sugerida para el PC ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Estrategia sugerida :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+	</ul>
+
+	</div><!--------- Fin Seccion Datos --------------------->
+
+	<!---------- Seccion Block de Comentarios --------------->
+	<div class="flex-item" style="width: 50%;">
+		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+			<strong>Block de Comentarios de Revision</strong>
+		</ul>
+	
+		<ul class="BarraScroll" style="height: 350px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+			<!-- Log de Comentarios -->
+				<table class="lta"> 
+					<thead class="encabezado_C" style="text-align: center">
+					<tr>
+					<th scope="col" style="width: 20%;">Referencia.Dato</th>
+					<th scope="col" style="width: 500px">Comentario</th>
+					<th scope="col" style="width: 10;">Est.</th>
+					</tr>
+					</thead>
+					
+					<body>
+					{% if comentarios %}
+	
+						{% for com in comentarios %}
+						<tr style="font-size: 9px;">
+						<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+							<p>{{com.campo}}
+							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+							</p>
+						</th>
+						<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+						<th scope="row" style="width: 10; text-align: center;">
+						{% if com.resuelto %}
+							&#9989
+						{%else%}
+							&#10067
+						{%endif%}
+						<!-- Borra Comentario -->
+						</th>
+							
+						</tr>
+							{% if not forloop.last %}
+							{%endif%}
+						{%endfor%}
+					
+					{%else%}
+						<p> Sin  Observaciones</p>
+					{%endif%}
+					
+						<tbody>
+								
+				</table>
+				
+				<!-- Fin Log Comentarios -->
+				
+		</ul>
+
+	</div><!---------- Fin Seccion Block de Comentarios --------------->
+
+	</div><!---------------------------------- Fin Bloque A ------------------------------------------>	
+	
+	<br/>
+	<bn>Revise los datos de Especificacion propuestos para el Procedimiento de Contingencia -<strong>{{proced.nombre}}</strong>- 
+		y en caso de alguna observacion o comentario registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
+		adjunto. 
+	</bn>
+
+	{% block A3 %}
+	<br/><br/>
+	<ul class='encabezado_SB'>
+	<h5><strong>Especificacion de Roles</strong></h5> </ul>
+
+	<ul class="scr4">
+
+	<p><strong>4.1.1.  Responsable del Proceso ................: &emsp;</strong> {{proced.resp_proceso}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Asignacion de Responsable o su Respaldo  ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Responsable Asignado y Respaldo :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+	<p><strong>4.1.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_resp}}</p>
+	<br/>
+	<p><strong>4.2.1.  Gestor Ejecutor ........................: &emsp;</strong> {{proced.gestor_ejecutor}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Asignacion de Ejecutor del PC o su Respaldo  ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Ejecutor PC y Respaldo :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+	<p><strong>4.2.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_ejecutor}}</p>
+	<br/>
+	<p><strong>4.3.1.  Enlace Comite de Crisis ................: &emsp;</strong> {{proced.enlace_c_crisis}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Asignacion de Responsable o su Respaldo  ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Responsable Asignado y Respaldo :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+	<p><strong>4.3.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_enlace}}</p>
+	<br/>
+	<p><strong>4.4.1.  Gestor Consultor .......................: &emsp;</strong> {{proced.gestor_consultor}}</p>
+
+	</ul>
+	{% endblock %}
+
+	
+	{% block B %}
+	<br/>
+	<ul class='encabezado_SB'>
+	<h5><strong>Servicios Requeridos</strong>
+
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Servicios Criticos requeridos por el PC ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Servicios Criticos :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+		
+	</h5></ul>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead style="background: greenyellow; color:black">
+		   <tr>
+			<th scope="col">NOMBRE DEL SERVICIO</th>
+			<th scope="col">DESCRIPCION/OBJETIVO</th>
+			<th scope="col">CONTACTO</th>
+			<th scope="col">RESPALDO CONTACTO</th>
+						
+		   </tr>
+		   </thead>
+
+		   <body>
+		   {% if servicios %}
+		    {%for ser in servicios.all  %}
+		    <tr>
+			<th scope="row"><bb>{{ser.nombre}}<bb></th>
+			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   <tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+	
+
+	{% block C %}
+	<br/>
+	<ul class='encabezado_SB'>
+	<h5><strong>Indice de Contactos</strong>
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar los Contactos declarados para el PC  ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Contactos declarados : "
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+		
+	</h5></ul>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">NOMBRE</th>
+			<th scope="col">CORREO ELECTRONICO</th>
+			<th scope="col">TELEFONO OFICINA</th>
+			<th scope="col">TELEFONO CELULAR</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if contactos %}
+		    {%for con in contactos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{con.nombre}}<bb></th>
+			<th scope="row"><bb>{{con.correo}}<bb></th>
+			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
+			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+	
+
+	{% block D %}
+	<br/>
+	<ul class='encabezado_SB'>
+	<h5><strong>Procedimiento de Contingencia (PC)</strong></h5></ul>
+
+	<ul class="scr4">
+		<table class="lta">
+		   <thead style="background: rgb(184, 183, 183); color:black">
+		   <tr>
+			<th scope="col" style="width: 5px;">NRO.</th>
+			<th scope="col" style="width: 400px;">DESCRIPCION</th>
+			<th scope="col" style="width: 250px;">EJECUTOR RESP.</th>
+			<th scope="col" style="width: 10px; font-size: 9px;" 
+			class="link" data-message="Tiempo Esperado Ejec. ...">T.E.(min)</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if pasos %}
+		    {%for pas in pasos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{pas.nro_paso}}<bb></th>
+			<th scope="row"><bb>{{pas.descripcion}}<bb>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar descripcion del paso {{pas.nro_paso}} del PC ..."
+					data-id="{{ proced.id }}"
+					data-sec="P" 
+					data-field="Revisar Descripcion del paso {{pas.nro_paso}} del PC : "
+					>
+					&emsp;<img src="/static/img/Comentario_1.png" width="10" height="10">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+				
+			</th>
+			<th scope="row"><bb>{{pas.ejecutor}}<bb>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar Ejecutor asignado al paso {{pas.nro_paso}} del PC ..."
+					data-id="{{ proced.id }}"
+					data-sec="P" 
+					data-field="Revisar Ejecutor asignado al paso {{pas.nro_paso}} del PC : "
+					>
+					&emsp;<img src="/static/img/Comentario_1.png" width="10" height="10">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+
+			</th>
+			<th scope="row" style="text-align: center;"><bb>{{pas.tiempo_esp}}<bb>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar descripcion del paso {{pas.nro_paso}} del PC ..."
+					data-id="{{ proced.id }}"
+					data-sec="P" 
+					data-field="Revisar Tiempo Esperado asignado al paso {{pas.nro_paso}} del PC: "
+					>
+					&emsp;<img src="/static/img/Comentario_1.png" width="10" height="10">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+
+			</th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{%block Conclusion%}
+		<br/>
+		<p><h5><strong>CONCLUSION</strong>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Hacer un comentario general ..."
+					data-id="{{ proced.id }}"
+					data-sec="P" 
+					data-field="Punto de Atencion ..: "
+					>
+					&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+
+		</h5>
+
+		{%block G%}
+		<form action="" method="post">
+        {% csrf_token %}
+        	<ul class="scr4">
+
+				 <p><strong>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si las especificaciones  (datos registrados)  para el Procedimiento de Contingencia - {{proced.nombre}} - estan correctos y  son autorizados.
+				 </strong>En caso de haber observaciones pendientes en el Block de Revision (Est.=<a style="font-size: 10px;">&#10067</a>) no autorizar y al 
+				 Registrar sera devuelto al Gestor [C]onsultor para su correccion.</p></p>
+			</ul>
+
+			<br/>
+			<!---- Botones de salida ---- -->
+			<a href="{% url 'Lista-Proced' %} "><aa class="button">Volver sin Registrar ...</aa></a>
+       		<input type="submit" class="button"   value="Registrar" />
+
+		</form>
+		{%endblock%}
+	{% endblock %}
+
+{% endblock %}
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[proced_auth]</aa>
+
+
+{% endblock %}
+

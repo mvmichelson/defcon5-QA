@@ -1,0 +1,49 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para el Reporte de un Incidente >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+
+	<ul class="encabezado_C">
+	<p class='blink'><am><strong>***&emsp;REPORTE DE INCIDENTE&emsp; ***</strong></am></p>
+	</ul>
+
+	{% endblock %}
+
+
+	{% block declara %}
+
+    	<form action="" method="post">
+          {% csrf_token %}
+          
+
+	  {% block A %}
+	  <ul class="scr4">
+	   <p>Nombre.........:&emsp;{{form.nombre }}</p>
+	   <p>Area...........:&emsp;{{form.area}}</p>
+	   <p>Descripcion....:&emsp;{{form.descripcion}}</p>
+	 </ul>
+
+	 {% endblock %}
+        
+	 {% block B %}
+
+	 <ul class="scr3">
+	  {{ form.media}}
+	  <p>{{form.amenazas_i}}</p>
+	  <br/>
+          <p> <input type="submit" value="Graba Reporte" /></p>
+	 </br>
+	 </ul>
+
+	 {% endblock %}
+    	</form>
+	
+	
+	{% endblock %}
+
+{% endblock %}

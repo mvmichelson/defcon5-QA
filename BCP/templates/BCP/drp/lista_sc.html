@@ -1,0 +1,81 @@
+<!Programa en HTML>
+<!Despliega lista los Servicios Criticos para el DRP>
+<!Programado por Marco A. Villalobos Michelson>
+<!==============================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+{% block encabezado_auth %}
+	 <ul class="encabezado_A">
+        <p><aa><strong>FORMULARIO DE DECLARACION DE SERVICIOS CRITICOS DEL DRP</aa></strong></p>
+	 </ul>
+	 <ul class="encabezado_SB">
+	 <p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	 </ul>
+	{% endblock %}
+
+
+	<ul class="scr4">	
+
+		<p>Especificar todos aquellos <strong>Servicios Criticos</strong> requeridos para aplicar el DRP. Tambien indicar 
+		el Ejecutivo del Proveedor encargado y un contacto de respaldo en caso de no estar disponible.</p>
+		<br/>
+		<table class="lta">
+		   <thead class="encabezado_E">
+		   <tr>
+			<th scope="col">Nombre Servicio</th>
+			<th scope="col">Objetivo</th>
+			<th scope="col">Contacto</th>
+			<th scope="col">Respaldo</th>
+			
+			<th scope="col"><a href="{% url 'crea-P5-DRP' drp.pk 'crea'  %}"><strong><am>&#10010</am></strong></a></th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+			{% if lista_sc %}
+
+		    	{%for sc in lista_sc.all  %}
+		    	<tr>
+				<th scope="row"><bb>{{sc.nombre}}<bb></th>
+				<th scope="row"><bb>{{sc.objetivo}}<bb></th>
+				<th scope="row"><bb>{{sc.contacto}}<bb></th>
+				<th scope="row"><bb>{{sc.contacto_bck}}<bb></th>
+				<th scope="row"><a href="{% url 'borra-P5-DRP' sc.pk  'crea' %}"><rr>&#128465</rr></a></th>
+
+				</tr>
+       		        {% if not forloop.last %}
+        	        {%endif%}
+      		    {%endfor%}
+		   
+			{%else%}
+				  <p> No hay Componentes definidos</p>
+		  	{%endif%}
+
+		   	<tbody>
+			
+		</table>
+		<br/>
+		<br/>
+		<a href="{{ drp.get_absolute_url }}"><span style='font-size:30px;'>&#128281</span></a>
+	</ul>
+
+
+
+{%block pie%}
+	<br/>
+	<ul class="encabezado_A">
+	
+	<strong><p><am>&#10010</am>&nbsp;:<tm>Crea Servicio Critico</tm></strong>&emsp;&emsp; 
+	<strong><rr>&#128465</rr> &nbsp;:<tm>Borra Servicio Critico</tm></strong> 
+	
+	</ul>
+{% endblock %}
+
+
+{% endblock %}

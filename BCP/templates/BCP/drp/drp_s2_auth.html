@@ -1,0 +1,142 @@
+<! Programa HTML>
+<! Autorizacion de la definicion de Responsables del DRP>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+	
+	{% block encabezado_auth %}
+	 <ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE AUTORIZACION  DE EQUIPO DRP</aa></strong></p>
+	 </ul>
+	 <ul class="encabezado_SB">
+		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	 </ul>
+	{% endblock %}
+	
+	{%block Informacion_x_Revisar%}
+	<h5><strong>EQUIPO DRP</strong></h5>
+	<p style="font-size:12px" >Revisar los gestores asignados a cada rol. Si existe alguna observacion, registrela 
+							   en (&#128221) frente al item correspondiente.</p>
+		
+	<ul class="scr2">
+		<br/>
+		<p><strong>Responsable DRP ...............:</strong>&emsp;{{drp.resp_drp}}
+		&emsp;<a href = "{% url 'obs-drp' 'Responsable' drp.pk  drp.resp_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+		
+			{% if drp.bck_resp_drp %}
+			<p><strong>Respaldo Resp DRP ............:</strong>&emsp;{{drp.bck_resp_drp}}
+			&emsp;<a href = "{% url 'obs-drp' 'Repaldo Resp' drp.pk  drp.bck_resp_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+			{%else%}
+			<p><strong>Respaldo Resp DRP ............:</strong>&emsp;*** Sin Asignacion ***
+			&emsp;<a href = "{% url 'obs-drp' 'Repaldo Resp' drp.pk  'Sin valor asignado' %}"><bb style="font-size:10px">&#128221</bb></a></p>
+			{%endif%}
+		<br/>
+
+		<p><strong>Ejecutor DRP ........................:</strong>&emsp;{{drp.gestor_ejecutor_drp}}
+		&emsp;<a href = "{% url 'obs-drp' 'Ejecutor' drp.pk  drp.gestor_ejecutor_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+		
+		{% if drp.bck_ejecutor_drp %}
+			<p><strong>Respaldo Ejecutor DRP .......:</strong>&emsp;{{drp.bck_ejecutor_drp}}
+			&emsp;<a href = "{% url 'obs-drp' 'Repaldo Ejecutor' drp.pk  drp.bck_ejecutor_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+		{%else%}
+			<p><strong>Respaldo Ejecutor DRP .......:</strong>&emsp;*** Sin Asignacion ***
+			&emsp;<a href = "{% url 'obs-drp' 'Repaldo Ejecutor' drp.pk  'Sin valor asignado' %}"><bb style="font-size:10px">&#128221</bb></a></p>
+		{%endif%}
+		
+		<br/>
+
+		<p><strong>Enlace Comite Crisis ............:</strong>&emsp;{{drp.enlace_c_crisis_drp}}
+		&emsp;<a href = "{% url 'obs-drp' 'Enlace Comite de Crs.' drp.pk  drp.enlace_c_crisis_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+		
+		{% if drp.bck_enlace_drp %}
+			<p><strong>Respaldo Enlace Cte.Crss....:</strong>&emsp;{{drp.bck_enlace_drp}}
+			&emsp;<a href = "{% url 'obs-drp' 'Repaldo Enlace CC.. ' drp.pk  drp.bck_enlace_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+			{%else%}
+			<p><strong>Respaldo Enlace Cte.Crss....:</strong>&emsp;*** Sin Asignacion ***
+			&emsp;<a href = "{% url 'obs-drp' 'Repaldo Enlace CC.. ' drp.pk  'Sin valor asignado' %}"><bb style="font-size:10px">&#128221</bb></a></p>
+			{%endif%}
+		<br/>
+		<p><strong>Gestor Consultor ...................:&emsp;{{drp.gestor_consultor_drp}} </strong></p>
+	</ul>
+	{%endblock%}
+ 
+	{%block Conclusion%}
+	
+	<p><h5><strong>CONCLUSION</strong></h5>
+	<ul class="scr4">
+
+	<h5><strong>Observaciones realizadas</strong></h5></p>
+	{%if drp.log_auth_drp.all %}
+	
+	<br/>
+	
+	<table class="lta">
+
+		<thead class='encabezado_D'>
+		  <tr>
+		<th scope="col">Fecha</th>
+		<th scope="col">Item</th>
+		<th scope="col">Observacion</th>
+		<th scope="col">Gestor</th>
+		<th scope="col">X</th>
+		
+		  </tr> 
+		</thead>
+		<tbody>
+
+	{%for log_auth in drp.log_auth_drp.all %}
+	
+	   	<tr>
+			<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
+			<th scope="row"><bb>{{log_auth.item}}</bb></th>
+		  	<th scope="row"><bb>{{log_auth.observacion}}</bb></th>
+			<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
+			{%if request.user.username == log_auth.gestor_aprobador.user_gestor.username %}
+				<th scope="row"> <a href = "{% url 'borra-obs-proceso'  log_auth.pk  %}"> <rr>&#128465</rr></a>
+			{%else%}
+				<th scope="row"> <aa>...</aa>
+			{%endif%}
+			</th>
+		</tr>
+	  
+		{% if not forloop.last %}
+		{%endif%}
+
+	{%endfor%}
+
+		</tbody>		
+	</table>
+
+	<br/>
+	<p>Las observaciones seran remitidas al <strong>Gestor Consultor</strong>, quien procedera a implementarlas para volver a ser puestas a su
+		disposicion para su autorizacion u observacion.</p>
+
+	{%else%}
+	   <p>Sin Observaciones</p></p></h5>
+	{%endif%}
+
+	<br/>
+	
+		{% block C %}
+		<form action="" method="post">
+			{% csrf_token %}
+        		
+        	<p><strong>Indique <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si los roles asignados 
+			le parecen  correctos y desea autorizar.</strong></p>
+			
+			<p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p>
+			<br/>
+			<br/>
+        	<input type="submit" value="Registrar" />
+	    </form>
+		{%endblock%}
+	</ul>
+
+	{% endblock %}
+	
+
+{% endblock %}
+

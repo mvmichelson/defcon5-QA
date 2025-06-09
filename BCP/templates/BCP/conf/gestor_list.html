@@ -1,0 +1,91 @@
+<!Programa HTML>
+<!Lista Gestores en modalidad Scrool para asignar/desasignar grupos>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{%extends "base_generic.html"%}
+
+defcon={{defcon_est}}
+
+{% block content %}
+
+	{% block encabezado2 %}
+	<ul class="encabezado_E">
+    		 <am><strong>A S I G N A C I O N &emsp;D E&emsp;G R U P O S</strong></am>
+	</ul>
+	{% endblock %}
+	
+	{%block lista%}
+	<ul class="scr3">  
+                         
+		{% if gestor_list %}
+
+		   
+		       
+			<table class="lta">
+		   	<thead  class='encabezado_T')>
+		   	<tr>
+				&emsp;&emsp;&emsp;
+				<th scope="col"><span style='font-size:20px;'><am>&#8844</am></span></th>
+				<th scope="col">Apellido</th>
+				<th scope="col">Nombre</th>
+				<th scope="col">Nombre Usuario</th>
+				<th scope="col">Activo?</th>
+				<th scope="col">Grupos</th>
+				
+	
+						
+		  	</tr>
+		  	</thead>
+
+			{% for ges in gestor_list %}
+
+		        <tbody>
+		   	
+		   	<tr>
+				<th scope="row"><span style='font-size:15px;'><a href="{%  url 'asigna-grupo' ges.user_pk  %}"><aa>&#8715</aa></a></span></th>
+
+				<th scope="row"><aa>{{ges.user_gestor.last_name}}</aa></th>
+				<th scope="row"><aa>{{ges.user_gestor.first_name}}</aa></th>
+				<th scope="row"><aa>{{ges.user_gestor.username}}</aa></th>
+
+				<th scope="row">
+				  {% if ges.user_gestor.is_active %}
+					<aa>Si</aa>
+				  {%else%}
+					<rr>No</rr>
+				   {%endif%}
+				</th>
+
+				<th scope="row">
+				  {% if ges.user_gestor.groups %}
+				    {% for grp in ges.user_gestor.groups.all %}
+					<aa>{{grp.name}}</aa>&emsp;
+				    {%endfor%}
+				  {%else%}
+					*** Sin Grupo(s) asignado(s)***
+				  {%endif%}
+				</th>	
+						
+		   	</tr>
+
+       		   
+		   	<tbody>
+
+		   	{% endfor %}
+
+			</table>
+
+		{% else %}
+      			<p>No hay Gestores definidos.</p>
+    		{% endif %}		
+
+		
+        </ul>
+	{% endblock %}			
+ 
+
+
+{%endblock%}
+

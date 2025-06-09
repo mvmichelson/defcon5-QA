@@ -1,0 +1,36 @@
+<!Programa en HTML									>
+<!Mensaje de Pagina en Construccion   						>
+<!Programado por Marco A. Villalobos Michelson		>
+<!==================================================>
+
+
+{%extends "base_generic.html"%}
+
+
+{% block content %}
+<!--------- Imagen -------->
+<ul  class="fondo_img">
+
+	<!------- Contenerdor ------->
+	<div class="flex-container">
+      <!----  Sector Izquierdo ----->
+      <div class="flex-item" style="width: 50%;">
+
+      </div>
+	  <!-- Fin Sector Izquierdo -->
+
+      <!----  Sector Derecho ----->
+      <div class="flex-item aparecer-abajo" style="width: 65%;">
+        <img src="/static/img/en_construccion.png" width="500" height="400">
+
+	    </div>
+	  <!----  Fin Sector Derecho ------>
+
+	</div>
+	<!----- Fin Contenedor-->
+
+	</ul>
+
+</ul>
+<!------ Fin Imagen -->
+{% endblock %}

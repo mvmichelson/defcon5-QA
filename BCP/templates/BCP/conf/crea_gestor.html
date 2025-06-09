@@ -1,0 +1,42 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para crear usuario en defcon-5  >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_E">
+        <am><strong> ENROLAR GESTOR EN defcon-5</strong></am>
+	</ul>
+	{% endblock %}
+	<br/>
+    <form action="" method="post">
+        {% csrf_token %}
+       <ul  class='Fondo_C'>
+	
+        <p><strong>Nombre de Usuario...:</strong>&nbsp;{{ form.username }}&nbsp;<rr>*</rr></p>
+	<p><strong>Clave ..........................:</strong>&nbsp;{{ form.password1}}&nbsp;<rr>*</rr>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <strong>Repita clave .......:</strong>&nbsp;{{ form.password2}}&nbsp;<rr>*</rr></p>
+        <br/>
+	<p><strong>Nombre ......................:</strong>&nbsp;{{form.first_name}}&nbsp;<rr>*</rr> &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; <strong>Apellido .............:</strong>&nbsp;{{form.last_name}}&nbsp;<rr>*</rr></p>
+	<p><strong>Correo electronico ....:</strong>&nbsp;{{form.email}}&nbsp;<rr>*</rr></p>
+	
+	
+	<p><strong>Cargo ..........................:</strong>&nbsp;{{form2.cargo}}</p>
+	<p><strong>Area  ............................:</strong>&nbsp;<a>{{form2.area}}</a></p>
+	<p><strong>Telefono Oficina ........:</strong>&nbsp;<a>{{form2.fono_t}}</a></p>
+	<p><strong>Telefono Celular ........:</strong>&nbsp;{{form2.cod_area}}&nbsp;{{form2.fono_c}}&nbsp;<rr>*</rr></p>
+	
+	<p><rr>(*)</rr>: datos obligatorios  &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;  
+						&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+						&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+						<input type="submit" value="Enrolar Gestor" /></p>	
+	</ul>
+        
+    </form>
+
+{% endblock %}

@@ -1,0 +1,94 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE ESCENARIOS DE RIESGO:</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proceso.path}}</aa></p>
+	</ul>
+	{% endblock %}
+
+	
+	{% block d_asigna_recu %}
+	<h5><strong>DATOS DEL PROCESO</strong></h5>
+	<!=======================================>
+
+	<ul class="scr4">
+	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
+	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+
+	  {% block Activos %}
+	  <h5><strong>Servicios Criticos asociados al Proceso<strong>&emsp;({{proceso.path}})</h5> 
+	  <!========================================================================================>
+	    
+	   {% if proceso.subproceso.recursos.all %}
+		  <table class="lta">
+			 <thead class="encabezado_A">
+			 <tr>
+			  <th scope="col">Activo/Recurso</th>
+			  <th scope="col">Descripcion</th>
+			  <th scope="col">Tipo</th>
+			  
+			 </tr>
+			 </thead>
+  
+			 <tbody>
+			 {%for act in proceso.subproceso.recursos.all  %}
+			 <tr>
+			  <th scope="row"><aa>{{act.nombre}}</aa></th>
+			  <th scope="row"><aa>{{act.descripcion}}</aa></th>
+			  <th scope="row"><aa>{{act.tipo}}</aa></th>
+			  
+			 </tr>
+					{% if not forloop.last %}
+				 {%endif%}
+				   {%endfor%}
+			 <tbody>
+		  </table>
+	  {% else %}
+		  <br/>
+		  <p> *** Sin Servicios Criticos asociados ***</p>
+	  {%endif%}
+  
+	  <br/>
+	{%endblock%}
+	</ul>
+	{% endblock %}
+
+	{% block asigna_proc %}
+	<h5><strong>ASIGNACION DE ESCENARIOS DE RIESGO</strong></h5>
+	<!===================================================>
+	<ul class="scr4">
+	<P>Seleccione  del  cuadro  de  la izquierda aquellos Escenarios de Riesgo  que podrian provocar una disrupcion en la 
+	operacion del Proceso &emsp;-&emsp;<strong>{{proceso.nombre}}</strong>&emsp;- en analisis</p>
+	
+    	<form action="" method="post">
+        	{% csrf_token %}
+       		{{form.media}}
+        	<p>{{form.escenarios }}</p>
+		<br/>
+		<p><span style='font-size:20px;'>&#128231&emsp;</span>Notifica?..:{{ form.notifica}}</p>
+
+		<br/>
+		<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+	</ul>
+
+		<!--- Boton de Salida ------>
+		<br/>
+		<a href="{% url 'Lista-Escenarios' %}" ><bb class="button">... Anterior</bb></a>
+		<input type="submit" class="button" value="Enviar a Asignacion RACI" />
+
+    	</form>
+
+
+
+	{% endblock %}
+
+{% endblock %}

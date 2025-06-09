@@ -1,0 +1,30 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para crear una Linea Base de Configuracion >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_comp %}
+	<ul class="encabezado_A">
+        <bb><strong>FORMULARIO DE CREACION DE LINEA BASE DE CONFIGURACION </strong></bb>
+	</ul>
+    <ul class="encabezado_SB">
+        <p><aa><strong>{{cmp.codigo}}&nbsp;/&nbsp;{{cmp.nombre}}&nbsp;/&nbsp;{{cmp.descripcion}}</strong></aa></p>
+    </ul>
+        
+	{% endblock %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        <p>Nombre del Parametro:{{ form.nombre }}</p>
+        <p>Descripcion:{{ form.descripcion }}</p>
+        <p>Metodo de Acceso:{{ form.metodo_acceso }}</p>
+        <p>Valor asignado : {{form.valor}}</p>
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

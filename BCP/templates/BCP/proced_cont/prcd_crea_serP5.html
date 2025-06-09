@@ -1,0 +1,62 @@
+<!Programa HTML>
+<!Despliega el formulario para la especificacion de un Servicio Critico para el Proceso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <aa><strong>5. INGRESO DE SERVICIO REQUERIDO</strong></aa>
+	</ul>
+	{% endblock %}
+
+	{% block B %}
+	<h5><strong>5. Servicios Requeridos</strong>( Indique todos los servicios/recursos que necesita el Procedimiento para su ejecucion)</h5>
+	<ul class="scr3">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Servicio</th>
+			<th scope="col">Objetivo</th>
+			<th scope="col">Contacto</th>
+			<th scope="col">Respaldo</th>
+						
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if servicios %}
+		    {%for ser in servicios.all  %}
+		    <tr>
+			<th scope="row"><bb>{{ser.nombre}}<bb></th>
+			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        {{ form }}
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

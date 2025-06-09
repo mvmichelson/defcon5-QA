@@ -1,0 +1,110 @@
+<!Programa HTML>
+<!Despliega el formulario para la Asignacion de Nivel de Impacto>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_escenario %}
+	<ul class="encabezado_B">
+        <aa><strong>FORMULARIO DE ANALISIS/EVALUACION DE IMPACTO AL NEGOCIO (BIA) - ASIGNA NIVEL INDICADOR DE RECUPERACION</strong></aa>
+	</ul>
+	<ul class='encabezado_SB'>
+		<p><aa><strong>{{proceso.subproceso.path}} </strong></aa>
+	</ul>			
+	{% endblock %}
+
+
+			<!-----------  Encabezado Indicador --------------->
+			<table class="lta">
+				<thead class="encabezado_A" style="background: blue;">
+				<tr>
+					<th scope="col">Indicador</th>
+					<th scope="col">Descripcion</th>
+	
+				</tr>
+				</thead>
+			
+				<body>
+	
+					 <tr>
+						<th scope="row"><bb>{{indicador.nombre}}<bb></th>
+						<th scope="row"><bb>{{indicador.descripcion}}<bb></th>
+
+					 </tr>
+			
+				<tbody>
+				 
+			 </table>
+			<!-----------  Fin Tabla de Riesgo --------------->
+	
+		<br/>
+		<bn>En caso de la interrupcion total del proceso -<strong>{{proceso.nombre}}</strong>- ¿ Que caracteristicas de {{indicador.nombre }}
+			debiera cumplir un Procedimiento alternativo de recuperacion de la continuidad operacional del negocio
+			(Procedimiento de Contingencia) ?. Considere las siguientes opciones:</bn>
+		<br/>
+		<h6><strong>OPCIONES</strong></h6>
+
+		<!-----------  Lista de Niveles  --------------->
+		<table class="lta">
+			<thead class="encabezado_A" style="background: grey;" >
+			<tr>
+				<th scope="col">Nivel</th>
+				<th scope="col">Descripcion</th>
+				<th scope="col" style="width: 10%; text-align: center;">Puntaje</th>
+
+			</tr>
+			</thead>
+		
+			<body>
+			 {% if opciones %} <!--- impactos asociados al Proceso -->
+		
+				 {%for op in opciones %} 
+				 <tr>
+					<th scope="row"><bb>{{op.nivel}}<bb></th>
+					<th scope="row"><bb>{{op.definicion}}<bb></th>
+					<th scope="row" style="width: 10%; text-align: center;"><bb>{{op.valor}}<bb></th>
+				 </tr>
+						{% if not forloop.last %}
+					 {%endif%}
+				   {%endfor%}
+			
+			 {%else%}
+				   <p> No hay Riesgos/Impactos definidos</p>
+			   {%endif%}
+		
+				<tbody>
+			 
+		 </table>
+		<!-----------  Fin Tabla de Niveles --------------->
+		<br/>
+		<!---- Asignacion ------------>
+    	<form action="" method="post">
+		{% csrf_token %}
+				
+		<strong>Asignacion...;</strong>{{form.nivel}}			   
+				
+		<br/>	
+		<br/>
+		<input type="submit" class="button"   value="Registrar y Salir" />
+		</form>
+		
+
+	 <!-- Globo de cómic -->
+	 <div id="comicBalloon"></div>
+
+	 <!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	 <div id="confirmation-dialog" class="hidden">
+        <div class="dialog-content">
+            <p id="confirmation-message"></p>
+            <button id="confirm-yes">Sí</button>
+            <button id="confirm-no">No</button>
+        </div>
+    </div>
+
+<!--- Despliega el nombre del programa -->
+<br/><br/><br/>
+<p style="font-size: 8px; color:green">asigna_nivel_ind</p>
+
+{% endblock %}

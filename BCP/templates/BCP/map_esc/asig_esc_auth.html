@@ -1,0 +1,264 @@
+<! Programa HTML>
+<! Autorizacion de la asignacion de Escenarios de Riesgo al Proceso>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE AUTORIZACION DE ESCENARIOS DE RIESGO:</aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proc.path}}</aa></p>
+	</ul>
+
+<!----- Bloque A ------------------------------------------------------------------->
+<div class="flex-container">
+	
+	<!-------- Sector Datos del Proceso --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+	<ul class="scr4" style="text-align: center; background: white; font-size: 15px; padding: 0%;">
+			<p><strong>&emsp; Datos del Proceso</strong></p>
+	</ul>
+		<ul class="scr4">
+		<p>&emsp;<strong>1.1.- Nombre........:</strong>&emsp; {{ proc.nombre }}</p>
+		<p>&emsp;<strong>1.2.- Codigo........:</strong>&emsp; {{ proc.proceso }}</p>
+  		<p>&emsp;<strong>1.3.- Objetivo......:</strong>&emsp; {{ proc.objetivo }}</p>
+  		<br/>
+	</ul> 
+	<br/>
+	<bn>Revise los <strong>Escenarios de Riesgo</strong> asignados al proceso -</bn> <strong>{{proc.nombre}}</strong> <bn>- 
+		y en caso de alguna observacion registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
+		adjunto. 
+	</bn>
+
+	</div><!-------- Fin Sector Datos del Proceso --------------------------------------->
+
+
+	<!-------- Sector Block de Observaciones --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Block de Comentarios de Revision</strong>
+	</ul>
+
+	<ul class="BarraScroll" style="height: 250px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+		<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10;">Est.</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+
+					{% for com in comentarios %}
+						{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+							<tr style="font-size: 9px;">
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}
+								(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+								</p>
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}</p>
+							</th>
+	
+						{%endif%}
+
+							<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+							<th scope="row" style="width: 10; text-align: center;">
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+
+								{% if com.resuelto %}
+									&#9989
+								{%else%}
+									&#10067
+								{%endif%}
+							{%endif%}
+							<!-- Borra Comentario -->
+							</th>
+								
+							</tr>
+								{% if not forloop.last %}
+								{%endif%}
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+			
+			<!-- Fin Log Comentarios -->
+			
+	</ul>
+
+</div><!-------- Fin Sector Block --------------------------------------->
+
+</div><!----- Fin Bloque A ------------------------------------------------------------------->
+<br/>
+<ul class="scr4" style="text-align: center; background: white; font-size: 15px; padding: 0%;">
+	<p><strong>&emsp; ASIGNACION DE ESCENARIOS </strong></p>
+</ul>
+
+<!----- Bloque B Asignaciones ------------------------------------------------------------------->
+<div class="flex-container">
+<!-------- Sector Disponibles --------------------------------------->
+<div class="flex-item" style="width: 50%;">
+<ul class="scr4" style="text-align: center; background: white; font-size: 15px; padding: 0%;">
+<p><strong>&emsp; DISPONIBLES </strong></p></ul>
+	
+<table class="lta">
+	<thead class='encabezado_A'>
+	<tr>
+ 
+	 <th scope="col" style="font-size: 10px;">ESCENARIO DE RIESGO</th>
+	 <th scope="col" style="font-size: 10px;">DESCRIPCION</th>
+	 <th scope="col" style="font-size: 10px;"></th>
+	</tr>
+	</thead>
+
+	<tbody>
+	{%for esc_d  in esc_disp.all  %}
+	{% if  esc_d not in escenarios.all %}
+	  <tr>
+	   
+	   <th scope="row"><bb style="font-size: 12px;">{{esc_d.titulo}}<bb></th>
+	   <th scope="row"><bb style="font-size: 10px;">{{esc_d.descripcion}}<bb></th>
+	   <th scope="row">
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar o hacer observacion sobre el Escenario {{esc_d.titulo}} disponible ..."
+					data-id="{{ proc.id }}"
+					data-sec="E" 
+					data-field="Revisar Escenario Disponible: {{esc_d.titulo}} " >
+					&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+		
+	   </th>
+	  </tr>
+			 {% if not forloop.last %}
+		  {%endif%}
+   {%endif%}
+
+		 {%endfor%}
+   </tbody>
+
+ </table>
+
+
+</div><!-------- Fin Sector Disponibles --------------------------------------->
+
+<!-------- Sector Asignados --------------------------------------->
+<div class="flex-item" style="width: 50%;">
+<ul class="scr4" style="text-align: center; background: white; font-size: 15px; padding: 0%;">
+<p><strong>&emsp; ASIGNADOS </strong></p></ul>
+
+<table class="lta">
+	<thead class='encabezado_A'>
+	<tr>
+ 
+	 <th scope="col" style="font-size: 10px;">ESCENARIO DE RIESGO</th>
+	 <th scope="col" style="font-size: 10px;">DESCRIPCION</th>
+	 <th scope="col" style="font-size: 10px;"></th>
+	</tr>
+	</thead>
+
+	<tbody>
+	{%for esc_a  in escenarios.all  %}
+	  <tr>
+	   
+	   <th scope="row"><bb style="font-size: 12px;">{{esc_a.titulo}}<bb></th>
+	   <th scope="row"><bb style="font-size: 10px;">{{esc_a.descripcion}}<bb></th>
+	   <th scope="row"> 
+		<!---------  Comentario de Revision ----->
+		<span class="comment-icon link"  data-message="Comentar o hacer observacion sobre el Escenario {{esc_a.titulo}} asignado ..."
+		data-id="{{ proc.id }}"
+		data-sec="E" 
+		data-field="Revisar Escenario Asignado: {{esc_a.titulo}}  " >
+		&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+		</span>
+		<!---------  Fin Comentario de Revision ----->
+		
+	   </th>
+	  </tr>
+
+	{%endfor%}
+   </tbody>
+
+ </table>
+
+</div><!-------- Fin Sector Asignados --------------------------------------->
+
+
+
+</div><!----- Fin Bloque B Asignaciones ------------------------------------------------------------------->
+
+ 
+<br/>
+<ul class="scr4" style="text-align: center; background: white; font-size: 15px; padding: 0%;">
+	<p><strong>&emsp; CONCLUSION </strong></p>
+</ul>
+
+<ul class="scr4">
+
+		<br/>
+		<form action="" method="post">
+        		{% csrf_token %}
+        		
+				<bn>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si desea autorizar los Servicios Criticos asignados para el Proceso - <strong>{{proc.nombre}}</strong>  -.
+					Considerar las observaciones en estado pendiente en el Block de Revision (Est.=<a style="font-size: 10px;">&#10067</a>).
+					En caso de no autorizar, al  registrar sera devuelto al Gestor [C]onsultor para su correccion.
+				</bn>
+</ul>			
+        	<input type="submit" class="button" value="Registrar" />
+	    </form>
+
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+<br/>
+<br/>
+
+
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[asig_esc_auth]</aa>	
+
+{% endblock %}
+

@@ -1,0 +1,50 @@
+<! Programa HTML>
+<! Autorizacion de la definicion de Objetivos del DRP>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+	
+	{% block encabezado_auth %}
+	 <ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE AUTORIZACION  DE OBJETIVOS DEL DRP</aa></strong></p>
+	 </ul>
+	 <ul class="encabezado_SB">
+		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	 </ul>
+	{% endblock %}
+	
+
+	{%block Objetivo%}
+	<p><h5><strong>DECLARACION OBJETIVO DRP</strong></h5>
+	<ul class="scr2">
+	<p>{{drp.introduccion}}</p>
+	</ul>
+	{%endblock%}
+ 
+	{%block Conclusion%}
+		<p><h5><strong>CONCLUSION</strong></h5>
+	<ul class="scr4">
+
+		{% block C %}
+		<form action="" method="post">
+			{% csrf_token %}
+        		
+        	<p><strong>Indique <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si la declaracion del Objetivo del DRP
+			le parece correcta y desea autorizar.</strong></p>
+			
+			<p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p>
+			<br/>
+			<br/>
+        	<input type="submit" value="Registrar" />
+	    </form>
+		{%endblock%}
+	</ul>
+
+	{% endblock %}
+	
+
+{% endblock %}
+

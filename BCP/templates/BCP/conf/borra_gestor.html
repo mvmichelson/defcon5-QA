@@ -1,0 +1,29 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para crear usuario en defcon-5  >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="Encabezado_E">
+        <am><strong> DAR DE BAJA GESTOR EN defcon-5</strong></am>
+	</ul>
+	{% endblock %}
+	<br/>
+    <form action="" method="post">
+        {% csrf_token %}
+       <ul  class='Fondo_C'>
+	
+        <p><strong>Nombre de Usuario...:</strong>&nbsp;{{ form.usuario }}</rr></p>
+	<p><strong>Desactiva  ? ......................:</strong>&nbsp;{{ form.confirma_desactiva}} (El Gestor sera inhabilitado para acceder al Sistema )</p>
+	<p><strong>Borra  ? ..........................:</strong>&nbsp;{{ form.confirma_borra}} (El Gestor sera borrado del Sistema)</p>
+        <br/>
+	</ul>
+	<br/> 
+        <input type="submit" value="Dar de baja" />
+    </form>
+
+{% endblock %}

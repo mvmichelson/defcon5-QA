@@ -1,0 +1,250 @@
+<!Programa HTML>
+<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Para establecer las Evaluaciones BIA al Proceso>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+<ul class="encabezado_SB"><strong><aa>M A P E O</aa></strong></ul>
+	
+
+	{% block encabezado2 %}
+	<!------ Menu Encabezado ---------------------------------->
+	<div class="flex-container">
+
+		<!---- Opcion 1 ----->
+		<div class="flex-item" style="width: 25%;">
+		<ul class="encabezado_B">
+			<a href="{% url 'Lista-Procesos' %}"><strong><aa>Definicion de Procesos</sa></strong></a>
+		</ul>
+		</div><!---- Fin  Opcion 1 ----->
+	
+		<!---- Opcion 2 ----->
+		<div class="flex-item" style="width: 30%;">
+			<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1); ">
+				<img src="/static/img/Evaluacion_Riesgo.png" width="30" height="30"></img>
+				<a href="{% url 'Lista-Evaluaciones' %}"><strong><sa>Analisis BIA</sa></strong></a>		</ul>
+		</div><!---- Fin  Opcion 2 ----->
+		
+		<!---- Opcion 3 ----->
+		<div class="flex-item" style="width: 25%;">
+			<ul class="encabezado_B">
+				<a href="{% url 'Lista-Recursos' %}"><strong><aa>Servicios/Recursos Criticos</aa></strong></a>		</ul>
+			</ul>
+		</div><!---- Fin  Opcion 3 ----->
+	
+		<!---- Opcion 4 ----->
+		<div class="flex-item" style="width: 25%;">
+			<ul class="encabezado_B">
+				<a href="{% url 'Lista-Escenarios' %}"><strong><aa>Escenarios de Riesgo</aa></strong></a>		</ul>
+			</ul>
+		</div><!---- Fin  Opcion 2 ----->
+	
+		</div><!------ Fin Menu Encabezado ---------------------------------->
+		{% endblock %}
+
+	{%block lista%}
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 310px">  
+                         
+		{% if lista_procesos %}
+
+			{% for proceso in lista_procesos.all %}
+			 <p>    
+			      <!**********************>
+			      <!* Despliega Opciones *>
+			      <!**********************>
+
+ 				<! Indenta >
+			  	{% for i in proceso.proceso %} &nbsp; {% endfor %%}
+				
+                {% if proceso.es_subproceso  %}
+				
+			 		{% if proceso.subproceso.fase_status == 'V' %} <! Si fase es de Evaluacion BIA>
+				
+				   	   {%if proceso.subproceso.status != 'R' %} <!Si el Proceso no esta vigenteado en etapa>
+
+						{% if proceso.subproceso.status == 'C' %}
+
+						<!Asignacion de responsables RACI y envio a aprobacion>
+						<!****************************************************>
+
+						{%if request.user.pk == proceso.subproceso.gestor_C.user_pk %}
+
+							<a href="{% url 'asigna-raci' proceso.pk 'Analisis de Impacto'  %}"
+							class="link blink " data-message="Define mapa de Autorizaciones RACI ..."><rr>...<strong>&#8476</strong>..</rr></a>
+
+						{%else%}
+
+							.<yy>&#8476</yy>..
+
+						{%endif%}
+
+					{%endif%}					
+
+				<!Proceso a Aprobacion x  Gestor [A]utorizador>
+				<!********************************************>
+				{% if proceso.subproceso.status == 'A' %}
+
+						{%if proceso.subproceso.gestor_A.user_pk == request.user.pk %}
+						<!-- Si el usuario en sesion es Autorizador-->
+							<a class="link blink" data-message="Revisar Evaluacion y Autorizar u Observar ..." 
+							href="{% url 'Aut-Asigna-Eval-BIA' proceso.pk  %}">
+							<img src="/static/img/Autorizacion.webp" width="20" height="20"></img>
+							</a>
+						{%else%}
+						<!--- Si no es el Autorizador -->
+							<a class="link " data-message="En Revision y Autorizacion por Gestor Autorizador ...({{proceso.subproceso.gestor_A}})">
+							<img src="/static/img/En_Revision.png" width="20" height="20"></img></a>
+						{%endif%}
+
+				{%endif%}
+
+					{%if proceso.subproceso.status == 'r' %}
+
+						<!Proceso a aprobacion del Gestor [R]esponsable>
+						<!***********************************************>
+						{%if proceso.subproceso.gestor_R.user_pk == request.user.pk %}
+						<!-- Si es el Gestor Responsable -->
+						<a class="link blink" data-message="Revisar Evaluacion y Autorizar u Observar ..." 
+						href="{% url 'Aut-Asigna-Eval-BIA' proceso.pk  %}">
+						<img src="/static/img/En_Autorizacion.jpg" width="20" height="20"></img>
+						</a>
+					{%else%}
+						<!--- Si no es el Responsable -->
+							<a class="link " data-message="En Revision y Autorizacion por Gestor Responsable ...({{proceso.subproceso.gestor_R}})">
+							<img src="/static/img/En_Revision.png" width="20" height="20"></img></a>
+						{%endif%}
+							
+					{%endif%}
+
+
+					<!Revision y correccion de observaciones x [C]onsultor>
+					<!======================================>
+					{%if proceso.subproceso.status == 'x' %}
+
+						{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}
+						<!-- Si usuario sesion es Consultor -->
+						  	<a href="{% url 'Rev-Asig-BIA' proceso.pk %}"
+							class="link blink " data-message="Revisar Comentarios e implementar ...">
+							<img src="/static/img/Corregir.png" width="20" height="20"></img>
+							</a>
+						{%else%}
+						<!-- Si usuario sesion No es Consultor -->
+							<a class="link" data-message="En Correccion por Gestor Consultor ...">
+								<img src="/static/img/Corregir.png" width="20" height="20"></img></a>
+							</a>
+						{%endif%}
+							
+					{%endif%}
+
+				    {%else%} <! si el estado esta vigenteado  >
+						
+						   <aa class="link " data-message="Aprobado en Etapa de Evaluacion y anterior ..." >...<strong>&#10004</strong>..</aa>
+						
+				    {%endif%}
+
+				{%else%} <!Si la fase no es Evaluacion BIA>
+
+					{% if proceso.subproceso.status == 'R' and proceso.subproceso.fase_status == 'M' %} <!el Proceso fue aprobado en  fase anterior>
+
+					<!Asigna Evaluacion >
+					<!******************>
+						<!--- Si usuario en sesion es [C]onsultor -->
+						{% if proceso.subproceso.gestor_C.user_pk == request.user.pk %}
+							<a href="{% url 'Asigna-Evaluacion' proceso.pk %}"
+							class="link blink" data-message="Evaluacion de Impactos y Asignacion de Indicadores de recuperacion (BIA)">
+								<img src="/static/img/Evaluacion_Riesgo.png" width="20" height="20"></img>
+							</a>
+						{%else%}
+						<!-- Su usuario en sesion No es [C]onsultor-->
+						<a 	class="link" data-message="En Evaluacion BIA x Gestor Consultor ({{proceso.subproceso.gestor_C}})">
+							<img src="/static/img/Evaluacion_Riesgo.png" width="20" height="20"></img>
+						</a>
+						{%endif%}
+					{%else%}<! Si no ha sido aprobado en fase anterior>
+
+						<!Si el proceso esta en fases posteriores>
+					   {% if proceso.subproceso.fase_status  == 'B' or proceso.subproceso.fase_status  == 'E'%}
+
+					      <!Si el Proceso ya esta aprobado en todas las etapas>
+						  {% if  proceso.subproceso.status  == 'R' and proceso.subproceso.fase_status == 'E' %} 
+						     <aa class="link " data-message="Aprobado en Fase de Mapeo ...">..<strong>&#9989</strong>. <!-- Tilde en cuadro verde -->
+						  {%else%}
+					   	     <aa class="link " data-message="Aprobado en Etapa de Evaluacion y anterior ..." >...<strong>&#10004</strong>.. <!--Tilde simple -->
+						  {%endif%}
+
+					   {%endif%}
+					   <! En caso de no estar aprobado en etapas anteriores no despliega nada>
+					  
+					{% endif %}
+
+		   			{%endif%}<!Fin Si la fase es Evaluacion BIA>
+                          	
+				
+
+                {% endif %} <! Fin si es Subproceso>
+
+            <! Fin Despliega Opciones>
+			<!****************************************************************************************************************************************************>
+
+
+			<!*****************************************>
+			<!* Despliega codigo y nombre del Proceso *>
+			<!*****************************************>
+			{% if proceso.es_subproceso %} <! Si es Subproceso>
+
+			  {% if proceso.subproceso.fase_status not in 'M' or proceso.subproceso.fase_status == 'M' and  proceso.subproceso.status == 'R' %}
+				<!Si el Proceso no se encuentra  en aprobacion en fases anteriores>
+
+					<!Opcion para ver detalle del Proceso>
+					<a href="{% url 'Detalle-Proceso' proceso.pk %}" class="link " data-message="Detalle del Proceso">
+						<bb>&#128065</bb></a>
+
+					<!Despliega codigo y nombre del Proceso>
+                	<aa> &nbsp;&nbsp;&#10149 {{ proceso.nombre }} </aa>
+					[ 
+					{% if proceso.subproceso.ranking <= tramo_1 %}
+				   		<strong> {{proceso.subproceso.ranking}} </strong>
+					{% elif  proceso.subproceso.ranking > tramo_1  and  proceso.subproceso.ranking <= tramo_2 %}
+				  		<sa><strong> {{proceso.subproceso.ranking}} </strong></sa>
+					{% elif  proceso.subproceso.ranking > tramo_2 %}
+				   		<rr><strong> {{proceso.subproceso.ranking}} </strong></rr>
+					{%endif%}
+					]
+ 					
+
+			  {%endif%}
+
+            {%else%}<! Si no es Subproceso>
+
+			    {% if proceso.nro_hijos > 0 %} <! Si el Proceso no tiene Subprocesos definidos no se despliega>
+                               <aa><strong>{{ proceso.nombre }}</strong></aa>
+			    {%endif%}
+
+            {%endif%}
+         		
+			
+		      <! Fin Despliega codigo y nombre del Proceso>
+		      <! *************************************************************************************************************************************************************>
+
+			</p> <!Salta linea al desplegar el nombre del Proceso>   
+		    {% endfor %}
+
+		{% else %}
+      			<p>No hay Procesos definidos.</p>
+    	{% endif %}
+		
+	</ul>
+	{%endblock%}
+
+
+	
+<!-- Globo de cómic -->
+<div id="comicBalloon"></div>
+
+{%endblock%}
+

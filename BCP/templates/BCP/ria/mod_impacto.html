@@ -1,0 +1,28 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para el Reporte de un Incidente >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+    <ul class="encabezado_B">
+        <yy><strong>ANALISIS DE IMPACTO DE RIESGO (RIA) - ADMINISTRACION RIESGO / IMPACTO</strong></yy>
+    </ul>
+    <ul class="encabezado_B">
+        <yy><strong>Modificacion Riesgo / Impacto</strong></yy>
+    </ul>
+
+
+    {% endblock %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form }}
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

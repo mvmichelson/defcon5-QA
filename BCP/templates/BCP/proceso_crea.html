@@ -1,0 +1,33 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Proceso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block encabezado_detalle %}
+	<ul class="encabezado_B">
+        <aa><strong>FORMULARIO DE CREACION DE PROCESO </strong></aa>
+	</ul>
+	<ul class='encabezado_SB'>
+	<aa>{{proceso.path}} </aa>
+	</ul>
+	{% endblock %}
+
+
+    <ul class="scr4"> 
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        <p><strong>Nombre..:</strong>&emsp;{{form.nombre}}</p>
+	<p><strong>Objetivo..:</strong>&emsp;{{form.objetivo}}</p>
+	</table>
+	<br/>
+	<p><strong>Es un Proceso Evaluable (SubProceso) ?........:</strong>&emsp;{{form.es_subproceso}}
+        <br/>
+	<br/>
+        <input type="submit" class="button" value="Registra Proceso" />
+    </form>
+   </ul>
+{% endblock %}

@@ -1,0 +1,56 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE SERVICIOS CRITICOS:</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proceso.path}}</aa></p>
+	</ul>
+	{% endblock %}
+
+	
+	{% block d_asigna_recu %}
+	<h5><strong>DATOS DEL PROCESO</strong></h5>
+	<!=======================================>
+
+	<ul class="Fondo_C">
+	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
+	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+	</ul>
+	{% endblock %}
+
+	{% block asigna_proc %}
+	<h5><strong>ASIGNACION DE SERVICIOS CRITICOS</strong></h5>
+	<!===================================================>
+	<ul class="scr3">
+	<P>Seleccione del cuadro de la izquierda aquellos Servicios o Recursos que son indispensables para la 
+	operacion del Proceso&emsp;<strong> {{proceso.nombre}}</strong>.</p>
+	
+    	<form action="" method="post">
+        	{% csrf_token %}
+       		{{form.media}}
+        	<p>{{form.activos }}</p>
+		<br/>
+		<p><span style='font-size:20px;'>&#128231&emsp;</span>Notifica?..:{{ form.notifica}}</p>
+       		<br/>
+			<br/>	
+		</ul>
+
+		
+        	<p>
+				<a href="{% url 'Lista-Recursos' %}" ><bb class="button">... Anterior</bb></a>&nbsp;&nbsp;&nbsp;
+				<input type="submit" class="button" value="Enviar a Asignacion RACI" />
+			</p>
+			<br/>
+    	</form>
+
+	{% endblock %}
+
+{% endblock %}

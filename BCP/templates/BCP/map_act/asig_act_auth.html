@@ -1,0 +1,251 @@
+<! Programa HTML>
+<! Autorizacion de la asignacion de Activos/Recursos al Proceso>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+	{% block encabezado_auth %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE AUTORIZACION DE SERVICIOS CRITICOS:</aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proceso.path}}</aa></p>
+	</ul>
+	{% endblock %}
+
+	<!----- Bloque A ------------------------------------------------------------------->
+	<div class="flex-container">
+	
+	<!-------- Sector Datos del Proceso --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+	{% block datos_proc %}
+	<h5><strong>1.&emsp;DATOS DEL PROCESO</strong></h5>
+	<ul class="scr4">
+		<p>&emsp;<strong>1.1.- Nombre...:</strong>&emsp; {{ proceso.nombre }}</p>
+		<p>&emsp;<strong>1.2.- Codigo...:</strong>&emsp; {{ proceso.proceso }}</p>
+  		<p>&emsp;<strong>1.3.- Objetivo.:</strong>&emsp; {{ proceso.objetivo }}</p>
+  		<br/>
+	</ul> 
+
+	<br/>
+	<bn>Revise los Servicios Criticos propuestos para el proceso -</bn> <strong>{{proceso.nombre}}</strong> <bn>- 
+		y en caso de alguna observacion o comentario registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
+		adjunto. 
+	</bn>
+
+	{% endblock %}
+	</div><!-------- Fin Sector Datos del Proceso --------------->
+
+	<!-------- Sector Block de Comentarios --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+			<strong>BLOCK DE COMENTARIOS</strong>
+		</ul>
+	
+		<ul class="BarraScroll" style="height: 274px; border-radius: 10px; border: 3px solid black; ">
+			<!-- Log de Comentarios -->
+				<table class="lta"> 
+					<thead class="encabezado_C" style="text-align: center">
+					<tr>
+					<th scope="col" style="width: 20%;">Referencia.Dato</th>
+					<th scope="col" style="width: 500px">Comentario</th>
+					<th scope="col" style="width: 10;">Est.</th>
+					</tr>
+					</thead>
+					
+					<body>
+					{% if comentarios %}
+	
+						{% for com in comentarios %}
+						<tr style="font-size: 9px;">
+						<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+							<p>{{com.campo}}
+							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+							</p>
+						</th>
+						<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+						<th scope="row" style="width: 10; text-align: center;">
+						{% if com.resuelto %}
+							&#9989
+						{%else%}
+							&#10067
+						{%endif%}
+						<!-- Borra Comentario -->
+						</th>
+							
+						</tr>
+							{% if not forloop.last %}
+							{%endif%}
+						{%endfor%}
+					
+					{%else%}
+						<p> Sin  Observaciones</p>
+					{%endif%}
+					
+						<tbody>
+								
+				</table>
+				
+				<!-- Fin Log Comentarios -->
+				
+		</ul>
+	
+	
+	</div><!--- Fin -------- Sector Block de Comentarios --------------------->
+	</div><!--------- Fin Bloque A ------------------------->	
+
+	{%block lista_act%}
+	<h5><strong>2.&emsp;REVISION/OBSERVACION DE SERVICIOS ASIGNADOS</strong></h5>
+
+	<ul class="scr4">
+	<br/>
+	<h6><strong>2.1.&emsp;Servicios Criticos seleccionados para el Proceso {{proceso.nombre}}.</strong><h6>
+		
+		<table class="lta">
+		   <thead class='encabezado_A'>
+		   <tr>
+			<th scope="col">TIPO</th>
+			<th scope="col">NOMBRE</th>
+			<th scope="col">DESCRIPCION</th>
+			<th scope="col">OBS.</th>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for act in activos.all  %}
+		   <tr>
+			<th scope="row"><bb>{{act.tipo.nombre}}<bb></th>
+			<th scope="row"><bb>{{act.nombre}}<bb></th>
+			<th scope="row"><bb>{{act.descripcion}}<bb></th>
+			<th scope="row">
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar Servicio ..."
+					data-id="{{ proceso.id }}"
+					data-sec="B"
+					data-field="Revisar Comentario en Servicio {{act.nombre}}."
+					>
+					&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+		
+			</th>
+		   </tr>
+       		   {% if not forloop.last %}
+        	   {%endif%}
+      		   {%endfor%}
+		   </tbody>
+		</table>
+	   	
+	
+	<br/>
+
+	<h6><strong>2.2.&emsp;Servicios disponibles en Base de Servicios Criticos NO seleccionados.</strong><h6>
+		
+		<table class="lta">
+		   <thead class='encabezado_A'>
+		   <tr>
+			<th scope="col">TIPO</th>
+			<th scope="col">NOMBRE</th>
+			<th scope="col">DESCRIPCION</th>
+			<th scope="col">OBS.</th>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for act_d  in activos_disp.all  %}
+		   {% if  act_d not in activos.all %}
+		     <tr>
+			  <th scope="row"><bb>{{act_d.tipo.nombre}}<bb></th>
+			  <th scope="row"><bb>{{act_d.nombre}}<bb></th>
+			  <th scope="row"><bb>{{act_d.descripcion}}<bb></th>
+			  <th scope="row">
+						<!---------  Comentario de Revision ----->
+						<span class="comment-icon link"  data-message="Comentar Servicio ..."
+						data-id="{{ proceso.id }}"
+						data-sec="B"
+						data-field="Revisar Comentario en Servicio {{act_d.nombre}}."
+						>
+						&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+						</span>
+						<!---------  Fin Comentario de Revision ----->
+	
+			  </th>
+		     </tr>
+       		     {% if not forloop.last %}
+        	     {%endif%}
+		  {%endif%}
+
+      		  {%endfor%}
+		  </tbody>
+
+		</table>
+	   	{%endblock%}
+	
+	</ul>
+ 
+	{%block Conclusion%}
+		<p><h5><strong>3.&emsp;CONCLUSION</strong></h5>
+		<ul class="scr4">
+		
+		{%block C%}
+		<form action="" method="post">
+        		{% csrf_token %}
+        		
+
+				<bn>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si desea autorizar los Servicios Criticos asignados para el Proceso - <strong>{{proceso.nombre}}</strong>  -.
+						Considerar las observaciones en estado pendiente en el Block de Revision (Est.=<a style="font-size: 10px;">&#10067</a>).
+						En caso de no autorizar, al  registrar sera devuelto al Gestor [C]onsultor para su correccion.
+				</bn>
+		
+			
+			<!-- <p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p> -->
+			<br/>
+			<br/>
+			<!-- Botones -->
+			<a href="{% url 'Lista-Recursos'  %}"><bb class="button">... Volver</bb></a>
+        	<input type="submit" class="button"  value="Registrar" />
+			
+	    	</form>
+		{%endblock%}
+		<br/>
+		</ul>
+	{% endblock %}
+	
+	<!----- CSS para Scripts --------------->
+	<!-------------------------------------->
+
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+
+	
+
+<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!-------------------------------------->
+
+<br/><br/><br/>
+<p><aa style="font-size: 8px;">asig_act_auth</aa></p>
+{% endblock %}
+

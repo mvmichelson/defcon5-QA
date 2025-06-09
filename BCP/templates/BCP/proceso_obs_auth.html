@@ -1,0 +1,48 @@
+<! Programa HTML>
+<! Observaciones Autorizacion de Procedimiento de Contingencia>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+	{% block encabezado_auth %}
+	<ul class="encabezado_B">
+        <aa><strong>*** OBSERVACION AUTORIZACION ***</aa>
+	</ul>
+	{% endblock %}
+ 
+
+	{% block Procedimiento %}
+	
+	<ul class="scr4">
+	<p><strong>2.0. Codigo del Proceso...........: &emsp;</strong> {{proc.proceso}}</p>	
+	<p><strong>2.1. Nombre del Proceso...........: &emsp;</strong> {{proc.path}}</p>
+	
+	<br/>
+
+	</ul>
+	{% endblock %}
+
+        
+	{% block A1 %}
+	<h5><strong>Dato a Observar:</strong></h5>
+	<ul class="scr4">
+
+	<p><strong>{{item}}&emsp;:&emsp;{{valor}}</strong></p>
+	{% endblock %} 
+
+	<form action="" method="post">
+       		{% csrf_token %}
+       		
+       		<p>Observacion..:</strong>{{ form.comentario }}
+		<br/>
+       		<input type="submit" value="Registrar" />
+		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+    	</form>
+	
+
+{% endblock %}
+

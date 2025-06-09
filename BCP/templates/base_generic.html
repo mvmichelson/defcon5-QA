@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!Programa en HTTML>
+<!base_generic>
+<!Despliega el Menu de la pagina Index>
+<!Programado por Marco A. Villalobos Michelson>
+<!============================================>
+
+<html lang="en">
+
+<head>
+
+  {% load static %}
+
+  {% block title %}
+  <title>
+    defcon-5/BCP
+  </title>
+  {% endblock %}
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js" defer></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" defer></script>
+
+
+  <!-- Estaticos locales del Sistema -->
+  <script src="/static/js/main.js" defer></script>
+
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+  <!-- Add additional CSS in static file-->
+
+  
+
+ <!-- <img src="{% static 'image/fondo_1.jpg' %}" >-->
+
+  <!-- Boostrap-->
+  <link rel="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"  integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+
+ 
+</head>
+<body>
+
+
+<ul class="encabezado">
+
+<div class="flex-container" style="height: 40px; width: 100%;">
+  <div class="flex-text" style="text-align: left; width: 50%;">
+    <a href="{% url 'Declara-Incidente' %}" style="font-size: 20px;"
+    class="link " data-message="***   D E C L A R A &nbsp;&nbsp;I N C I D E N T E   ***" >&nbsp;&#128222</a>
+  </div>
+
+  <div class="flex-text" style="text-align: right; width:100%;">
+    <strong><ab>defcon-5/bcp</ab></strong>
+  </div>
+
+
+</div>
+</ul>
+
+
+
+<! despliega la opcion Login o Logout dependiendo del estado de la sesion>
+{% block sesion %}
+<ul class="sesion">
+{% if user.is_authenticated %}
+    
+    <li><aa>Hola </aa><strong>{{ user.get_full_name }}</strong><a href="{% url 'logout'%}?next={{request.path}}"><strong><aa>\ Logout</aa></strong>&nbsp;&nbsp;</a></li>              
+             
+{% else %}
+    <li><a href="{% url 'login'%}?next={{request.path}}"><aa>&#128477<strong>\ Login</aa></strong>&nbsp;&nbsp;</a></li>
+{% endif %}
+</ul>
+{% endblock %}
+
+  <div class="container-fluid">
+     <div class="row">
+      <div class="col-sm-2">
+      
+      <! Define la barra de Menu de opciones>
+      {% block sidebar %}
+      <ul class="sidebar-nav encabezado" style="height: 400px;">
+
+      			<li><aa><strong>MENU</strong></aa></li>
+	   	 	    <br/> 
+           	<li><a href="{% url 'index' %}"><aa><strong><span style='font-size:25px;'>&#8680</span>. Principal</strong></aa></a></li>
+            <br/>
+            <li> <a href="{% url 'Mapeo' %}" style="text-align: left;"><aa><strong><img src="/static/img/metodologia.png" width="25" height="25"></img>&nbsp;. Metodologia</strong></aa></a></li>
+            <br/> 
+			      <li><aa style="font-size: 25px;">&#9971</aa><aa><strong>. Mapeo</strong></aa></li>
+				
+            <li>&nbsp;<a href="{% url 'Lista-Procesos' %}"><strong>&#10146&nbsp;Definicion Procesos</strong></a></li>
+			      <li>&nbsp;<a href="{% url 'Lista-Evaluaciones' %}"><strong>&#10146&nbsp;Analisis Impacto</strong></a></li>
+			      <li>&nbsp;<a href="{% url 'Lista-Recursos' %}"><strong>&#10146&nbsp;Servicios Criticos</a></strong></li>
+			      <li>&nbsp;<a href="{% url 'Lista-Escenarios' %}"><strong>&#10146&nbsp;Escenarios Rsgo</strong></a></li>
+			
+			      <br/>
+			      <li><aa style='font-size:15px;'>&#128213</aa><aa><strong>.Prcd.Contingencias</strong></aa></li>
+			
+			      <li>&nbsp;<a href="{% url 'Lista-Proced' %}"><strong>&#10146&nbsp;Procedimientos</strong></a></li>
+			      <li>&nbsp;<a href="{% url 'Lista-DRP' %}"><strong>&#10146&nbsp;DRP</a></strong></li>
+			      <br/>
+            <li><bl style="font-size: 20px;">&#129519</bl><a href="{% url 'Lista-Incidentes' %}"><aa><strong>&nbsp;Adm. Incidentes</strong></aa></a></li>
+			      <br/>
+            <li><bl style="font-size: 20px;">&#9965</bl>&nbsp;<a href="{% url 'menu-conf' %}"><strong><aa>Configuracion</aa></strong></a></li>
+            <br/>
+                      		
+        </ul>      
+    
+     {% endblock %}
+      </div>
+        <div class="col-sm-10 ">
+      {% block content %}{% endblock %}
+      
+{% block pagination %}
+<! *** Esta seccion de codigo permite paginar el despliegue de la lista de acuerdo a
+la variable paginate_by en views.py***>
+  {% if is_paginated %}
+      <div class="pagination">
+          <span class="page-links">
+              {% if page_obj.has_previous %}
+                  <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}">Previa</a>
+              {% endif %}
+              <span class="page-current">
+                  Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+              </span>
+              {% if page_obj.has_next %}
+                  <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">Proximo</a>
+              {% endif %}
+          </span>
+      </div>
+  {% endif %}
+{% endblock %}
+
+      </div>
+    </div>
+
+  </div>
+</body>
+
+	 <!-- Globo de cómic -->
+	 <div id="comicBalloon"></div>
+
+</html>

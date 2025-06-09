@@ -1,0 +1,876 @@
+
+
+/* INDICE */
+
+
+/* Fondos de Imagen */
+/* Barras de encabezado y pie de pagina */
+
+/* ----- FORMATOS DE TEXTO ----- */
+
+/* Sectores de Pagina */
+
+/* Mensajes de tipo Comic para dar instrucciones con posicionamiento del cursor en la 
+Opcion */
+
+/* Efectos de Pantalla */
+
+/* Indentaciones de texto */
+
+/* Switch Activa/Desactiva Procedimiento de Contingencia */
+
+
+
+
+
+
+
+
+body {
+  margin: 0;
+  /* background-image: url('static/image/LogoBCP.jpg'); */
+  /* height: 30vh; */
+}
+
+.chart {
+	width: 100%;
+	min-height: 400px;
+}
+
+
+/* Fondos de Imagen */
+/* ================ */
+
+.fondo_img {
+
+	background: url("/static/img/presentacion_2.jpg")  100% 0 no-repeat fixed;
+    	color: white;
+    	height: 650px;
+    	padding: 100px 0 0 0;   
+	
+}
+
+/* Barras de encabezado y pie de pagina */
+/* ==================================== */
+
+.encabezado {
+	color:blue;
+	background: rgba(0, 128, 0, 0.5); /* Green background */
+	/*text-align: right; */
+	font-size: 30px;
+	padding: 2px;
+}
+
+.encabezado_A {
+	background: rgba(255, 153, 0, 0.9); /* Encabezado salmon*/
+	text-align: center;
+	font-size: 15px;
+	/* font-color: white; */
+	padding: 2px;
+    border-radius: 5px;
+	border: 1px solid black;
+}
+
+.encabezado_B {
+	/* background:rgba(0, 111, 134, 0.5) /* Azul agua */
+
+	text-align: center;
+	/* font-size: 15px;*/
+	padding: 5px;
+	border: 1px solid black;
+	border-radius: 5px;
+    border: 2px solid green;
+}
+
+.encabezado_N {
+	background:black; /* Negro*/
+	text-align: center;
+	/* font-size: 15px;*/
+	padding: 10px;
+	
+}
+
+.encabezado_SB {
+	/* background:rgba(255, 99, 71, 0.3); /* papel rozado */
+	text-align: center;
+	/* font-size: 15px;*/
+	padding: 0px;
+	border: 2px solid green;
+	border-radius: 5px;
+	
+}
+
+
+
+.encabezado_C {
+	background:rgba(255, 0, 0, 0.8); /*Color Rojo tomate*/
+	text-align: center;
+	padding: 5px;
+}
+
+.encabezado_D {
+	background:rgba(0, 138, 71, 1); /*Color verde. Usada en cuadro de Logs*/
+	text-align: center;
+	padding: 5px;
+}
+
+.encabezado_E {
+	background:rgba(0, 0, 102, 0.7); /*Color azul. Usada en Formularios de Datos Maestros*/
+	text-align: center;
+	padding: 5px;
+}
+
+.sidebar-nav {
+	font-family: sans-serif;
+    	font-size: 1.1rem;
+	border: 1px solid black;
+	border-radius: 10px;
+	margin-top:0px;
+	height:100%;
+	width:100%;
+	padding: 10px;
+	list-style: none;
+	/* background: rgba(0, 128, 0, 0.3) /* Green background with 30% opacity */
+	
+}
+
+.sesion {
+	height:0;
+	text-align: right;
+	padding: 0;
+	background: rgba(0, 128, 0, 0.3); /* Green background with 30% opacity */
+	height: 100%;
+}
+
+.FondoP {
+	/*background: #FFFAD8 url('images/LogoBCP.png') scroll;*/
+	background-image: url('images/LogoBCP.png');
+	background: rgba(0, 128, 0, 0.3); /* Green background with 30% opacity */
+	margin-right: 70px;
+
+}
+
+.Fondo_C {
+	background: rgba(255, 99, 71, 0.3);
+	width: 100%;
+	height: auth;
+	border: 2px solid black;
+	padding:10px;
+}
+
+.FondoD {
+	background: rgba(0, 0, 102, 0.9);   /* Fondo Azul */
+	width: 100%;
+	height: auth;
+	border: 2px solid black;
+	padding:10px;
+}
+
+
+/* ----- FORMATOS DE TEXTO ----- */
+/* ============================= */
+
+a {
+	margin-top:50px;
+	color:white;
+	height:20px;
+	width:20px;
+	padding:5px;
+	
+}
+
+aa {
+	margin-top:5px;
+	font-family: sans-serif;
+    	font-size: 1.2rem;
+	color:green;
+	padding:0px;
+		
+}
+
+ab {	
+	margin-top:5px;
+	font-family: sans-serif;
+    	font-size: 3rem;
+	color:green;
+		
+}
+
+bl {
+	margin-top:5px;
+	color:white;
+		
+}
+
+bb { 
+	color:black;
+	font-size: 13px;
+}
+
+/* Usado para mensajes en pantalla */
+bn {               
+	color:black;
+	font-family: sans-serif;
+	font-size: 1.2rem;
+}
+
+am {
+	margin-top:5px; 
+	color:rgba(255, 215, 0, 1);
+}
+
+sa { 	margin-top:5px;                      
+	color:rgba(255, 153, 0, 0.9); 
+	font-family: sans-serif;
+    	font-size: 1.2rem;
+}
+
+rr {
+	margin-top:5px; 
+	color:red;
+}
+
+der {
+	text-align: center;
+	width:100%;	
+}
+
+ii { 
+	text-align: left;
+	width:100%;
+
+   }
+
+tm {
+	font-family: sans-serif;
+    	font-size: 1.0rem;	
+}
+
+
+/* ----- MARCOS CON SCROLL ------ */
+
+.BarraScroll {
+    margin:0;
+    border: 2px solid green; 
+    width: 100%; 
+    height: 150px;
+    padding: 2px;
+    overflow-y: scroll;
+    border-radius: 5px;
+    box-sizing: border-box;}
+    
+.BarraScroll_Ext {
+    margin:0;
+    width: 100%; 
+    height: 100%; 
+    
+    overflow-y: scroll;
+    }	
+
+
+.scr {
+  background:rgba(0, 128, 0, 0.2);/* Fondo verde agua (usado en fondos de listas  de Mapeo) */
+  width: 100%;
+  height: 60vh;
+  border: 1px solid black;
+  overflow: scroll;
+}
+
+.scrb {
+  background: rgba(255, 153, 0, 0.3); /* Fondo ladrillo  (usado en fondos de listas  de Procedimientos de Contingencia) */
+  width: 100%;
+  height: 60vh;
+  border: 1px solid black;
+  overflow: scroll;
+}
+
+.scr2 { /* Usar para porcion superior de pantalla */
+  background: rgba(222, 220, 220, 0.5);  
+  width: 100%;
+  height: 50vh;
+  border: 1px solid black;
+  overflow: scroll;
+  padding:5px;
+}
+
+.scr3 {  /* Usar para porcion inferior de pantalla */
+  background: rgba(255, 99, 71, 0.2);  
+  width: 100%;
+  height: auth;
+  border: 1px solid black;
+  overflow: scroll;
+  padding:5px;
+}
+
+/* Marcos sin Scroll */	
+
+.scr4 {  /*  */
+  background: rgba(222, 220, 220, 0.5);  
+  width: 100%;
+  height: auth;
+  border: 1px solid black;
+  padding:5px;
+  border-radius: 10px;
+
+}
+
+/* Cuadros */
+
+thead,
+tfoot {
+    background-color: rgba(0, 0, 153, 0.8); /*#3f87a6;*/
+    color: #fff;
+}
+
+tenc {
+    background-color:#3f87a6;
+    color: #fff;
+}
+
+
+tbody {
+    background-color: white;  /*#e4f0f5;*/ 
+    
+}
+
+
+caption {
+    padding: 10px;
+    caption-side: bottom;
+}
+
+.lta{
+    padding: 0px;
+    border-collapse: collapse;
+    border: 2px solid rgb(0, 0, 102);
+    letter-spacing: 2px;
+    font-family: sans-serif;
+    font-size: 1.1rem;
+}
+
+td,
+th {
+    border: 1px solid  rgb(0,0,102);          /* rgb(190, 190, 190);*/
+    padding: 1px 10px;
+}
+
+td {
+    text-align: rigth;
+}
+
+
+/* ComboBox */
+
+.selector{
+    float:none;
+    display:block;
+    height:330px;
+}
+
+.selector input[type="submit"]{
+    display:block;
+    clear:both;
+}
+
+.selector h2{
+    font-size:15px;
+}
+.selector  select{
+    margin: 2px 0;
+    padding: 2px 3px;
+    font-weight: normal;
+    width: 270px !important;
+    height: 17.2em;
+}
+
+textarea{
+    display:block;
+    width:450px;
+}
+
+
+.blink {
+    animation: blinker 1.0s linear infinite;
+    /*color: red;*/
+    /*font-family: sans-serif;*/
+}
+@keyframes blinker {
+            50% {
+                opacity: 0;
+   }
+}
+
+/* ----- BOX DE ENTRADAS DE DATOS (Widgets)  ------ */
+
+.inbox_1 {
+  	background: rgba(255, 153, 0, 0.1); /* Fondo ladrillo  (usado en fondos de listas  de Procedimientos de Contingencia) */
+ 	width: 100%;
+  	height: 60%;
+  	border: 1px solid black;
+	border-radius: 10px;
+  	overflow: scroll;
+}
+
+.inbox_2 {
+  	
+ 	width: 100%;
+  	height: 30%;
+  	border: 1px solid black;
+	border-radius: 10px;
+  	
+}
+
+.inbox_3 {
+  	
+ 	border: 1px solid black;
+	border-radius: 10px;
+  	
+}
+
+
+/* Figuras de Diagrama */
+/* =================== */
+
+/* Rectangulo en 3D */
+
+.rectangle-3d {
+    width: 150px;
+    height: 100px;
+    background-color: #007bff; /* Color del rectángulo */
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center;
+    transform: perspective(500px) rotateY(-30deg); /* Efecto 3D desde el ángulo derecho */
+    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
+    border: 2px solid #0056b3; /* Borde opcional */
+}
+
+.rectangle-3d .text {
+    transform: rotateY(30deg); /* Alinea el texto correctamente en el rectángulo 3D */
+}
+
+
+/* Círculo en 3D */
+.circle-3d {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(145deg, #3cb371, #2e8b57); /* Efecto degradado para 3D */
+    border-radius: 50%;
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3), -10px -10px 15px rgba(255, 255, 255, 0.3); /* Profundidad */
+    transform: rotateY(20deg); /* Vista desde el ángulo derecho */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* Texto centrado */
+.text {
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    z-index: 1; /* Asegura que el texto esté visible */
+}
+
+
+
+
+/* Sectores de Pagina */
+/* ================== */
+
+/* Basico */
+
+.sector {
+	width: 50%;
+	float: left;
+	padding: 10px;
+}
+
+/* Uso:
+<div class="sector">
+<h2>Texto en el sector izquierdo</h2>
+<p>Aquí va el contenido textual.</p>
+</div>
+
+<div class="sector">
+<h2>Imagen en el sector derecho</h2>
+<img src="imagen2.jpg" alt="Descripción">
+</div>
+*/
+
+/*Grid Layout para manejar sectores
+El CSS Grid te permite definir sectores con precisión en una cuadrícula. (Columnas)*/
+
+.grid-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+.grid-item {
+        padding: 20px;
+        border: 1px solid #ccc;
+    }
+
+/* Uso:
+<div class="grid-container">
+    <div class="grid-item">
+        <h2>Texto en el sector 1</h2>
+        <p>Contenido de texto aquí.</p>
+    </div>
+    <div class="grid-item">
+        <h2>Imagen en el sector 2</h2>
+        <img src="imagen3.jpg" alt="Descripción">
+    </div>
+</div>
+*/
+
+/* Flexbox para distribución flexible
+El sistema Flexbox permite organizar 
+sectores de manera flexible, ajustándose al tamaño del contenedor. */
+
+.flex-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+.flex-item {
+        width: auth;
+        padding: 5px;
+        /*border: 1px solid #ddd;*/
+    }
+
+
+/* Uso: 
+<div class="flex-container">
+    <div class="flex-item">
+        <h2>Texto en el sector izquierdo</h2>
+        <p>Este es el contenido textual de este sector.</p>
+    </div>
+
+    <div class="flex-item">
+        <h2>Imagen en el sector derecho</h2>
+        <img src="imagen4.jpg" alt="Descripción de la imagen">
+    </div>
+</div>
+*/
+
+/* Responsive Design para manejar sectores en diferentes dispositivos
+Puedes usar media queries en CSS para hacer que los sectores cambien
+ su diseño en función del tamaño de la pantalla (por ejemplo, en móviles).
+
+<style>
+    .sector {
+        width: 100%;
+        padding: 10px;
+    }
+
+    @media (min-width: 768px) {
+        .sector {
+            width: 50%;
+            float: left;
+        }
+    }
+</style>
+
+<div class="sector">
+    <h2>Sector 1</h2>
+    <p>Texto en el sector 1.</p>
+</div>
+
+<div class="sector">
+    <h2>Sector 2</h2>
+    <img src="imagen5.jpg" alt="Descripción de la imagen">
+</div>
+
+ */
+
+/* Mensajes de tipo Comic para dar instrucciones con posicionamiento del cursor en la 
+Opcion */
+
+/* Ocultar el globo por defecto */
+#comicBalloon {
+    position: absolute;
+    display: none;
+    padding: 8px;
+    background-color: #f9f9f9;
+    border: 2px solid #333;
+    border-radius: 8px;
+    font-size: 10px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* Efectos de Pantalla */
+/* =================== */
+
+.aparecer-abajo {
+	opacity: 0;
+	transform: translateY(100px);  /* Mueve hacia abajo */
+	animation: aparecer 1s ease-out forwards; /* Duración y suavidad de la animación */
+}
+
+@keyframes aparecer {
+	to {
+		opacity: 1;
+		transform: translateY(0);  /* Elemento vuelve a su posición original */
+	}
+}
+
+/* Uso:
+  <div class="aparecer-abajo">
+        Este texto aparece desde abajo con un efecto suave.
+    </div>
+*/
+
+
+.aparecer-lento {
+	opacity: 0;
+	animation: fadeIn 1s ease-in forwards; /* Aparece en 3 segundos */
+}
+
+@keyframes fadeIn {
+	to {
+		opacity: 1;
+	}
+}
+
+/* Uso:
+ <div class="aparecer-lento">
+        Este texto aparece lentamente.
+    </div>
+*/
+
+.aparecer-lado {
+	opacity: 0;
+	transform: translateX(-100px);  /* Mueve el elemento hacia la izquierda */
+	animation: slideIn 2s ease-out forwards;
+}
+
+@keyframes slideIn {
+	to {
+		opacity: 1;
+		transform: translateX(0);  /* Vuelve a su posición original */
+	}
+}
+/* Uso:
+ <div class="aparecer-lado">
+        Este texto aparece desde la izquierda.
+    </div>
+*/
+
+/* Caja de Confirmacion de Borrado de Regisro */
+/* ========================================== */
+
+.hidden {
+    display: none;
+}
+
+#confirmation-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.dialog-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#confirm-yes {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#confirm-no {
+    background-color: #f44336;
+    color: white;
+}
+
+
+
+/* Botones de Opcion  */
+/* ================= */
+
+.button {
+    display: inline-block;
+    padding: 5px 10px;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: rgb(25, 24, 24);
+    background-color: rgb(221, 216, 216);
+    border: 2px solid black;
+    border-radius: 5%; 
+    box-shadow: 0 5px rgb(74, 71, 71);
+  }
+  
+  .button:hover {
+      color: white;
+      background-color: red;
+      border-radius: 5%;
+    }
+  
+  .button:active {
+    color:white;
+    background-color: green;
+    border-radius: 5%;
+    box-shadow: 0 10px #666;
+    transform: translateX(6px); 
+  }
+  
+  ---- Boton en Imagen ----
+  .container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .container img {
+      width: 100%;
+      height: auto;
+    }
+    
+    .container .btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      background-color: #f1cb0c;
+      color: black;
+      font-size: 16px;
+      padding: 16px 30px;
+      border: 1px #efecdb;
+      cursor: pointer;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .container .btn:hover {
+      background-color: black;
+      color: rgb(240, 175, 10);
+    }
+  
+
+/* Despliegue en Revision de Evaluacion O.C. */
+
+#comment-box {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -20%);
+	background: rgb(236, 239, 63); 
+    border: 2px solid black;
+	border-radius: 8px;
+    padding: 5px;
+    z-index: 500;
+    display: block; /* Asegura que el cuadro esté visible */
+}
+
+.hidden {
+    display: none;
+}
+
+    
+/* Indentaciones de texto */
+/* ====================== */
+
+.indenta { padding-left: 120px; /* Ajusta la cantidad de indentación deseada */ }
+.indenta_ctrl { padding-left: 310px; /* Ajusta la cantidad de indentación deseada */ }
+.indenta_obs  { padding-left: 350px; /* Ajusta la cantidad de indentación deseada */ }
+
+/* Bordes de la Tabla de Seleccion de opciones */
+/* =========================================== */
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.styled-table th, .styled-table td {
+    border: 2px solid black;
+    padding: 0px;
+    text-align: left;
+}
+
+.styled-table th {
+    background-color: #f2f2f2;
+}
+
+
+/* Switch Activa/Desactiva Procedimiento de Contingencia */
+/* ===================================================== */
+
+   .switch {
+    position: relative;
+    display: inline-block;
+    width: 35px;
+    height: 15px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: red;
+    transition: 0.4s;
+    border-radius: 20px;
+    border: 1px solid black;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 10px;
+    width: 10px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #4caf50;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}

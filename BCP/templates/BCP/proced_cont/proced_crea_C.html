@@ -1,0 +1,205 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Proceso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block encabezado_detalle %}
+	<ul class="encabezado_A">
+        <aa><strong>FORMULARIO DE CREACION DE PROCEDIMIENTO DE RECUPERACION </strong></aa>
+        </ul>
+	<ul class="encabezado_A">
+	  <aa>{{proceso.path}}</aa>
+	</ul>
+	{% endblock %}
+
+	
+	{% block B %}<!--------- SERVICIOS --------------------------------------------->
+	<h5><strong>5. Servicios Requeridos</strong></h5>
+	Indique todos los servicios/recursos que necesita el Procedimiento para su ejecucion
+	&emsp;[{{proced.sec_servicios}}]
+	<br/>
+	<ul class="scr4">
+	{% if servicios %}
+		<table class="lta">
+		   <thead style="background: greenyellow; color:black">
+		   <tr>
+			<th scope="col">NOMBRE SERVICIO</th>
+			<th scope="col">DESCRIPCION/OBJETIVO</th>
+			<th scope="col">CONTACTO</th>
+			<th scope="col">RESPALDO CONTACTO</th>
+			<th scope="col"><a href="{% url 'crea-P5' proced.pk 0  %}"
+				class="link"  data-message="Registra un Servicio ..."><strong><am style="color:green">&#10010</am></strong></a></th>
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+		   
+		    {%for ser in servicios.all  %}
+		    <tr>
+			<th scope="row"><bb>{{ser.nombre}}<bb></th>
+			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
+			<th scope="row"><bb><a href="{% url 'borra-P5' ser.pk  0 %}"
+				class="link confirm-link" con-message="* * *  Confirma Eliminacion del Servicio? * * *"  data-message="Elimina Servicio ...">
+				<rr>&#128465</rr> </th>
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		{%endfor%}
+		   <tbody>
+		</table>
+	{%else%}
+		Sin servicios definidos.
+	{%endif%}
+
+	
+	</ul>
+
+	{% endblock %}<!--------- FIN SERVICIOS --------------------------------------------->
+	
+
+	{% block C %}<!--------- CONTACTOS  --------------------------------------------->
+	<br/>
+	<h5><strong>6. Indice de Contactos</strong></h5>
+	Registre  todos los datos de contacto involucrados en el Procedimiento. 
+	Considere los Contactos de los Servicios señalados en la seccion 5.
+	<br/>
+
+	<ul class="scr4">
+		<table class="lta" >
+		   <thead >
+		   <tr>
+			<th scope="col">NOMBRE</th>
+			<th scope="col">CORREO ELECTRONICO</th>
+			<th scope="col">TELEFONO OFICINA</th>
+			<th scope="col">TELEFONO CELULAR</th>
+			<th scope="col"><a href="{% url 'crea-P6' proced.pk  0 %}"
+				class="link"  data-message="Registra un Contacto ...">
+				<strong><am>&#10010</am></strong></a></th>
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if contactos %}
+		    {%for con in contactos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{con.nombre}}<bb></th>
+			<th scope="row"><bb>{{con.correo}}<bb></th>
+			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
+			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			<th scope="row"><bb><a href="{% url 'borra-P6' con.pk 0  %}"
+				class="link confirm-link" con-message="* * *  Confirma Eliminacion del Contacto? * * *"  data-message="Elimina Contacto ..."> 
+				<rr>&#128465</rr></th>
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}<!--------- FIN CONTACTOS --------------------------------------------->
+	
+
+	{% block D %}<!--------- PROCEDIMIENTOS CONT.-------------------------------------------->
+	<br/>
+	<h5><strong>7. Procedimiento de Contingencia (PC)</strong></h5>
+	Describa/Especifique cada uno de los pasos del Procedimiento de Contingencia (PC)&emsp;[{{proced.sec_pasos}}]
+	<br/>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead style="background: rgb(184, 183, 183); color:black">
+			<strong>
+		   <tr style="font-size: 10px;">
+			<th scope="col" style="width: 5px;">NRO.</th>
+			<th scope="col" style="width: 400px;">DESCRIPCION</th>
+			<th scope="col" style="width: 250px;">EJECUTOR RESP.</th>
+			<th scope="col" style="width: 10px; font-size: 9px;" 
+			class="link" data-message="Tiempo Esperado Ejec. ...">T.E.(min)</th>
+			<th scope="col" style="width: 10px; text-align: center;">
+				<a href="{% url 'crea-P7' proced.pk 0  %}" class="link"  data-message="Agrega Paso al PC ..."><strong><am style="color:brown">&#10010</am></strong></a></th>
+			</strong>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if pasos %}
+		    {%for pas in pasos.all  %}
+		    <tr >
+			<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{pas.nro_paso}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{pas.descripcion}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{pas.ejecutor}}<bb></th>
+			<th scope="row" style="text-align: center;"><bb style="font-size: 10px;">{{pas.tiempo_esp}}<bb></th>
+			<th scope="row"><a href="{% url 'borra-P7' pas.pk 0  %}"
+				class="link confirm-link" con-message="* * *  Confirma Eliminacion? * * *"  data-message="Elimina Paso ..."
+				> <rr>&#128465<rr>
+
+				</th>
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}<!--------- FIN PROCEDIMIENTOS CONT.----	------------------------------------>
+
+<!-------- Botones de Salida ------------->
+<br/>
+<a href="{% url 'crea-proced-B' proced.pk %}"><bb class="button" >... Volver</bb></a>
+<a href="{% url 'Lista-Proced' %}"><bb class="button" >Salir</bb></a>
+<a href = "{% url 'env-aut-proced' proced.pk %}"><bb class="button" style="color:brown"><strong class="blink">Envia a Autorizacion</bb></strong></a>
+
+<br/>
+<br/>
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[proced_crea_C]</aa>
+
+{% endblock %}

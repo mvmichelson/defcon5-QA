@@ -1,0 +1,235 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% load static %} 
+
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE REVISION DE ASIGNACION DE SERVICIOS CRITICOS:</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proceso.path}}</aa></p>
+	</ul>
+	{% endblock %}
+
+	
+<!----- Bloque A ---------------------------------->
+<div class="flex-container">
+	
+	<!------------- Seccion Datos del Proceso -------------------->
+	<div class="flex-item" style="width: 45%;">
+
+	<h5><strong>DATOS DEL PROCESO</strong></h5>
+	<!=======================================>
+
+	<ul class="scr4">
+	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
+	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+	</ul>
+	<br/>
+	<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
+		. Realice las modificaciones solicitadas y marquelo en el icono (&#10067). 
+		Si desea dejar un comentario, utilice el icono 
+		(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p>
+		<p>Al registrar las modificaciones sera enviada al Gestor Autorizador para su revision.</p>  
+	</bn>
+
+	</div><!------------- Seccion Datos del Proceso -------------------->
+
+	<!------------- Seccion Block de Comentarios -------------------->
+	<div class="flex-item" style="width: 52%;"> 
+		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+			<strong>Block de Comentarios de Revision</strong>
+		</ul>
+		<ul class="BarraScroll" style="height: 300px; border-radius: 10px; border: 3px solid black; background: white;">
+			<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10px;">Fecha</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+					{%for com in comentarios  %}
+					<tr style="font-size: 9px;">
+						{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+						<!--- Si el usuario en sesion es el Gestor Consultor --->
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+								<p>{{com.campo}}</p>
+								(
+									{% if com.resuelto %}
+									<a href="{% url 'OK-Rev-OC' com.pk %} " 
+									class="link confirm-link" con-message="Confirma Desmarcar?"  
+									data-message="Realizado (Haga Click para desmarcar)">&#9989
+									{%else%}
+									<a href="{% url 'OK-Rev-OC' com.pk %}" class="link confirm-link" con-message="Confirma Marcar como Realizado?"  
+									data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
+									{%endif%}
+								)
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}
+							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+							</p></th>
+	
+						{%endif%}
+	
+						<th scope="row" style="width: 500px";> {{com.comentario}}
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+	
+								<p>
+								<!---------  Comentario de Revision ----->
+								<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
+								data-id="{{ proceso.id }}"
+								data-sec="B"
+								data-field="Comentario a '{{com.campo}}'" 
+								>
+								<img src="/static/img/Comentario_1.png" width="15" height="15">
+								</span>
+								<!---------  Fin Comentario de Revision ----->
+								</p>
+							{%endif%}
+						</th>
+						<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+				
+			<!-- Fin Log Comentarios -->
+				
+		</ul>
+	
+	</div><!----------- Fin Seccion der - Block de Comentarios ----------->
+
+
+</div><!----- Bloque A ---------------------------------->
+
+
+	{% block asigna_proc %}
+	<br/>
+	<h5><strong>ASIGNACION DE SERVICIOS CRITICOS</strong></h5>
+	<!===================================================>
+	<P>Seleccione del listado de la izquierda aquellos Servicios o Recursos que son indispensables para la 
+	operacion del Proceso -<strong> {{proceso.nombre}}</strong>-.</p>
+	
+	<!---- Bloque A --------------------------------------------------------------->
+	<div class="flex-container">
+	<!--- Seccion Disponibles --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<h4><strong>Servicios/Recursos Disponibles</strong></h4>
+	<input type="text" id="filtro_disponibles" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
+	<br/><br/>
+	<table id="tabla_disponibles" class="styled-table">
+		<thead style="background: greenyellow;">
+			<tr style="color:black">
+				<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
+				<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
+				<th >DESCRIPCION</th>
+				<th>  </th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for recurso in recursos_disponibles %}
+				<tr data-id="{{ recurso.id }}" >
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
+					<td ><button class="button link " data-message="Asigna Servicio {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
+						style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<br/><br/><br/>
+	</div><!--- Fin Seccion Disponibles --------------------------------------->
+
+	<!--- Seccion Asignados --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<h4><strong>Servicios/Recursos Criticos Asignados</strong></h4>
+	<input type="text" id="filtro_asignados" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
+	<br/><br/>
+	<table id="tabla_asignados" class="styled-table">
+		<thead>
+			<tr style="color:black">
+				<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
+				<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
+				<th >DESCRIPCION</th>
+				<th>  </th>
+			</tr>
+		</thead>
+		<tbody id="id_tabla_asignados">
+			{% for recurso in recursos_asignados %}
+				<tr data-id="{{ recurso.id }}">
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
+					<td>
+					<button style="background: red; color: white; font-size: 12px; padding: 1px 3px;" class="button link " data-message="Des-Asigna Servicio / Recurso ..." onclick="moverRecurso(this, 'id_tabla_disponibles')">◀</button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+		<!-- Formulario oculto -->
+		<br/>
+		<form method="post">
+			{% csrf_token %}
+			<input type="hidden" name="recursos" id="recursos_input">
+			<button  class="button"   type="submit">Guardar</button>
+			<a href="{% url 'Envia-Auth' proceso.pk  'B' %}"  
+			class="confirm-link link" data-message="Envia al Gestor Autorizador para su Revision ..." con-message="Confirma Envio a Autorizacion ?"
+			><bb class="button">Registrar (Envia a Autorizacion) ...</bb></a> 
+		</form>
+			
+
+	</div><!--- Fin Seccion Asignados --------------------------------------->
+
+</div><!------- Fin Bloque A ------->
+
+
+
+	{% endblock %}
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+
+{% endblock %}

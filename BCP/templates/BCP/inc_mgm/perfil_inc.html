@@ -1,0 +1,350 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para el Reporte de un Incidente >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <am><p class="blink"><strong>REPORTE DE PERFIL DE INCIDENTE&emsp;{{incidente.codigo}}</strong></p></am>
+	</ul>
+	{% endblock %}
+
+
+<!------- Bloque 0 --------------------------------------------------------------->
+<div class="flex-container" style="width: 100%;">
+
+	<!------------ Seccion 1 Reporte ---------->
+	<div class="flex-item"style="width: 47%;">
+		<ul class="encabezado_SB"><h5><strong>REPORTE</strong></h5></ul>
+		<ul class="scr2" style="width: 100%;">
+			<br/>
+				<p><strong>Codigo...............:<strong>&emsp;{{incidente.codigo}}</p>
+				<p><strong>Fecha................:<strong>&emsp;{{incidente.fecha}}</p>
+				<p><strong>Reportado por...:<strong>&emsp;{{incidente.nombre_r}}</p>
+				<p><strong>Area/Gerencia...:<strong>&emsp;{{incidente.area_r}}</p>
+				<br/>
+				
+				<h5><strong>Descripcion:</strong></h5>
+				{{incidente.descripcion}}
+				<br/>
+				
+				<h5><strong>Amenazas reportadas:</strong></h5>
+				
+				<table class="lta">
+					<thead>
+						<tr>
+						<th scope="col">Titulo</th>
+						<th scope="col">Descripcion</th>
+				
+						</tr> 
+					</thead>
+				
+					<tbody>
+					   {%for amn in amenazas.all %}
+					<tr>
+						<th scope="row"><bb style="font-size: 10px;">{{amn.titulo}}</bb></th>
+						  <th scope="row"><bb style="font-size: 10px;">{{amn.descripcion}}</bb></th>
+					  
+					</tr>
+						{% if not forloop.last %}
+						{%endif%}
+					  {%endfor%}
+					</tbody>
+				
+					</table>
+				
+	
+		</ul>
+	
+		</div><!------------ Fin Seccion 1 Reporte  ---------->
+	
+
+	<!------------ Seccion 2 Lista del Comite de Crisis ---------->
+	<div class="flex-item" >
+	<ul class="encabezado_SB"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
+	<ul class="scr2" style="height: 100px;">
+	<table class="lta">
+		<thead>
+			<tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Telefono</th>
+
+			</tr> 
+		</thead>
+	
+		<tbody>
+		   {%for int in comite %}
+		<tr>
+			<th scope="row" ><bb style="font-size: 10px;">{{int.user_gestor.last_name}},{{int.user_gestor.first_name}}</bb></th>
+		  	<th scope="row"><bb style="font-size: 10px;">{{int.user_gestor.email}}</bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{int.fono_c}}</bb></th>
+
+		  
+		</tr>
+			{% if not forloop.last %}
+			{%endif%}
+		  {%endfor%}
+		</tbody>
+	
+		</table>
+	</ul>
+	
+	<br/>
+	<ul class="encabezado_SB"><h5><strong>GENERALES</strong></h5></ul>
+	<ul class="scr4">
+		<p><strong>Numero de Procesos Alcanzados :&ensp;{{n_procesos}}</strong></p>
+		<p><strong>Puntaje Promedio ...........................:&ensp;{{puntaje_x |floatformat:2}}</strong></p>
+	</ul>
+
+
+	</div><!------------ Fin Seccion 2 Lista del Comite de Crisis ---------->
+
+
+</div><!------- Bloque 0  --------------------------------------------------------------->
+
+
+<br/>
+<ul class="encabezado_SB"><h5><strong>ALCANCE DEL INCIDENTE</strong></h5></ul>
+<br/>
+<ul class="scr4">
+
+<!------- Bloque A --------------------------------------------------------------->
+<div class="flex-container" style="width: 100%;">
+
+	<!------------ Seccion 1 Indicdores de Impactos ---------->
+	<div class="flex-item" style="width: 35%; text-align: center">
+
+		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Indicadores de Impacto</strong></h5></ul>
+		<br/>
+		<table class="lta">
+			<thead>
+				<tr>
+				<th scope="col">Tipo</th>
+				<th scope="col">Nivel</th>
+				<th scope="col"># Procesos</th>
+	
+				</tr> 
+			</thead>
+		
+			<tbody>
+				{% for tipo, niveles in estadistica_impactos.items %}
+					{% for nivel, cantidad in niveles.items %}
+						<tr>
+							<td>{{ tipo }}</td>
+							<td>{{ nivel }}</td>
+							<td>{{ cantidad }}</td>
+						</tr>
+					{% endfor %}
+				{% endfor %}
+			</tbody>		
+			</table>
+		
+		  	<br/><br/>
+			<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Servicios / Recursos </strong></h5></ul>
+			<br/>
+			<table class="lta">
+				<thead>
+					<tr>
+					<th scope="col">Servicios/Recursos</th>
+					<th scope="col"># Procesos</th>
+		
+					</tr> 
+				</thead>
+			
+				<tbody>
+					{% for recurso, cantidad  in estadistica_recursos.items %}
+							<tr>
+								<td>{{ recurso }}</td>
+								<td>{{ cantidad }}</td>
+							</tr>
+					{% endfor %}
+				</tbody>		
+				</table>
+	
+
+	</div><!------------ Fin Seccion 1 Indicadores de Impacto ---------->
+
+	<!------------ Seccion 2 Indicadores de Recuperacion ---------->
+	<div class="flex-item"style="width: 36%;">
+	<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Indicadores de Recuperacion</strong></h5></ul>
+	<br/>
+	<table class="lta">
+		<thead>
+			<tr>
+			<th scope="col">Tipo</th>
+			<th scope="col">Nivel</th>
+			<th scope="col"># Procesos</th>
+
+			</tr> 
+		</thead>
+	
+		<tbody>
+			{% for tipo, niveles in estadistica_indicadores.items %}
+				{% for nivel, cantidad in niveles.items %}
+					<tr>
+						<td>{{ tipo }}</td>
+						<td>{{ nivel }}</td>
+						<td>{{ cantidad }}</td>
+					</tr>
+				{% endfor %}
+			{% endfor %}
+		</tbody>		
+		</table>
+
+
+
+
+	</div><!------------ Fin Seccion 2 Datos Generales del alcance de Impacto ---------->
+
+	<!------------ Seccion 3 Escenarios de Riesgo  ---------->
+	<div class="flex-item"style="width: 34%;">
+		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Escenarios de Riesgo </strong></h5></ul>
+		<br/>
+		<table class="lta">
+			<thead>
+				<tr>
+				<th scope="col">Escenario</th>
+				<th scope="col"># Procesos</th>
+	
+				</tr> 
+			</thead>
+		
+			<tbody>
+				{% for escenario, cantidad  in estadistica_escenarios.items %}
+						<tr>
+							<td>{{ escenario }}</td>
+							<td>{{ cantidad }}</td>
+						</tr>
+				{% endfor %}
+			</tbody>		
+			</table>
+
+		</div><!------------ Fin Seccion 2 Datos Generales del alcance de Impacto ---------->
+</div><!------- Fin Bloque A --------------------------------------------------------------->
+
+
+
+
+</ul>	
+
+<!------- Bloque B --------------------------------------------------------------->
+
+<br/>
+<br/>
+<ul class="encabezado_SB"><h5><strong>MATRIZ DE PROCEDIMIENTOS</strong></h5></ul>
+
+<ul class="scr2" style="height: 390px;">
+<table class="lta">
+	<thead>
+		<tr>
+		<th scope="col" style="background: green; width: 300px; font-size: 20px;">PROCESO</th>
+		<th scope="col" style="background: green; width: 200px; font-size: 20px; text-align: center;">RTO</th>
+
+		<th scope="col" style="background: black;"></th>
+
+		{% for escenario, _ in estadistica_escenarios.items %}
+		<th scope="col" style="background: black; width: 100px;" >{{ escenario}}</th>
+		{% endfor %}
+		</tr> 
+	</thead>
+
+	<tbody>
+		{% for proc in procesos.all %}
+		<tr>
+			<td scope="row" style="width: 300px; padding: 1px  5px;">{{proc.path}}</td>
+			{%for ind in proc.indicador_subp.all %}
+				{%if ind.indicador.nombre == 'RTO' %}
+					<td scope="row" style="width: 200px; padding: 1px  5px;">{{ind.nivel.definicion}}</td>
+				{%endif%}
+			{%endfor%}
+
+			<td scope="row" style="background: black;"></td>
+			
+				{% for escenario, _ in estadistica_escenarios.items %}
+				<!---- Inicio de la Fila ------>
+				<td scope="row" style="text-align: center; padding: 1px  5px;">
+				
+					{% for prc in proc.procedimientos_contingencia.all %}
+					
+						<!--- Si el escenario  es igual a escenario del Procedimiento -->
+						{% if escenario == prc.escenarios.titulo %}
+						
+							<a href = "{% url 'det-proced'  prc.pk %}" 
+							class="link" data-message="Procedimiento de Contingencia (PC) .: {{prc.nombre}}"
+							><p style="font-size: 25px;">&#128215</p></a>
+
+							<!--- Activa / Desactiva Procedimiento -->
+							<label class="switch" >
+								<input type="checkbox" id="toggle-activo-{{ prc.id }}" 
+									data-id="{{ prc.id }}"> 
+									{% if procedimiento.esta_activo %}checked{% endif %}
+								<span class="slider link" data-message="Activa/Desactiva el PC .:{{prc.nombre}}" ></span>
+							</label>
+												
+							<!--- Fin Activa/Desactiva ----->
+						
+						{%endif%}
+					
+					{%endfor%}
+				</td> <!---- Fin de la Fila ------>
+				{% endfor %}
+
+
+		</tr>
+		{% endfor %}
+	</tbody>		
+</table>
+</ul>
+<br/><br/><br/>
+
+<div class="flex-container">
+	<!------------ Seccion 1 Lista del Comite de Crisis ---------->
+	<div class="flex-item" style="width: 50%;">
+			
+
+	</div><!------------ Fin Seccion 1 Lista del Comite de Crisis ---------->
+
+	<!------------ Seccion 2 Datos Generales del alcance de Impacto ---------->
+
+	</div><!------------ Fin Seccion 2 Datos Generales del alcance de Impacto ---------->
+
+
+
+</div><!------- Fin Bloque B --------------------------------------------------------------->
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+
+{% endblock %}

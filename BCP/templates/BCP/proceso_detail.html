@@ -1,0 +1,329 @@
+<! Programa HTML>
+<! *** Muestra el detalle de los Procesos***>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block encabezado_detalle %}
+	
+	<ul class="encabezado_B">
+        <aa><strong> *** DETALLES DEL PROCESO *** </strong></aa>
+	</ul>
+	<ul class="encabezado_SB">
+        <aa><strong> {{proceso.path}} </strong></aa>
+	</ul>
+	{% endblock %}
+
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+ 
+	{% block Identificacion %}
+	<h5><strong>1. Identificacion del Proceso<strong></h5>
+	<!====================================================================================> 
+	<ul class="scr4">
+	  <p><strong>1.1 Codigo ......:</strong>&emsp;<aa>{{ proceso.proceso }}</aa>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<strong>1.6 Puntaje BIA .......:</strong>&emsp;<aa>{{ proceso.subproceso.ranking}}</aa></p>
+	  <p><strong>1.2 Nombre ......:</strong>&emsp;<aa>{{ proceso.nombre  }}</aa></p>
+  	  <p><strong>1.3 Objetivo ....:</strong>&emsp;<aa>{{ proceso.objetivo }}</aa></p>
+  	  <p><strong>1.4 Fecha Creacion :</strong>&emsp;<aa>{{ proceso.fecha_crea }}</aa></p>
+  	  <p><strong>1.5 Fecha Ulti Modi:</strong>&emsp;<aa>{{ proceso.fecha_ult_mod }}</aa></p>
+        </ul>
+	{% endblock %}
+
+	{%if proceso.es_subproceso %}
+
+		{% block Estado %}
+		<h5><strong>2. Estado del Proceso<strong></h5>
+		<!====================================================================>
+		<ul class="scr4">
+		{% if proceso.subproceso.status == 'R' and proceso.subproceso.fase_status == 'E' %}
+			<p class='blink'>&emsp;Proceso habilitado para definicion de Procedimientos de Continuidad</p>
+		{% else %}
+
+		  <p><strong>2.1 Fase de Analisis .........:&emsp; 
+				{% if proceso.subproceso.fase_status == 'M' %}<aa>M: Mapeo de Proceso</aa>
+				{% endif %}
+				{% if proceso.subproceso.fase_status == 'V' %}<aa>V: Fase BIA</aa>
+				{% endif %}
+				{% if proceso.subproceso.fase_status == 'B' %}<aa>B: Fase Mapeo de Activos/Recursos</aa>
+				{% endif %}
+				{% if proceso.subproceso.fase_status == 'E' %}<aa>E: Fase de Mapeo de Escenarios</aa>
+				{% endif %}
+								
+
+		  <p><strong>2.2 Estado RACI ................:&emsp; 
+				{% if proceso.subproceso.status == 'R' %}<aa>R: Aprobado por Gestor Aprobador y Gestor Responsable</aa>
+				{% endif %}
+				{% if proceso.subproceso.status == 'r' %}<aa>r: En aprobacion  Gestor Responsable</aa>
+				{% endif %}
+				{% if proceso.subproceso.status == 'A' %}<aa>A: En Aprobacion x Gestor Autorizador </aa>
+				{% endif %}
+				{% if proceso.subproceso.status == 'C' %}<aa>C: En definicion x Gestor Consultor</aa>
+				{% endif %}
+				{% if proceso.subproceso.status == 'x' %}<aa>x: En revision  Gestor Consultor</aa>
+				{% endif %}
+		{% endif%}
+		</ul>
+		{% endblock %}
+
+		{% block Gestores %}
+		<h5><strong>3. Gestores RACI<strong></h5>
+		<!==============================================================>
+		<ul class="scr4">
+		  <p><strong>3.1 Gestor Responsable .........: </strong>&emsp; <aa>{{proceso.subproceso.gestor_R}}</aa> </p>
+		  <p><strong>3.2 Gestor Autorizador ...........: </strong>&emsp; <aa>{{proceso.subproceso.gestor_A}}</aa> </p>
+		  <p><strong>3.3 Gestor Consultor ..............: </strong>&emsp; <aa>{{proceso.subproceso.gestor_C}}</aa> </p>
+		  <p><strong>3.4 Gestor a Informar .............: </strong>&emsp; <aa>{{proceso.subproceso.gestor_I}}</aa> </p>
+		</ul>
+		{% endblock %}
+
+		{% block Indicadores %}
+		<h5><strong>4. Analisis de Impacto al Negocio<strong></h5>
+		<!================================================================================>
+		<ul class="scr2" style="height: 100vh; width: 100%; padding: 5%;">
+
+		  <h5><strong>4.1 Riesgos / Impactos<strong></h5>
+
+		  <table class="lta" style="width: 100%;">
+		   <thead class="encabezado_C">
+			<tr>
+					<th scope="col">Riesgo</th>
+					<th scope="col">Descripcion</th>
+					<th scope="col">Nivel Asignado</th>
+					<th scope="col">Impacto Probable</th>
+			</tr>
+		   </thead>
+
+		   <tbody>
+		   
+			{% for imp in proceso.subproceso.impact_subp.all %}
+
+			<tr>
+				{{proceso.subproceso.imp}}
+				<th scope="row"><bb>{{imp.impacto.nombre}}</bb></th>
+				<th scope="row"><bb>{{imp.impacto.descripcion}}</bb></th>
+				<th scope="row"><aa>{{imp.nivel.nombre}}</aa></th>
+				<th scope="row"><aa>{{imp.nivel.descripcion}}</aa></th>
+			</tr>
+
+			{%endfor%}
+
+       		   
+		   </tbody>
+
+		</table>
+
+		   <br/>
+		  <h5><strong>4.2 Indicadores de Recuperacion<strong></h5>
+
+			<table class="lta" style="width: 80%;">
+				<thead class="encabezado_C" style="background: blue; color: white;">
+				 <tr>
+						 <th scope="col">Indicador</th>
+						 <th scope="col">Descripcion</th>
+						 <th scope="col">Nivel Asignado</th>
+						 <th scope="col">Descripcion</th>
+				 </tr>
+				</thead>
+	 
+				<tbody>
+				
+				 {% for ind in proceso.subproceso.indicador_subp.all %}
+	 
+				 <tr>
+					 {{proceso.subproceso.imp}}
+					 <th scope="row"><bb>{{ind.indicador.nombre}}</bb></th>
+					 <th scope="row"><bb>{{ind.indicador.descripcion}}</bb></th>
+					 <th scope="row"><aa>{{ind.nivel.nivel}}</aa></th>
+					 <th scope="row"><aa>{{ind.nivel.definicion}}</aa></th>
+				 </tr>
+	 
+				 {%endfor%}
+	 
+					   
+				</tbody>
+	 
+			 </table>
+			 <br/>
+		</ul>
+		{% endblock %}
+
+
+	{% block Activos %}
+	<h5><strong>5. Servicios Criticos asociados al Proceso<strong></h5> 
+	<!========================================================================================>
+	<ul class="scr2">
+
+	 {% if proceso.subproceso.recursos.all %}
+		<table class="lta">
+		   <thead class="encabezado_A">
+		   <tr>
+			<th scope="col">Activo/Recurso</th>
+			<th scope="col">Descripcion</th>
+			<th scope="col">Tipo</th>
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for act in proceso.subproceso.recursos.all  %}
+		   <tr>
+			<th scope="row"><bb>{{act.nombre}}</bb></th>
+			<th scope="row"><bb>{{act.descripcion}}</bb></th>
+			<th scope="row"><bb>{{act.tipo}}</bb></th>
+			
+		   </tr>
+       		   {% if not forloop.last %}
+        	   {%endif%}
+      		   {%endfor%}
+		   <tbody>
+		</table>
+	{% else %}
+		<br/>
+		<p> *** Sin Servicios Criticos asociados ***</p>
+	{%endif%}
+
+	<br/>
+	</ul>
+	{% endblock %}
+
+
+	{% block Escenarios %}
+	<h5><strong>6. Escenarios de Riesgo asociados al Proceso<strong></h5>
+	<!===========================================================================================> 
+	<ul class="scr2">
+
+	  {% if proceso.subproceso.escenarios.all %}
+		<table class="lta">
+		   <thead  class='encabezado_C')>
+		   <tr>
+			<th scope="col">Titulo</th>
+			<th scope="col">Descripcion</th>
+						
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for esc in proceso.subproceso.escenarios.all  %}
+		   <tr>
+			<th scope="row"><bb>{{esc.titulo}}</bb></th>
+			<th scope="row"><bb>{{esc.descripcion}}</bb></th>
+						
+		   </tr>
+       		   {% if not forloop.last %}
+        	   {%endif%}
+      		   {%endfor%}
+		   <tbody>
+		</table>
+
+	{% else %}
+		<br/>
+		<p> *** Sin Escenarios de Riesgo asociados ***</p>
+	{%endif%}
+
+	<br/>
+	</ul>
+	{% endblock %}
+
+	{% block Procedimientos %}
+	<h5><strong>7. Procedimientos de Continuidad  (PC) asociados al Proceso<strong></h5>
+	<!=========================================================================================================>
+ 
+	<ul class="scr2">
+
+	    {% if proceso.subproceso.procedimientos_contingencia.all %}
+
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Codigo</th>
+			<th scope="col">Nombre</th>
+			<th scope="col">Tipo</th>
+			<th scope="col">Version</th>
+			<th scope="col">Escenario(s)</th>
+			<th scope="col">Estrategia</th>
+						
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for prcd in proceso.subproceso.procedimientos_contingencia.all  %}
+		   <tr>
+			<th scope="row"><a href = "{% url 'det-proced' prcd.pk  %}">{{prcd.codigo}}</a></th>
+			<th scope="row"><bb>{{prcd.nombre}}</bb></th>
+			<th scope="row"><bb>{{prcd.tipo}}</bb></th>
+			<th scope="row"><bb>{{prcd.version}}</bb></th>
+			<th scope="row"><bb>{{prcd.escenarios}}</bb></th>
+			<th scope="row"><bb>{{prcd.estrategia}}</bb></th>
+						
+		   </tr>
+       		   {% if not forloop.last %}
+        	   {%endif%}
+      		   {%endfor%}
+		   <tbody>
+		</table>
+	  {% else %}
+		<br/>
+		<p> *** Sin Procedimientos de Contingencia definidos ***</p>
+	  {%endif%}
+
+	  <br/>
+	</ul>	
+	{% endblock %}
+
+	{% block Autorizaciones %}
+	<h5><strong>8. Historial de Autorizaciones<strong>&emsp;({{proceso.path}})</h5> 
+	<ul class="scr2">
+
+		<table class="lta">
+		   <thead class='encabezado_D' style="font-size: 13px;">
+		   <tr>
+			<th scope="col">Fecha</th>
+			<th scope="col">Gestor</th>
+			<th scope="col">Etapa</th>
+			<th scope="col">Item observado</th>
+			<th scope="col">Observacion(s)</th>
+			<th scope="col">Estado</th>
+
+			
+						
+		   </tr>
+		   </thead>
+
+		   <tbody style="font-size: 10px;">
+		   {%for aut in comentarios.all %}
+		   <tr >
+			<th scope="row"><bb>{{aut.fecha}}</bb></th>
+			<th scope="row"><bb>{{aut.gestor_aut}}</bb></th>
+
+			<th scope="row"><bb>{{aut.seccion}}</bb></th>
+			<th scope="row"><bb>{{aut.campo}}</bb></th>
+			<th scope="row"><bb>{{aut.comentario}}</bb></th>
+			{% if aut.resuelto %}
+			   <th scope="row"><aa>Resuelto</aa></th>
+			{%else%}
+			   <th scope="row"><rr>Pendiente</rr></th>
+			{% endif %}
+
+									
+		   </tr>
+       		   {% if not forloop.last %}
+		   {% endif %}
+        	   {%endfor%}
+		   <tbody>
+		</table>
+
+		<br/>
+	</ul>
+	{% endblock %}		
+	{%else%}
+	 >> No es un Proceso final o Sub-Proceso.
+
+	{%endif%}
+
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+{% endblock %}
+

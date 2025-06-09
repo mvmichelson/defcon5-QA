@@ -1,0 +1,204 @@
+<! Programa HTML>
+<! Autorizacion de Procedimiento de Contingencia>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+	{% block encabezado_auth %}
+	<ul class="encabezado_C">
+        <aa><strong>AUTORIZACION DE PROCEDIMIENTO DE CONTINGENCIA / {{proceso.path}}</aa>
+	</ul>
+	{% endblock %}
+ 
+        
+	{% block A1 %}
+	<h5><strong>2. Identificacion del Procedimiento de Recuperacion (PC)</strong></h5>
+	<ul class="scr4">
+	<p><strong>2.0. Codigo del Procedimiento...: &emsp;</strong> {{proced.codigo}}</p>	
+	<p><strong>2.1. Nombre del Procedimiento...: &emsp;</strong> {{proced.nombre}}
+			&emsp;<a href = "{% url 'obs-proced' '2.1. Nombre del Procedimiento' proced.pk  proced.nombre %}"><bb><strong>&#128221</bb></strong></a></p>          
+	<p><strong>2.2. Tipo ........................................: &emsp;</strong> {{proced.tipo}}
+			&emsp;<a href = "{% url 'obs-proced' 'Tipo'  proced.pk    proced.tipo.nombre %}"><bb><strong>&#128221</bb></strong></a></p>
+	<p><strong>2.3. Fecha de creacion.................: &emsp;</strong> {{proced.fecha_c}}</p>
+	<p><strong>2.4. Version....................................: &emsp;</strong> {{proced.version}}
+			&emsp;<a href = "{% url 'obs-proced' '2.4 Version' proced.pk  proced.version %}"><bb><strong>&#128221</bb></strong></a>
+			&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<strong>3.5. Fecha de ultima modificacion..: </strong> {{proced.fecha_ult_mod}}</p>
+
+
+	</ul>
+	{% endblock %}
+
+	{% block A2 %}
+	<h5><strong>3. Estrategia del Procedimiento</strong></h5>
+	<ul class="scr4">
+	<p><strong>3.1. Escenario(s) a cubrir................: &emsp;</strong> {{proced.escenarios}}
+			&emsp;<a href = "{% url 'obs-proced' '3.1. Escenario(s) a cubrir' proced.pk  proced.escenarios %}"><bb><strong>&#128221</bb></strong></a></p>	
+	<p><strong>3.2. Estrategia del Procedimiento...: &emsp;</strong> {{proced.estrategia}}
+			&emsp;<a href = "{% url 'obs-proced' '3.2. Estrategia del Procedimiento' proced.pk  proced.estrategia %}"><bb><strong>&#128221</bb></strong></a></p>
+	</ul>
+	{% endblock %}		
+
+	{% block A3 %}
+	<h5><strong>4. Especificacion de Roles</strong></h5>
+	<ul class="scr4">
+
+	<p><strong>4.1.1.  Responsable del Proceso ................: &emsp;</strong> {{proced.resp_proceso}}
+			&emsp;<a href = "{% url 'obs-proced' '4.1.1.  Responsable del Proceso' proced.pk  proced.resp_proceso %}"><bb><strong>&#128221</bb></strong></a></p>
+	<p><strong>4.1.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_resp}}
+			&emsp;<a href = "{% url 'obs-proced' '4.1.2.  Respaldo' proced.pk  proced.bck_resp %}"><bb><strong>&#128221</bb></strong></a></p>
+	<br/>
+	<p><strong>4.2.1.  Gestor Ejecutor ........................: &emsp;</strong> {{proced.gestor_ejecutor}}
+			&emsp;<a href = "{% url 'obs-proced' '4.2.1.  Gestor Ejecutor' proced.pk  proced.gestor_ejecutor %}"><bb><strong>&#128221</bb></strong></a></p>
+	<p><strong>4.2.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_ejecutor}}
+			&emsp;<a href = "{% url 'obs-proced' '4.1.2.  Respaldo Gestor Ejecutor' proced.pk  proced.bck_ejecutor %}"><bb><strong>&#128221</bb></strong></a></p>
+	<br/>
+	<p><strong>4.3.1.  Enlace Comite de Crisis ................: &emsp;</strong> {{proced.enlace_c_crisis}}
+			&emsp;<a href = "{% url 'obs-proced' '4.3.1.  Enlace Comite de Crisis' proced.pk  proced.enlace_c_crisis %}"><bb><strong>&#128221</bb></strong></a></p>
+	<p><strong>4.3.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_enlace}}
+			&emsp;<a href = "{% url 'obs-proced' '4.1.2.  Respaldo Enlace C.C.' proced.pk  proced.bck_enlace %}"><bb><strong>&#128221</bb></strong></a></p>	
+	<br/>
+	<p><strong>4.4.1.  Gestor Consultor .......................: &emsp;</strong> {{proced.gestor_consultor}}</p>
+
+	</ul>
+	{% endblock %}
+
+	
+	{% block B %}
+	<h5><strong>5. Servicios Requeridos</strong>&emsp;<a href = "{% url 'obs-proced' '5. Servicios Requeridos' proced.pk  ' ' %}"><bb><strong>&#128221</bb></strong></a></h5>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Objetivo</th>
+			<th scope="col">Contacto</th>
+			<th scope="col">Respaldo</th>
+						
+		   </tr>
+		   </thead>
+
+		   <body>
+		   {% if servicios %}
+		    {%for ser in servicios.all  %}
+		    <tr>
+			<th scope="row"><bb>{{ser.nombre}}<bb></th>
+			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   <tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+	
+
+	{% block C %}
+	<h5><strong>6. Indice de Contactos</strong>&emsp;<a href = "{% url 'obs-proced' '6. Indice de Contacto' proced.pk  ' ' %}"><bb><strong>&#128221</bb></strong></a></h5>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Telefono laboral</th>
+			<th scope="col">Celular</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if contactos %}
+		    {%for con in contactos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{con.nombre}}<bb></th>
+			<th scope="row"><bb>{{con.correo}}<bb></th>
+			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
+			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+	
+
+	{% block D %}
+	<h5><strong>7. Procedimiento de Contingencia</strong>&emsp;<a href = "{% url 'obs-proced' '7. Procedimiento de Contingencia' proced.pk  ' ' %}"><bb><strong>&#128221</bb></strong></a></h5>
+	<ul class="scr4">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Paso</th>
+			<th scope="col">descripcion</th>
+			<th scope="col">responsable</th>
+			<th scope="col">tiempo esperado (min)</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if pasos %}
+		    {%for pas in pasos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{pas.nro_paso}}<bb></th>
+			<th scope="row"><bb>{{pas.descripcion}}<bb></th>
+			<th scope="row"><bb>{{pas.ejecutor}}<bb></th>
+			<th scope="row"><bb>{{pas.tiempo_esp}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+
+
+
+
+
+	
+	{% endblock %}
+ 
+		<form action="" method="post">
+        		{% csrf_token %}
+        		<table>
+        		{{ form }}
+			</table>
+        		<input type="submit" value="Registrar" />
+	    	</form>
+	
+
+{% endblock %}
+

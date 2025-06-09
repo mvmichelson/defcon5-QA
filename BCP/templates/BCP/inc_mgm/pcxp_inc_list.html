@@ -1,0 +1,96 @@
+<!Programa HTML>
+<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{%extends "base_generic.html"%}
+
+
+{% block content %}
+
+	{% block encabezado_pc %}
+	<ul class="encabezado_C">
+    		 <strong><am>PROCEDIMIENTOS DE CONTINUIDAD ASOCIADOS AL PROCESO (PC)</am></strong>
+	</ul>
+	{% endblock %}
+
+	<button><a href="{% url 'Perfil-Incidente' pk_padre  %}"><strong>[&#129190.Volver]</strong></a></button>
+	{% block Seccion_A %}
+	<h5><strong>1. Identificacion del Proceso<strong>&emsp;<aa>({{proceso_det.path}})</aa></h5> 
+	<ul class="Fondo_C">
+	  <p><strong>Codigo ......:</strong>&emsp;<aa>{{ proceso_enc.proceso }}</aa>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<strong>1.6 Ranking ........:</strong>&emsp;<aa>{{ proceso_det.ranking}}</aa></p>
+	  <p><strong>Nombre ......:</strong>&emsp;<aa>{{ proceso_enc.nombre  }}</aa></p>
+  	  <p><strong>Objetivo ....:</strong>&emsp;<aa>{{ proceso_enc.objetivo }}</aa></p>
+  	  <p><strong>RTO .........:</strong>&emsp;<aa>{{ proceso_det.rto }}</aa></p>
+  	  
+        </ul>
+	{% endblock %}
+	
+	
+	{%block lista%}
+	<h5><strong>2. Procedimientos de Continuidad  definidos para este Proceso<strong></h5>
+	<ul class="scr2">  
+                         
+	{% if proced %}
+	    <br/>
+  	    <table class="lta">
+
+    	   <thead>
+      	      <tr>
+	      <th scope="col">XX</th>
+	      <th scope="col">Codigo</th>
+	      <th scope="col">Nombre</th>
+	      <th scope="col">Escenario</th>
+	      <th scope="col">Estrategia</th>
+	      <th scope="col">Responsable</th>
+	      <th scope="col">Est</th>
+	      <th scope="col">Act</th>
+	      
+
+              </tr> 
+          </thead>
+
+          <tbody>
+    
+          {%for pc in proced.all %}
+	     <tr>
+	     <th scope="row"><a href = "{% url 'det-proced'  pc.pk %}"><bb><strong>&#128210</bb></strong></a> <!Libro rojo>
+      	     <th scope="row"><bb>{{pc.codigo}}</bb></th>
+	     <th scope="row"><bb>{{pc.nombre}}</bb></th>
+	     <th scope="row"><bb>{{pc.escenarios}}</bb></th>
+	     <th scope="row"><bb>{{pc.estrategia}}</bb></th>
+	     <th scope="row"><bb>{{pc.resp_proceso}}</bb></th>
+	     <th scope="row"><bb>{{pc.status}}</bb></th>
+	     <th scope="row">
+		{% if pc.esta_activo %}
+		   <a href = "{% url 'act-des-pc' pc.pk  %}"><bb><strong>&#128214</a> <! >
+	        {% else %}
+		   <a href = "{% url 'act-des-pc' pc.pk  %}"><bb><strong>&#128213</a> <! >
+		{% endif %}
+	     </tr>
+
+             {% if not forloop.last %}
+             {%endif%}
+         {%endfor%}
+         </tbody>
+
+         </table>
+
+	{% else %}
+      		<p>*** El Proceso no tiene Procedimientos de Continuidad definidos ***</p>
+    	{% endif %}
+	<br/>
+	<br/>
+	&emsp;&emsp;&emsp;&#128210:&emsp;Consulta Procedimiento 
+	&emsp;&emsp;&emsp;&#128214:&emsp;Procedimiento Activado
+	&emsp;&emsp;&emsp;&#128213:&emsp;Procedimiento Desactivado
+		
+	</ul>
+
+	{%endblock%}
+
+	<button><a href="{% url 'Perfil-Incidente' pk_padre  %}"><strong>[&#129190.Volver]</strong></a></button>
+
+{%endblock%}
+

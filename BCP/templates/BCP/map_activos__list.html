@@ -1,0 +1,132 @@
+<!Programa HTML>
+<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Para establecer las relaciones entre Activos y Procesos
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block encabezado2 %}
+	<ul class="encabezado_B">
+    		 <strong>MAPEO PROCESOS vs ACTIVOS</strong>
+	</ul>
+	{% endblock %}
+	
+	{%block lista%}
+	<ul class="scr">  
+                         
+		{% if proceso_list %}
+
+			{% for proceso in proceso_list %}
+			
+			<p> 
+			<!Opcion Agrega/RACI y Listo>
+			<!==========================>
+			
+                        {% if proceso.es_subproceso  %}
+				{% if proceso.subproceso.status != 'R' %}
+
+					{% if proceso.subproceso.status == 'C' %}
+						<!Asignacion de responsables RACI y envio a aprobacion>
+						{%if request.user.username == proceso.subproceso.gestor_C.username %}
+
+							<a href="{% url 'asigna-raci' proceso.pk %}"><rr><strong>&#8476</strong></rr></a>
+
+						{%else%}
+
+							.<yy>&#8476</yy>..
+
+						{%endif%}
+
+					{%endif%}					
+
+
+					{% if proceso.subproceso.status == 'A' %}
+						<!Proceso a Aprobacion del Gestor Asignado>
+						{%if proceso.subproceso.gestor_A.username == request.user.username %}
+							<a href="{% url 'auth_m-raci' proceso.pk  %}"><strong><rr>&#128477</rr></strong></a>
+						{%else%}
+							<yy>.&#128477.</yy>
+						{%endif%}
+
+					{%endif%}
+
+					{%if proceso.subproceso.status == 'r' %}
+						<!Proceso a aprobacion por Responsable Area>
+						{%if proceso.subproceso.gestor_R.username == request.user.username %}
+							<a href="{% url 'auth_m-raci' proceso.pk  %}"><strong><rr>&#128477</rr></strong></a>
+						{%else%}
+							<yy>.&#128477.</yy>
+						{%endif%}
+							
+					{%endif%}
+
+					{%if proceso.subproceso.status == 'x' %}
+						<!Proceso a aprobacion por Responsable Area>
+						{%if  proceso.subproceso.gestor_C.username == request.user.username %}
+						  	<a href="{% url 'proceso-revisa' proceso.pk %}"><strong><rr>&#128394</rr></strong></a>
+						{%else%}
+							<yy>.&#128394</yy></a>
+						{%endif%}
+							
+					{%endif%}
+
+				{%else%}
+					<!Proceso listo y aprobado>
+					<aa>.<strong>&#10004</strong>..</aa>
+				{%endif%}
+                          	
+                        {% else %}
+
+				<a href="{% url 'crea-procesos' proceso.pk %}"><bb>&#10010</bb></a>
+                        {% endif %}
+                        
+			<!Opcion Modifica>
+			
+			<!Opcion Muestra>
+			<a href="{{ proceso.get_absolute_url }}"><bb>&#128065</bb></a>
+        		<!Opcion Borra>
+			&#128465
+                        
+
+			{% if proceso.es_subproceso %}
+                            <aa>  >{{proceso.proceso}}  &#10149 <strong>{{ proceso.nombre }}</strong></aa> 
+                        {%else%}
+                            <aa>  >.{{proceso.proceso}}  &#10149 {{ proceso.nombre }}</aa>
+                        {%endif%}
+         		
+			</p>
+      		 	
+			{% endfor %}
+
+		{% else %}
+      			<p>No hay Procesos definidos.</p>
+    		{% endif %}
+		
+	</ul>
+	{%endblock%}
+
+
+	{%block pie%}
+	<ul class="encabezado_B">
+    		<strong>&#10010</strong> :Crear Proceso -<strong><rr>&#8476<rr></strong> :Asignar RACI - <strong><rr>&#128394</rr></strong> :Revisar - <strong>&#128065</strong> :Consultar - <strong>&#128465</strong> :Borra
+		-<strong><rr>&#128477<rr></strong> :Aprobar-<strong>&#10004</strong> :Aprobado
+	</ul>
+	{% endblock %}
+
+{%endblock%}
+
+<script>
+// When the user scrolls the page, execute myFunction 
+window.onscroll = function() {myFunction()};
+
+function myFunction() {
+  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var scrolled = (winScroll / height) * 100;
+  document.getElementById("myBar").style.width = scrolled + "%";
+}
+</script>

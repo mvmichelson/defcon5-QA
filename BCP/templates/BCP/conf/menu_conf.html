@@ -1,0 +1,142 @@
+<!Programa en HTML>
+<!Despliega Menu de opciones para administracion de Datos Maestros>
+<!Programado por Marco A. Villalobos Michelson>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+<ul class="FondoD">
+<!----- Bloque A ------------------------------------------------------------------->
+<div class="flex-container">
+
+<!-------- Columna 1 (Icono) --------------------------------------->
+<div class="flex-item" style="width: 25%;">
+<!-- GESTORES -->
+<p><a style="font-size:50px">&#129333</a><am>Gestores</am></p>
+
+<!--- GRUPOS ------> 
+<p><a style="font-size:25px">&#129333</a><a style="font-size:25px">&#129333</a><am>Grupos</am>
+</p>
+
+<!--- BASE DE DATOS ------>
+<br/> 
+<P>
+&nbsp;&nbsp;&nbsp;<img src="/static/img/BD.png" width="50" height="50"></img>&nbsp;&nbsp;&nbsp;<am>Base de Datos</am>
+
+</P>
+
+
+</div><!----- Fin Columna 1 --------->
+
+<!----- Columna 2 (opciones)------------->
+
+<div class="flex-item" style="width: 25%;">
+
+    <!-- GESTORES -->
+    <br/>
+    <br/>
+    <p>
+    <am>[
+    <!-- Crea Gestor -->
+    <a href="{%  url 'crea-g'  %}"
+    class="link" data-message="Crea Gestor..."><am>&#10010</am></a>
+    <!-- Muestra Gestor ----> 
+    &nbsp;&#128065
+    <!-- Modifica Gestor --->
+    &nbsp;&#128393
+    <!--- Borra Gestor --->
+    <a href="{%  url 'borra-g'  %}"
+    class="link" data-message="Elimina Gestor..."><am>&#128465</am></a>
+    &nbsp;
+    ]</am></p>
+
+    <!-- GRUPOS --> 
+    <br/>
+    <p>
+    <am>[
+    <!-- Asigna Grupo a Gestor -->
+    <a href="{%  url 'lista-gestores'  %}"><am>&#8844</am></a>
+    ]</am></p>
+
+    <!-- BASE DE DATOS -->
+    <br/>
+    <br/>
+    <p>
+    <am>[
+    <!-- Reinicio de la BD -->
+    <a href="{%  url 'reinicia_bd'  %}"
+    class="link" data-message="Reinicia la Base de Datos ..."><img src="/static/img/reinicio.jpg" width="15" height="15"></img></a>
+    ]</am></p>
+
+</div><!---- Fin Columna 2 --------->
+
+<!-------- Columna 3 (Icono) --------------------------------------->
+<div class="flex-item" style="width: 25%;">
+<!----------  ADM. DE SERVICIOS CRITICOS -------->
+<a style="font-size:50px">&#129520</a><am>Servicios Criticos</am>
+</div><!----- Fin Columna 3 --------->
+
+<!-------- Columna 4 (Opciones) --------------------------------------->
+<div class="flex-item" style="width: 25%;">
+<!----------  ADM. DE SERVICIOS CRITICOS -------->
+<br/>
+<br/>
+<am>[&nbsp;&#10010&nbsp;&#128065&nbsp;&#128393&nbsp;&#128465&nbsp;]</am></p></p>
+</div><!----- Fin Columna 4 --------->
+
+
+</div><!----- Fin Bloque A -->
+
+<br/>
+<br/>
+
+
+
+
+
+
+
+
+<! ADM. DE ESCENARIOS>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a style="font-size:50px">&#128696</a><am>Escenarios de Riesgo</am>...........................<am>[&nbsp;&#10010&nbsp;&#128065&nbsp;&#128393&nbsp;&#128465&nbsp;]</am></p></p>
+<br/>
+<p>&nbsp;&nbsp;&nbsp;<a style="font-size:50px">&#128680</a><am>Impactos Probables</am>............................<am>[&nbsp;-- &nbsp;&#128065&nbsp;&#128393&nbsp;&#128465&nbsp;]</am></p>
+<br/>
+<p>&nbsp;&nbsp;&nbsp;<a style="font-size:50px">&#9889</a><am>Indicadores de Recuperacion</am>.............<am>[&nbsp;--&nbsp;&#128065&nbsp;&#128393&nbsp;&#128465&nbsp;]</am></p>
+<br/>
+
+
+
+</ul>
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+
+{% endblock %}

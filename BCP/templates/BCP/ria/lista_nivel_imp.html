@@ -1,0 +1,105 @@
+<!Programa HTML                            >
+<!Lista Riesgo/impacto                     >
+<!Programado por Marco A. Villalobos M.    >
+<!=========================================>
+
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block content %}
+
+    <ul class="encabezado_B">
+        <yy><strong>ANALISIS DE IMPACTO DE RIESGO (RIA) - ASIGNACION DE NIVELES DE IMPACTO</strong></yy>
+    </ul>
+
+<!--- Riesgo -->
+
+<table class="lta">
+    <thead class="encabezado_A">
+    <tr>
+        <th scope="col">Riesgo</th>
+        <th scope="col">Descripcion</th>
+        <th scope="col" style="width: 10%; text-align: center;">Ponderacion</th>
+    </tr>
+    </thead>
+
+    <body>
+         <tr>
+            <th scope="row"><bb>{{riesgo.nombre}}<bb></th>
+            <th scope="row"><bb>{{riesgo.descripcion}}<bb></th>
+            <th scope="row" style="width: 10%; text-align: center;"><bb>{{riesgo.ponderacion}}<bb>%</th>
+         
+         </tr>
+    </body>
+     
+ </table>
+
+
+<!--- Niveles de Impacto -->
+<br/>
+<br/>
+<img src="/static/img/niveles.jpg" width="50" height="50"></img>
+<table class="lta">
+    <thead class="encabezado_A" style="background: gray;">
+    <tr>
+        <th scope="col" style="width: 10%; text-align: center;"><a href="{% url 'Crea-Nivel-Imp' riesgo.pk  %}" class="link" data-message="Define un Riesgo"><strong><am>&#10010</am></strong></a></th>
+        <th scope="col">Nivel</th>
+        <th scope="col">Descripcion</th>
+        <th scope="col" style="width: 10%; text-align: center;">Valor</th>
+    </tr>
+    </thead>
+
+    <body>
+     {% if niveles %}
+
+         {%for imp in niveles %}
+         <tr>
+            <th scope="row" style="width: 10%; text-align: center;">
+                <a href="{% url 'Mod-Impacto' imp.pk  %}" class="link" data-message="Modifica Riesgo">&#128393</a>
+                {% if not drp.status_t %}
+                    <a href="{% url 'Borra-Impacto' imp.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Riesgo ? * * *" data-message="Borra Riesgo"><rr>&#128465</rr></a>
+                {%else%}
+                    <rr>..</rr>
+                {%endif%}
+                
+            </th>
+            <th scope="row"><bb>{{imp.nombre}}<bb></th>
+            <th scope="row"><bb>{{imp.descripcion}}<bb></th>
+            <th scope="row" style="width: 10%; text-align: center;"><bb>{{imp.valor}}<bb></th>
+         
+         </tr>
+                {% if not forloop.last %}
+             {%endif%}
+           {%endfor%}
+    
+     {%else%}
+           <p> No hay Niveles de Impactos definidos</p>
+       {%endif%}
+
+        <tbody>
+     
+ </table>
+
+<br/>
+{% if menor_a_100 %}
+    <p><strong>El Total de la Ponderacion debe sumar <rr>100 %</rr>. Se debe adicionar un riesgo con una ponderacion del <rr>{{resto}}</rr> % o sumarlo a la ponderacion en 
+        algunos de los existentes.</strong> </p>
+{%endif%}
+
+
+	 <!-- Globo de cómic -->
+	 <div id="comicBalloon"></div>
+
+	 <!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	 <div id="confirmation-dialog" class="hidden">
+        <div class="dialog-content">
+            <p id="confirmation-message"></p>
+            <button id="confirm-yes">Sí</button>
+            <button id="confirm-no">No</button>
+        </div>
+    </div>
+
+<!--- Despliega el nombre del programa -->
+<p style="font-size: 8px; color:green">lista_impacto</p>
+{% endblock %}

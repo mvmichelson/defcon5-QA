@@ -1,0 +1,83 @@
+<!Programa en HTML>
+<!Despliega lista de DRPs definidos>
+<!Programado por Marco A. Villalobos Michelson>
+<!==============================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+{% block encabezado2 %}
+	<ul class="encabezado_B">
+        <strong>P L A N E S&emsp;&emsp;D E&emsp;&emsp; R E C U P E R A C I O N&emsp;&emsp;D E L&emsp;&emsp;P R O C E S A M I E N T O&emsp;&emsp;D E&emsp;&emsp;D A T O S&emsp;&emsp;( D R P )</strong>
+	</ul>
+{% endblock %}
+
+	<ul class="scr">
+		<br/>	
+
+		<table class="lta">
+		   <thead class="encabezado_A">
+		   <tr>
+			<th scope="col">Codigo</th>
+			<th scope="col">Nombre</th>
+			<th scope="col">Estado</th>
+			<th scope="col">DRP</th>
+			<th scope="col"><a href="{% url 'Crea-DRP' %}"><strong><am>&#10010</am></strong></a></th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+			{% if lista_drp %}
+
+		    	{%for drp in lista_drp.all  %}
+		    	<tr>
+				<th scope="row"><bb>{{drp.codigo}}<bb></th>
+				<th scope="row"><bb>{{drp.nombre}}<bb></th>
+				<th scope="row"><bb>{{drp.status_t}}<bb></th>
+				<th scope="row"><a href="{% url 'Indice-DRP' drp.pk %}">&#128213</a></th>
+				<th scope="row">
+					{% if not drp.status_t %}
+						<a href="{% url 'Borra-DRP' drp.pk %}"><rr>&#128465</rr></a>
+					{%else%}
+						<rr>..</rr>
+					{%endif%}
+					
+				</th>
+		    	</tr>
+       		        {% if not forloop.last %}
+        	        {%endif%}
+      		    {%endfor%}
+		   
+			{%else%}
+				  <p> No hay DRPs definidos</p>
+		  	{%endif%}
+
+		   	<tbody>
+			
+		</table>
+		    
+	</ul>
+
+
+
+{%block pie%}
+	<br/>
+	<ul class="encabezado_SB">
+	
+	<strong><p><am>&#10010</am>:<tm>Crear DRP&emsp;</tm></strong> 
+	<strong>&#128065 :<tm>Consultar &emsp;</tm></strong>
+	<strong><rr>&#128465</rr> :<tm>Borrar &emsp;</tm></strong>
+	<strong>&#128270 :<tm>Revisar Obs. &emsp;</tm></strong> 
+	<strong>&#128273 :<tm>Autorizar &emsp;</tm></strong>
+	<strong>&#128274 :<tm>En autorizacion &emsp;</tm></strong>
+	
+	<strong>&#9989 :<tm>Aprobado</tm></strong>
+	</ul>
+{% endblock %}
+
+
+{% endblock %}

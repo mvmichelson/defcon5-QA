@@ -1,0 +1,85 @@
+<!Programa en HTML>
+<!Despliega lista los Componentes de Configuracion del DRP>
+<!Programado por Marco A. Villalobos Michelson>
+<!==============================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+{% block encabezado_auth %}
+	 <ul class="encabezado_A">
+        <p><aa><strong>FORMULARIO DE DECLARACION DE LINEA BASE DE CONFIGURACION DEL COMPONENTE </aa></strong></p>
+	 </ul>
+	 <ul class="encabezado_SB">
+		<p><aa><strong>{{comp.codigo}}&nbsp;/&nbsp;{{comp.nombre}}&nbsp;/&nbsp;{{comp.descripcion}}</strong></aa></p>
+	 </ul>
+	{% endblock %}
+
+	<ul class="scr4">
+		
+		<p>Especificar los Parametros de Configuracion, su descripcion u objetivo, el metodo mediante el cual se hace la 
+			definicion (p.e. mediante la ejecucion de un comando, la edicion de un archivo, etc.) y el valor que debe 
+			tener asignado el parametro para la correcta operacion del Componente de Configuracion asociado	</p>
+			<br/>
+
+		<table class="lta">
+			<thead class="encabezado_N">
+		   <tr>
+			<th scope="col">Codigo</th>
+			<th scope="col">Nombre Parametro</th>
+			<th scope="col">Descripcion/Objetivo</th>
+			<th scope="col">Metodo de Acceso</th>
+			<th scope="col">Valor Parametro</th>
+			<th scope="col"><a href="{% url 'Crea-LBC' comp.pk %}"><strong><am>&#10010</am></strong></a></th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+			{% if lista_lbc %}
+
+		    	{%for lbc in lista_lbc.all  %}
+		    	<tr>
+				<th scope="row"><bb>{{lbc.codigo}}<bb></th>
+				<th scope="row"><bb>{{lbc.nombre}}<bb></th>
+				<th scope="row"><bb>{{lbc.descripcion}}<bb></th>
+				<th scope="row"><bb>{{lbc.metodo_acceso}}<bb></th>
+				<th scope="row"><bb>{{lbc.valor}}<bb></th>
+				<th scope="row">
+					<a href="{% url 'Borra-LBC' lbc.pk %}"><rr>&#128465</rr></a>
+				</th>
+		    	</tr>
+       		        {% if not forloop.last %}
+        	        {%endif%}
+      		    {%endfor%}
+		   
+			{%else%}
+				  <p> No hay LsBC definidos</p>
+		  	{%endif%}
+
+		   	<tbody>
+			
+		</table>
+		<br/>	
+		<a href="{{ drp.get_absolute_url }}"><span style='font-size:30px;'>&#128281</span></a>	    
+
+	</ul>
+
+
+
+{%block pie%}
+	<br/>
+	<ul class="encabezado_A">
+	
+	<strong><p><am>&#10010</am>&nbsp;:<tm>Definir Parametro</tm></strong>&emsp;&emsp; 
+	<strong><rr>&#128465</rr>&nbsp; :<tm>Borrar &emsp;&emsp;</tm></strong>
+	 
+	
+	</ul>
+{% endblock %}
+
+
+{% endblock %}

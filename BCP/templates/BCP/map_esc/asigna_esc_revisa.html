@@ -1,0 +1,207 @@
+<!Programa HTML>
+<!Despliega el formulario para la revision de Asignacion de Activos por autorizacion RACI rechazada>
+<!Programado por Marco A. Villalobos M.>
+<!==================================================================================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+   {% block enc_RevAsig %}
+   <ul class="encabezado_B">
+   <p><aa><strong>FORMULARIO DE REVISION DE OBSERVACIONES A ESCENARIOS DE RIESGO  ASIGNADOS:</aa></strong></p>
+   </ul>
+   <ul class='encabezado_SB'>  
+   <p><aa>{{proceso.path}}</aa></p>
+   </ul>
+  {% endblock %}
+
+<!==========================>
+<!Despliega Observaciones>
+<!==========================>
+<!----- Bloque A ---------------------------------->
+<div class="flex-container">
+
+	<!------------- Seccion Datos del Proceso -------------------->
+	<div class="flex-item" style="width: 50%;">
+	<!==========================>
+	<!Informcion para Evaluacion>
+	<!==========================>
+	
+			<ul class="scr4" style="text-align: center; background: white; font-size: 13px;">
+				<strong>PROCESO</strong>
+			</ul>
+	
+			<ul class="scr4">
+			  <p>Nombre........:</strong> {{ proceso.nombre }}</p>
+			  <p>Objetivo......:</strong> {{ proceso.objetivo }}</p>
+			<p>Puntaje  ....: {{total_pro}}</p>
+			<br/>
+		</ul>
+		<br/>
+		<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
+			. Realice las modificaciones solicitadas y marquelo en el icono (&#10067). 
+			Si desea dejar un comentario, utilice el icono 
+			(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p>
+			<p>Al registrar las modificaciones sera enviada al Gestor Autorizador para su revision.</p>  
+		</bn>
+	
+	
+	
+	</div><!------------- Fin Seccion Datos del Proceso -------------------->
+	
+	<!----- Seccion der - Block de Comentarios ---------->
+	<div class="flex-item" style="width: 52%;"> 
+		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+			<strong>Block de Comentarios de Revision</strong>
+		</ul>
+		<ul class="BarraScroll" style="height: 300px; border-radius: 10px; border: 3px solid black; background: white;">
+			<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10px;">Fecha</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+					{%for com in comentarios  %}
+					<tr style="font-size: 9px;">
+						{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+						<!--- Si el usuario en sesion es el Gestor Consultor --->
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+								<p>{{com.campo}}</p>
+								(
+									{% if com.resuelto %}
+									<a href="{% url 'OK-Rev-OC' com.pk %} " 
+									class="link confirm-link" con-message="Confirma Desmarcar?"  
+									data-message="Realizado (Haga Click para desmarcar)">&#9989
+									{%else%}
+									<a href="{% url 'OK-Rev-OC' com.pk %}" class="link confirm-link" con-message="Confirma Marcar como Realizado?"  
+									data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
+									{%endif%}
+								)
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}
+							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+							</p></th>
+	
+						{%endif%}
+	
+						<th scope="row" style="width: 500px";> {{com.comentario}}
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+	
+								<p>
+								<!---------  Comentario de Revision ----->
+								<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
+								data-id="{{ proceso.id }}"
+								data-sec="E"
+								data-field="Comentario a '{{com.campo}}'" 
+								>
+								<img src="/static/img/Comentario_1.png" width="15" height="15">
+								</span>
+								<!---------  Fin Comentario de Revision ----->
+								</p>
+							{%endif%}
+						</th>
+						<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+				
+			<!-- Fin Log Comentarios -->
+				
+		</ul>
+	
+	</div><!----------- Fin Seccion der - Block de Comentarios ----------->
+	
+	</div> <!------- Fin Bloque A ----------------------->
+
+	
+
+{% block rev_asigna_proc %}
+<h5><strong>REVISION DE ASIGNACION DE ESCENARIOS DE RIESGO</strong></h5>
+<!=====================================================================>
+<ul class="scr3">
+
+<h5><P>Seleccione del cuadro de la izquierda aquellos <strong>Escenarios</strong>  que, de acuerdo a lo señalado por el <strong>Gestor Autorizador</strong> en  las observaciones (Seccion 1 del Formulario),
+deben ser incorporados a la seleccion de Escenarios de Riesgo  asociados al Proceso <strong>{{proceso.nombre}}</strong>.</p>
+<p>De-seleccione del cuadro de la derecha aquellos <strong>Escenarios de Riesgo</strong> que, de acuerdo a lo señalado por
+el <strong>Gestor Autorizador</strong>, <strong>NO</strong> deben ser asociado al Proceso.</p><h5>
+	
+    	<form action="" method="post">
+        	{% csrf_token %}
+       		{{ form.media}}
+        	<p>{{ form.escenarios}}
+		<br/>
+		<p><span style='font-size:20px;'>&#128231&emsp;</span>Notifica?..:{{ form.notifica}}</p>
+       		<br/>	
+        	<p><input type="submit" value="Registrar y Salir" /></p>
+    	</form>
+
+</ul>
+{% endblock %}
+
+<!-- Globo de cómic -->
+<div id="comicBalloon"></div>
+
+<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+<div id="confirmation-dialog" class="hidden">
+    <div class="dialog-content">
+        <p id="confirmation-message"></p>
+        <button id="confirm-yes">Sí</button>
+        <button id="confirm-no">No</button>
+        </div>
+    </div>
+
+	<p> <!-- Botones de Secuencia --></strong>
+		<a href="{% url 'Lista-Evaluaciones' %}" ><bb class="button">... Volver</bb></a>&nbsp;&nbsp;&nbsp;
+		<a href="{% url 'Envia-Auth' proceso.pk  'V' %}"  ><bb class="button">Registrar (Envia a Autorizacion) ...</bb></a>
+	</p>
+	<br/>
+
+	<!----- CSS para Scripts --------------->
+	<!-------------------------------------->
+
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!-------------------------------------->
+
+
+<!--- Despliega el nombre del programa -->
+<p style="font-size: 8px; color:green">asigna_esc_revisa</p>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+<!Programa HTML>
+<!Lista los Log de autorizaciones en modalidad Scrool>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block encabezado2 %}
+	<ul class="encabezado_B">
+    		 <strong>Lista de Logs de Autorizaciones</strong>
+	</ul>
+	{% endblock %}
+	
+	{%block lista%}
+	<ul class="scr2">  
+             {% if logautrev_list %}
+		{% for log in logautrev_list
+
+		{{log.gestor_aprobador}}
+		{{log.fecha}}
+		{{log.Aprobado}}
+		{{log.observacion}}
+		{{log.p_status}}		
+	</ul>
+	{%endblock%}
+
+
+	{%block pie%}
+	
+	{% endblock %}
+
+{%endblock%}
+

@@ -1,0 +1,175 @@
+<!Programa HTML>
+<!Despliega el formulario para la revision de los Comentarios>
+<!realizados por el Aprobador.>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+
+{% block encabezado_Revisa %}
+<ul class="encabezado_B">
+<p><aa><strong>FORMULARIO DE REVISION DE PROCESO :</aa></strong></p>
+</ul>
+<ul class='encabezado_SB'>
+<p><aa>{{proceso.path}} </strong></aa></p>
+</ul>
+{% endblock %}
+
+<!----------- Bloque A ------------------------------------>
+<div class="flex-container"> 
+
+<!----- Seccion izq - Datos Proceso ---------->
+<div class="flex-item" style="width: 55%;"> 
+
+<ul class="scr4" style="text-align: center;background: white;">
+<strong>REVISION DATOS</strong>
+<!============================================>
+</ul>
+ 
+    <form action="" method="post">
+        {% csrf_token %}
+	<ul class="scr4" style="height: 500px;">
+          
+    	<p><strong>Nombre..:</strong>&emsp; {{ form.nombre }}</p>
+	   <p><strong>Objetivo..:</strong>&emsp; {{ form.objetivo }}</p>
+	   <br/>
+	   <p><strong>Gestor [R]esponsable ..:</strong>&emsp; {{ form.gestor_R }}</p>
+ 	   <p><strong>Gestor [A]utorizador ....:</strong>&emsp; {{ form.gestor_A }}</p>
+	   <p><strong>Persona [I]nteresada ....:</strong>&emsp; {{ form.gestor_I }}</p>
+	   <br/>
+	
+   
+   
+</div><!----------- Fin Seccion izq - Datos Proceso ----------->
+
+<!----- Seccion der - Block de Comentarios ---------->
+<div class="flex-item" style="width: 47%;"> 
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Block de Comentarios de Revision</strong>
+	</ul>
+	<ul class="BarraScroll" style="height: 300px; border-radius: 10px; border: 3px solid black; background: white;">
+		<!-- Log de Comentarios -->
+		<table class="lta"> 
+			<thead class="encabezado_C" style="text-align: center">
+			<tr>
+			<th scope="col" style="width: 20%;">Referencia.Dato</th>
+			<th scope="col" style="width: 500px">Comentario</th>
+			<th scope="col" style="width: 10px;">Fecha</th>
+			</tr>
+			</thead>
+			
+			<body>
+			{% if comentarios %}
+				{%for com in comentarios  %}
+				<tr style="font-size: 9px;">
+					{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+					<!--- Si el usuario en sesion es el Gestor Consultor --->
+						<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}</p>
+							(
+								{% if com.resuelto %}
+								<a href="{% url 'OK-Rev-OC' com.pk %} " 
+								class="link confirm-link" con-message="Confirma Desmarcar?"  
+								data-message="Realizado (Haga Click para desmarcar)">&#9989
+								{%else%}
+								<a href="{% url 'OK-Rev-OC' com.pk %}" class="link confirm-link" con-message="Confirma Marcar como Realizado?"  
+								data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
+								{%endif%}
+							)
+						</th>
+					{%else%}
+						<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+						<p>{{com.campo}}
+						(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+						</p></th>
+
+					{%endif%}
+
+					<th scope="row" style="width: 500px";> {{com.comentario}}
+						{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+
+							<p>
+							<!---------  Comentario de Revision ----->
+							<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
+							data-id="{{ proceso.id }}"
+							data-sec="M"
+							data-field="Comentario a '{{com.campo}}'" 
+							>
+							<img src="/static/img/Comentario_1.png" width="15" height="15">
+							</span>
+							<!---------  Fin Comentario de Revision ----->
+							</p>
+						{%endif%}
+					</th>
+					<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
+				{%endfor%}
+			
+			{%else%}
+				<p> Sin  Observaciones</p>
+			{%endif%}
+			
+				<tbody>
+						
+		</table>
+			
+		<!-- Fin Log Comentarios -->
+			
+	</ul>
+	<br/>
+	<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
+		. Realice las modificaciones solicitadas y marquelo en el icono (&#10067). 
+		Si desea dejar un comentario, utilice el icono 
+		(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p>
+		<p>Al registrar las modificaciones sera enviada al Gestor Autorizador para su revision.</p>  
+	</bn>
+
+	<br/>
+	<a href="{% url 'Lista-Procesos' %}" ><aa class="button">... Volver</aa></a>
+	<input type="submit" class="button" value="Registrar" />
+
+	</form>
+
+
+</div><!----------- Fin Seccion der - Block de Comentarios ----------->
+
+</div><!----- Fin Bloque A ----------------------------------->
+
+
+
+	<!----- CSS para Scripts --------------->
+	<!-------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!-------------------------------------->
+
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[proceso_revisa]</aa>	
+
+
+{% endblock %}

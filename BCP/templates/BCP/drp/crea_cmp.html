@@ -1,0 +1,27 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para el Reporte de un Incidente >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <bb><strong>FORMULARIO DE CREACION DE COMPONENTE</strong></bb>
+	</ul>
+	{% endblock %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        <p>Tipo:{{ form.tipo_act }}</p>
+        <p>Nombre:{{ form.nombre }}</p>
+        <p>Descripcion:{{ form.descripcion }}</p>
+        <p>Nro.Serie/Licencia: {{form.identificacion}}</p>
+        <p>Fabricante :{{form.fabricante}}</p>
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

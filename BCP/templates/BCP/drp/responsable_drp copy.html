@@ -1,0 +1,39 @@
+<!Programa HTML>
+<!Despliega el formulario para la asignacion de Responsables del DRP>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	{% block encabezado_detalle %}
+	<ul class="encabezado_B">
+        <aa><strong>FORMULARIO DE ASIGNACION DE EQUIPO  AL  DRP. </strong></aa>
+        </ul>
+	<ul class="encabezado_SB">
+		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	</ul>
+	{% endblock %}
+
+
+	{% block Drp %}
+
+	<ul class="scr4">
+		<form action="" method="post">
+    	{% csrf_token %}
+		
+		<p><strong>Responsable del Proceso ..:</strong>&emsp;{{form.resp_drp}}&emsp; Respaldo:&emsp;{{form.bck_resp}}</p>
+		<p><strong>Ejecutor Procedimiento ......:</strong>&emsp;{{form.gestor_ejecutor}}&emsp; Respaldo:&emsp;{{form.bck_ejecutor}}</p>
+		<p><strong>Enlace Comite Crisis ..........:</strong>&emsp;{{form.enlace_c_crisis}}&emsp; Respaldo:&emsp;{{form.bck_enlace}}</p>
+		<p><strong>Gestor Consultor ................:&emsp;{{drp.gestor_consultor_drp}} </strong></p>
+		<br/>
+		<input type="submit" value="Registrar" />
+		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+		</form>
+	</ul>
+	{% endblock %}
+
+
+{% endblock %}

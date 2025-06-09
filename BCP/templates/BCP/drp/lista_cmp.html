@@ -1,0 +1,88 @@
+<!Programa en HTML>
+<!Despliega lista los Componentes de Configuracion del DRP>
+<!Programado por Marco A. Villalobos Michelson>
+<!==============================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+{% block encabezado_auth %}
+	 <ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE ESPECIFICACION  DE COMPONENTES DE CONFIGURACION DEL DRP</aa></strong></p>
+	 </ul>
+	 <ul class="encabezado_SB">
+	 <p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	 {{Componentes.get_absolute_url}}
+	 </ul>
+	{% endblock %}
+
+
+
+	<ul class="scr3">	
+		<p>Especificar mediante la Asignacion desde la Base, todos los <strong>Componentes de Hardware, Software o MiddleWare</strong> que compondran la configuracion del Site
+			de Contingencia  asociado a este <strong>DRP</strong>. Para cada Componente, especificar en (&#9202) los valores de configuracion relevantes a considerar
+			para su adecuada operacion.</p>
+		<br/>
+		<table class="lta">
+		   <thead class="encabezado_N">
+		   <tr>
+			<th scope="col">Codigo</th>
+			<th scope="col">Tipo</th>
+			<th scope="col">Nombre</th>
+			<th scope="col">Nro.Identificacion</th>
+			<th scope="col">Descripcion</th>
+			
+			<th scope="col"><a href="{% url 'Asigna-CMP' drp.pk 'asigna'  %}"><strong><am>&#10010</am></strong></a></th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+			{% if lista_cmp %}
+
+		    	{%for cmp in lista_cmp.all  %}
+		    	<tr>
+				<th scope="row"><bb>{{cmp.codigo}}<bb></th>
+				<th scope="row"><bb>{{cmp.tipo_act.tipo}}<bb></th>
+				<th scope="row"><bb>{{cmp.nombre}}<bb></th>
+				<th scope="row"><bb>{{cmp.identificacion}}<bb></th>
+				<th scope="row"><bb>{{cmp.descripcion}}<bb></th>
+				<th scope="row"><a href="{% url 'Lista-LBC' cmp.pk drp.pk %}">&#9202</a></th>
+
+				</tr>
+       		        {% if not forloop.last %}
+        	        {%endif%}
+      		    {%endfor%}
+		   
+			{%else%}
+				  <p> No hay Componentes definidos</p>
+		  	{%endif%}
+
+		   	<tbody>
+			
+		</table>
+		<br/>
+		<br/>
+		
+	</ul>
+
+
+
+{%block pie%}
+	
+	
+	<ul class="encabezado_SB">
+	
+	<strong><p><am>&#10010</am>&nbsp;:<tm>Asignar/Desasignar Componente</tm></strong>&emsp;&emsp; 
+	<strong>&#9202 &nbsp;:<tm>Linea Base de Configuracion</tm></strong> 
+	
+	</ul>
+
+	<a href="{{ drp.get_absolute_url }}"><span style='font-size:30px;'>&#128281</span></a>
+{% endblock %}
+
+
+{% endblock %}

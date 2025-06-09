@@ -1,0 +1,86 @@
+<!Programa en HTML>
+<!Despliega lista de Contactos del DRP>
+<!Programado por Marco A. Villalobos Michelson>
+<!==============================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+{% block encabezado_auth %}
+	 <ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE DECLARACION DE DATOS DE CONTACTO DEL DRP</aa></strong></p>
+	 </ul>
+	 <ul class="encabezado_SB">
+	 <p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	 </ul>
+	{% endblock %}
+
+
+	<ul class="scr4">	
+
+		<p>Especificar los <strong>datos de contacto</strong> de las personas involucradas en el DRP.</p>
+		<br/>
+		<table class="lta">
+		   <thead class="encabezado_D">
+		   <tr>
+			<th scope="col">Nombre.</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Telefono Of.</th>
+			<th scope="col">Telefono Cel.</th>
+			
+			<th scope="col"><a href="{% url 'crea-P6-DRP' drp.pk  %}"><strong>&nbsp;&nbsp;<am>&#10010</am></strong></a></th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+			{% if lista_contactos %}
+
+		    	{%for con in lista_contactos.all  %}
+		    	<tr>
+				<th scope="row"><bb>{{con.nombre}}<bb></th>
+				<th scope="row"><bb>{{con.correo}}<bb></th>
+				<th scope="row"><bb>{{con.tel_lab}}<bb></th>
+				<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+				<th scope="row">
+							{% if not con.cont_int %}
+							      <a href="{% url 'modifica-P6-DRP' con.pk  %}"><sa>&#128393</sa></a>
+							&nbsp;<a href="{% url 'borra-P6-DRP' con.pk  %}"><rr>&#128465</rr></a>
+							{%endif%}
+				</th>
+
+				</tr>
+       		        {% if not forloop.last %}
+        	        {%endif%}
+      		    {%endfor%}
+		   
+			{%else%}
+				  <p> No hay Datos de Contacto  definidos</p>
+		  	{%endif%}
+
+		   	<tbody>
+			
+		</table>
+		<br/>
+		<br/>
+		<a href="{{ drp.get_absolute_url }}"><span style='font-size:30px;'>&#128281</span></a>
+	</ul>
+
+
+
+{%block pie%}
+	<br/>
+	<ul class="encabezado_SB">
+	
+	<strong><am>&#10010</am>&nbsp;:<tm>Crea  Contacto</tm></strong>&emsp;
+	<strong><am>&#128393</am>&nbsp;:<tm>Modifica Contacto</tm></strong>&emsp;&emsp; 
+	<strong><rr>&#128465</rr> &nbsp;:<tm>Borra Contacto</tm></strong> 
+	
+	</ul>
+{% endblock %}
+
+
+{% endblock %}

@@ -1,0 +1,245 @@
+<! Programa HTML>
+<! Muestra Detalle del Procedimiento de Contingencia (PC)>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+	{% block encabezado_auth %}
+	<ul class="encabezado_B">
+    	<strong> *** PROCEDIMIENTO DE RECUPERACION DE CONTINUIDAD (PC) *** </strong>
+	</ul>  
+	{% endblock %}
+
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+{% block Proceso %}
+	<h5><strong>1. Identificacion del Proceso Matriz</strong></h5>
+	<ul class="scr4">
+	<p>&emsp;<strong>Codigo..........:</strong>&emsp;{{proceso.proceso}}&emsp;<strong>Nombre Proceso...:</strong>{{proceso.path}}</p>
+	
+	<p>&emsp;<strong>Descripcion.....:</strong>{{proceso.objetivo}}</p>
+	<br/>
+
+	</ul>
+	{% endblock %}
+
+        
+	{% block A1 %}
+	<h5><strong>2. Identificacion del Procedimiento de Recuperacion (PC)</strong></h5>
+	<ul class="scr4">
+	<p><strong>2.0. Codigo del Procedimiento...: &emsp;</strong> {{proced.codigo}}</p>	
+	<p><strong>2.1. Nombre del Procedimiento...: &emsp;</strong> {{proced.nombre}}</p>
+	<p><strong>2.2. Tipo ........................................: &emsp;</strong> {{proced.tipo}}</p>
+	<p><strong>2.3. Fecha de creacion.................: &emsp;</strong> {{proced.fecha_c}}</p>
+	<p><strong>3.4. Version....................................: &emsp;</strong> {{proced.version}}</p>
+	<p><strong>3.5. Fecha de ultima modificacion..: </strong> {{proced.fecha_ult_mod}}</p>
+	<p><strong>3.6. Estado.....................................: &emsp;</strong> {{proced.status}}</p>
+
+
+	</ul>
+	{% endblock %}
+
+	{% block A2 %}
+	<h5><strong>3. Estrategia del Procedimiento</strong></h5>
+	<ul class="scr4">
+	<p><strong>3.1. Escenario(s) a cubrir................: &emsp;</strong> {{proced.escenarios}}</p>	
+	<p><strong>3.2. Estrategia del Procedimiento...: &emsp;</strong> {{proced.estrategia}}</p>	
+	</ul>
+	{% endblock %}
+
+	{% block A3 %}
+	<h5><strong>4. Especificacion de Roles</strong></h5>
+	<ul class="scr4">
+
+	<p><strong>4.1.1.  Responsable del Proceso ................: &emsp;</strong> {{proced.resp_proceso}}</p>
+	<p><strong>4.1.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_resp}}</p>
+	<br/>
+	<p><strong>4.2.1.  Gestor Ejecutor ........................: &emsp;</strong> {{proced.gestor_ejecutor}}</p>
+	<p><strong>4.2.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_ejecutor}}</p>
+	<br/>
+	<p><strong>4.3.1.  Enlace Comite de Crisis ................: &emsp;</strong> {{proced.enlace_c_crisis}}</p>
+	<p><strong>4.3.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_enlace}}</p>	
+	<br/>
+	<p><strong>4.4.1.  Gestor Consultor .......................: &emsp;</strong> {{proced.gestor_consultor}}</p>
+
+	</ul>
+	{% endblock %}
+
+	
+	{% block B %}
+	<h5><strong>5. Servicios Requeridos</strong></h5>
+	<ul class="scr3">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Objetivo</th>
+			<th scope="col">Contacto</th>
+			<th scope="col">Respaldo</th>
+						
+		   </tr>
+		   </thead>
+
+		   <body>
+		   {% if proced.servicios_pc %}
+		    {%for ser in proced.servicios_pc.all  %}
+		    <tr>
+			<th scope="row"><bb>{{ser.nombre}}<bb></th>
+			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto}}<bb></th>
+			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     *** Sin servicios definidos ***
+		   {%endif%}
+		   <tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+	
+
+	{% block C %}
+	<h5><strong>6. Indice de Contactos</strong></h5>
+	<ul class="scr3">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Telefono laboral</th>
+			<th scope="col">Celular</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if proced.contactos_pc %}
+		    {%for con in proced.contactos_pc.all  %}
+		    <tr>
+			<th scope="row"><bb>{{con.nombre}}<bb></th>
+			<th scope="row"><bb>{{con.correo}}<bb></th>
+			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
+			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     *** Sin Contactos definidos ***.
+		   {%endif%}
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+	
+
+	{% block D %}
+	<h5><strong>7. Procedimiento de Contingencia</strong></h5>
+	<ul class="scr3">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Paso</th>
+			<th scope="col">descripcion</th>
+			<th scope="col">responsable</th>
+			<th scope="col">tiempo esperado (min)</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if proced.pasos %}
+		    {%for pas in proced.pasos.all  %}
+		    <tr>
+			<th scope="row"><bb>{{pas.nro_paso}}<bb></th>
+			<th scope="row"><bb>{{pas.descripcion}}<bb></th>
+			<th scope="row"><bb>{{pas.ejecutor}}<bb></th>
+			<th scope="row"><bb>{{pas.tiempo_esp}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+
+		   {%else%}
+		     *** Sin Procedimiento definido ***.
+		   {%endif%}
+
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+ 
+	{% block E %}
+	<h5><strong>8. Log de autorizaciones</strong></h5>
+	<ul class="scr3">
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">Fecha</th>
+			<th scope="col">Gestor Aprobador</th>
+			<th scope="col">Estado</th>
+			<th scope="col">Fase/Etapa</th>
+			<th scope="col">Dato</th>
+			<th scope="col">Observacion</th>
+			
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if proced.log_auth %}
+		    {%for log in proced.log_auth.all  %}
+		    <tr>
+			<th scope="row"><bb>{{log.fecha}}<bb></th>
+			<th scope="row"><bb>{{log.gestor_aprobador}}<bb></th>
+			{% if log.Aprobado %}
+				<th scope="row"><bb>Aprobado<bb></th>
+			{%else%}
+				<th scope="row"><bb>Observado<bb></th>
+			{%endif%}
+			<th scope="row"><bb>{{log.p_status}}<bb></th>
+			<th scope="row"><bb>{{log.item}}<bb></th>
+			<th scope="row"><bb>{{log.observacion}}<bb></th>
+			
+			
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+
+		   {%else%}
+		     *** Sin Procedimiento definido ***.
+		   {%endif%}
+
+		   </tbody>
+		</table>
+	
+	</ul>
+
+	{% endblock %}
+
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+{% endblock %}
+

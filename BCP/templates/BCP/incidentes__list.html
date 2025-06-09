@@ -1,0 +1,70 @@
+<!Programa HTML>
+<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+
+{%extends "base_generic.html"%}
+
+
+{% block content %}
+
+	{% block encabezado2 %}
+	<ul class="encabezado_B">
+    		 <strong>INCIDENTES</strong>
+	</ul>
+	{% endblock %}
+	
+	{%block lista%}
+	<ul class="scr">  
+                         
+		{% if incidentes_list %}
+
+			{% for inc in incidentes_list %}
+			
+				<p> 
+				<!**********************>
+				<!* Despliega Opciones *>
+				<!**********************>
+			
+
+				<! Incluir condicion para que solo los integrantes del Comite de Crisis puedan operar>
+
+				<a href="{% url 'index' proceso.pk %}"><rr><strong>&#8476</strong></rr></a>
+
+                        
+			   	<!Opcion Modifica>
+			
+			   	<!Opcion Muestra>
+			   	<a href="{{ proceso.get_absolute_url }}"><bb>&#128065</bb></a>
+
+        		   	<!Opcion Borra>
+			   	&#128465
+                        
+
+				<!*****************************************>
+				<!* Despliega codigo y nombre del Proceso *>
+				<!*****************************************>
+			 	 <aa>  {{inc.codigo}}--{{ inc.desripcion }}</aa>
+			
+				</p>
+      		 	
+			{% endfor %}
+
+		{% else %}
+      			<p>No hay Incidentes Reportados</p>
+    		{% endif %}
+		
+	</ul>
+	{%endblock%}
+
+
+	{%block pie%}
+	<ul class="encabezado_B">
+    		<strong>&#10010</strong> :Crear Proceso -<strong><rr>&#8476<rr></strong> :Asignar RACI - <strong><rr>&#128270</rr></strong> :Revisar - <strong>&#128065</strong> :Consultar - <strong>&#128465</strong> :Borra
+		-<strong><rr>&#128477<rr></strong> :Aprobar-<strong>&#10004</strong> :Aprobado
+	</ul>
+	{% endblock %}
+
+{%endblock%}
+

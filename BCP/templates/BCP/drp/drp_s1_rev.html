@@ -1,0 +1,99 @@
+<!Programa HTML>
+<! Despliega el formulario para la Revision de la Asignacion>
+<! de Objetivo (introduccion) del DRP>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_escenario %}
+	<ul class="encabezado_B">
+        <aa><strong>FORMULARIO DE REVISION  OBJETIVO DEL DRP 
+	</ul>
+	<ul class='encabezado_SB'>
+		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	</ul>
+	{% endblock %}
+
+
+<!==========================>
+<!Despliega Observaciones>
+<!==========================>
+
+<p><h5><strong>2.&emsp;OBSERVACIONES</strong></h5>
+<!================================================>
+	<ul class="scr4">
+
+		{%block A%}
+		<h5><strong>Observaciones realizadas</strong></p>
+		{%if drp.log_auth_drp.all %}
+		<p>El siguiente cuadro muestra las observaciones realizadas por el Gestor Autorizador para ser revisadas e implementadas</p></h5>
+		<br/>
+		
+		<table class="lta">
+
+    		<thead>
+      		<tr>
+			<th scope="col">Fecha</th>
+			<th scope="col">Aprobador</th>
+			<th scope="col">Estado</th>
+			<th scope="col">Item</th>
+			<th scope="col">Observacion</th>
+			
+      		</tr> 
+    		</thead>
+
+    		<body>
+    
+       		{%for log_auth in drp.log_auth_drp.all %}
+			<tr>
+      	  		<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
+			<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
+			<th scope="row">
+				{% if log_auth.Aprobado %}
+					<bb>Aprobado</bb>
+				{%else%}
+					<bb>Observado</bb>
+				{%endif%}
+			</th>
+			<th scope="row"><bb>{{log_auth.item}}</bb></th>
+	  		<th scope="row"><bb>{{log_auth.observacion}}</bb></th>
+
+		</tr>
+        	{% if not forloop.last %}
+        	{%endif%}
+      		{%endfor%}
+    		<tbody>		
+		</table>
+		{%else%}
+		   <p>Sin Observaciones</p></p></h5>
+		{%endif%}
+		{% endblock %}
+	</ul>	
+
+<!===================================>
+<!  Asignacion de Responsables       >
+<!===================================>
+
+	{% block asigna_eval %}
+	
+	<h5><strong>3.&emsp;REVISION OBJETIVO</strong></h5>
+	<!==================================================>
+
+	<ul class="scr4">
+		<form action="" method="post">
+    	{% csrf_token %}
+		
+		<p><strong>Objetivo</strong></p>
+		{{form.resp_drp}}&emsp; Respaldo:&emsp;{{form.objetivo}}</p>
+		<br/>
+		<input type="submit" value="Registrar" />
+		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+		</form>
+	</ul>
+	
+	{% endblock %}
+
+{% endblock %}

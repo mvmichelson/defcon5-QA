@@ -1,0 +1,97 @@
+<!Programa HTML>
+<!Despliega el formulario para la Evaluacion BIA>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_escenario %}
+	<ul class="encabezado_C">
+        <aa><strong> >> POLITICA DE EVALUACION BIA {{proceso.path}}</strong></aa>
+	</ul>
+	{% endblock %}
+
+
+<!==========================>
+<!Informcion para Evaluacion>
+<!==========================>
+
+	
+	{%block lista_eval%}
+	<h4><strong>INFORMACION PARA EVALUACION</strong></h4>En esta seccion encontrara informacion util para realizar la evaluacion:
+	<br/>
+
+	<ul class="scr2">
+		
+		
+		<h6><strong>Politica de Evaluacion de Impactos</strong></h6>
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">TIPO</th>
+			<th scope="col">DESCRIPCION</th>
+			<th scope="col">NIVEL</th>
+			<th scope="col">DESCRIPCION</th>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for imp in nivel_Impactos.all  %}
+			
+		   <tr>
+			{% if imp.nombre == 'Alto' %}
+				<th scope="row"><bb>{{imp.tipo.nombre}}<bb></th>
+				<th scope="row"><bb>{{imp.tipo.descripcion}}<bb></th>
+			{%else%}
+				<th scope="row"><bb><bb></th>
+				<th scope="row"><bb><bb></th>
+			{%endif%}
+
+			<th scope="row"><bb>{{imp.nombre}}<bb></th>
+			<th scope="row"><bb>{{imp.descripcion}}<bb></th>
+		   </tr>
+
+       		   	{% if not forloop.last %}
+        	   	{%endif%}
+      		   {%endfor%}
+
+		   </tbody>
+		</table>
+
+		<br/>
+		<h6><strong>Indicadores BCP</strong></h6>
+		<table class="lta">
+		   <thead>
+		   <tr>
+			<th scope="col">TIPO</th>
+			<th scope="col">DESCRIPCION</th>
+			<th scope="col">NIVEL</th>
+			<th scope="col">DEFINICION</th>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for ind in indicadores.all  %}
+			
+		   <tr>
+			{% if ind.nivel == 'ALTO' %}
+				<th scope="row"><bb>{{ind.tipo.nombre}}<bb></th>
+				<th scope="row"><bb>{{ind.tipo.descripcion}}<bb></th>
+			{%else%}
+				<th scope="row"><bb><bb></th>
+				<th scope="row"><bb><bb></th>
+			{%endif%}
+			<th scope="row"><bb>{{ind.nivel}}<bb></th>
+			<th scope="row"><bb>{{ind.definicion}}<bb></th>
+		   </tr>
+       		   {% if not forloop.last %}
+        	   {%endif%}
+      		   {%endfor%}
+
+		   </tbody>
+		</table>
+
+		<br/>
+		
+{% endblock %}

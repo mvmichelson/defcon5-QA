@@ -1,0 +1,199 @@
+<!Programa HTML>
+<!Despliega el formulario para la Evaluacion BIA>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% load static}
+
+{% block content %}
+
+	<ul class="encabezado_B">
+        <aa><strong>FORMULARIO DE ANALISIS/EVALUACION DE IMPACTO AL NEGOCIO (BIA)</strong></aa>
+	</ul>
+	<ul class='encabezado_SB'>
+		<p><aa><strong>{{proceso.path}} </strong></aa>
+	</ul>			
+
+
+<!==========================>
+<!Informcion para Evaluacion>
+<!==========================>
+
+	<ul class="scr4">
+		
+		<h6><strong>1.1.&emsp;Identificacion del Proceso</strong></h6>
+	  	<p><strong>Nombre........:</strong> {{ proceso.nombre }}</p>
+	  	<p><strong>Objetivo......:</strong> {{ proceso.objetivo }}</p>
+		<p><strong>Puntaje ....:</strong> {{total_pro}}</p>
+		<br/>
+	</ul>
+
+
+<!===================================>
+<!Listas de Impactos e Asignacion de niveles de criticidad>
+<!===================================>
+
+	
+<h5><strong>EVALUACION/ANALISIS DE IMPACTO (BIA)</strong></h5>
+			
+<ul class="scr4">
+       		
+		<p><h6><strong>1. Evaluacion de Impacto por Riesgo :</strong></p>
+			    <p>Para cada uno de los Riesgos Criticos definidos para el Negocio, asigne 
+					(<img src="/static/img/niveles.jpg" width="20" height="20"></img> ) el 
+					nivel de impacto adecuado para este Proceso.<h6></p>
+
+		<!-----------  Tabla de Riesgo --------------->
+		<table class="lta">
+			<thead style="background: yellow; color:black"  >
+			<tr>
+				<strong>
+				<th scope="col" style="font-size: 10%;"></th>
+				<th scope="col" style="width: 10%; text-align: center;">NIVEL ASIGNADO</th>
+
+				<th scope="col">RIESGO</th>
+				<th scope="col">DESCRIPCION</th>
+				<th scope="col" style="width: 10%; text-align: center;">PONDERACION</th>
+				</strong>
+			</tr>
+			</thead>
+		
+			<body>
+			 {% if impactos %} <!--- impactos asociados al Proceso -->
+		
+				 {%for imp in impactos.all %} 
+				 <tr>
+					<th scope="row" style="width: 10%; text-align: center;">
+						<a href="{% url 'Asig-Nivel-Imp' imp.pk  'V' %}" class="link" data-message="Asigna un nivel de Impacto"><img src="/static/img/niveles.jpg" width="25" height="20"></img></a>
+					</th>
+					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{imp.nivel}}" ><bb>{{imp.nivel.nombre}}<bb></th>
+
+					<th scope="row"><bb>{{imp.impacto.nombre}}<bb></th>
+					<th scope="row"><bb>{{imp.impacto.descripcion}}<bb></th>
+					<th scope="row" style="width: 10%; text-align: center;"><bb>{{imp.impacto.ponderacion}}<bb>%</th>
+
+				 </tr>
+						{% if not forloop.last %}
+					 {%endif%}
+				   {%endfor%}
+			
+			 {%else%}
+				   <p> No hay Riesgos/Impactos definidos</p>
+			   {%endif%}
+		
+				<tbody>
+			 
+		 </table>
+		 <br/>
+		 Total Puntaje Impacto .....: {{total_imp}}
+		<!-----------  Fin Tabla de Riesgo --------------->
+
+		 
+
+		 <br/>
+		 <br/>
+		 <br/>
+
+		<h6><strong>2. Indicadores de Recuperacion:</strong>
+				<p>En base a su conocimiento experto, favor seleccione los indicadores (caracteristicas)
+				    necesarios para el diseño de un Procedimiento de recuperacion de la continuidad de la operacion.<h6></p>
+		<table class="lta">
+			<thead  style="background: blue; color:white">
+			<tr>
+				<th scope="col" style="width: 10%;"></th>
+				<th scope="col" style="width: 10%; text-align: center;">NIVEL ASIGNADO</th>
+
+				<th scope="col">INDICADOR</th>
+				<th scope="col">DESCRIPCION</th>
+
+			</tr>
+			</thead>
+		
+			<body>
+			 {% if indicadores %}
+		
+				 {%for ind in indicadores.all %}
+				 <tr>
+					<th scope="row" style="width: 10%; text-align: center;">
+						<a href="{% url 'Asig-Nivel-Ind'  ind.pk  'V' %}" class="link" data-message="Asigna Niveles"><img src="/static/img/niveles.jpg" width="25" height="20"></img></a>
+					</th>
+					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{ind.nivel}}"><bb>{{ind.nivel.nivel}}<bb></th>
+
+					<th scope="row" style="text-align: center; background: blue; color: white;">{{ind.indicador.nombre}}</th>
+
+					<th scope="row" style="padding: 5px;"><bb>{{ind.indicador.descripcion}}<bb></th>
+
+				 </tr>
+						{% if not forloop.last %}
+					 {%endif%}
+				   {%endfor%}
+			
+			 {%else%}
+				   <p> No hay Riesgos/Impactos definidos</p>
+			   {%endif%}
+		
+				<tbody>
+			 
+		 </table>
+		<br/>
+		Total Puntaje Indicadores de recuperacion .....: {{total_ind}}
+
+	<br/>	
+</ul>
+
+	<br/>	
+	<br/>		        	        
+
+
+<!-- Globo de cómic -->
+<div id="comicBalloon"></div>
+
+<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+<div id="confirmation-dialog" class="hidden">
+    <div class="dialog-content">
+        <p id="confirmation-message"></p>
+        <button id="confirm-yes">Sí</button>
+        <button id="confirm-no">No</button>
+        </div>
+    </div>
+
+	<p> <!-- Botones de Secuencia --></strong>
+		<a href="{% url 'Lista-Evaluaciones' %}" ><bb class="button">... Anterior</bb></a>&nbsp;&nbsp;&nbsp;
+		<a href="{% url 'Envia_Ev_RACI' proceso.pk 'V'  %}"  
+		class="confirm-link link" data-message="Envia a la definicion del esquema de Autorizaciones RACI" con-message="Confirma Envio a Autorizacion RACI ?"><rr class="button">Asigna RACI ...</rr></a>
+	</p>
+	<br/>
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+<!--- Despliega el nombre del programa -->
+<p style="font-size: 8px; color:green">asigna_eval</p>
+
+{% endblock %}

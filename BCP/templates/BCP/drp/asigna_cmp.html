@@ -1,0 +1,40 @@
+<!Programa HTML>
+<!Despliega el formulario para la asignacion del Alcance al DRP>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE COMPONENTES DE CONFIGURACION  AL DRP</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{drp.nombre}}</aa></p>
+	</ul>
+	{% endblock %}
+	
+
+	{% block asigna_proc %}
+	<h5><strong>ASIGNACION DE COMPONENTE DE HW/SW </strong></h5>
+	<!===================================================>
+	<ul class="scr3">
+	<P>	Seleccione del cuadro de la izquierda, aquellos Componentes registrados en la Base de Datos que seran considerados 
+		dentro del alcance de éste DRP (Plan Recuperacion del Procesamiento de Datos). Si desea registrar un nuevo Componente en la Base de Datos
+		haga click en (<a href="{% url 'Crea-CMP' %}"><strong><sa>&#10010</sa></strong></a>) </p>
+	
+    	<form action="" method="post">
+        	{% csrf_token %}
+       		{{form.media}}
+        	<p>{{form.componentes }}</p>
+		<br/>
+		
+       		<br/>	
+        	<p><input type="submit" value="Registrar y Salir" /></p>
+			<p><a href="{% url 'Crea-CMP' %}"><span style='font-size:20px;'><sa>&#10010</sa></span></a></p>
+    	</form>
+	</ul>
+	{% endblock %}
+
+{% endblock %}

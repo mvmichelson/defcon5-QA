@@ -1,0 +1,54 @@
+<!Programa HTML                                           >
+<!Crea un Nivel de Impacto para un Riesgo X      >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+    <ul class="encabezado_B">
+        <yy><strong>ANALISIS DE IMPACTO DE RIESGO (RIA) - CREACION DE NIVEL DE IMPACTO</strong></yy>
+    </ul>
+    <ul class="encabezado_B">
+        <yy><strong>Definicion Riesgo / Impacto</strong></yy>
+    </ul>
+	{% endblock %}
+
+<!--- Riesgo -->
+
+<table class="lta">
+    <thead class="encabezado_A">
+    <tr>
+        <th scope="col">Riesgo</th>
+        <th scope="col">Descripcion</th>
+        <th scope="col" style="width: 10%; text-align: center;">Ponderacion</th>
+    </tr>
+    </thead>
+
+    <body>
+         <tr>
+            <th scope="row"><bb>{{riesgo.nombre}}<bb></th>
+            <th scope="row"><bb>{{riesgo.descripcion}}<bb></th>
+            <th scope="row" style="width: 10%; text-align: center;"><bb>{{riesgo.ponderacion}}<bb>%</th>
+         
+         </tr>
+    </body>
+     
+ </table>
+
+<br/>
+<br/>
+<!--- Formulario ----->
+
+    <form action="" method="post">
+        {% csrf_token %}
+        <table>
+        <p>Nivel de Impacto : {{ form.nombre }}</p>
+        <p>Descripcion : {{form.descripcion}}</p>
+        <p>Puntaje/Valor ..: {{form.valor}} %</p>
+        </table>
+        <input type="submit" value="Graba" />
+    </form>
+
+{% endblock %}

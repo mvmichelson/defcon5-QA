@@ -1,0 +1,80 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <aa><strong>7. PROCEDIMIENTO DE RECUPERACION DE CONTINUIDAD</strong></aa>
+	</ul>
+	{% endblock %}
+
+	{% block D %}
+	<h5><strong>7. Procedimiento de Contingencia (PC)</strong></h5>
+	<p><bn>Registre los pasos del Procedimiento de Contingencia (PC) de la manera mas descriptiva posible.
+		Haga referencia a los servicios internos y/o externos requeridos  para su adecuada ejecucion 
+		(ver seccion 5 de este documento) asi como a comandos de sistemas y otra informacion relevante.
+	</bn></p>
+	<p><bn>Recuerde que el tiempo de puesta en operaciones del PC (Activacion) no puede exceder el 
+		<strong>Tiempo Objetivo de Recuperacion (RTO)</strong> definido para el Proceso de Negocio asociado: -<strong>{{proceso.nombre}}</strong>-, que en este caso corresponde a {{rto}}.  
+	</bn></p>
+	<br/>
+	<br/>
+		<table class="lta">
+		   <thead style="background: rgb(184, 183, 183); color:black">
+			<strong>
+		   <tr style="font-size: 10px;">
+			<th scope="col" style="width: 5px;">NRO.</th>
+			<th scope="col" style="width: 300px;">DESCRIPCION</th>
+			<th scope="col" style="width: 250px;">EJECUTOR RESP.</th>
+			<th scope="col" style="width: 10px; font-size: 9px;" 
+			class="link" data-message="Tiempo Esperado Ejec. ...">Tiempo Esperado Ejecucion.(min)</th>
+			</strong>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   <!---- Despliega lista de pasos -->
+		   {% if pasos %}
+		    {%for pas in pasos.all  %}
+		    <tr >
+			<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{pas.nro_paso}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{pas.descripcion}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{pas.ejecutor}}<bb></th>
+			<th scope="row" style="text-align: center;"><bb style="font-size: 10px;">{{pas.tiempo_esp}}<bb></th>
+		
+		    </tr>
+       		    {% if not forloop.last %}
+        	    {%endif%}
+      		    {%endfor%}
+		   {%else%}
+		     Sin servicios definidos.
+		   {%endif%}
+		   	<!---- Fin Despliega lista de pasos -->
+			<!---- Despliega campos a ingresar dentro de la tabla -->
+			<form action="" method="post">
+			{% csrf_token %}
+			<th scope="row" style="text-align: center;  background: rgb(184, 183, 183);" ><bb style="font-size: 10px;">{{form.nro_paso}}<bb></th>
+			<th scope="row" style="background: rgb(184, 183, 183);"><bb style="font-size: 10px;">{{form.descripcion}}<bb></th>
+			<th scope="row" style="background: rgb(184, 183, 183);"><bb style="font-size: 10px;">{{form.ejecutor}}<bb></th>
+			<th scope="row" style="text-align: center; background: rgb(184, 183, 183);"><bb style="font-size: 10px;">{{form.tiempo_esp}}<bb></th>
+			</tbody>
+			</table>
+			<bn>Total Tiempo Esperado de Ejecucion ......: <strong>{{acum}}</strong>.[Min.] - <strong>{{acum_h|floatformat:2}}</strong>.[Horas]</bn>
+
+			<br/><br/><br/>
+
+			<a href="{%  url 'lista-c' proc.pk %}"><bn class="button">Volver... </bn></a>	
+			<input type="submit" class="button" value="Graba" />
+	
+			</form>
+			<!---- Fin despliega campos a ingresar dentro de la tabla -->
+	
+
+	{% endblock %}
+
+
+{% endblock %}

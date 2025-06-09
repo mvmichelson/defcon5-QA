@@ -1,0 +1,157 @@
+<!Programa HTML                                           >
+<!Despliega Diagrama Metodologico  Analisis RIA >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+<ul class="encabezado_B">
+    <yy><strong>PLAN DE CONTUNIDAD DE NEGOCIOS (BCP/DRP) - ANALISIS DE IMPACTO DE RIESGO (RIA)</strong></yy>
+</ul>
+
+<!-- Bloque 0 -->
+<div class="flex-container">
+
+ <!--- Sector 1 / Bloque 0 -->
+ <div class="flex-text" style="width: 50%;">
+ <ul class="encabezado_B">
+    <yy><strong>PROPUESTA / ACTUALIZACION </strong></yy>
+ </ul>
+ 
+
+    <!-- Bloque 2 ---------------------------------------------------------------------------->
+    <ul class="encabezado_B" style="border: 1.5px dashed black; text-align: left;">
+    <h5><strong>Analisis de Impactos de Riesgos</strong></h5>
+
+        <br/>
+        <br/>
+        
+        <div class="flex-container">
+        
+            <div class="flex-text"><!-- Sector 1 (  )-->
+        
+            </div> <!-- Fin Sector 1 -->
+        
+            <div class="flex-text"><!-- Sector 2 ( ) -->
+        
+            </div><!-- Fin Sector 2 ( )-->
+        
+            <div class="flex-text" style="text-align: center;"><!-- Sector 3 (Caja BIA)-->
+                <div class="rectangle-3d" style="background: rgb(255, 213, 0);">
+                    <div class="text">
+                        <a href="{% url 'Lista-Impactos' %}" style="color:blue">Determinacion de RIESGOS</a>
+                    </div>
+                </div>
+            </div> <!-- Fin Sector 3 -->
+        
+            <div class="flex-text" style="text-align: center;"><!-- Sector 4 (Flecha) -->
+                <br/>
+                <img src="/static/img/flecha_roja.webp" width="70" height="60"></img>
+            </div><!-- Fin Sector 4 (flecha)-->
+        
+            <div class="flex-text" style="text-align: center;"><!-- Sector 5 (Servicios Ctcos)-->
+                <div class="rectangle-3d" style="background: rgb(255, 213, 0);">
+                    <div class="text">
+                        <a href="{% url 'En-Construccion' %}" style="color:blue">Asignacion de Niveles de IMPACTOS</a>
+                    </div>
+                </div>
+            </div> <!-- Fin Sector 5 -->
+        
+        
+            <div class="flex-text"><!-- Sector 6 ( ) -->
+        
+            </div><!-- Fin Sector 6 ( )-->
+        
+            <div class="flex-text"><!-- Sector 7 ( )-->
+        
+            </div> <!-- Fin Sector 7 -->
+        
+        
+        </div>
+        <br/>
+        </ul>
+        <!-- Fin Bloque 2 ----------------------------------------------------------------->
+        <!--------------------------------------------------------------------------------------->
+        
+        <!-- Bloque 1 ---------------------------------------------------------------------------->
+    <ul class="encabezado_B" style="border: 1.5px dashed black; text-align: left;">
+    <h5><strong>Analisis de Escenarios de Riesgo</strong></h5>
+
+        <br/>
+        <br/>
+        
+        <div class="flex-container">
+        
+            <div class="flex-text"><!-- Sector 1 (  )-->
+        
+            </div> <!-- Fin Sector 1 -->
+        
+            <div class="flex-text"><!-- Sector 2 ( ) -->
+        
+            </div><!-- Fin Sector 2 ( )-->
+        
+            <div class="flex-text" style="text-align: center;"><!-- Sector 3 (Caja BIA)-->
+                <div class="rectangle-3d" style="background: rgb(255, 213, 0);">
+                    <div class="text">
+                        <a href="{% url 'Lista-Evaluaciones' %}" style="color:blue">Determinacion de ESCENARIOS</a>
+                    </div>
+                </div>
+                <br/>
+                <img src="/static/img/flecha-roja-abajo.jpg" width="70" height="60"></img>
+                <br/>
+                <br/>
+
+                <div class="rectangle-3d" style="background: rgb(255, 213, 0);">
+                    <div class="text">
+                        <a href="{% url 'Lista-Evaluaciones' %}" style="color:blue">Determinacion de AMENAZAS</a>
+                    </div>
+                </div>
+        
+            </div> <!-- Fin Sector 3 -->
+        
+            <div class="flex-text" style="text-align: center;"><!-- Sector 4 (Flecha) -->
+                <br/>
+                <img src="/static/img/flecha_roja.webp" width="70" height="60"></img>
+            </div><!-- Fin Sector 4 (flecha)-->
+        
+            <div class="flex-text" style="text-align: center;"><!-- Sector 5 (Servicios Ctcos)-->
+                <div class="rectangle-3d" style="background: rgb(255, 213, 0);">
+                    <div class="text">
+                        <a href="{% url 'Lista-Recursos' %}" style="color:blue">Asignacion de ESTRATEGIAS DE RECUPERACION</a>
+                    </div>
+                </div>
+            </div> <!-- Fin Sector 5 -->
+        
+        
+            <div class="flex-text"><!-- Sector 6 ( ) -->
+        
+            </div><!-- Fin Sector 6 ( )-->
+        
+            <div class="flex-text"><!-- Sector 7 ( )-->
+        
+            </div> <!-- Fin Sector 7 -->
+        
+        
+        </div>
+        <br/>
+        </ul>
+        <!-- Fin Bloque 1 ----------------------------------------------------------------->
+        <!--------------------------------------------------------------------------------------->
+
+  </div><!-- Fin Sector 1 / Bloque 0 -->
+
+  <!-- Sector 2 / Bloque 0 -->
+  <div class="flex-text" style="width: 50%;">
+    <ul class="encabezado_B" style="background: blue; color: white;">
+        <yy><strong>COMITE DE GESTION DE CONTINGENCIAS (CGC)</strong></yy>
+    </ul>
+
+
+  </div> <!-- Fin Sector 2 / Bloque 0-->
+
+
+</div><!-- Fin Bloque 0-->
+<!-- nombre del programa -->
+ <aa style="font-size: 10px;">diagrama_ria</aa>   
+{% endblock %}

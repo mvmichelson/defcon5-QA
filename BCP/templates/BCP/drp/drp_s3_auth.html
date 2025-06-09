@@ -1,0 +1,163 @@
+<! Programa HTML>
+<! Autorizacion de la asignacion de Alcance al DRP>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+{% block encabezado_auth %}
+<ul class="encabezado_B">
+   <p><aa><strong>FORMULARIO DE AUTORIZACION  DE ALCANCE DEL DRP</aa></strong></p>
+</ul>
+<ul class="encabezado_SB">
+   <p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+</ul>
+{% endblock %}
+
+		
+	{%block lista_proc%}
+	<h5><strong>2.&emsp;REVISION/OBSERVACION DE PROCESOS CONSIDERADOS EN EL ALCANCE</strong></h5>
+
+	<ul class="scr2">
+	<p>Revisar los Procesos asignados y no asignados. Hacer observacion ( 📝 ) en terminos de eliminar o incluir en la seleccion.</p>
+	<br/>
+	<h6><strong>2.1.&emsp;Procesos con Procedimientos de Contingencia (PC) automaticos,  seleccionados para este DRP.</strong><h6>
+		
+		<table class="lta">
+		   <thead class='encabezado_A'>
+		   <tr>
+			<th scope="col">CODIGO</th>
+			<th scope="col">PROCESO</th>
+			<th scope="col">OBS.</th>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for prc in procesos_asig.all  %}
+		   <tr>
+			<th scope="row"><bb>{{prc.codigo}}<bb></th>
+			<th scope="row"><bb>{{prc.path}}<bb></th>
+			<th scope="row"><a href = "{% url 'obs-drp' 'Proceso Seleccionado'  drp.pk  prc.codigo  %}"><bb><strong>&#128221</bb></strong></a><bb>
+			</th>
+		   </tr>
+       		   {% if not forloop.last %}
+        	   {%endif%}
+      		   {%endfor%}
+		   </tbody>
+		</table>
+	   	
+	
+	<br/>
+
+	<h6><strong>2.2.&emsp;Procesos con PC automaticos disponibles NO seleccionados.</strong><h6>
+		
+		<table class="lta">
+		   <thead class='encabezado_A'>
+		   <tr>
+			<th scope="col">CODIGO</th>
+			<th scope="col">PROCESO</th>
+			<th scope="col">OBS.</th>
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {%for prc_d  in procesos_disp.all  %}
+		   {% if  prc_d not in procesos_asig.all %}
+		     <tr>
+			  <th scope="row"><bb>{{prc_d.codigo}}<bb></th>
+			  <th scope="row"><bb>{{prc_d.path}}<bb></th>
+			  <th scope="row"><a href = "{% url 'obs-drp' 'Proceso NO Seleccionado'  drp.pk  prc_d.codigo %}"><bb><strong>&#128221</bb></strong></a><bb>
+			  </th>
+		     </tr>
+       		     {% if not forloop.last %}
+        	     {%endif%}
+		  {%endif%}
+
+      		  {%endfor%}
+		  </tbody>
+
+		</table>
+	   	{%endblock%}
+	
+	</ul>
+ 
+	{%block Conclusion%}
+		<p><h5><strong>3.&emsp;CONCLUSION</strong></h5>
+
+		<ul class="scr4">
+
+		{%block A%}
+		<h5><strong>3.1. &emsp;Observaciones realizadas</strong></p>
+		{%if drp.log_auth_drp.all %}
+		<p>Las observaciones seran remitidas al <strong>Gestor Consultor</strong>, quien procedera a implementarlas para volver a ser puestas a su
+		disposicion para su autorizacion u observacion.</p></h5>
+		<br/>
+		
+		<table class="lta">
+
+    		<thead class='encabezado_D'>
+      		<tr>
+			<th scope="col">Fecha</th>
+			<th scope="col">Item</th>
+			<th scope="col">Observacion</th>
+			<th scope="col">Gestor</th>
+			<th scope="col">X</th>
+			
+      		</tr> 
+    		</thead>
+    		<tbody>
+    
+       		{%for log_auth in drp.log_auth_drp.all %}
+		
+		   	<tr>
+      	  	<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
+			<th scope="row"><bb>{{log_auth.item}}</bb></th>
+	  		<th scope="row"><bb>{{log_auth.observacion}}</bb></th>
+			<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
+			{%if request.user.username == log_auth.gestor_aprobador.user_gestor.username %}
+				<th scope="row"> <a href = "{% url 'borra-obs-proceso'  log_auth.pk  %}"> <rr>&#128465</rr></a>
+			{%else%}
+				<th scope="row"> <aa>...</aa></a>
+			{%endif%}
+			</th>
+			</tr>
+
+        	{% if not forloop.last %}
+        	{%endif%}
+
+      		{%endfor%}
+
+    		</tbody>		
+		</table>
+
+		{%else%}
+		   <p>Sin Observaciones</p></p></h5>
+		{%endif%}
+
+		{% endblock %}
+		
+		<br/>
+		<h5><strong>3.2. &emsp;Conclusion</strong></h5>
+		{%block C%}
+		<form action="" method="post">
+        		{% csrf_token %}
+        		
+        		<p><strong>Indique <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si la seleccion de Procesos seleccionados para el 
+				DRP -&nbsp;<strong>{{drp.nombre}} </strong> -&nbsp;	estan correctas y desea autorizar.&emsp;</strong>
+				(En caso de haber observaciones especificas en 3.1  no autorizar)</p>
+			
+			<p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p>
+			<br/>
+			<br/>
+        		<input type="submit" value="Registrar" />
+	    	</form>
+		{%endblock%}
+		</ul>
+	{% endblock %}
+	
+
+{% endblock %}
+

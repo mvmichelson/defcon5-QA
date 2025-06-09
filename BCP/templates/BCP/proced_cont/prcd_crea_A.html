@@ -1,0 +1,61 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Proceso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block encabezado_detalle %}
+	<ul class="encabezado_A">
+        <aa><strong>FORMULARIO DE CREACION DE PROCEDIMIENTO DE RECUPERACION </strong></aa>
+        </ul>
+	<ul class="encabezado_A">
+	  <aa>{{proceso.path}}</aa>
+	</ul>
+	{% endblock %}
+
+
+	{% block Proceso %}
+	<!-- Bloque A -->
+	<div class="flex-container">
+	<!-- Columna izq ------>
+	<div class="flex-item" style=" width: 50%;">
+	<h5><strong>Proceso Asociado</strong></h5>
+	<ul class="scr4" style="background: white;">
+	<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
+	<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
+	<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
+	</ul>
+	</div><!--- Fin columna izq -->
+
+	<!--- Columna der -->
+	<div class="flex-item" style="text-align: center">
+		<bb style="text-align: center">Puntaje:
+			<ul class="scr4"> {{proceso.subproceso.ranking}}</ul> 
+		</bb>
+	</div><!--- Fin Columna der -->
+
+	</div> <!--- Fin Bloque A -->
+	{% endblock %}
+
+    <form action="" method="post">
+        {% csrf_token %}
+        
+	{% block A %}
+	<br/>
+	<h5><strong>Procedimiento de Contingencia</strong></h5>
+	<ul class="scr4">
+	<p><strong> 2.1 Nombre..:</strong>&emsp; {{ form.nombre }}</p>
+	<p><strong> 2.2 Version.:</strong>&emsp; {{ form.version}}</p>
+	<p><strong> 2.3 Tipo..: </strong>&emsp; {{form.tipo}}</p>
+	</ul>
+	{% endblock %}
+
+
+        <input type="submit" class="button" value="Crear Procedimiento" />
+    </form>
+
+	<!---- Despliega el nombre del codigo html -->
+	<aa style="font-size: 8px;">[prcd_crea_A]</aa>
+{% endblock %}

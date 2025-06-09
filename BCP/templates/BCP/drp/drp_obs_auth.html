@@ -1,0 +1,35 @@
+<! Programa HTML>
+<! Observaciones x Item de Autorizacion de DRP>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+	{% block encabezado_auth %}
+	<ul class="encabezado_B">
+        <bb><strong>OBSERVACION AUTORIZACION DE DRP</bb>
+	</ul>
+	{% endblock %}
+ 
+        
+	{% block A1 %}
+	<h5><strong>Dato a Observar:</strong></h5>
+	<ul class="scr4">
+
+	<p><strong></strong> {{item}}....:&emsp;{{valor}}</p>
+	{% endblock %} 
+
+	<form action="" method="post">
+       		{% csrf_token %}
+       		<table>
+       		{{ form }}
+		</table>
+       		<input type="submit" value="Registrar" />
+    	</form>
+	
+
+{% endblock %}
+
