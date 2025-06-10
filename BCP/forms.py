@@ -548,22 +548,34 @@ class CreaProc_P6_Form(forms.Form):
 
 class CreaProc_P7_Form(forms.Form):
     "Pasos del Procedimiento de Contingencia"
+
     nro_paso = forms.IntegerField(max_value=999, required=True, 
                                   widget=forms.NumberInput(attrs={'style': 'width: 60px;'}) )
     descripcion = forms.CharField(max_length=480, widget=forms.Textarea(attrs={'rows':4, 'cols':120}))
     
-    lista_ejecutores=[]
-    gestores=Gestor.objects.all()
-    for ges in gestores:
-        grp=ges.user_gestor.groups
-        for g in grp.all():
-            if g.name == 'Ejecutores':
-                lista_ejecutores.append(ges.user_pk)
-
-    ejecutor = forms.ModelChoiceField(queryset=Gestor.objects.filter(user_pk__in=lista_ejecutores), empty_label=None, help_text='', label='Gestor Responsable ', required=True)
+    ejecutor = forms.ModelChoiceField(queryset=Gestor.objects.all(), empty_label=None, help_text='', required=True)
 
     tiempo_esp = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'style': 'width: 60px;'}))
-             
+
+    # Filtra los gestores R y A para pertenecer al grupo Autorizadores
+    def __init__(self,initial):
+
+        # Seleccion por grupos
+        ejecutores = []
+
+        gestores=Gestor.objects.all()
+        for ges in gestores:
+            grp=ges.user_gestor.groups
+            for g in grp.all():
+                if g.name == 'Ejecutores':
+                    ejecutores.append(ges.user_pk)
+
+
+        super(AsignaRaciForm, self).__init__(initial)
+        self.fields['ejecutor'].queryset = Gestor.objects.filter(user_pk__in = ejecutores)
+
+
+
 
 
 class Revisa_Proced_B_Form(forms.Form):
