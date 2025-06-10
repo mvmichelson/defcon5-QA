@@ -56,14 +56,14 @@ class AsignaRaciForm(forms.Form):
     print('------ Form AsignaRaci ------')
 
     #Selecciona Gestores del Grupo Autorizador
-    gestores = Gestor.objects.all()
-    lista_autorizadores = [] 
+    #gestores = Gestor.objects.all()
+    #lista_autorizadores = [] 
     
-    for ges in gestores:
-        grp=ges.user_gestor.groups
-        for g in grp.all():
-            if g.name == 'Autorizadores':
-                lista_autorizadores.append(ges.user_pk)
+    #for ges in gestores:
+    #    grp=ges.user_gestor.groups
+    #    for g in grp.all():
+    #        if g.name == 'Autorizadores':
+    #            lista_autorizadores.append(ges.user_pk)
     
     
     
