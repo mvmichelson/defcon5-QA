@@ -1,4 +1,4 @@
-#Sistema  defcon5
+#Programa PYTHON
 #Definicion de Links urls
 #Programado por Marco A. Villalobos Michelson
 #=============================================
@@ -253,6 +253,7 @@ urlpatterns += [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # y ahí le especifico a Django el directorio que voy a utilizar para subir
 # ficheros.
+
 
 
 

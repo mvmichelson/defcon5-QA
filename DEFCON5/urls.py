@@ -15,55 +15,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-
-urlpatterns = [
-    path('admin/', admin.site.urls),
-]
-
-# Use include() to add paths from the BCP application
-from django.urls import include
-
-urlpatterns += [
-    path('BCP/', include('BCP.urls')),
-]
-
-#Add URL maps to redirect the base URL to our application
-#from django.views.generic import RedirectView
-#urlpatterns += [
-#    path('', RedirectView.as_view(url='/BCP/', permanent=True)),
-#]
-#==========================================================================
+from django.urls import path, include
 from django.views.generic import RedirectView
-
-urlpatterns = [
-    path('', RedirectView.as_view(url='/BCP/', permanent=False)),
-    path('admin/', admin.site.urls),
-    path('BCP/', include('BCP.urls')),
-]
-
-#==========================================================================
-
-# Use static() to add url mapping to serve static files during development (only)
 from django.conf import settings
 from django.conf.urls.static import static
 
+urlpatterns = [
+    # Redirige la raíz '/' a '/BCP/'
+    path('', RedirectView.as_view(url='/BCP/', permanent=False)),
+
+    # Admin
+    path('admin/', admin.site.urls),
+
+    # App principal
+    path('BCP/', include('BCP.urls')),
+
+    # Autenticación
+    path('accounts/', include('django.contrib.auth.urls')),
+]
+
+# Servir archivos estáticos en desarrollo
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-#Add Django site authentication urls (for login, logout, password management)
-urlpatterns += [
-    path('accounts/', include('django.contrib.auth.urls')),
 
-    path('^accounts/login/$', include('django.contrib.auth.urls'), name='login'),
-       
-    path('^accounts/logout/$', include('django.contrib.auth.urls'), name='logout'),
-    
-    path('^accounts/password_change/$', include('django.contrib.auth.urls'), name='cambio password'),
-   
-    path('^accounts/password_change/done/$', include('django.contrib.auth.urls'), name='cambio pwd hecho'),
-    path('^accounts/password_reset/$', include('django.contrib.auth.urls'), name='password_reset'),
-    path('^accounts/password_reset/done/$', include('django.contrib.auth.urls'), name='password_reset_done'),
-    path('^accounts/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', include('django.contrib.auth.urls'), name='password_reset_confirm'),
-    path('^accounts/reset/done/$', include('django.contrib.auth.urls'), name='password_reset_complete'),
-    
-]
