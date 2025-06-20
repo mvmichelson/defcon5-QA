@@ -204,18 +204,21 @@
 					<a href="{% url 'Detalle-Proceso' proceso.pk %}" class="link " data-message="Detalle del Proceso">
 						<bb>&#128065</bb></a>
 
-					<!Despliega codigo y nombre del Proceso>
-                	<aa> &nbsp;&nbsp;&#10149 {{ proceso.nombre }} </aa>
-					[ 
-					{% if proceso.subproceso.ranking <= tramo_1 %}
-				   		<strong> {{proceso.subproceso.ranking}} </strong>
-					{% elif  proceso.subproceso.ranking > tramo_1  and  proceso.subproceso.ranking <= tramo_2 %}
-				  		<sa><strong> {{proceso.subproceso.ranking}} </strong></sa>
-					{% elif  proceso.subproceso.ranking > tramo_2 %}
-				   		<rr><strong> {{proceso.subproceso.ranking}} </strong></rr>
+						<!Despliega codigo y nombre del Proceso>
+						<aa> &nbsp;&nbsp;&#10149 {{ proceso.nombre }} </aa>
+						[ 
+						{% if proceso.subproceso.ranking <= tramo_1 %}
+							<strong> {{proceso.subproceso.ranking}} </strong>
+						{% elif  proceso.subproceso.ranking > tramo_1  and  proceso.subproceso.ranking <= tramo_2 %}
+							<sa><strong> {{proceso.subproceso.ranking}} </strong></sa>
+						{% elif  proceso.subproceso.ranking > tramo_2 %}
+							<rr><strong> {{proceso.subproceso.ranking}} </strong></rr>
+						{%endif%}
+						]
+					{% if proceso.subproceso.actualiza %}
+						&nbsp;<img class="blink link" src="/static/img/actualizacion.png" width="12" height="12"
+						data-message="En actualizacion">
 					{%endif%}
-					]
- 					
 
 			  {%endif%}
 

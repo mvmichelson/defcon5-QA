@@ -4,7 +4,8 @@ from django.db import models
 
 from django.urls import reverse #Used to generate URLs by reversing the URL patterns
 from django.contrib.auth.models import User, Group
-from datetime import date
+from datetime import date, datetime
+
 
 #====================================
 # ENTIDADES o MODELOS
@@ -19,10 +20,10 @@ class Proceso(models.Model):
 
     
     path= models.CharField(max_length=200, blank=True)
-    proceso_padre = models.CharField(max_length=10, blank=True)
+    proceso_padre = models.CharField(max_length=30, blank=True)
     pk_padre = models.IntegerField(default=0)
     ni= models.CharField(max_length=20, blank=True) 
-    proceso = models.CharField(max_length=10, blank=True)
+    proceso = models.CharField(max_length=30, blank=True)
     nro_hijos = models.IntegerField()
     nombre = models.CharField(max_length=50)
     objetivo = models.TextField(max_length=500, blank=True, help_text='Describa el principal objetivo del Proceso')
@@ -36,7 +37,7 @@ class Proceso(models.Model):
     subproceso = models.OneToOneField('SubProceso', on_delete=models.CASCADE, blank=True, null=True)
     subproceso_v = models.OneToOneField('SubProceso_V', on_delete=models.CASCADE, blank=True, null=True)
 
-    log_auth=models.ManyToManyField('LogAut', blank=True, null=True)
+    log_auth=models.ManyToManyField('LogAut', blank=True)
     
     
     class Meta:
@@ -63,7 +64,7 @@ class SubProceso(models.Model):
     """
 
     pk_padre = models.IntegerField(default=0)
-    codigo = models.CharField(max_length=10, blank=True)
+    codigo = models.CharField(max_length=30, blank=True)
     path=models.CharField(max_length=200, blank=True)
     
     #Campos para implementar un modelo RACI
@@ -76,8 +77,8 @@ class SubProceso(models.Model):
 
     #Impactos e Indicadores de recuperacion
  
-    impact_subp = models.ManyToManyField('Impactos_Asig', related_name= 'impactos', blank=True, null=True) 
-    indicador_subp= models.ManyToManyField('Indicadores_Asig', related_name= 'indicadores', blank=True, null=True) 
+    impact_subp = models.ManyToManyField('Impactos_Asig', related_name= 'impactos', blank=True) 
+    indicador_subp= models.ManyToManyField('Indicadores_Asig', related_name= 'indicadores', blank=True) 
 
     ranking =  models.DecimalField(max_digits=5, decimal_places=2, default=000.00)
     
@@ -101,15 +102,16 @@ class SubProceso(models.Model):
 
     fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del BCP')
 
-    recursos=models.ManyToManyField('Recursos', blank=False, null=False)
+    recursos=models.ManyToManyField('Recursos', blank=False)
 
-    escenarios=models.ManyToManyField('Escenarios', blank=False, null=False)
+    escenarios=models.ManyToManyField('Escenarios', blank=False)
 
     #procedimientos_contingencia = models.ManyToManyField('Procedimientos',  blank=True, null=True)
     nro_prdto = models.IntegerField(default=0)
 
-    log_revision=models.ManyToManyField('Log_Revision', blank=False, null=False)
+    log_revision=models.ManyToManyField('Log_Revision', blank=True)
     
+    actualiza=models.BooleanField(default=False) # Identifica si el proceso esta siendo actualizado
 
 
     class Meta:
@@ -132,10 +134,14 @@ class SubProceso(models.Model):
 class SubProceso_V(models.Model):
     """
     Datos de Proceso Evaluable Vigente (aprobado)
-    """
-
+    """""
+    # Campos del Proceso
+    nombre = models.CharField(max_length=50, default="")
+    objetivo = models.TextField(max_length=500, blank=True, help_text='Describa el principal objetivo del Proceso')
+    version= models.IntegerField(default=0)
+    
     pk_padre = models.IntegerField(default=0)
-    codigo = models.CharField(max_length=10, blank=True)
+    codigo = models.CharField(max_length=50, blank=True) # Codigo del Proceso original
     path=models.CharField(max_length=200, blank=True)
     fecha_ult_aut=models.DateField(null=True, blank=True)
     
@@ -145,12 +151,10 @@ class SubProceso_V(models.Model):
     gestor_C = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_c', null=True, blank=True)
     gestor_I = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_i', null=True, blank=True)
 
-    #Campos para impactos e indicadores de Contingencia.
-
     #Impactos e Indicadores de recuperacion
  
-    impact_subp = models.ManyToManyField('Impactos_Asig', related_name= 'impactos_v', blank=True, null=True) 
-    indicador_subp= models.ManyToManyField('Indicadores_Asig', related_name= 'indicadores_v', blank=True, null=True) 
+    impact_subp = models.ManyToManyField('Impactos_Asig_v', related_name= 'impactos_v', blank=True) 
+    indicador_subp= models.ManyToManyField('Indicadores_Asig_v', related_name= 'indicadores_v', blank=True) 
 
     ranking =  models.DecimalField(max_digits=5, decimal_places=2, default=000.00)
     
@@ -174,16 +178,16 @@ class SubProceso_V(models.Model):
 
     #fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del BCP')
 
-    recursos=models.ManyToManyField('Recursos', blank=False, null=False)
+    recursos=models.ManyToManyField('Recursos', blank=False)
 
-    escenarios=models.ManyToManyField('Escenarios', blank=False, null=False)
+    escenarios=models.ManyToManyField('Escenarios', blank=False)
 
-    procedimientos_contingencia = models.ManyToManyField('Procedimientos', blank=True, null=True)
-    procedimientos_contingencia_v = models.ManyToManyField('Procedimientos_V', blank=True, null=True)
+    procedimientos_contingencia = models.ManyToManyField('Procedimientos', blank=True)
+    procedimientos_contingencia_v = models.ManyToManyField('Procedimientos_V', blank=True)
 
     nro_prdto = models.IntegerField(default=0)
 
-    log_revision=models.ManyToManyField('Log_Revision', blank=False, null=False)
+    log_revision=models.ManyToManyField('Log_Revision', blank=True)
 
     #log_control_cambio=models.ManyToManyField('Log_Revision', blank=False, null=False)
     
@@ -211,6 +215,7 @@ class Control_Cambios(models.Model):
     Log de Control de Cambios de Procesos y Procedimientos vigentes """
 
     fecha = models.DateField(null=True, blank=True, default=date.today())
+    hora = models.TimeField(default=datetime.now().time())
     proceso= models.ForeignKey(SubProceso_V, on_delete=models.CASCADE, null=True)
     procedimiento= models.ForeignKey('Procedimientos_V', on_delete=models.CASCADE, null=True)
 
@@ -218,8 +223,8 @@ class Control_Cambios(models.Model):
 
     descripcion=models.TextField(max_length=200)
 
-
-
+    class Meta:
+        ordering = ["-fecha", "-hora"]
 
 
 
@@ -234,6 +239,19 @@ class Impactos_Asig(models.Model):
     impacto=models.ForeignKey('Tipo_Impacto', on_delete=models.SET_NULL, related_name='riesgo', null=True, blank=True)
     nivel=models.ForeignKey('Nivel_Impacto', on_delete=models.SET_NULL, related_name='nivel_imp', null=True, blank=True)
 
+
+class Impactos_Asig_v(models.Model):
+    """
+    Impactos Asignados al Proceso vigente (Nub de relacion entre un Subprocesos, los Impactos (Riesgos)
+    y Nivel de cada uno)
+    """
+
+    #subproceso=models.ForeignKey(SubProceso, on_delete=models.SET_NULL, related_name='Subproceso', null=True, blank=True)
+    pk_proc=models.IntegerField(default=0)
+    impacto=models.ForeignKey('Tipo_Impacto', on_delete=models.SET_NULL, related_name='riesgo_vigente', null=True, blank=True)
+    nivel=models.ForeignKey('Nivel_Impacto', on_delete=models.SET_NULL, related_name='nivel_imp_vigente', null=True, blank=True)
+
+
 class Indicadores_Asig(models.Model):
     """
     Indicadores asignados al Proceso (Nub)
@@ -241,6 +259,14 @@ class Indicadores_Asig(models.Model):
     pk_proc=models.IntegerField(default=0)
     indicador=models.ForeignKey('Tipo_Indicador', on_delete=models.SET_NULL, related_name='indicador', null=True, blank=True)
     nivel = models.ForeignKey('Indicadores_BIA', on_delete=models.SET_NULL, related_name='nivel_bia', null=True, blank=True)
+
+class Indicadores_Asig_v(models.Model):
+    """
+    Indicadores asignados al Proceso vigente (Nub)
+    """
+    pk_proc=models.IntegerField(default=0)
+    indicador=models.ForeignKey('Tipo_Indicador', on_delete=models.SET_NULL, related_name='indicador_vigente', null=True, blank=True)
+    nivel = models.ForeignKey('Indicadores_BIA', on_delete=models.SET_NULL, related_name='nivel_bia_vigente', null=True, blank=True)
 
 
 class LogAut(models.Model):
@@ -520,7 +546,7 @@ class Incidentes(models.Model):
     descripcion = models.CharField(max_length= 500, blank=True)
 
     # Registro de la amenazas identificadas ocurridas en el incidente
-    amenazas_i = models.ManyToManyField('Amenazas', null=False, blank=False)
+    amenazas_i = models.ManyToManyField('Amenazas', blank=False)
 
     # Procesos y Escenarios de Riesgo asociados al Incidente
     procesos_i = models.ManyToManyField('SubProceso')
@@ -945,6 +971,8 @@ class Log_Revision(models.Model):
     Comentarios de Revision de Auditoria y  Objetivos de Control
     """
     fecha = models.DateField(null=True, blank=True, default=date.today())
+    hora = models.TimeField(default=datetime.now().time())
+
     proceso= models.ForeignKey(Proceso, on_delete=models.CASCADE, null=True)
     procedimiento= models.ForeignKey(Procedimientos, on_delete=models.CASCADE, null=True)
 
@@ -961,3 +989,7 @@ class Log_Revision(models.Model):
     comentario = models.TextField()
     #obj_ries = models.ForeignKey(Obj_Ries, on_delete=models.CASCADE, null=True, related_name="comentarios")
     resuelto=models.BooleanField(default=False, blank=True)
+
+    class Meta:
+        ordering = ["-fecha", "-hora"]
+

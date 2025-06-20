@@ -216,9 +216,9 @@
 	<form action="" method="post">
     {% csrf_token %}
         		
-			<bn>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si desea autorizar los niveles asignados a los indicadores de Impacto y Recuperacion para el Proceso - <strong>{{proceso.nombre}}</strong>  -.
+			<bn>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si desea Autorizar los niveles asignados a los indicadores de Impacto y Recuperacion para el Proceso - <strong>{{proceso.nombre}}</strong>  -.
 				Considerar las observaciones en estado pendiente en el Block de Revision (Est.=<a style="font-size: 10px;">&#10067</a>).
-				En caso de no autorizar, al  registrar sera devuelto al Gestor [C]onsultor para su correccion.
+				Si Registra sin Autorizar, el proceso sera devuelto al Gestor [C]onsultor para su revision en base a sus comentarios.
 			</bn>
 
 			<br/>

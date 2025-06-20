@@ -7,12 +7,12 @@ from .models import  Proceso, SubProceso, LogAut, Recursos, Gestor, Tipo_RR, Esc
 from .models import  Nivel_Impacto, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Grupos, Control_Cambios
 from .models import  Drp, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC, Area, Cod_Area, SubProceso_V
 from .models import  LBC, Tipo_Site, Tipo_Disp, Componentes, Tipo_Componente, Impactos_Asig, Indicadores_Asig, Log_Revision
-from .models import  Procedimientos_V, Servicios_PC_V, Contactos_PC_V, Pasos_PC_V
+from .models import  Procedimientos_V, Servicios_PC_V, Contactos_PC_V, Pasos_PC_V, Impactos_Asig_v, Indicadores_Asig_v
 
 @admin.register(Proceso)
 class AdminProceso(admin.ModelAdmin):
 
-    list_display = ('proceso', 'pk_padre', 'nombre', 'path', 'nro_hijos', 'es_subproceso', 'subproceso')
+    list_display = ('proceso', 'fecha_crea', 'pk_padre', 'nombre', 'path', 'nro_hijos', 'es_subproceso', 'subproceso')
 
 @admin.register(SubProceso)
 class AdminSubProceso(admin.ModelAdmin):
@@ -209,11 +209,19 @@ class AdminLBC(admin.ModelAdmin):
 
 @admin.register(Impactos_Asig)
 class AdminImpactos_Asig(admin.ModelAdmin):
-    list_display = ()
+    list_display = ('impacto', 'nivel')
 
 @admin.register(Indicadores_Asig)
 class AdminIndicadores_Asig(admin.ModelAdmin):
-    list_display = ()
+    list_display = ('indicador', 'nivel')
+
+@admin.register(Impactos_Asig_v)
+class AdminImpactos_Asig(admin.ModelAdmin):
+    list_display = ('impacto', 'nivel')
+
+@admin.register(Indicadores_Asig_v)
+class AdminIndicadores_Asig(admin.ModelAdmin):
+    list_display = ('indicador', 'nivel')
 
 @admin.register(Log_Revision)
 class AdminLog_Revision(admin.ModelAdmin):

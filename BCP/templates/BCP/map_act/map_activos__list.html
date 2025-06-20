@@ -57,10 +57,10 @@
 			  {% for i in proceso.proceso %} &nbsp; {% endfor %%}
 
 				{% if proceso.proceso_padre == '/' %}
-					<br/}
+					<br/>
 				{%endif%}
 
-                              {% if proceso.es_subproceso  %}
+                {% if proceso.es_subproceso  %}
 
 			 	{% if proceso.subproceso.fase_status == 'B' %} <! Si fase es Mapeo Servicios Criticos>
 	   
@@ -119,8 +119,8 @@
 					{%endif%}
 
 
-					<!Revision y correccion de observaciones x [C]onsultor>
-					<!======================================>
+					<!-- Revision y correccion de observaciones x [C]onsultor
+					===================================================== -->
 					{%if proceso.subproceso.status == 'x' %}
 
 						{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}
@@ -130,6 +130,7 @@
 							<img src="/static/img/revision_servicio.png" width="20" height="20"></img>
 						</a>
 						{%else%}
+						<!-- Si usuario sesion NO es Consultor -->
 							<yy class="link" data-message="En revision por Gestor Consultor ({{proceso.subproceso.gestor_C}})">
 							<img src="/static/img/revision_servicio.png" width="20" height="20"></img></yy>
 						{%endif%}

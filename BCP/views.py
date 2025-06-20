@@ -106,7 +106,7 @@ from django.contrib import messages
 from .models import Proceso, SubProceso, LogAut, Recursos, Tipo_RR, Gestor, Escenarios, Amenazas, Estrategias, Tipo_Impacto, Nivel_Impacto, Tipo_Impacto_P, Nivel_Impacto_P
 from .models import Drp, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC 
 from .models import Componentes, Tipo_Componente, LBC, Tipo_Disp, Tipo_Site, Impactos_Asig, Contactos_PC_V, Pasos_PC_V
-from .models import Indicadores_Asig, Log_Revision, SubProceso_V, Control_Cambios, Procedimientos_V, Servicios_PC_V
+from .models import Indicadores_Asig, Log_Revision, SubProceso_V, Control_Cambios, Procedimientos_V, Servicios_PC_V, Impactos_Asig_v, Indicadores_Asig_v
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User, PermissionsMixin
@@ -616,6 +616,41 @@ def Crea_Activo(request):
 #*********************************************** 3. Gestion de Autorizaciones *** ************************************************************
 #*********************************************************************************************************************************************
 
+#****************
+# Actualizacion *
+#****************
+
+def Actualiza_Mapeo(request, pk):
+    """
+    Cambia el estado de un Proceso autorizado en todas sus fases para su actualizacion
+    """
+    print('-- Actualiza Mapeo :')
+    proceso=get_object_or_404(Proceso, pk=pk)
+    print('--- Proceso :', proceso)
+    # Verifica si el usuario en sesion esta habilitado
+    if not es_del_grupo([request.user, 'Consultores']):
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
+
+    proceso.subproceso.status="C"
+    proceso.subproceso.fase_status="M"
+    proceso.subproceso.actualiza=True
+    print('--- en_actua.. : ', proceso.subproceso.actualiza )
+    proceso.subproceso.save()
+
+     # Crea Log de Rechazo de Autorizador
+    log=Log_Revision()
+    log.fecha = datetime.date.today()
+    log.proceso= proceso
+    log.gestor_aut=proceso.subproceso.gestor_C
+    log.seccion="M"
+    log.campo="Autorizado por:"+aut
+    log.comentario="Inicio Ciclo de Actualizacion del Proceso."
+    log.resuelto=True
+    log.save()
+
+    return HttpResponseRedirect(reverse('Lista-Procesos') )
+
+
 #**********************
 # 3.1 Asignacion  RACI*
 #**********************
@@ -800,7 +835,7 @@ def Autoriza_M(request, pk):
                     log.gestor_aut=usr_aut
                     log.seccion="M"
                     log.campo="Autorizado por:"+aut
-                    log.comentario="Aprobado por Nivel [A]utorizador"
+                    log.comentario="Proceso aprobado por Gestor Autorizador"
                     log.resuelto=True
                     log.save()
                     
@@ -812,6 +847,19 @@ def Autoriza_M(request, pk):
                 else:
                     proc.subproceso.status='x' # (Devuelve a [C]onsultor)
                     print ('rechazo A->x')
+
+                    # Crea Log de Rechazo de Autorizador.
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proc
+                    log.gestor_aut=usr_aut
+                    log.seccion="M"
+                    log.campo="Observado por:"+aut
+                    log.comentario="Proceso observado por Gestor Autorizador. Se envia a Gestor Consultor para su Revision. "
+                    log.resuelto=True
+                    log.save()
+
+
                     email = proc.subproceso.gestor_C.user_gestor.email
                     accion='Tomar accion sobre las modificaciones solicitadas por el gestor Autorizador para el'
                     
@@ -823,14 +871,14 @@ def Autoriza_M(request, pk):
                         print('aprobo A->R')
                         proc.subproceso.status='R'
 
-                        # Crea Log de aprobacion de [A]utorizador
+                        # Crea Log de aprobacion de [R]esponsable
                         log=Log_Revision()
                         log.fecha = datetime.date.today()
                         log.proceso= proc
                         log.gestor_aut=usr_aut
                         log.seccion="M"
                         log.campo="Autorizado por:"+aut
-                        log.comentario="Aprobado por Nivel [R]esponsable"
+                        log.comentario="Proceso aprobado por Nivel [R]esponsable"
                         log.resuelto=True
                         log.save()
                     
@@ -842,6 +890,18 @@ def Autoriza_M(request, pk):
                     else:
                         """ Pasa a revision por C """
                         proc.subproceso.status='x'
+
+                        # Crea Log de Observacion de [R]esponsable
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proc
+                        log.gestor_aut=usr_aut
+                        log.seccion="M"
+                        log.campo="Observado por:"+aut
+                        log.comentario="Proceso observado por Gestor Responsable. Se envia a Revision por Gestor Autorizador."
+                        log.resuelto=True
+                        log.save()
+
 
                 
             #Notificar a Gestor I por email
@@ -891,6 +951,13 @@ def Aut_Asig_BIA(request, pk):
     
     proceso=get_object_or_404(Proceso, pk = pk)
 
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
     # Selecciona observaciones del proceso de asignacion ("V")
     comentarios_proceso=Log_Revision.objects.filter(proceso=proceso)
     comentarios_v=[]
@@ -921,27 +988,64 @@ def Aut_Asig_BIA(request, pk):
             #Cambia Estado de Aprobacion
             print(proceso.subproceso.status)
             if proceso.subproceso.status=='A':
+            # Si el estado esta en x Aprobar 
                 
                 if aprobado:
                     print('aprobo A->r')
+                    # Si es aprobado cambia a  x Vigentear
                     proceso.subproceso.status='r'
-                    
+
+                    # Crea Log de aprobacion de Autorizador
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proceso
+                    log.gestor_aut=usr_aut
+                    log.seccion="V"
+                    log.campo="Autorizado por:"+aut
+                    log.comentario="BIA Aprobado por Gestor Autorizador"
+                    log.resuelto=True
+                    log.save()
+
+                    # Prepara correo informativo
                     nombre=proceso.subproceso.gestor_R.user_gestor.last_name
                     email = proceso.subproceso.gestor_R.user_gestor.email
                     accion='dar visto bueno o requerir cambios para el '
                     
                 else:
+                    # Si no es aprobado cambia a En Revision
                     proceso.subproceso.status='x'
-                    
+
+                    # Crea Log de rechazo de Autorizador
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proceso
+                    log.gestor_aut=usr_aut
+                    log.seccion="V"
+                    log.campo="Observado por:"+aut
+                    log.comentario="BIA observado por Gestor Autorizador. Se envia a revision por Gestor Consultor"
+                    log.resuelto=True
+                    log.save()
+
                     email = proceso.subproceso.gestor_C.user_gestor.email
                     accion='Tomar accion sobre las modificaciones solicitadas por el gestor Autorizador para el'
                     
             else:
-                if proceso.subproceso.status=='r':
+                if proceso.subproceso.status=='r': 
 
                     if aprobado:
-                        print('aprobo A->R')
+                        print('aprobo r->R')
                         proceso.subproceso.status='R'
+                        # Crea Log de aprobacion de Responsable
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proceso
+                        log.gestor_aut=usr_aut
+                        log.seccion="V"
+                        log.campo="Aprobado por:"+aut
+                        log.comentario="BIA Aprobado por Gestor Responsable"
+                        log.resuelto=True
+                        log.save()
+
                     
                         if  proceso.subproceso.gestor_I:
                             nombre=proceso.subproceso.gestor_I.user_gestor.last_name
@@ -949,8 +1053,18 @@ def Aut_Asig_BIA(request, pk):
                             accion='tomar conocimiento de la puesta en vigencia del '
                     else:
                         proceso.subproceso.status='x'
+                        # Crea Log de rechazo de Responsable
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proceso
+                        log.gestor_aut=usr_aut
+                        log.seccion="V"
+                        log.campo="Observado por:"+aut
+                        log.comentario="BIA observado por Gestor Responsable"
+                        log.resuelto=True
+                        log.save()
 
-                
+
             #Notificar a Gestor I por email
             if notifica:
                 if aprobado:
@@ -1088,6 +1202,15 @@ def Aut_Asig_Act(request, pk):
     activos=proc.subproceso.recursos
     activos_disp=Recursos.objects.all().order_by('tipo')
     
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
+
+
     form = Autoriza_Act_x_Proc_Form()
     #aut=LogAut()
 
@@ -1129,6 +1252,16 @@ def Aut_Asig_Act(request, pk):
                 if aprobado:
                     print('aprobo A->r')
                     proc.subproceso.status='r'
+                    # Crea Log de aprobacion de Autorizador
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proc
+                    log.gestor_aut=usr_aut
+                    log.seccion="B"
+                    log.campo="Autorizado por:"+aut
+                    log.comentario="Asignacion de Servicios Criticos Aprobado por Gestor Autorizador"
+                    log.resuelto=True
+                    log.save()
                     
                     # Prepara correo al Gestor Responsable
                     #nombre=proc.subproceso.gestor_R.user_gestor.last_name
@@ -1137,6 +1270,17 @@ def Aut_Asig_Act(request, pk):
                     
                 else:
                     proc.subproceso.status='x'
+                    # Crea Log de aprobacion de Autorizador
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proc
+                    log.gestor_aut=usr_aut
+                    log.seccion="B"
+                    log.campo="Autorizado por:"+aut
+                    log.comentario="Asignacion de Servicios Criticos observado por Gestor Autorizador. Se envia a Gestor Consultor para su Revision."
+                    log.resuelto=True
+                    log.save()
+
                     # Prepara correo para Gestor Consultor
                     #email = proc.subproceso.gestor_C.user_gestor.email
                     #accion='Tomar accion sobre las modificaciones solicitadas por el gestor Autorizador para el'
@@ -1145,9 +1289,19 @@ def Aut_Asig_Act(request, pk):
                 if proc.subproceso.status=='r':
 
                     if aprobado:
-                        print('aprobo A->R')
+                        print('aprobo r->R')
                         proc.subproceso.status='R'
-                    
+                        # Crea Log de aprobacion de Autorizador
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proc
+                        log.gestor_aut=usr_aut
+                        log.seccion="B"
+                        log.campo="Autorizado por:"+aut
+                        log.comentario="Asignacion de Servicios Criticos Aprobado por Gestor Responsable"
+                        log.resuelto=True
+                        log.save()
+                   
                         # Prepara correo a Gestor Interesado
                         #if proc.subproceso.gestor_I:
                         #    nombre=proc.subproceso.gestor_I.user_gestor.last_name
@@ -1155,6 +1309,16 @@ def Aut_Asig_Act(request, pk):
                         #    accion='tomar conocimiento de la puesta en vigencia del '
                     else:
                         proc.subproceso.status='x'
+                        # Crea Log de aprobacion de Autorizador
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proc
+                        log.gestor_aut=usr_aut
+                        log.seccion="B"
+                        log.campo="Observado por:"+aut
+                        log.comentario="Asignacion de Servicios Criticos observada por Gestor Responsable. Se envia a Gestor Consultor para su Revision."
+                        log.resuelto=True
+                        log.save()
 
                 
             #Notificar a Gestor I por email
@@ -1223,8 +1387,15 @@ def Aut_Asig_Esc(request, pk):
     escenarios=proc.subproceso.escenarios
     esc_disp=Escenarios.objects.all()
     
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
     form = Autoriza_Asig_Escenarios_Form()
-    aut=LogAut()
+    #aut=LogAut()
 
     # Selecciona Comentarios sobre Escenarios
     comentarios_proceso=Log_Revision.objects.filter(proceso=proc)
@@ -1261,6 +1432,17 @@ def Aut_Asig_Esc(request, pk):
                 if aprobado:
                     print('aprobo A->r')
                     proc.subproceso.status='r'  # Por vigentear
+                    # Crea Log de aprobacion de Autorizador
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proc
+                    log.gestor_aut=usr_aut
+                    log.seccion="E"
+                    log.campo="Autorizado por:"+aut
+                    log.comentario="Asignacion de Escenarios de Riesgo Aprobado por Gestor Autorizador"
+                    log.resuelto=True
+                    log.save()
+
                     
                     # Prepara email para Gestor Responsable 
                     #nombre=proc.subproceso.gestor_R.user_gestor.last_name
@@ -1269,6 +1451,17 @@ def Aut_Asig_Esc(request, pk):
                     
                 else:
                     proc.subproceso.status='x'
+                    # Crea Log de Rechazo de Autorizador
+                    log=Log_Revision()
+                    log.fecha = datetime.date.today()
+                    log.proceso= proc
+                    log.gestor_aut=usr_aut
+                    log.seccion="E"
+                    log.campo="Autorizado por:"+aut
+                    log.comentario="Asignacion de Escenarios de Riesgo observada por Gestor Autorizador. Se envia a Gestor Consultor para Revision."
+                    log.resuelto=True
+                    log.save()
+
                     
                     #Prepara email para Gestor Consultor
                     #email = proc.subproceso.gestor_C.user_gestor.email
@@ -1278,19 +1471,52 @@ def Aut_Asig_Esc(request, pk):
                 if proc.subproceso.status=='r':
 
                     if aprobado:
-                        print('aprobo A->R')
+                        print('aprobo r->R')
                         proc.subproceso.status='R'
+                        proc.subproceso.actualiza=False
+
+                        # Crea Log de aprobacion de Autorizador
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proc
+                        log.gestor_aut=usr_aut
+                        log.seccion="E"
+                        log.campo="Autorizado por:"+aut
+                        log.comentario="Asignacion de Escenarios de Riesgo Aprobado por Gestor Responsable."
+                        log.resuelto=True
+                        log.save()
+
 
                         # Crea o Modifica Proceso (SubProceso) Vigente
                         # Crea una entrada al log de Control de Cambios
                         # =============================================
 
-                        
+                        p_vigente_existe=SubProceso_V.objects.filter(codigo=proc.subproceso.codigo).exists()
                         hay_cambios=False
-                        if proc.subproceso_v == None:
+
+
+                        if not p_vigente_existe:
+                            # Si el Proceso Vigente no existe, lo crea.
+                            # Crea Log de Creacion de Proceso Vigente 
+                            log=Log_Revision()
+                            log.fecha = datetime.date.today()
+                            log.proceso= proc
+                            log.gestor_aut=usr_aut
+                            log.seccion="E"
+                            log.campo="Autorizado por:"+aut
+                            log.comentario="Se crea un Proceso vigente (sujeto a Contingenciar)"
+                            log.resuelto=True
+                            log.save()
+
+
                             sub_proceso_v=SubProceso_V()
                             print('Crea version inicial del Subproceso vigente.')
                             detalle_log="Version Inicial"
+
+                            sub_proceso_v.nombre=proc.nombre
+                            sub_proceso_v.objetivo=proc.objetivo
+                            sub_proceso_v.version=1
+
 
                             sub_proceso_v.fecha_ult_aut=datetime.date.today()
                             sub_proceso_v.pk_padre = proc.subproceso.pk_padre
@@ -1303,77 +1529,337 @@ def Aut_Asig_Esc(request, pk):
                             sub_proceso_v.gestor_I = proc.subproceso.gestor_I
 
                             sub_proceso_v.save()
-                            sub_proceso_v.impact_subp.set(proc.subproceso.impact_subp.all())
-                            sub_proceso_v.indicador_subp.set(proc.subproceso.indicador_subp.all())
+
+                            # Asigna Impactos
+
+                            impactos_asig = proc.subproceso.impact_subp.all()
+                            impactos_asig_v = []
+                            print('-- impactos asignados :', impactos_asig)
+
+
+                            for imp in impactos_asig:
+                                try:
+                                    imp_v, created = Impactos_Asig_v.objects.get_or_create(
+                                        impacto=imp.impacto,
+                                        nivel=imp.nivel
+                                    )
+                                    impactos_asig_v.append(imp_v)
+                                    if created:
+                                        print(f"Creado nuevo Impactos_Asig_v: {imp_v}")
+                                        
+                                except Exception as e:
+                                    print(f"Error al crear o recuperar impacto: {imp.impacto} / {imp.nivel} -> {e}")
+
+                            # Relaciona al subproceso vigente
+                            sub_proceso_v.impact_subp.set(impactos_asig_v)
+
+                           
+                            # Asigna Indicadores
+                            # Obtener los indicadores asignados al proceso editable
+                            indicadores_asig = proc.subproceso.indicador_subp.all()
+                            indicadores_asig_v = []
+                            print('-- indicadores asignados: ', indicadores_asig)
+
+                            # Buscar sus equivalentes en Indicadores_Asig_v
+                            for ind in indicadores_asig:
+                                try:
+                                    ind_v, created = Indicadores_Asig_v.objects.get_or_create(
+                                        indicador=ind.indicador,
+                                        nivel=ind.nivel
+                                    )
+                                    indicadores_asig_v.append(ind_v)
+                                    if created:
+                                        print(f"Creado nuevo Indicadores_Asig_v: {ind_v}")
+                                except Exception as e:
+                                    print(f"Error al crear o recuperar indicador: {ind.indicador} / {ind.nivel} -> {e}")
+
+                            # Asignar la lista encontrada al ManyToManyField del modelo vigente
+                            sub_proceso_v.indicador_subp.set(indicadores_asig_v)
+
 
                             sub_proceso_v.ranking =  proc.subproceso.ranking
-
                             sub_proceso_v.recursos.set(proc.subproceso.recursos.all())
                             sub_proceso_v.escenarios.set(proc.subproceso.escenarios.all())
 
                             sub_proceso_v.save()
+                            proc.subproceso_v = sub_proceso_v
 
 
                         else:
+                            # Si el Proceso vigente ya existe
+
                             print('Modifica el Proceso vigente existente')
+
+                            sub_proceso_v=get_object_or_404(SubProceso_V, codigo=proc.subproceso.codigo)
                             sub_proceso_v.fecha_ult_aut=datetime.date.today()
-                            detalle_log="Cambios implementados :"
+                            detalle_log="Cambios implementados a version "+str(sub_proceso_v.version)+" :-> "
+
+                            # Crea "Log de Creacion" de Proceso Vigente 
+                            log=Log_Revision()
+                            log.fecha = datetime.date.today()
+                            log.proceso= proc
+                            log.gestor_aut=usr_aut
+                            log.seccion="E"
+                            log.campo="Autorizado por:"+aut
+                            log.comentario="Se modifica version "+str(sub_proceso_v.version)+" del Proceso"
+                            log.resuelto=True
+                            log.save()
+                         
+                            sub_proceso_v.version=sub_proceso_v.version+1
+
+
                             
-                            if proc.subproceso.gestor_R != proc.subproceso.gestor_R:
+                            # Deteccion de Cambios y actualizacion de Control de Cambios
+                            # ==========================================================
+
+                            # Datos Sub Proceso
+                            # -----------------
+
+                            if sub_proceso_v.nombre != proc.nombre:
+                                print('Cambio a Nombre del Proceso')
+                                sub_proceso_v.nombre = proc.nombre
+                                detalle_log=detalle_log+'Cambio a nombre del Proceso. De :'+sub_proceso_v.nombre+' a: '+proc.nombre+'.//'
+
+                            if sub_proceso_v.objetivo != proc.objetivo:
+                                print('Cambio descripcion de objetivo')
+                                sub_proceso_v.objetivo = proc.objetivo
+                                detalle_log=detalle_log+'Cambio en la descripcion del objetivo. De : '+sub_proceso_v.objetivo+' a: '+proc.objetivo+'.//'
+     
+                            # Gestores
+                            # --------
+
+                            if sub_proceso_v.gestor_R != proc.subproceso.gestor_R:
                                 print('Cambio al Gestor Responsable')
-                                detalle_log=detalle_log+'Cambio al Gestor Responsable '+proc.subproceso.gestor_R+', por'+proc.subproceso.gestor_R+'.'
-                                sub_proceso_v.gestor_R != proc.subproceso.gestor_R+'. '
+                                detalle_log=detalle_log+'Cambio al Gestor Responsable de: '+sub_proceso_v.gestor_R.user_gestor.last_name+','+sub_proceso_v.gestor_R.user_gestor.first_name+', por :'+proc.subproceso.gestor_R.user_gestor.last_name+','+proc.subproceso.gestor_R.user_gestor.first_name+'.//'
+                                sub_proceso_v.gestor_R = proc.subproceso.gestor_R
                                 hay_cambios=True
 
                             if sub_proceso_v.gestor_A != proc.subproceso.gestor_A:
                                 print('Cambio al Gestor Autorizador')
-                                detalle_log=detalle_log+'Cambio al Gestor Autorizador '+proc.subproceso.gestor_A+', por'
-                                +proc.subproceso.gestor_A+'. '
+                                detalle_log=detalle_log+'Cambio al Gestor Autorizador de: '+sub_proceso_v.gestor_A.user_gestor.last_name+','+sub_proceso_v.gestor_A.user_gestor.first_name+', por :'+proc.subproceso.gestor_A.user_gestor.last_name+','+proc.subproceso.gestor_A.user_gestor.first_name+'.//'
                                 sub_proceso_v.gestor_A = proc.subproceso.gestor_A
                                 hay_cambios=True
 
-                            if sub_proceso_v.gestor_C != proc.subproceso.gestor_C:
-                                print('Cambio al Gestor Consultor')
-                                detalle_log=detalle_log+'Cambio al Gestor Consultor '+proc.subproceso.gestor_C+', por'
-                                +proc.subproceso.gestor_C+'. '
-                                sub_proceso_v.gestor_C = proc.subproceso.gestor_C
-                                hay_cambios=True
 
                             if sub_proceso_v.gestor_I != proc.subproceso.gestor_I:
                                 print('Cambio Persona Interesada')
-                                detalle_log=detalle_log+'Cambio a la persona Interesada '+proc.subproceso.gestor_I+', por'
-                                +proc.subproceso.gestor_I+'. '
+
+                                if sub_proceso_v.gestor_I:
+                                    detalle_log=detalle_log+'Cambio a la Persona Interesada de: '+sub_proceso_v.gestor_I.user_gestor.last_name+','+sub_proceso_v.gestor_I.user_gestor.first_name+', por :'+proc.subproceso.gestor_I.user_gestor.last_name+','+proc.subproceso.gestor_I.user_gestor.first_name+'.//'
+                                else:
+                                     detalle_log=detalle_log+'Se asigna Pesona Interesada: '+proc.subproceso.gestor_I.user_gestor.last_name+','+proc.subproceso.gestor_I.user_gestor.first_name+'.//'
+            
                                 sub_proceso_v.gestor_I = proc.subproceso.gestor_I
                                 hay_cambios=True
 
-                            #Impactos e Indicadores de recuperacion
-                        
-                            if sub_proceso_v.impact_subp != proc.subproceso.impact_subp:
-                                print('Cambio en impactos')
-                                sub_proceso_v.impact_subp.set(proc.subproceso.impact_subp)
-                                hay_cambios=True
 
-                            if sub_proceso_v.indicador_subp != proc.subproceso.indicador_subp:
-                                print('CAmbio en Indicadores')
-                                sub_proceso_v.indicador_subp.set(proc.subproceso.indicador_subp)
-                                hay_cambios=True 
+                            # === Versión 4.1 - Sincronización de Impactos e Indicadores ===
+                            # Fecha: 2025-06-19  Hora: 20:53
+                            # - Distingue correctamente entre agregados/eliminados y cambios de nivel.
+                            # - Crea automáticamente registros faltantes en Impactos_Asig_v e Indicadores_Asig_v si no existen.
+                            # - No elimina impactos ni indicadores por cambios de nivel.
+
+                            # --- Sincronización de Impactos ---
+                            impactos_p = list(proc.subproceso.impact_subp.all())
+                            impactos_v = list(sub_proceso_v.impact_subp.all())
+
+                            # Diccionarios por nombre de impacto
+                            dict_p = {imp.impacto.nombre: imp for imp in impactos_p}
+                            dict_v = {imp.impacto.nombre: imp for imp in impactos_v}
+
+                            nombres_p = set(dict_p.keys())
+                            nombres_v = set(dict_v.keys())
+
+                            impactos_agregados = nombres_p - nombres_v
+                            impactos_eliminados = nombres_v - nombres_p
+                            impactos_comunes = nombres_p & nombres_v
+
+                            # Detectar cambios de nivel (solo si están en ambos)
+                            cambios_nivel = [
+                                nombre for nombre in impactos_comunes
+                                if dict_p[nombre].nivel.nombre != dict_v[nombre].nivel.nombre
+                            ]
+
+                            impactos_asig_v = []
+
+                            # 1. Mantener impactos comunes sin cambios de nivel
+                            for nombre in impactos_comunes:
+                                if nombre not in cambios_nivel:
+                                    impactos_asig_v.append(dict_v[nombre])
+
+                            # 2. Agregar impactos nuevos
+                            for nombre in impactos_agregados:
+                                imp_p = dict_p[nombre]
+                                imp_v, created = Impactos_Asig_v.objects.get_or_create(
+                                    impacto=imp_p.impacto,
+                                    nivel=imp_p.nivel
+                                )
+                                impactos_asig_v.append(imp_v)
+
+                            # 3. Reemplazar nivel de impactos con cambio de nivel
+                            for nombre in cambios_nivel:
+                                imp_p = dict_p[nombre]
+                                imp_v, created = Impactos_Asig_v.objects.get_or_create(
+                                    impacto=imp_p.impacto,
+                                    nivel=imp_p.nivel
+                                )
+                                impactos_asig_v.append(imp_v)
+
+                            # 4. Asignar solo si hay cambios reales
+                            if impactos_agregados or impactos_eliminados or cambios_nivel:
+                                sub_proceso_v.impact_subp.set(impactos_asig_v)
+                                sub_proceso_v.save()
+                                hay_cambios = True
+
+                                detalle_log += "Cambios en impactos:\n"
+                                for nombre in impactos_agregados:
+                                    imp = dict_p[nombre]
+                                    detalle_log += f"+ Nuevo impacto: {imp.impacto.nombre} (nivel: {imp.nivel.nombre})\n"
+                                for nombre in impactos_eliminados:
+                                    imp = dict_v[nombre]
+                                    detalle_log += f"- Impacto eliminado: {imp.impacto.nombre} (nivel: {imp.nivel.nombre})\n"
+                                for nombre in cambios_nivel:
+                                    imp_p = dict_p[nombre]
+                                    imp_v = dict_v[nombre]
+                                    detalle_log += (
+                                        f"* Cambio de nivel: {imp_p.impacto.nombre}, "
+                                        f"de {imp_v.nivel.nombre} a {imp_p.nivel.nombre}\n"
+                                    )
+                                detalle_log += ".//"
+                            else:
+                                print("Sin cambios en impactos.")
+
+                            # --- Sincronización de Indicadores ---
+                            indicadores_p = list(proc.subproceso.indicador_subp.all())
+                            indicadores_v = list(sub_proceso_v.indicador_subp.all())
+
+                            dict_ip = {ind.indicador.nombre: ind for ind in indicadores_p}
+                            dict_iv = {ind.indicador.nombre: ind for ind in indicadores_v}
+
+                            nombres_ip = set(dict_ip.keys())
+                            nombres_iv = set(dict_iv.keys())
+
+                            indicadores_agregados = nombres_ip - nombres_iv
+                            indicadores_eliminados = nombres_iv - nombres_ip
+                            indicadores_comunes = nombres_ip & nombres_iv
+
+                            cambios_nivel_ind = [
+                                nombre for nombre in indicadores_comunes
+                                if dict_ip[nombre].nivel.nivel != dict_iv[nombre].nivel.nivel
+                            ]
+
+                            indicadores_asig_v = []
+
+                            # 1. Mantener indicadores comunes sin cambios de nivel
+                            for nombre in indicadores_comunes:
+                                if nombre not in cambios_nivel_ind:
+                                    indicadores_asig_v.append(dict_iv[nombre])
+
+                            # 2. Agregar nuevos
+                            for nombre in indicadores_agregados:
+                                ind_p = dict_ip[nombre]
+                                ind_v, created = Indicadores_Asig_v.objects.get_or_create(
+                                    indicador=ind_p.indicador,
+                                    nivel=ind_p.nivel
+                                )
+                                indicadores_asig_v.append(ind_v)
+
+                            # 3. Reemplazar nivel si cambió
+                            for nombre in cambios_nivel_ind:
+                                ind_p = dict_ip[nombre]
+                                ind_v, created = Indicadores_Asig_v.objects.get_or_create(
+                                    indicador=ind_p.indicador,
+                                    nivel=ind_p.nivel
+                                )
+                                indicadores_asig_v.append(ind_v)
+
+                            # 4. Asignar si hubo cambios
+                            if indicadores_agregados or indicadores_eliminados or cambios_nivel_ind:
+                                sub_proceso_v.indicador_subp.set(indicadores_asig_v)
+                                sub_proceso_v.save()
+                                hay_cambios = True
+
+                                detalle_log += "Cambios en indicadores:\n"
+                                for nombre in indicadores_agregados:
+                                    ind = dict_ip[nombre]
+                                    detalle_log += f"+ Nuevo indicador: {ind.indicador.nombre} (nivel: {ind.nivel.nivel})\n"
+                                for nombre in indicadores_eliminados:
+                                    ind = dict_iv[nombre]
+                                    detalle_log += f"- Indicador eliminado: {ind.indicador.nombre} (nivel: {ind.nivel.nivel})\n"
+                                for nombre in cambios_nivel_ind:
+                                    ind_p = dict_ip[nombre]
+                                    ind_v = dict_iv[nombre]
+                                    detalle_log += (
+                                        f"* Cambio de nivel: {ind_p.indicador.nombre}, "
+                                        f"de {ind_v.nivel.nivel} a {ind_p.nivel.nivel}\n"
+                                    )
+                                detalle_log += ".//"
+                            else:
+                                print("Sin cambios en indicadores.")
+
+
+                            # Puntaje (Ranking) de Evaluacion
+                            # ------------------------------- 
 
                             if sub_proceso_v.ranking !=  proc.subproceso.ranking:
                                 print('Cambio en el puntaje')
-                                detalle_log=detalle_log+'Cambio al Puntaje '+proc.subproceso.gestor_A+', por'
-                                +proc.subproceso.gestor_A+'.'
+                                detalle_log=detalle_log+'Se produjo un cambio en el puntaje de :'+str(sub_proceso_v.ranking) +'a :'+str(proc.subproceso.ranking)+'.//'
                                 sub_proceso_v.ranking =  proc.subproceso.ranking
                                 hay_cambios=True
-                            
-                            if sub_proceso_v.recursos != proc.subproceso.recursos:
-                                print('Cambios en Servicios/Recursos asignados')
-                                sub_proceso_v.recursos.set(proc.subproceso.recursos)
-                                hay_cambios=True
 
-                            if sub_proceso_v.escenarios != proc.subproceso.escenarios:
-                                print('Cambios en escenarios de Riesgo')
-                                sub_proceso_v.escenarios.set(proc.subproceso.escenarios)
-                                hay_cambios=True
+                            # Servicios/Recursos criticos
+                            # -----------------------------
+                            
+                            # Obtener recursos como conjuntos
+                            recursos_p = set(proc.subproceso.recursos.all())
+                            recursos_v = set(sub_proceso_v.recursos.all())
+
+                            # Detectar diferencias
+                            recursos_agregados = recursos_p - recursos_v
+                            recursos_eliminados = recursos_v - recursos_p
+
+                            # Si hay cambios
+                            if recursos_agregados or recursos_eliminados:
+                                sub_proceso_v.recursos.set(recursos_p)
+                                sub_proceso_v.save()
+                                hay_cambios = True
+
+                                detalle_log += "Cambios en recursos:\n"
+
+                                for recurso in recursos_agregados:
+                                    detalle_log += f"+ Recurso agregado: {recurso.nombre}\n"
+
+                                for recurso in recursos_eliminados:
+                                    detalle_log += f"- Recurso eliminado: {recurso.nombre}\n"
+
+                                detalle_log +='.//'
+                                print("CAMBIOS EN RECURSOS:\n", detalle_log)
+
+                            else:
+                                print("Sin cambios en recursos.")
+
+
+                            # Escenarios
+                            # -----------
+
+                            # Obtener los conjuntos de escenarios
+                            escenarios_p = set(proc.subproceso.escenarios.all())
+                            escenarios_v = set(sub_proceso_v.escenarios.all())
+
+                            # Comparar si hay diferencias
+                            if escenarios_p != escenarios_v:
+                                sub_proceso_v.escenarios.set(escenarios_p)  # Actualiza la relación
+                                sub_proceso_v.save()
+
+                                detalle_log += "Cambio en escenarios:\n"
+                                detalle_log += f"De: {[esc.titulo for esc in escenarios_v]}\n"
+                                detalle_log += f"A: {[esc.titulo for esc in escenarios_p]}\n"
+                                hay_cambios = True
+                                print("CAMBIO en escenarios:", escenarios_v, "->", escenarios_p, "--", detalle_log)
+                                detalle_log += './/'
+                            else:
+                                print("Sin cambios en escenarios:", [esc.titulo for esc in escenarios_v])
+
 
                             if not hay_cambios:
                                 detalle_log=detalle_log+'Vigenteo sin cambios'
@@ -1381,7 +1867,7 @@ def Aut_Asig_Esc(request, pk):
                             sub_proceso_v.save()
 
                         # Actualiza Base 
-                        proc.subproceso_v=sub_proceso_v
+                        # proc.subproceso_v=sub_proceso_v
                         proc.save()
 
                         # Crea entrada para el Control de Cambios
@@ -1390,8 +1876,9 @@ def Aut_Asig_Esc(request, pk):
                         log=Control_Cambios()
 
                         # Crea entrada
-                        log.proceso=proc.subproceso_v
-                        log.gestor_aut=proc.subproceso_v.gestor_R
+                        log.fecha=datetime.date.today()
+                        log.proceso=sub_proceso_v
+                        log.gestor_aut=sub_proceso_v.gestor_R
                         log.descripcion=detalle_log
                         log.save()
 
@@ -1404,7 +1891,19 @@ def Aut_Asig_Esc(request, pk):
                         # accion='tomar conocimiento de la puesta en vigencia del '
 
                     else:
+                    # Si no esta aprobado
                         proc.subproceso.status='x'
+                        # Crea Log de Rechazo de Autorizador
+                        log=Log_Revision()
+                        log.fecha = datetime.date.today()
+                        log.proceso= proc
+                        log.gestor_aut=usr_aut
+                        log.seccion="E"
+                        log.campo="Autorizado por:"+aut
+                        log.comentario="Asignacion de Escenarios de Riesgo observada por Gestor Responsable. Se envia a Gestor Consultor para Revision."
+                        log.resuelto=True
+                        log.save()
+
 
                 
             #Notificar a Gestor I por email
@@ -1418,15 +1917,16 @@ def Aut_Asig_Esc(request, pk):
 
             #Registra autorizacion en log
                                 
-            aut.fecha=datetime.date.today()
-            aut.p_status=proc.subproceso.status+proc.subproceso.fase_status
-            aut.item = 'Conclusion etapa Autorizacion.:'
+            #aut.fecha=datetime.date.today()
+            #aut.p_status=proc.subproceso.status+proc.subproceso.fase_status
+            #aut.item = 'Conclusion etapa Autorizacion.:'
             #aut.observacion=form.cleaned_data['comentario']
-            aut.Aprobado=form.cleaned_data['aprobacion']                    
+            #aut.Aprobado=form.cleaned_data['aprobacion']                    
             
             #Graba en Base de Datos                
-            aut.save()
-            proc.log_auth.add(aut)      
+            #aut.save()
+            #proc.log_auth.add(aut)
+                  
             proc.subproceso.save()
             
              
@@ -3769,16 +4269,16 @@ def aut_obs_proced(request, item, pk, valor):
     
     proced = get_object_or_404(Procedimientos, pk = pk)
         
-    aut=LogAut()
+    #aut=LogAut()
     #Asigna al usuario de sesion como Autorizador
-    print('asigna usuario sesion')
+    #print('asigna usuario sesion')
     pk_usr_sesion= request.user.pk
-    aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    print('usuario de sesion',aut.gestor_aprobador)
+    #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
+    #print('usuario de sesion',aut.gestor_aprobador)
 
      
-    aut.cod_proceso=proced.codigo
-    aut.item=item
+    #aut.cod_proceso=proced.codigo
+    #aut.item=item
     
 
     if request.method=='POST':
@@ -3791,9 +4291,9 @@ def aut_obs_proced(request, item, pk, valor):
             
             #Registra autorizacion en log
                                 
-            aut.fecha=datetime.date.today()
-            aut.p_status=proced.status+'P'
-            aut.observacion=form.cleaned_data['comentario']
+            #aut.fecha=datetime.date.today()
+            #aut.p_status=proced.status+'P'
+            #aut.observacion=form.cleaned_data['comentario']
             #aut.Aprobado=form.cleaned_data['aprobacion']
             
             #notifica=form.cleaned_data['notifica']
@@ -3803,8 +4303,8 @@ def aut_obs_proced(request, item, pk, valor):
                             
            
             #Graba en Base de Datos                
-            aut.save()
-            proced.log_auth.add(aut)      
+            #aut.save()
+            #proced.log_auth.add(aut)      
             proced.save()
             
                 
@@ -7180,11 +7680,12 @@ def reset(request):
     if not es_del_grupo([request.user, 'Administradores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[100] ))
 
-
+    # Modelos a Reiniciar
     modelos = [
         Proceso, SubProceso, SubProceso_V,
         Procedimientos, Contactos_PC, Servicios_PC, Pasos_PC,
-        Procedimientos_V, Contactos_PC_V, Servicios_PC_V, Pasos_PC_V
+        Procedimientos_V, Contactos_PC_V, Servicios_PC_V, Pasos_PC_V,
+        Impactos_Asig, Indicadores_Asig, Impactos_Asig_v, Indicadores_Asig_v 
     ]
 
     print('prepost')

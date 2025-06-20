@@ -91,33 +91,46 @@
 							<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
 							</a>
 						{%else%}
-						<!--- Si no es el Autorizador -->
+						<!--- Si NO es el Autorizador -->
 							<a class="link " data-message="En Revision y Autorizacion por Gestor Autorizador ...({{proceso.subproceso.gestor_A}})">
 							<img src="/static/img/En_Revision.png" width="17" height="17"></img></a>
 						{%endif%} <!----- Fin si el usuario en sesion es Gestor Autorizador -->
 
 					{%endif%}
 
+					<!-- Aprobacion por Gestor Responsable -->
 					{%if proceso.subproceso.status == 'r' %}
 
 						<!Proceso a aprobacion por Responsable Area>
 						<!*****************************************>
 						{%if proceso.subproceso.gestor_R.user_pk == request.user.pk %}
-							<a href="{% url 'Aut-Asigna-Escenarios' proceso.pk  %}"><strong>..<rr>&#128273</rr></strong>.</a>
+						<!-- Si el usuario en sesion es Gestor Responsable  -->
+							<a class="link blink" data-message="Revisar Definicion  y Autorizar u Observar ..." 
+							href="{% url 'Aut-Asigna-Escenarios' proceso.pk  %}">
+							<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
+							</a>
 						{%else%}
-							<yy>..&#128274..</yy>
+						<!-- So NO es el Responsable -->
+							<a class="link " data-message="En Revision y Autorizacion por Gestor Autorizador ...({{proceso.subproceso.gestor_R}})">
+							<img src="/static/img/En_Revision.png" width="17" height="17"></img></a>
 						{%endif%}
 							
 					{%endif%}
 
+					<!-- Revision y correccion de observaciones x [C]onsultor
+					===================================================== -->
 					{%if proceso.subproceso.status == 'x' %}
 
-						<!Proceso a Revision por Consultor>
-						<!********************************>
 						{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}
-						  	<a href="{% url 'Rev-Asigna-Escenarios' proceso.pk %}"><strong>.<rr>&#128269</rr></strong>..</a>
+						<!-- Si usuario sesion es Consultor -->
+						  	<a href="{% url 'Rev-Asigna-Escenarios' proceso.pk %}"
+							class="link blink " data-message="Revisar Comentarios e implementar ...">
+							<img src="/static/img/revision_servicio.png" width="20" height="20"></img>
+							</a>
 						{%else%}
-							<yy>.&#128373</yy></a>
+						<!-- Si usuario sesion NO es Consultor -->
+							<yy class="link" data-message="En revision por Gestor Consultor ({{proceso.subproceso.gestor_C}})">
+							<img src="/static/img/revision_servicio.png" width="20" height="20"></img></yy>
 						{%endif%}
 							
 					{%endif%}
@@ -159,7 +172,7 @@
 
 						{%endif%}
 						
-					  
+					   
 					{% endif %}
 		   		{%endif%}<!Fin Si la fase es Mapeo de Escenarios de R.>
                           	

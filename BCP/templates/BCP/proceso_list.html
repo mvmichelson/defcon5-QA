@@ -151,8 +151,14 @@ defcon={{defcon_est}}
 				{%else%}<!-- Si el Subproceso esta en Fase distinta a "M" -->
 
 					{% if proceso.subproceso.status == 'R' and proceso.subproceso.fase_status == 'E' %}
-						<!Proceso listo para definicion de Procedimientos (PC)>
-						<aa class="link " data-message="Aprobado en Fase de Mapeo"	>..<strong>&#9989</strong>&nbsp;
+						<!---************************************************************ -->
+						<!-- *** Proceso listo para definicion de Procedimientos (PC) *** -->
+						<!---************************************************************ -->
+
+							<a href="{% url 'actualiza-mapeo' proceso.pk %}"
+							class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Aprobado en Fase de Mapeo. Haga click si desea actualizar">..<strong>&#9989</strong>&nbsp;
+							</a>
+
 					{% else %}
 						<!Proceso ya salio de fase M. Solo Imprime el nombre>
 						<aa class="link " data-message="Aprobado en Etapa de Definicion"
@@ -166,6 +172,7 @@ defcon={{defcon_est}}
 				<!-- ============================== -->
 				<a href="{% url 'crea-procesos' proceso.pk %}"
 				class="link " data-message="Define un Subproceso ..."><sa>&#10010</sa></a>
+				
 				
 				{% if proceso.nro_hijos == 0 and proceso.pk_padre != 0 %}<!--- Si el Proceso no tiene hijos --> 
 					<a href="{% url 'borra-procesos' proceso.pk %}"
@@ -217,7 +224,7 @@ defcon={{defcon_est}}
 			<!*****************************************>
 			{% if proceso.es_subproceso %}<!---- Si es Subproceso ------->
 					<aa>&#10149  {{ proceso.nombre }} </aa>&emsp;
-					[ 
+						[ 
 						{% if proceso.subproceso.ranking <= tramo_1 %}
 							<aa><strong> {{proceso.subproceso.ranking}} </strong></aa>
 						{% elif  proceso.subproceso.ranking > tramo_1  and  proceso.subproceso.ranking <= tramo_2 %}
@@ -226,6 +233,11 @@ defcon={{defcon_est}}
 							<rr><strong> {{proceso.subproceso.ranking}} </strong></rr>
 						{%endif%}
 						]
+				{% if proceso.subproceso.actualiza %}
+					&nbsp;<img class="blink link" src="/static/img/actualizacion.png" width="12" height="12"
+					data-message="En actualizacion">
+				{%endif%}
+
 			{%else%}<!---- Si es Proceso (No Evaluable) --------->
 
 						&emsp;<strong>{{ proceso.nombre }}</strong><aa></aa>
