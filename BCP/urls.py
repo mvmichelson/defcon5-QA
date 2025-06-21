@@ -19,8 +19,8 @@ urlpatterns = [
     # Redirigir raíz a BCP
     #path('', RedirectView.as_view(url='/BCP/', permanent=False)),
 
-    # Admin
-    path('admin/', admin.site.urls),
+    # Admin (Obviar si ya esta en Url principal)
+    #path('admin/', admin.site.urls),
 
     # Pagina Principal y utilidades
     path('', views.index, name='index'),         # Pagina Principal

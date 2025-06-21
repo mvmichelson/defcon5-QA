@@ -5,6 +5,7 @@ from django.db import models
 from django.urls import reverse #Used to generate URLs by reversing the URL patterns
 from django.contrib.auth.models import User, Group
 from datetime import date, datetime
+from django.utils import timezone
 
 
 #====================================
@@ -27,8 +28,8 @@ class Proceso(models.Model):
     nro_hijos = models.IntegerField()
     nombre = models.CharField(max_length=50)
     objetivo = models.TextField(max_length=500, blank=True, help_text='Describa el principal objetivo del Proceso')
-    fecha_crea = models.DateField(null=True, default=date.today(), blank=True)
-    fecha_ult_mod = models.DateField(null=True, blank=True)
+    fecha_crea = models.DateField(auto_now_add=True)
+    fecha_ult_mod = models.DateField(auto_now_add=True)
 
 
     #Registra el Tipo 
@@ -143,7 +144,7 @@ class SubProceso_V(models.Model):
     pk_padre = models.IntegerField(default=0)
     codigo = models.CharField(max_length=50, blank=True) # Codigo del Proceso original
     path=models.CharField(max_length=200, blank=True)
-    fecha_ult_aut=models.DateField(null=True, blank=True)
+    fecha_ult_aut=models.DateField(auto_now_add=True)
     
     #Campos para implementar un modelo RACI
     gestor_R = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_r', null=True, blank=True)
@@ -214,8 +215,8 @@ class Control_Cambios(models.Model):
     """
     Log de Control de Cambios de Procesos y Procedimientos vigentes """
 
-    fecha = models.DateField(null=True, blank=True, default=date.today())
-    hora = models.TimeField(default=datetime.now().time())
+    fecha = models.DateField(auto_now_add=True)
+    hora = models.TimeField(auto_now_add=True)
     proceso= models.ForeignKey(SubProceso_V, on_delete=models.CASCADE, null=True)
     procedimiento= models.ForeignKey('Procedimientos_V', on_delete=models.CASCADE, null=True)
 
@@ -279,7 +280,7 @@ class LogAut(models.Model):
     cod_proceso = models.CharField(max_length=10, blank=True)
     gestor_aprobador= models.ForeignKey('Gestor', on_delete=models.SET_NULL, null=True)
     p_status=models.CharField(max_length=2, blank=True)
-    fecha=models.DateField(null=True, default=date.today(), blank=True)
+    fecha=models.DateField(auto_now_add=True)
     Aprobado=models.BooleanField(default=False, blank=True)
     item = models.CharField(max_length=10, blank=True)
     observacion=models.TextField(max_length=200)
@@ -536,7 +537,7 @@ class Incidentes(models.Model):
     """
 
     codigo = models.CharField(max_length= 100, blank=True)
-    fecha=models.DateField(null=True, default=date.today(), blank=True)
+    fecha=models.DateField(auto_now_add=True)
 
     # Identificacion de quien registra el incidente
     nombre_r  = models.CharField(max_length= 25, blank=True)
@@ -565,8 +566,8 @@ class Procedimientos(models.Model):
     pk_padre = models.IntegerField(default=0)
 
     #Fechas
-    fecha_c=models.DateField(null=True, default=date.today(), blank=True)
-    fecha_ult_mod =models.DateField(null=True, default=date.today(), blank=True)
+    fecha_c=models.DateField(auto_now_add=True)
+    fecha_ult_mod =models.DateField(auto_now_add=True)
 
     #Identificacion del Procedimiento
     nombre = models.CharField(max_length= 100, blank=False)
@@ -639,8 +640,8 @@ class Procedimientos_V(models.Model):
     version  = models.IntegerField(default=0)
 
     #Fechas
-    fecha_c=models.DateField(null=True, default=date.today(), blank=True)        # Autorizacion
-    fecha_ult_mod =models.DateField(null=True, default=date.today(), blank=True) 
+    fecha_c=models.DateField(auto_now_add=True)        # Autorizacion
+    fecha_ult_mod =models.DateField(auto_now_add=True) 
 
     #Identificacion del Procedimiento
     nombre = models.CharField(max_length= 100, blank=False)
@@ -815,8 +816,8 @@ class Drp(models.Model):
     version = models.CharField(max_length= 5, blank=False, default='0000')
     
     #Fechas
-    fecha_c=models.DateField(null=True, default=date.today(), blank=True)
-    fecha_ult_mod =models.DateField(null=True, default=date.today(), blank=True)
+    fecha_c=models.DateField(auto_now_add=True)
+    fecha_ult_mod =models.DateField(auto_now_add=True)
 
     #Identificacion del DRP
     nombre = models.CharField(max_length= 100, blank=False)
@@ -970,8 +971,8 @@ class Log_Revision(models.Model):
     """
     Comentarios de Revision de Auditoria y  Objetivos de Control
     """
-    fecha = models.DateField(null=True, blank=True, default=date.today())
-    hora = models.TimeField(default=datetime.now().time())
+    fecha = models.DateField(auto_now_add=True)
+    hora = models.TimeField(auto_now_add=True)
 
     proceso= models.ForeignKey(Proceso, on_delete=models.CASCADE, null=True)
     procedimiento= models.ForeignKey(Procedimientos, on_delete=models.CASCADE, null=True)
