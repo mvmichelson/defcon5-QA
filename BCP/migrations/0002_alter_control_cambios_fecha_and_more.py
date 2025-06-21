@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('BCP', '0001_initial'),
+        ('bcp', '0001_initial'),
     ]
 
     operations = [
@@ -100,3 +100,4 @@ class Migration(migrations.Migration):
             preserve_default=False,
         ),
     ]
+

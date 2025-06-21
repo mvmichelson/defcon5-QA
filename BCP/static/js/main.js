@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // const url = "{% url 'Crea-Rev-OC' %}";
 
         //fetch('/CIS/Auditorias/revisa/', {
-        fetch('/BCP/revisa/', {
+        fetch('/bcp/revisa/', {
 
             method: "POST",
             headers: {
@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("main.js en Activa/Desactiva cargado correctamente");
 
     // Cargar estados actuales de los switches al iniciar la página
-    fetch("/BCP/procedimientos/toggle/")  
+    fetch("/bcp/procedimientos/toggle/")  
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
@@ -382,9 +382,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            console.log(`Enviando petición a: /BCP/procedimientos/toggle/${procedimientoId}/`); 
+            console.log(`Enviando petición a: /bcp/procedimientos/toggle/${procedimientoId}/`); 
             
-            fetch(`/BCP/procedimientos/toggle/${procedimientoId}/`, {  
+            fetch(`/bcp/procedimientos/toggle/${procedimientoId}/`, {  
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -428,4 +428,5 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
     }
 });
+
 

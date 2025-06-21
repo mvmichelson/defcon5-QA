@@ -1,4 +1,4 @@
-#Modelo de Datos Modelo BCP del Sistema Defcon5.
+#Modelo de Datos Modelo bcp del Sistema Defcon5.
 
 from django.db import models
 
@@ -16,7 +16,7 @@ from django.utils import timezone
 class Proceso(models.Model):
     """
     Entidad: Proceso
-             Registra los atributos del Proceso a ser considerado por el BCP
+             Registra los atributos del Proceso a ser considerado por el bcp
     """
 
     
@@ -93,7 +93,7 @@ class SubProceso(models.Model):
     )
     status = models.CharField(max_length=1, choices=PROC_STATUS, blank=True, default='C', help_text='Estado de la definicion del Proceso')
 
-    #Registra la Fase en el desarrollo del  BCP
+    #Registra la Fase en el desarrollo del  bcp
     FASE_STATUS = (
         ('M', 'Fase Procesos'),
         ('V', 'Fase BIA'),
@@ -101,7 +101,7 @@ class SubProceso(models.Model):
         ('E', 'Fase Escenarios'),
     )
 
-    fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del BCP')
+    fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del bcp')
 
     recursos=models.ManyToManyField('Recursos', blank=False)
 
@@ -169,7 +169,7 @@ class SubProceso_V(models.Model):
     #)
     #status = models.CharField(max_length=1, choices=PROC_STATUS, blank=True, default='C', help_text='Estado de la definicion del Proceso')
 
-    #Registra la Fase en el desarrollo del  BCP
+    #Registra la Fase en el desarrollo del  bcp
     #FASE_STATUS = (
     #    ('M', 'Fase Procesos'),
     #    ('V', 'Fase BIA'),
@@ -177,7 +177,7 @@ class SubProceso_V(models.Model):
     #    ('E', 'Fase Escenarios'),
     #)
 
-    #fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del BCP')
+    #fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del bcp')
 
     recursos=models.ManyToManyField('Recursos', blank=False)
 
@@ -993,4 +993,5 @@ class Log_Revision(models.Model):
 
     class Meta:
         ordering = ["-fecha", "-hora"]
+
 

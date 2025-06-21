@@ -16,8 +16,8 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
 
-    # Redirigir raíz a BCP
-    #path('', RedirectView.as_view(url='/BCP/', permanent=False)),
+    # Redirigir raíz a bcp
+    #path('', RedirectView.as_view(url='/bcp/', permanent=False)),
 
     # Admin (Obviar si ya esta en Url principal)
     #path('admin/', admin.site.urls),
@@ -34,7 +34,7 @@ urlpatterns = [
 
     # Diagramas Metodologicos
     # -----------------------
-    path('mapeo/', views.Mapeo, name='Mapeo'),            # Diagrama Metodologia BCP/DRP
+    path('mapeo/', views.Mapeo, name='Mapeo'),            # Diagrama Metodologia bcp/DRP
     path('ria/mapa/', views.Mapa_RIA, name='Mapa-RIA'),    # Diagrama Metodologia RIA
 
    
@@ -256,6 +256,7 @@ urlpatterns += [
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # y ahí le especifico a Django el directorio que voy a utilizar para subir
 # ficheros.
+
 
 
 

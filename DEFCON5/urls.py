@@ -21,14 +21,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    # Redirige la raíz '/' a '/BCP/'
-    path('', RedirectView.as_view(url='/BCP/', permanent=False)),
+    # Redirige la raíz '/' a '/bcp/'
+    path('', RedirectView.as_view(url='/bcp/', permanent=False)),
 
     # Admin
     path('admin/', admin.site.urls),
 
     # App principal
-    path('BCP/', include('BCP.urls')),
+    path('bcp/', include('bcp.urls')),  # ✅ corregido a minúscula
 
     # Autenticación
     path('accounts/', include('django.contrib.auth.urls')),
@@ -36,5 +36,7 @@ urlpatterns = [
 
 # Servir archivos estáticos en desarrollo
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
 
 

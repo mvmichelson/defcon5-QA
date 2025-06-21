@@ -1,5 +1,5 @@
 #Programa PYTHON
-#Definicion de Vistas para el Sistema BCP del Proyecto DEFCON5
+#Definicion de Vistas para el Sistema bcp del Proyecto DEFCON5
 #Programado por Marco A. Villalobos Michelson
 #==============================================================
 
@@ -148,7 +148,7 @@ selec_TI=[]
 class Base_GenericPageView(TemplateView):
     
     model = Parametros_G
-    template_name = '/BCP/base_generic.html'
+    template_name = '/bcp/base_generic.html'
 
     def get_context_data(self, **kwargs):
         #global defcon_est
@@ -190,7 +190,7 @@ def index(request):
                  'defcon':defcon})
 
 def En_Construccion(request):
-    return render(request, 'BCP/Mensajes/en_construccion.html')
+    return render(request, 'bcp/Mensajes/en_construccion.html')
 
 
 def Mapeo(request):
@@ -198,14 +198,14 @@ def Mapeo(request):
     Despliega Grafico con la Metodologia de Mapeo 
     """
 
-    return render(request, 'BCP/mapeo.html')
+    return render(request, 'bcp/mapeo.html')
 
 def Mapa_RIA(request):
     """
     Despliega Grafico con la Metodologia de Evaluacion RIA 
     """
 
-    return render(request, 'BCP/ria/diagrama_ria.html')
+    return render(request, 'bcp/ria/diagrama_ria.html')
 
 
 
@@ -238,7 +238,7 @@ def Lista_Procesos(request):
 
     lista_procesos = Proceso.objects.all()
     
-    return render(request, 'BCP/proceso_list.html',
+    return render(request, 'bcp/proceso_list.html',
                   context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
  
 
@@ -262,7 +262,7 @@ def Lista_Recursos(request):
     tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
 
     lista_procesos = Proceso.objects.all()
-    return render(request, 'BCP/map_act/map_activos__list.html',
+    return render(request, 'bcp/map_act/map_activos__list.html',
                   context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
     
 
@@ -289,7 +289,7 @@ def Lista_Escenarios(request):
 
     lista_procesos = Proceso.objects.all()
     
-    return render(request, 'BCP/map_esc/map_esc_list.html',
+    return render(request, 'bcp/map_esc/map_esc_list.html',
                   context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
     
 
@@ -317,7 +317,7 @@ def Lista_Evaluaciones(request):
 
     lista_procesos = Proceso.objects.all()
     
-    return render(request, 'BCP/map_eval/map_eval__list.html',
+    return render(request, 'bcp/map_eval/map_eval__list.html',
                   context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
 
 
@@ -339,7 +339,7 @@ def Detalle_Proceso(request, pk):
     comentarios=Log_Revision.objects.filter(proceso=proceso)
     print('comentarios=', comentarios)
 
-    return render(request, 'BCP/proceso_detail.html',
+    return render(request, 'bcp/proceso_detail.html',
                   context={'proceso':proceso, 'comentarios':comentarios})
 
 def Detalle_Proceso_V(request, pk):
@@ -355,7 +355,7 @@ def Detalle_Proceso_V(request, pk):
     control_cambios=Control_Cambios.objects.filter(proceso=proceso.subproceso_v)
     print('comentarios=', control_cambios)
 
-    return render(request, 'BCP/proceso_detail_v.html',
+    return render(request, 'bcp/proceso_detail_v.html',
                   context={'proceso':proceso, 'control_c':control_cambios})
 
 
@@ -500,14 +500,14 @@ def crea_proceso(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
             
 
 
     # If this is a GET (or any other method) create the default form.
     else:
     
-        return render(request, 'BCP/proceso_crea.html', {'form': form, 'proceso':proc_padre})
+        return render(request, 'bcp/proceso_crea.html', {'form': form, 'proceso':proc_padre})
 
 #***********************
 # 2.1.2 Borra  Proceso *
@@ -600,13 +600,13 @@ def Crea_Activo(request):
             return HttpResponseRedirect(reverse('Lista-Recursos') )
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     # If this is a GET (or any other method) create the default form.
     else:
 
         
-        return render(request, 'BCP/map_act/crea_activo.html', {'form': form})
+        return render(request, 'bcp/map_act/crea_activo.html', {'form': form})
 
 
 
@@ -764,7 +764,7 @@ def Asigna_Raci(request, pk, etapa):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
         
     else:
@@ -782,7 +782,7 @@ def Asigna_Raci(request, pk, etapa):
                                         }
                              )
                                         
-        return render(request, 'BCP/raci_asigna.html', {'form': form, 'proc_raci':proc_raci, 'etapa':etapa})
+        return render(request, 'bcp/raci_asigna.html', {'form': form, 'proc_raci':proc_raci, 'etapa':etapa})
 
 
 #*********************************
@@ -920,7 +920,7 @@ def Autoriza_M(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -930,7 +930,7 @@ def Autoriza_M(request, pk):
                                         }
                              )
                                         
-        return render(request, 'BCP/proceso_auth.html', {'form': form, 
+        return render(request, 'bcp/proceso_auth.html', {'form': form, 
                                                          'proceso':proc,
                                                          'comentarios':comentarios_m})
     
@@ -1081,7 +1081,7 @@ def Aut_Asig_BIA(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
         
     else:
@@ -1089,7 +1089,7 @@ def Aut_Asig_BIA(request, pk):
         form = AutorizaRaciForm(initial= {'aprobacion':False, 'notifica':False }
                              )
                                         
-        return render(request, 'BCP/map_eval/asig_eval_auth.html', {'form': form,
+        return render(request, 'bcp/map_eval/asig_eval_auth.html', {'form': form,
                                                                     'proceso':proceso,
                                                                     'comentarios':comentarios_v})
     
@@ -1161,14 +1161,14 @@ def aut_obs_proceso(request, item, pk, valor):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
         url_ant_obs_aut =request.META['HTTP_REFERER']
         form= Autoriza_obs_Proced_C_Form()
         
-        return render(request, 'BCP/proceso_obs_auth.html', {'form': form, 'proc':proc, 'item':item, 'valor':valor})
+        return render(request, 'bcp/proceso_obs_auth.html', {'form': form, 'proc':proc, 'item':item, 'valor':valor})
 
 
 def borra_obs_proceso(request, pk):
@@ -1352,7 +1352,7 @@ def Aut_Asig_Act(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -1362,7 +1362,7 @@ def Aut_Asig_Act(request, pk):
                                         }
                              )
                                         
-        return render(request, 'BCP/map_act/asig_act_auth.html', {'form': form,
+        return render(request, 'bcp/map_act/asig_act_auth.html', {'form': form,
                                                                   'proceso':proc,
                                                                   'activos':activos,
                                                                   'activos_disp':activos_disp,
@@ -1935,7 +1935,7 @@ def Aut_Asig_Esc(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -1945,7 +1945,7 @@ def Aut_Asig_Esc(request, pk):
                                         }
                              )
                                         
-        return render(request, 'BCP/map_esc/asig_esc_auth.html', {'form': form, 'proc':proc,
+        return render(request, 'bcp/map_esc/asig_esc_auth.html', {'form': form, 'proc':proc,
                                                                   'escenarios':escenarios,
                                                                   'comentarios':comentarios_e,
                                                                   'esc_disp':esc_disp})
@@ -2072,7 +2072,7 @@ def Revisa_Proceso(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -2087,7 +2087,7 @@ def Revisa_Proceso(request, pk):
                                         }
                              )
                                         
-        return render(request, 'BCP/proceso_revisa.html', {'form': form,
+        return render(request, 'bcp/proceso_revisa.html', {'form': form,
                                                            'proceso':proc_rev,
                                                            'comentarios':comentarios_m})
 
@@ -2181,7 +2181,7 @@ def Revisa_AsigActxProceso(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
 
@@ -2191,7 +2191,7 @@ def Revisa_AsigActxProceso(request, pk):
                                           )
 
                                                
-        return render(request, 'BCP/map_act/asigna_act_revisa.html', {'form': form, 'proceso':proc_rev})
+        return render(request, 'bcp/map_act/asigna_act_revisa.html', {'form': form, 'proceso':proc_rev})
 
 
 def rev_asigna_servicio(request, pk):
@@ -2232,7 +2232,7 @@ def rev_asigna_servicio(request, pk):
     recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
     recursos_asignados = subproceso.recursos.all()
 
-    return render(request, 'BCP/map_act/rev_asigna_activos_v2.html', {
+    return render(request, 'bcp/map_act/rev_asigna_activos_v2.html', {
         'form': ServicioForm(),
         'proceso': proceso,
         'subproceso': subproceso,
@@ -2338,7 +2338,7 @@ def Revisa_Asig_Esc(request, pk):
         else:
 
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
             
         
@@ -2349,7 +2349,7 @@ def Revisa_Asig_Esc(request, pk):
                                               'notifica':False} )
 
                                                
-        return render(request, 'BCP/map_esc/asigna_esc_revisa.html', {'form': form,
+        return render(request, 'bcp/map_esc/asigna_esc_revisa.html', {'form': form,
                                                                       'proceso':proc_rev,
                                                                       'comentarios':comentarios_m})
     
@@ -2519,7 +2519,7 @@ def Revisa_Asig_BIA(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
 
@@ -2530,7 +2530,7 @@ def Revisa_Asig_BIA(request, pk):
                                               'notifica':False} )
 
                                                
-        return render(request, 'BCP/map_eval/asigna_eval_rev.html', {'form': form,
+        return render(request, 'bcp/map_eval/asigna_eval_rev.html', {'form': form,
                                                                      'proceso':proceso,
                                                                      'impactos':impactos_pc,
                                                                      'indicadores':indicador_pc,
@@ -2696,7 +2696,7 @@ def Asigna_Escenarios(request, pk):
         else:
 
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
 
             
         
@@ -2705,7 +2705,7 @@ def Asigna_Escenarios(request, pk):
         p2 = proceso.subproceso.escenarios.all()
         form = Asig_Esc_Form(initial= {'escenarios':set(p2)})
                                         
-        return render(request, 'BCP/map_esc/asigna_escenarios.html', {'form': form, 'proceso':proceso, 'escenarios':escenarios})
+        return render(request, 'bcp/map_esc/asigna_escenarios.html', {'form': form, 'proceso':proceso, 'escenarios':escenarios})
 
 
 
@@ -2754,7 +2754,7 @@ def Asigna_Activos(request, pk):
 
                     
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
     
         
     else:
@@ -2763,7 +2763,7 @@ def Asigna_Activos(request, pk):
         #form = Act_x_Proc_Form(initial= {'activos':set(p2)})
         form = Act_x_Proc_Form()
                                         
-        return render(request, 'BCP/map_act/asigna_activos.html', {'form': form, 'proceso':proceso})
+        return render(request, 'bcp/map_act/asigna_activos.html', {'form': form, 'proceso':proceso})
 
 
 
@@ -2796,7 +2796,7 @@ def asigna_servicio(request, pk):
     recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
     recursos_asignados = subproceso.recursos.all()
 
-    return render(request, 'BCP/map_act/asigna_activos_v2.html', {
+    return render(request, 'bcp/map_act/asigna_activos_v2.html', {
         'form': ServicioForm(),
         'proceso': proceso,
         'subproceso': subproceso,
@@ -2892,7 +2892,7 @@ def Asigna_Imp_Ind(request, pk):
         proceso.subproceso.save()
 
                                         
-    return render(request, 'BCP/map_eval/asigna_eval.html', {'proceso':proceso,
+    return render(request, 'bcp/map_eval/asigna_eval.html', {'proceso':proceso,
                                                              'impactos':impactos_pc,
                                                              'indicadores':indicador_pc,
                                                              'total_imp':total_imp,
@@ -2934,7 +2934,7 @@ def Asig_Imp(request, pk, status):
 
                     
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
     
         
     else:
@@ -2944,7 +2944,7 @@ def Asig_Imp(request, pk, status):
         form = Asig_Imp_Form(request.POST  or None, param=riesgo,
                              initial= {'nivel':nub_impacto.nivel} )
                                         
-        return render(request, 'BCP/map_eval/asigna_nivel_imp.html', {'nub_impacto':nub_impacto,
+        return render(request, 'bcp/map_eval/asigna_nivel_imp.html', {'nub_impacto':nub_impacto,
                                                                       'proceso':proceso,
                                                                       'opciones':opciones,
                                                                       'riesgo':riesgo,
@@ -2985,7 +2985,7 @@ def Asig_Ind(request, pk, status):
 
                     
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
     
         
     else:
@@ -2995,7 +2995,7 @@ def Asig_Ind(request, pk, status):
         form = Asig_Ind_Form(request.POST  or None, param=indicador,
                              initial= {'nivel':nub_indicador.nivel} )
                                         
-        return render(request, 'BCP/map_eval/asigna_nivel_ind.html', {'nub_indicador':nub_indicador,
+        return render(request, 'bcp/map_eval/asigna_nivel_ind.html', {'nub_indicador':nub_indicador,
                                                                       'proceso':proceso,
                                                                       'opciones':opciones,
                                                                       'indicador':indicador,
@@ -3081,7 +3081,7 @@ class ProcedimientosListView(generic.ListView):
     Generic class-based view listing books on loan to current user.
     """
     model =  Proceso
-    template_name='BCP/proced_cont/proced_list.html'
+    template_name='bcp/proced_cont/proced_list.html'
 
 
 def Lista_Procedimientos(request):
@@ -3114,7 +3114,7 @@ def Lista_Procedimientos(request):
 
     print('Procesos seleccionados', lista_procesos_v)
 
-    return render(request, 'BCP/proced_cont/proced_list.html',
+    return render(request, 'bcp/proced_cont/proced_list.html',
                   context={'lista_procesos':lista_procesos_v, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
     
 #*****************************************************
@@ -3202,7 +3202,7 @@ def cr_prcd_a(request, pk):
         
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})             
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})             
             
         
         
@@ -3218,7 +3218,7 @@ def cr_prcd_a(request, pk):
                         )
 
     
-        return render(request, 'BCP/proced_cont/prcd_crea_A.html', {'form': form, 'proceso':proceso})
+        return render(request, 'bcp/proced_cont/prcd_crea_A.html', {'form': form, 'proceso':proceso})
 
 #*************************************************************
 # 5.1.2  Creacion parte (B) de Procedimiento de Recuperacion *
@@ -3371,14 +3371,14 @@ def cr_prcd_b(request, pk):
             
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
             
             
         # redirect to a new URL:
         
         #return HttpResponseRedirect(reverse('Lista-Proced'))
         return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-        #return render(request, 'BCP/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
+        #return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
         #                                                          'contactos':contactos, 'pasos':pasos})
         
                       
@@ -3404,7 +3404,7 @@ def cr_prcd_b(request, pk):
                                 )
 
     
-        return render(request, 'BCP/proced_cont/proced_crea_B.html', {'form': form, 'proced':proced, 'proceso':proceso, 'escenarios':escenarios,
+        return render(request, 'bcp/proced_cont/proced_crea_B.html', {'form': form, 'proced':proced, 'proceso':proceso, 'escenarios':escenarios,
                                                                       'servicios':servicios, 'contactos':contactos,'pasos':pasos})
 
 
@@ -3464,7 +3464,7 @@ def cr_prcd_P5(request, pk, fase):
         
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
             
 
     # If this is a GET (or any other method) create the default form.
@@ -3473,7 +3473,7 @@ def cr_prcd_P5(request, pk, fase):
         url_ant=request.META['HTTP_REFERER']
         print(url_ant)
         form = CreaProc_P5_Form()
-        return render(request, 'BCP/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':proced.servicios_pc})    
+        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':proced.servicios_pc})    
 
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -3554,7 +3554,7 @@ def cr_prcd_P6(request, pk, fase):
         else:
             
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})            
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})            
                      
         
 
@@ -3563,7 +3563,7 @@ def cr_prcd_P6(request, pk, fase):
 
         url_ant=request.META['HTTP_REFERER']
         form = CreaProc_P6_Form()
-        return render(request, 'BCP/proced_cont/prcd_crea_conP6.html', {'form': form, 'contactos':proced.contactos_pc})
+        return render(request, 'bcp/proced_cont/prcd_crea_conP6.html', {'form': form, 'contactos':proced.contactos_pc})
     
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -3666,7 +3666,7 @@ def cr_prcd_P7(request, pk, fase):
             
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
             
 
     # If this is a GET (or any other method) create the default form.
@@ -3675,7 +3675,7 @@ def cr_prcd_P7(request, pk, fase):
         form = CreaProc_P7_Form(initial={'ejecutor':proced.gestor_ejecutor})
 
         #url_ant=request.META['HTTP_REFERER']
-        return render(request, 'BCP/proced_cont/prcd_crea_pasP7.html', {'form': form, 'pasos':proced.pasos,
+        return render(request, 'bcp/proced_cont/prcd_crea_pasP7.html', {'form': form, 'pasos':proced.pasos,
                                                                         'rto':rto,
                                                                         'proc':proced,
                                                                         'proceso':proceso,
@@ -4234,7 +4234,7 @@ def Aut_Proced_C(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -4244,7 +4244,7 @@ def Aut_Proced_C(request, pk):
                                         }
                              )
                                         
-        return render(request, 'BCP/proced_cont/proced_auth.html', {'form': form,
+        return render(request, 'bcp/proced_cont/proced_auth.html', {'form': form,
                                                                     'proceso':proceso,
                                                                     'proced':proced,
                                                                     'servicios':servicios,
@@ -4313,14 +4313,14 @@ def aut_obs_proced(request, item, pk, valor):
         
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     else:
     
         url_ant_obs_aut =request.META['HTTP_REFERER']
         form= Autoriza_obs_Proced_C_Form()
         
-        return render(request, 'BCP/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
+        return render(request, 'bcp/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
 
 
 
@@ -4410,7 +4410,7 @@ def Revisa_Proced_B(request, pk):
         else:
             
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     # If this is a GET (or any other method) create the default form.
     else:
@@ -4430,7 +4430,7 @@ def Revisa_Proced_B(request, pk):
                         )
 
     
-        return render(request, 'BCP/proced_cont/proced_rev_B.html', {'form': form,
+        return render(request, 'bcp/proced_cont/proced_rev_B.html', {'form': form,
                                                                      'proced':proced,
                                                                      'proceso':proceso,
                                                                      'escenarios':escenarios,
@@ -4459,7 +4459,7 @@ def cr_prcd_list(request, pk):
     pasos = proced.pasos
     
     
-    return render(request, 'BCP/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
+    return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
                                                                   'contactos':contactos, 'pasos':pasos})
 
 
@@ -4473,7 +4473,7 @@ def detalle_procedimiento(request, pk ):
 
     proced = get_object_or_404(Procedimientos, pk = pk)
     proceso = get_object_or_404(Proceso, pk=proced.pk_padre)
-    return render(request, 'BCP/proced_cont/proced_detalle.html', {'proced':proced, 'proceso':proceso})
+    return render(request, 'bcp/proced_cont/proced_detalle.html', {'proced':proced, 'proceso':proceso})
     
 def detalle_procedimiento_v(request, pk): 
     """ Detalle del Procedimiento Vigente
@@ -4486,7 +4486,7 @@ def detalle_procedimiento_v(request, pk):
 
     c_cambio=Control_Cambios.objects.filter(procedimiento=proced_v)
 
-    return render(request, 'BCP/proced_cont/proced_detalle_v.html', {'proced':proced_v,
+    return render(request, 'bcp/proced_cont/proced_detalle_v.html', {'proced':proced_v,
                                                                      'proceso':proceso,
                                                                      'c_cambio':c_cambio})
 
@@ -4550,7 +4550,7 @@ def Lista_DRP(request):
 
     lista_drp = Drp.objects.all()
     
-    return render(request, 'BCP/drp/lista_drp.html', context={'lista_drp':lista_drp})
+    return render(request, 'bcp/drp/lista_drp.html', context={'lista_drp':lista_drp})
 
 #******************************************************
 # 6.2 Muestra el Indice con las Secciones del DRP     *
@@ -4563,7 +4563,7 @@ def Indice_DRP(request, pk):
     #lista_procesos = Proceso.objects.all()
     drp =  get_object_or_404(Drp, pk = pk)
     
-    return render(request, 'BCP/drp/indice_drp.html', context={'drp':drp})
+    return render(request, 'bcp/drp/indice_drp.html', context={'drp':drp})
 
 
 #**********************
@@ -4609,12 +4609,12 @@ def Crea_Drp(request):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
         form = Crea_DRP_Enc_Form()
-        return render(request, 'BCP/drp/crea_drp.html', {'form':form})
+        return render(request, 'bcp/drp/crea_drp.html', {'form':form})
 
 #**********************
 # 6.4 Borra un DRP    *
@@ -4668,12 +4668,12 @@ def Drp_Sec_1(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
         form = Drp_Sec_1_Form(initial={'objetivo':drp.introduccion})
-        return render(request, 'BCP/drp/objetivo_drp.html', {'drp':drp, 'form':form})
+        return render(request, 'bcp/drp/objetivo_drp.html', {'drp':drp, 'form':form})
 
  
 
@@ -4904,7 +4904,7 @@ def Drp_Sec_2(request, pk):
         else:
             print('*** ERROR DE INGRESO ***', form.errors)
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form.errors':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form.errors':form.errors})
 
     else:
 
@@ -4915,7 +4915,7 @@ def Drp_Sec_2(request, pk):
                                        'enlace_c_crisis':drp.enlace_c_crisis_drp,
                                        'bck_enlace':drp.bck_enlace_drp})
 
-        return render(request, 'BCP/drp/responsable_drp.html', {'drp':drp, 'form':form})
+        return render(request, 'bcp/drp/responsable_drp.html', {'drp':drp, 'form':form})
 
 
 #*************************************
@@ -4957,7 +4957,7 @@ def Drp_Sec_3(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
@@ -4966,7 +4966,7 @@ def Drp_Sec_3(request, pk):
         p2=drp.procesos_drp.all()
 
         form = Drp_Sec_3_Form(initial={ 'procesos':set(p2)})
-        return render(request, 'BCP/drp/alcance_drp.html', {'drp':drp, 'form':form})
+        return render(request, 'bcp/drp/alcance_drp.html', {'drp':drp, 'form':form})
 
 
 
@@ -5009,7 +5009,7 @@ def Drp_Sec_4(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
@@ -5020,7 +5020,7 @@ def Drp_Sec_4(request, pk):
                                        'desc_estrategia':drp.desc_estrategia
                                        
                                        })
-        return render(request, 'BCP/drp/estrategia_drp.html', {'drp':drp, 'form':form})
+        return render(request, 'bcp/drp/estrategia_drp.html', {'drp':drp, 'form':form})
 
 
 #**************************************
@@ -5041,7 +5041,7 @@ def Lista_CMP(request, pk):
     url_comp=Componentes.get_absolute_url
     print('url ant=', url_ant)
 
-    return render(request, 'BCP/drp/lista_cmp.html', context={'lista_cmp':lista_cmp, 'url_comp':url_comp, 'drp':drp})
+    return render(request, 'bcp/drp/lista_cmp.html', context={'lista_cmp':lista_cmp, 'url_comp':url_comp, 'drp':drp})
 
 
 #*************************************
@@ -5080,7 +5080,7 @@ def Asigna_CMP(request, pk, accion):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
@@ -5088,7 +5088,7 @@ def Asigna_CMP(request, pk, accion):
         p2=drp.componentes.all()
         form = Drp_Sec_5_Form(initial={'componentes':set(p2)})
 
-        return render(request, 'BCP/drp/asigna_cmp.html', {'drp':drp, 'form':form})
+        return render(request, 'bcp/drp/asigna_cmp.html', {'drp':drp, 'form':form})
       
 #************************************
 # 6.9.3.1 Crea Componentes en la BD *
@@ -5133,13 +5133,13 @@ def Crea_CMP(request):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
         
         form = Crea_CMP_Form()
-        return render(request, 'BCP/drp/crea_cmp.html', {'form':form})    
+        return render(request, 'bcp/drp/crea_cmp.html', {'form':form})    
 
 #*************************************
 # 6.9.3.2 Borra Componentes de la BD *
@@ -5163,7 +5163,7 @@ def Lista_LBC(request, pk, pk_drp):
     print('Lista_lbc=', lista_lbc)
 
 
-    return render(request, 'BCP/drp/lista_lbc.html', context={'comp':comp, 'lista_lbc':lista_lbc, 'drp':drp})
+    return render(request, 'bcp/drp/lista_lbc.html', context={'comp':comp, 'lista_lbc':lista_lbc, 'drp':drp})
 
 
 #***************************
@@ -5220,14 +5220,14 @@ def Crea_LBC(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
         Crea_LBC_url_ant=request.META['HTTP_REFERER']
 
         form = Crea_LBC_Form()
-        return render(request, 'BCP/drp/crea_lbc.html', {'form':form, 'cmp':cmp})  
+        return render(request, 'bcp/drp/crea_lbc.html', {'form':form, 'cmp':cmp})  
 
 
 #***************************
@@ -5262,7 +5262,7 @@ def Lista_Serv_Crtc(request, pk):
     lista_sc=drp.servicios_drp 
 
    
-    return render(request, 'BCP/drp/lista_sc.html', context={'lista_sc':lista_sc, 'drp':drp})
+    return render(request, 'bcp/drp/lista_sc.html', context={'lista_sc':lista_sc, 'drp':drp})
 
 
 #**************************************
@@ -5348,7 +5348,7 @@ def cr_drp_P5(request, pk, acc):
         
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
             
 
     # If this is a GET (or any other method) create the default form.
@@ -5356,7 +5356,7 @@ def cr_drp_P5(request, pk, acc):
 
         cr_drp_P5_url_ant=request.META['HTTP_REFERER']
         print(url_ant)
-        return render(request, 'BCP/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':drp.servicios_drp})    
+        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':drp.servicios_drp})    
 
 
 #***************************************
@@ -5411,7 +5411,7 @@ def Lista_Pasos_Drp(request, pk):
     lista_pasos=drp.pasos_drp 
 
    
-    return render(request, 'BCP/drp/lista_pasos.html', context={'lista_pasos':lista_pasos, 'drp':drp})
+    return render(request, 'bcp/drp/lista_pasos.html', context={'lista_pasos':lista_pasos, 'drp':drp})
 
 #*******************************
 # 6.11 Procedimiento del  DRP  *
@@ -5465,14 +5465,14 @@ def cr_drp_P7(request, pk):
             
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
             
 
     # If this is a GET (or any other method) create the default form.
     else:
 
         #url_ant=request.META['HTTP_REFERER']
-        return render(request, 'BCP/proced_cont/prcd_crea_pasP7.html', {'form': form, 'pasos':drp.pasos_drp})
+        return render(request, 'bcp/proced_cont/prcd_crea_pasP7.html', {'form': form, 'pasos':drp.pasos_drp})
     
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -5513,7 +5513,7 @@ def Lista_Contactos_DRP(request, pk):
     lista_contactos=drp.contactos_drp 
 
    
-    return render(request, 'BCP/drp/lista_contactos.html', context={'lista_contactos':lista_contactos, 'drp':drp})
+    return render(request, 'bcp/drp/lista_contactos.html', context={'lista_contactos':lista_contactos, 'drp':drp})
 
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -5566,7 +5566,7 @@ def cr_drp_P6(request, pk):
         else:
             
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})            
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})            
                      
         
 
@@ -5574,7 +5574,7 @@ def cr_drp_P6(request, pk):
     else:
 
         url_ant=request.META['HTTP_REFERER']
-        return render(request, 'BCP/proced_cont/prcd_crea_conP6.html', {'form': form, 'contactos':drp.contactos_drp})
+        return render(request, 'bcp/proced_cont/prcd_crea_conP6.html', {'form': form, 'contactos':drp.contactos_drp})
     
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -5624,7 +5624,7 @@ def md_drp_P6(request, pk):
         else:
             
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})            
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})            
                      
         
 
@@ -5637,7 +5637,7 @@ def md_drp_P6(request, pk):
                                        'tel_lab':contacto.tel_lab,
                                        'cel_lab':contacto.cel_lab})
         
-        return render(request, 'BCP/drp/drp_mod_conP6.html', {'form': form })
+        return render(request, 'bcp/drp/drp_mod_conP6.html', {'form': form })
     
 
 
@@ -5875,7 +5875,7 @@ def Aut_Drp(request, pk, sec):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -5886,35 +5886,35 @@ def Aut_Drp(request, pk, sec):
                              )
 
         if sec == '1':    # 2. Objetivo                           
-            return render(request, 'BCP/drp/drp_s1_auth.html', {'form': form, 'drp':drp})
+            return render(request, 'bcp/drp/drp_s1_auth.html', {'form': form, 'drp':drp})
         
         if sec == '2':    # 1. Organizacion                            
-            return render(request, 'BCP/drp/drp_s2_auth.html', {'form': form, 'drp':drp})
+            return render(request, 'bcp/drp/drp_s2_auth.html', {'form': form, 'drp':drp})
         
         if sec == '3':    # 3. Alcance                           
-            return render(request, 'BCP/drp/drp_s3_auth.html',
+            return render(request, 'bcp/drp/drp_s3_auth.html',
                         {'form': form, 'drp':drp, 'procesos_disp':procesos_disp, 'procesos_asig':procesos_asig})
         
         if sec == '4':    # 4. Estrategia de Recuperacion                         
-            return render(request, 'BCP/drp/drp_s4_auth.html', {'form': form, 'drp':drp})
+            return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form, 'drp':drp})
         
         if sec == '5':    # 5. Especificacion Tecnica del Site de Contingencias                           
-            return render(request, 'BCP/drp/drp_s5_auth.html',  {'form': form, 'drp':drp,
+            return render(request, 'bcp/drp/drp_s5_auth.html',  {'form': form, 'drp':drp,
                                                                  'compo_asig':compo_asig,
                                                                  'compo_disp':compo_disp})
         
         if sec == '6':   # 6. Servicios Criticos                         
-            return render(request, 'BCP/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
+            return render(request, 'bcp/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
                                                                   'servicios_asig':servicios_asig,
                                                                   'servicios_disp':servicios_disp
                                                                   })
         
         if sec == '7':                            
-            return render(request, 'BCP/proced_cont/proced_auth.html',
+            return render(request, 'bcp/proced_cont/proced_auth.html',
                         {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
                         'contactos':contactos, 'pasos':pasos})
         if sec == 'A':                            
-            return render(request, 'BCP/proced_cont/proced_auth.html',
+            return render(request, 'bcp/proced_cont/proced_auth.html',
                         {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
                         'contactos':contactos, 'pasos':pasos})
         
@@ -5980,14 +5980,14 @@ def aut_obs_proced(request, item, pk, valor):
         
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     else:
     
         url_ant_obs_aut =request.META['HTTP_REFERER']
         form= Autoriza_obs_Proced_C_Form()
         
-        return render(request, 'BCP/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
+        return render(request, 'bcp/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
 
 
 from .forms import Autoriza_obs_Proced_C_Form
@@ -6051,14 +6051,14 @@ def aut_obs_drp(request, item, pk, valor):
         
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     else:
     
         url_ant_obs_aut =request.META['HTTP_REFERER']
         form= Autoriza_obs_Proced_C_Form()
         
-        return render(request, 'BCP/drp/drp_obs_auth.html', {'form': form, 'drp':drp, 'item':item, 'valor':valor})
+        return render(request, 'bcp/drp/drp_obs_auth.html', {'form': form, 'drp':drp, 'item':item, 'valor':valor})
 
 
 #*********************************************************
@@ -6301,7 +6301,7 @@ def Rev_S2_Drp(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -6316,7 +6316,7 @@ def Rev_S2_Drp(request, pk):
                              )
 
                                  
-        return render(request, 'BCP/drp/drp_s2_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s2_rev.html', {'form': form, 'drp':drp})
         
 
 #******************************************************
@@ -6368,7 +6368,7 @@ def Rev_S1_Drp(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -6378,7 +6378,7 @@ def Rev_S1_Drp(request, pk):
                              )
 
                                  
-        return render(request, 'BCP/drp/drp_s1_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s1_rev.html', {'form': form, 'drp':drp})
     
 
 #*****************************************************
@@ -6432,7 +6432,7 @@ def Rev_S3_Drp(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -6443,7 +6443,7 @@ def Rev_S3_Drp(request, pk):
         form = Drp_Sec_3_Form(initial={ 'procesos':set(p2)})
 
                                  
-        return render(request, 'BCP/drp/drp_s3_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s3_rev.html', {'form': form, 'drp':drp})
 
 
 #*****************************************************
@@ -6488,7 +6488,7 @@ def Rev_S4_Drp(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -6502,7 +6502,7 @@ def Rev_S4_Drp(request, pk):
                                        })
 
                                  
-        return render(request, 'BCP/drp/drp_s4_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s4_rev.html', {'form': form, 'drp':drp})
 
 
 #***************************************************************
@@ -6546,7 +6546,7 @@ def Rev_S5_Drp(request, pk):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
@@ -6555,7 +6555,7 @@ def Rev_S5_Drp(request, pk):
         form = Drp_Sec_5_Form(initial={'componentes':set(p2)})
 
                                  
-        return render(request, 'BCP/drp/drp_s5_rev.html', {'form': form, 'drp':drp,
+        return render(request, 'bcp/drp/drp_s5_rev.html', {'form': form, 'drp':drp,
                                                            'lista_cmp':lista_cmp})
 
 
@@ -6577,7 +6577,7 @@ def Rev_S6_Drp(request, pk):
     drp = get_object_or_404(Drp, pk = pk)
     lista_sc = drp.servicios_drp
 
-    return render(request, 'BCP/drp/drp_s6_rev.html', {'drp':drp,'lista_sc':lista_sc})
+    return render(request, 'bcp/drp/drp_s6_rev.html', {'drp':drp,'lista_sc':lista_sc})
 
 #*********************************************** Fin DRP ************************************************************************************
 
@@ -6680,12 +6680,12 @@ def Declara_Inc(request):
         else:
 
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
     else:
 
         form = Declara_Incidente_Form()
-        return render(request, 'BCP/inc_mgm/crea_inc.html',{'form':form })
+        return render(request, 'bcp/inc_mgm/crea_inc.html',{'form':form })
 
 
 #************************************
@@ -6701,7 +6701,7 @@ def Lista_Incidentes(request):
 
     incidentes=Incidentes.objects.all()
     
-    return render(request, 'BCP/inc_mgm/incidentes__list.html', {'incidentes':incidentes})
+    return render(request, 'bcp/inc_mgm/incidentes__list.html', {'incidentes':incidentes})
 
 #****************************
 #6.2.1  Modifica Incidente  *
@@ -6753,7 +6753,7 @@ def Modifica_Inc(request, pk):
         else:
 
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
             
               
 
@@ -6764,7 +6764,7 @@ def Modifica_Inc(request, pk):
 
         print('GET')
         
-        return render(request, 'BCP/inc_mgm/modi_inc.html',{'form':form, 'incidente':incidente })
+        return render(request, 'bcp/inc_mgm/modi_inc.html',{'form':form, 'incidente':incidente })
 
       
 
@@ -6893,7 +6893,7 @@ def Perfil_Inc(request, pk):
 
     
 
-    return render(request,'BCP/inc_mgm/perfil_inc.html', {'incidente':incidente,
+    return render(request,'bcp/inc_mgm/perfil_inc.html', {'incidente':incidente,
                                                           'comite':comite,
                                                           'amenazas':amenazas_inc,
                                                           'n_procesos':n_procesos,
@@ -7044,7 +7044,7 @@ def Lista_PC_Px(request, pk, pk_padre):
 
     url_ant = request.META['HTTP_REFERER']
 
-    return render(request,'BCP/inc_mgm/pcxp_inc_list.html',
+    return render(request,'bcp/inc_mgm/pcxp_inc_list.html',
                   context={'proceso_det':proceso_det, 'proceso_enc':proceso_enc, 'proced':proced,
                            'url_ant':url_ant,'pk_padre':pk_padre}) 
 
@@ -7100,7 +7100,7 @@ def Menu_Conf(request):
     if not es_del_grupo([request.user, 'Administradores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[100] ))
         
-    return render(request,'BCP/conf/menu_conf.html')
+    return render(request,'bcp/conf/menu_conf.html')
 
 
 #******************************************
@@ -7183,9 +7183,9 @@ def Crea_G(request):
                 print ('mensaje :', form.errors[error])
                                     
                 #return HttpResponseRedirect(reverse('error-mgm', args=[mensaje]))
-                return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors, 'form2':form2.errors} )
+                return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors, 'form2':form2.errors} )
                 #form = Crea_Gestor_Form(request.POST, data=form.errors)
-                #return render(request, 'BCP/conf/crea_gestor.html', {'form':form} )
+                #return render(request, 'bcp/conf/crea_gestor.html', {'form':form} )
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -7193,7 +7193,7 @@ def Crea_G(request):
         form = Crea_Gestor_Form()
         form2= Crea_Gestor2_Form()
         
-        return render(request, 'BCP/conf/crea_gestor.html', {'form':form, 'form2':form2} )
+        return render(request, 'bcp/conf/crea_gestor.html', {'form':form, 'form2':form2} )
 
 
 from .forms import Borra_Gestor_Form
@@ -7238,14 +7238,14 @@ def Borra_Gestor(request):
         else:
 
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})   
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})   
 
 
     else:
         
         form = Borra_Gestor_Form()
         
-    return render(request,'BCP/conf/borra_gestor.html', {'form':form})
+    return render(request,'bcp/conf/borra_gestor.html', {'form':form})
     
 
 
@@ -7254,7 +7254,7 @@ class GestorListView(generic.ListView):
     Generic class-based view listing - Listado de Gestores para asignacion de Grupos.
     """
     model = Gestor
-    template_name='BCP/conf/gestor_list.html'
+    template_name='bcp/conf/gestor_list.html'
 
     print('Entra a Listado')
 
@@ -7303,7 +7303,7 @@ def Asigna_Grupo(request, pk):
 
                     
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
     
         
     else:
@@ -7311,7 +7311,7 @@ def Asigna_Grupo(request, pk):
         p2 = usuario.groups.all()
         form = Asigna_Grupo_Form(initial= {'grupos':set(p2)})
                                         
-        return render(request, 'BCP/conf/asigna_grupos.html', {'form': form, 'usuario':usuario})
+        return render(request, 'bcp/conf/asigna_grupos.html', {'form': form, 'usuario':usuario})
 
 
 
@@ -7339,7 +7339,7 @@ def Lista_riesgos(request):
 
     print('menor_a_100', menor_a_100)
 
-    return render(request, 'BCP/ria/lista_riesgos.html', {'riesgos':riesgos,
+    return render(request, 'bcp/ria/lista_riesgos.html', {'riesgos':riesgos,
                                                            'menor_a_100':menor_a_100,
                                                            'resto':resto})
 
@@ -7385,13 +7385,13 @@ def Crea_Impacto(request):
         else:
                   
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     else:
         
         form = Crea_Impacto_Form(initial={'ponderacion':resto})
                                         
-        return render(request, 'BCP/ria/crea_impacto.html', {'form':form })
+        return render(request, 'bcp/ria/crea_impacto.html', {'form':form })
 
 
 from .forms import Crea_Impacto_Form
@@ -7441,7 +7441,7 @@ def Mod_Impacto(request, pk):
         else:
                   
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     else:
         
@@ -7449,7 +7449,7 @@ def Mod_Impacto(request, pk):
                                           'descripcion':impacto.descripcion,
                                           'ponderacion':impacto.ponderacion})
                                         
-        return render(request, 'BCP/ria/mod_impacto.html', {'form':form })
+        return render(request, 'bcp/ria/mod_impacto.html', {'form':form })
 
 def Borra_Impacto(request, pk):
     """
@@ -7473,7 +7473,7 @@ def Lista_Nivel_Impactos(request, pk):
 
 
 
-    return render(request, 'BCP/ria/lista_nivel_imp.html', {'niveles':niveles,
+    return render(request, 'bcp/ria/lista_nivel_imp.html', {'niveles':niveles,
                                                             'riesgo':riesgo})
 
 
@@ -7505,14 +7505,14 @@ def Crea_Nivel_Impacto(request, pk):
         else:
                   
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
         
     else:
         
         form = Crea_Nivel_Imp_Form()
     
 
-    return render(request, 'BCP/ria/crea_nivel_impacto.html', {'riesgo':riesgo, 'form':form})
+    return render(request, 'bcp/ria/crea_nivel_impacto.html', {'riesgo':riesgo, 'form':form})
 
 
 #*********************************************************************************************************************************************
@@ -7533,11 +7533,11 @@ from django.core.mail import EmailMultiAlternatives
 def Manda_Correo(email,cc_email,nombre,proceso, accion):
 
     context = {'email':email, 'nombre':nombre,'proceso':proceso, 'accion':accion}
-    plantilla = get_template('BCP/mensajes/mensaje1.html')
+    plantilla = get_template('bcp/mensajes/mensaje1.html')
     contenido = plantilla.render(context)
 
     correo= EmailMultiAlternatives(
-        'DEFCON 5 / BCP - Autorizacion de Proceso',
+        'DEFCON 5 / bcp - Autorizacion de Proceso',
         'Aprobacion de Proceso ',
         settings.EMAIL_HOST_USER,
         [email],
@@ -7594,7 +7594,7 @@ def Err_Sesion_Mgm(request, ce):
         mensaje='Error de Sesion no identificado.'
         
  
-    return render(request, 'BCP/mensajes/mensajes_error_sesion.html', context={'mensaje':mensaje}) 
+    return render(request, 'bcp/mensajes/mensajes_error_sesion.html', context={'mensaje':mensaje}) 
 
 #*******************************
 #Valida el acceso de la sesion *
@@ -7743,11 +7743,12 @@ def reset(request):
 
         else:
             print(form.errors)
-            return render(request, 'BCP/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
     else:
     
         form = Reset()
                                  
         return render(request, 'reset.html', {'form': form})
+
 

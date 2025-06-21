@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // const url = "{% url 'Crea-Rev-OC' %}";
 
         //fetch('/CIS/Auditorias/revisa/', {
-        fetch('/BCP/revisa/', {
+        fetch('/bcp/revisa/', {
 
             method: "POST",
             headers: {
@@ -327,3 +327,4 @@ function filtrarTabla(inputId, tablaId) {
 
 // Confirmar que el script se cargó sin errores
 console.log("Script main.js ejecutado correctamente.");
+

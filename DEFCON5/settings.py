@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'BCP.apps.BcpConfig',
+    'bcp.apps.bcpConfig',  # Cambiado a minúsculas para coincidir con carpeta y apps.py
     'django_select2',
 ]
 
@@ -97,7 +97,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 #STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'BCP/static'),
+    os.path.join(BASE_DIR, 'bcp/static'),  # Cambiado a minúsculas
 ]
 
 MEDIA_URL = '/media/'
@@ -128,4 +128,5 @@ PASSWORD_HASHERS = [
 ]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
