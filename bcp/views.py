@@ -167,30 +167,32 @@ def index(request):
     Función de vista para la página inicio del sitio.
     """
 
-    usr=request.user
+    #usr=request.user
     #if not usr.is_authenticated:
         #return HttpResponseRedirect(reverse('error-sesion-mgm', args=[500] ))
 
     # Genera contadores de algunos de los objetos principales
-    num_proc=Proceso.objects.all().count()
-    num_sproc=SubProceso.objects.all().count()
-    num_proced=Procedimientos.objects.all().count()
+    #num_proc=Proceso.objects.all().count()
+    #num_sproc=SubProceso.objects.all().count()
+    #num_proced=Procedimientos.objects.all().count()
    
     # Numero de visitas a esta view, como está contado en la variable de sesión.
-    num_visits = request.session.get('num_visits', 0)
-    request.session['num_visits'] = num_visits + 1
+    #num_visits = request.session.get('num_visits', 0)
+    #request.session['num_visits'] = num_visits + 1
 
-    defcon = get_object_or_404(Parametros_G , pk=1)
+    #defcon = get_object_or_404(Parametros_G , pk=1)
 
     # Renderiza la plantilla HTML index.html con los datos en la variable contexto
-    return render(
-        request,
-        'index.html',
-        context={'num_proc':num_proc,'num_sproc':num_sproc, 'num_proced':num_proced,'num_visits':num_visits,
-                 'defcon':defcon})
+    return render(request, 'index.html')
+
+    #return render(
+    #    request,
+    #    'index.html',
+    #    context={'num_proc':num_proc,'num_sproc':num_sproc, 'num_proced':num_proced,'num_visits':num_visits,
+    #             'defcon':defcon})
 
 def En_Construccion(request):
-    return render(request, 'bcp/Mensajes/en_construccion.html')
+    return render(request, 'bcp/mensajes/en_construccion.html')
 
 
 def Mapeo(request):
