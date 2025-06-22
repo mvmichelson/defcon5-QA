@@ -7766,3 +7766,19 @@ def importa_usuarios(request):
         return HttpResponse("✅ Usuarios y grupos importados correctamente.")
     except Exception as e:
         return HttpResponse(f"❌ Error al importar usuarios: {e}")
+    
+
+### Codigo temporal para cargar la Base de Datos en Desarrollo (local)
+from django.contrib.admin.views.decorators import staff_member_required
+
+def importa_backup(request):
+    try:
+        ruta_fixture = os.path.join('bcp', 'fixtures', 'backup.json')
+        
+        if not os.path.exists(ruta_fixture):
+            return HttpResponse("❌ Archivo backup.json no encontrado.")
+
+        call_command('loaddata', ruta_fixture, verbosity=1)
+        return HttpResponse("✅ Datos importados exitosamente desde backup.json.")
+    except Exception as e:
+        return HttpResponse(f"❌ Error al importar backup: {e}")

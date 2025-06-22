@@ -32,8 +32,9 @@ urlpatterns = [
 
     #url(r'^request.META['HTTP_REFERER']', name='volver'),
 
-    # Carga de usuarios y grupos en produccion (usar solo una vez)
+    # Carga de datos de la BD de Desarrollo (local) 
     path('carga_usuarios/', views.importa_usuarios, name='carga-usuarios'),
+    path('importa_backup/', views.importa_backup, name='importa-backup'),
 
 
     # Diagramas Metodologicos
