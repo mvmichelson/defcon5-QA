@@ -32,6 +32,10 @@ urlpatterns = [
 
     #url(r'^request.META['HTTP_REFERER']', name='volver'),
 
+    # Carga de usuarios y grupos en produccion (usar solo una vez)
+    path('carga_usuarios/', views.importa_usuarios, name='carga-usuarios'),
+
+
     # Diagramas Metodologicos
     # -----------------------
     path('mapeo/', views.Mapeo, name='Mapeo'),            # Diagrama Metodologia bcp/DRP

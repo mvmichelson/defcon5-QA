@@ -7754,3 +7754,15 @@ def reset(request):
         return render(request, 'reset.html', {'form': form})
 
 
+### Codigo temporal para cargar usuarios y grupos a produccion
+from django.core.management import call_command
+from django.http import HttpResponse
+import os
+
+def importa_usuarios(request):
+    try:
+        ruta_fixture = os.path.join('bcp', 'fixtures', 'usuarios.json')
+        call_command('loaddata', ruta_fixture, verbosity=0)
+        return HttpResponse("✅ Usuarios y grupos importados correctamente.")
+    except Exception as e:
+        return HttpResponse(f"❌ Error al importar usuarios: {e}")
