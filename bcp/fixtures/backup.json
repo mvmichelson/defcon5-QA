@@ -2142,266 +2142,6 @@
   }
 },
 {
-  "model": "bcp.logaut",
-  "pk": 115,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "rE",
-    "fecha": "2025-06-05",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 116,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-05",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 117,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-05",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 118,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "xE",
-    "fecha": "2025-06-11",
-    "Aprobado": false,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 119,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "xE",
-    "fecha": "2025-06-11",
-    "Aprobado": false,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 120,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "xE",
-    "fecha": "2025-06-11",
-    "Aprobado": false,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 121,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "xE",
-    "fecha": "2025-06-11",
-    "Aprobado": false,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 122,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "xE",
-    "fecha": "2025-06-11",
-    "Aprobado": false,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 123,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "rE",
-    "fecha": "2025-06-11",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 124,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "xE",
-    "fecha": "2025-06-11",
-    "Aprobado": false,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 125,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "rE",
-    "fecha": "2025-06-11",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 126,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-11",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 127,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "rE",
-    "fecha": "2025-06-11",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 128,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "rE",
-    "fecha": "2025-06-11",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 129,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "rE",
-    "fecha": "2025-06-13",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 130,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-13",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 131,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-13",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 132,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-13",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 133,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-14",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
-  "model": "bcp.logaut",
-  "pk": 134,
-  "fields": {
-    "cod_proceso": "",
-    "gestor_aprobador": null,
-    "p_status": "RE",
-    "fecha": "2025-06-14",
-    "Aprobado": true,
-    "item": "Conclusion etapa Autorizacion.:",
-    "observacion": ""
-  }
-},
-{
   "model": "bcp.recursos",
   "pk": 1,
   "fields": {
@@ -60755,6 +60495,366 @@
     ],
     "object_id": "2",
     "object_repr": "./. Negociacion./. Ordenes de Compra/Venta./. Rueda",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2769,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.052Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "134",
+    "object_repr": "LogAut object (134)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2770,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.065Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "133",
+    "object_repr": "LogAut object (133)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2771,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.074Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "132",
+    "object_repr": "LogAut object (132)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2772,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.082Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "131",
+    "object_repr": "LogAut object (131)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2773,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.093Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "130",
+    "object_repr": "LogAut object (130)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2774,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.103Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "129",
+    "object_repr": "LogAut object (129)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2775,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.112Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "128",
+    "object_repr": "LogAut object (128)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2776,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.116Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "127",
+    "object_repr": "LogAut object (127)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2777,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.122Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "126",
+    "object_repr": "LogAut object (126)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2778,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.136Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "125",
+    "object_repr": "LogAut object (125)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2779,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.146Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "124",
+    "object_repr": "LogAut object (124)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2780,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.152Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "123",
+    "object_repr": "LogAut object (123)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2781,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.166Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "122",
+    "object_repr": "LogAut object (122)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2782,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.174Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "121",
+    "object_repr": "LogAut object (121)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2783,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.184Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "120",
+    "object_repr": "LogAut object (120)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2784,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.193Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "119",
+    "object_repr": "LogAut object (119)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2785,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.204Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "118",
+    "object_repr": "LogAut object (118)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2786,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.214Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "117",
+    "object_repr": "LogAut object (117)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2787,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.222Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "116",
+    "object_repr": "LogAut object (116)",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2788,
+  "fields": {
+    "action_time": "2025-06-22T15:22:09.233Z",
+    "user": [
+      "mvillalobos"
+    ],
+    "content_type": [
+      "bcp",
+      "logaut"
+    ],
+    "object_id": "115",
+    "object_repr": "LogAut object (115)",
     "action_flag": 3,
     "change_message": ""
   }
