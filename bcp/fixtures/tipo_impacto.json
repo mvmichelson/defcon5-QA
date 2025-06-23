@@ -1,0 +1,38 @@
+[
+{
+  "model": "bcp.tipo_impacto",
+  "pk": 1,
+  "fields": {
+    "nombre": "Finanaciero",
+    "descripcion": "El incidente genera perdidas monetarias  para la Empresa",
+    "ponderacion": "25.00"
+  }
+},
+{
+  "model": "bcp.tipo_impacto",
+  "pk": 2,
+  "fields": {
+    "nombre": "Reputacional",
+    "descripcion": "La imagen de marca de la empresa se ve afectada frente a la opinion publica",
+    "ponderacion": "25.00"
+  }
+},
+{
+  "model": "bcp.tipo_impacto",
+  "pk": 3,
+  "fields": {
+    "nombre": "Normativo o Legal",
+    "descripcion": "El incidente genera  situaciones que pueden poner a la empresa en incumplimiento legal o normativos (CMF u otros)",
+    "ponderacion": "25.00"
+  }
+},
+{
+  "model": "bcp.tipo_impacto",
+  "pk": 8,
+  "fields": {
+    "nombre": "Operacional",
+    "descripcion": "El incidente podria afectar la continuidad de las operaciones o degradar significativamente el servicio.",
+    "ponderacion": "25.00"
+  }
+}
+]

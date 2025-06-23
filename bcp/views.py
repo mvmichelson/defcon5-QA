@@ -7768,17 +7768,51 @@ def importa_usuarios(request):
         return HttpResponse(f"❌ Error al importar usuarios: {e}")
     
 
-### Codigo temporal para cargar la Base de Datos en Desarrollo (local)
-from django.contrib.admin.views.decorators import staff_member_required
+import os
+from django.core.management import call_command
+from django.http import HttpResponse
 
+# Puedes agregar @staff_member_required si deseas restringir
+# el acceso solo a usuarios con acceso al admin.
+# from django.contrib.admin.views.decorators import staff_member_required
+
+# @staff_member_required
 def importa_backup(request):
     try:
-        ruta_fixture = os.path.join('bcp', 'fixtures', 'backup.json')
-        
-        if not os.path.exists(ruta_fixture):
-            return HttpResponse("❌ Archivo backup.json no encontrado.")
+        nombres_archivos = [
+            'grupos.json',
+            'gestor.json',
+            'parametros_g.json',
+            'tipo_impacto.json',
+            'Nivel_impacto.json',
+            'Indicadores_BIA.json',
+            'escenarios.json',
+        ]
 
-        call_command('loaddata', ruta_fixture, verbosity=1)
-        return HttpResponse("✅ Datos importados exitosamente desde backup.json.")
+        errores = []
+        exitos = []
+
+        for nombre in nombres_archivos:
+            ruta_fixture = os.path.join('bcp', 'fixtures', nombre)
+
+            if os.path.exists(ruta_fixture):
+                try:
+                    call_command('loaddata', ruta_fixture, verbosity=1)
+                    exitos.append(nombre)
+                except Exception as carga_error:
+                    errores.append(f"{nombre} → {carga_error}")
+            else:
+                errores.append(f"{nombre} → No encontrado")
+
+        # Construye el mensaje final
+        mensaje = ""
+        if exitos:
+            mensaje += f"✅ Cargados correctamente: {', '.join(exitos)}.<br>"
+        if errores:
+            mensaje += f"❌ Errores:<br>" + "<br>".join(errores)
+
+        return HttpResponse(mensaje)
+
     except Exception as e:
-        return HttpResponse(f"❌ Error al importar backup: {e}")
+        return HttpResponse(f"❌ Error inesperado: {e}")
+

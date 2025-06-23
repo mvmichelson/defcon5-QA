@@ -1,0 +1,92 @@
+[
+{
+  "model": "bcp.parametros_g",
+  "pk": 1,
+  "fields": {
+    "nombre": "ESTADO_BCP",
+    "valor_1": "defcon 1",
+    "valor_2": 3
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 2,
+  "fields": {
+    "nombre": "FOLIO INCIDENTES",
+    "valor_1": "",
+    "valor_2": 19
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 3,
+  "fields": {
+    "nombre": "PONDERACION_IMPACTO",
+    "valor_1": "",
+    "valor_2": 50
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 4,
+  "fields": {
+    "nombre": "PODERACION_INDICADORES_R",
+    "valor_1": "",
+    "valor_2": 50
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 5,
+  "fields": {
+    "nombre": "BIA_BAJO",
+    "valor_1": "",
+    "valor_2": 34
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 6,
+  "fields": {
+    "nombre": "BIA_MEDIO",
+    "valor_1": "",
+    "valor_2": 33
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 7,
+  "fields": {
+    "nombre": "BIA_ALTO",
+    "valor_1": "",
+    "valor_2": 33
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 8,
+  "fields": {
+    "nombre": "CORRELATIVO_DRP",
+    "valor_1": "",
+    "valor_2": 140
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 10,
+  "fields": {
+    "nombre": "CORRELATIVO COMPONENTES",
+    "valor_1": "",
+    "valor_2": 117
+  }
+},
+{
+  "model": "bcp.parametros_g",
+  "pk": 11,
+  "fields": {
+    "nombre": "CORRELATIVO LineaBaseComp",
+    "valor_1": "",
+    "valor_2": 179
+  }
+}
+]

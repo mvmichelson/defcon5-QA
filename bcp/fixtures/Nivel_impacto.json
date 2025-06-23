@@ -1,0 +1,134 @@
+[
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 1,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nombre": "Alto",
+    "descripcion": "Perdidas financieras superior a  CLP 100 MM",
+    "valor": "5.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 2,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nombre": "Medio",
+    "descripcion": "Perdidas entre  $ 10 MM y  $ 100 MM",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 3,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nombre": "Bajo",
+    "descripcion": "Perdidas financieras menores a  CLP 10 MM",
+    "valor": "1.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 4,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nombre": "Alto",
+    "descripcion": "Incidente sale publicado a nivel nacional",
+    "valor": "5.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 5,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nombre": "Medio",
+    "descripcion": "Incidente es publicado en algun medio",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 6,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nombre": "Bajo",
+    "descripcion": "Incidente no es mencionado en alguna publicacion",
+    "valor": "1.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 7,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nombre": "Alto",
+    "descripcion": "La Empresa se ve sometida a sanciones graves e incluso prohibicion de operar / Multas por sobre las UF 2.500",
+    "valor": "5.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 8,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nombre": "Medio",
+    "descripcion": "La Empresa puede recibir sanciones reiteradas graves y menos graves / Multas entre las UF 250 y UF 2.500",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 9,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nombre": "Bajo",
+    "descripcion": "La Empresa podria recibir sanciones menos graves / Multas hasta las UF 250",
+    "valor": "1.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 15,
+  "fields": {
+    "tipo": 8,
+    "cod": 4,
+    "nombre": "Bajo",
+    "descripcion": "Los Procesos afectados son pocos y no criticos",
+    "valor": "1.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 17,
+  "fields": {
+    "tipo": 8,
+    "cod": 4,
+    "nombre": "Medio",
+    "descripcion": "Las operaciones afectadas son pocas pero complejas",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.nivel_impacto",
+  "pk": 18,
+  "fields": {
+    "tipo": 8,
+    "cod": 4,
+    "nombre": "Alto",
+    "descripcion": "Las operaciones afectadas son muchas y complejas.",
+    "valor": "5.00"
+  }
+}
+]

@@ -1,0 +1,39 @@
+[
+{
+  "model": "bcp.escenarios",
+  "pk": 1,
+  "fields": {
+    "titulo": "Sin servicios TI",
+    "descripcion": "No es posible acceder  a  ningun Servicio TI (Internet, intranet ni Sistemas de Aplicacion).",
+    "estrategias": [
+      1,
+      3
+    ]
+  }
+},
+{
+  "model": "bcp.escenarios",
+  "pk": 3,
+  "fields": {
+    "titulo": "Sin personal clave",
+    "descripcion": "Algunos colaboradores claves para determinadas funciones no estan disponibles para la operacion de los Procesos",
+    "estrategias": [
+      3,
+      5
+    ]
+  }
+},
+{
+  "model": "bcp.escenarios",
+  "pk": 4,
+  "fields": {
+    "titulo": "Sin Servicio Externo Critico  (remoto)",
+    "descripcion": "El  Servicio Critico  provisto de manera remota por un Proveedor externo  no se encuentra disponible.",
+    "estrategias": [
+      2,
+      3,
+      8
+    ]
+  }
+},
+]

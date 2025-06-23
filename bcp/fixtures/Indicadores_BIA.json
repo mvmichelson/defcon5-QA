@@ -1,0 +1,167 @@
+[
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 1,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nivel": "ALTO",
+    "definicion": "0 - 4 horas",
+    "valor": "5.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 2,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nivel": "MEDIO - ALTO",
+    "definicion": "5 - 24 horas (1 dia)",
+    "valor": "4.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 3,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nivel": "MEDIO",
+    "definicion": "24 - 72 horas (3 dias)",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 4,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nivel": "MEDIO - BAJO",
+    "definicion": "72 - 168 horas (1 semana)",
+    "valor": "2.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 5,
+  "fields": {
+    "tipo": 1,
+    "cod": 1,
+    "nivel": "BAJO",
+    "definicion": "Sobre 168 horas (mas de una semana)",
+    "valor": "1.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 6,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nivel": "ALTO",
+    "definicion": "0 - 4 horas (On line)",
+    "valor": "5.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 7,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nivel": "MEDIO - ALTO",
+    "definicion": "1 dia",
+    "valor": "4.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 8,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nivel": "MEDIO",
+    "definicion": "1 semana",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 9,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nivel": "MEDIO - BAJO",
+    "definicion": "1 mes",
+    "valor": "2.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 10,
+  "fields": {
+    "tipo": 2,
+    "cod": 2,
+    "nivel": "BAJO",
+    "definicion": "Mas de un mes",
+    "valor": "1.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 11,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nivel": "ALTO",
+    "definicion": "1 dia",
+    "valor": "5.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 12,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nivel": "MEDIO - ALTO",
+    "definicion": "3 dias",
+    "valor": "4.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 13,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nivel": "MEDIO",
+    "definicion": "1 semana",
+    "valor": "3.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 14,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nivel": "MEDIO - BAJO",
+    "definicion": "1 semana a 1 mes",
+    "valor": "2.00"
+  }
+},
+{
+  "model": "bcp.indicadores_bia",
+  "pk": 15,
+  "fields": {
+    "tipo": 3,
+    "cod": 3,
+    "nivel": "BAJO",
+    "definicion": "Indefinido",
+    "valor": "1.00"
+  }
+}
+]
