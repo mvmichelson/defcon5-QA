@@ -1,0 +1,205 @@
+------ Form AsignaRaci ------
+----- Drp_Sec_3_Form--------
+list[0]
+----- Drp_Sec_4_Form--------
+list[0]
+----- Drp_Sec_5_Form--------
+list[0]
+----- Crea_CMP --------
+list[0]
+----- Crea_LBC x CMP --------
+list[0]
+Entra a Borra Gestor
+Entra a Listado
+[
+{
+  "model": "bcp.recursos",
+  "pk": 1,
+  "fields": {
+    "cod_rec": "10001",
+    "nombre": "Equifax",
+    "descripcion": "Servicio de consultas antecedentes Financieros clientes.",
+    "tipo": 1
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 2,
+  "fields": {
+    "cod_rec": "2000",
+    "nombre": "SAP FICO",
+    "descripcion": "Sistema Financiero Contable SAP",
+    "tipo": 3
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 3,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "POS",
+    "descripcion": "Sistema de Caja",
+    "tipo": 3
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 4,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "PROSEG",
+    "descripcion": "Servicio de vigilancia en sucursales",
+    "tipo": 4
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 5,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Veri-Id",
+    "descripcion": "Servicio de identificacion biometrica.",
+    "tipo": 1
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 6,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "VeriSign",
+    "descripcion": "Verificacion de identidad mediante huella digital",
+    "tipo": 1
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 7,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Seuss",
+    "descripcion": "Servidor de Aplicaciones web",
+    "tipo": 5
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 8,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "SAP EX",
+    "descripcion": "Modulo de existencias SAP",
+    "tipo": 3
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 9,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Portal Web",
+    "descripcion": "Portal Web del Banco",
+    "tipo": 3
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 10,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Sistema de Caja",
+    "descripcion": "Sistema de Caja",
+    "tipo": 3
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 11,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Sistema de Creditos",
+    "descripcion": "Sistema Fron-End para el curse de Creditos de Consumo, Hipotecarios y Comerciales.",
+    "tipo": 3
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 12,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Internet",
+    "descripcion": "Servicio de conexion a Internet",
+    "tipo": 5
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 13,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Correo Electronico (email)",
+    "descripcion": "Servicio de correo electronico",
+    "tipo": 5
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 14,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "SCD",
+    "descripcion": "Servicio de impresion de Cartolas",
+    "tipo": 4
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 15,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "PAC-BE",
+    "descripcion": "Sistema de descuento en Cta.Cte del Banco Estado",
+    "tipo": 1
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 16,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "PAC-SAN",
+    "descripcion": "Descuento automatico en Cta.Cte. Banco Santander",
+    "tipo": 1
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 17,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "Boton de Pago Mercado Pago",
+    "descripcion": "API transaccional para pagos via Mercado Pago",
+    "tipo": 1
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 18,
+  "fields": {
+    "cod_rec": "10001",
+    "nombre": "SCNI",
+    "descripcion": "Servicio no identificado",
+    "tipo": 7
+  }
+},
+{
+  "model": "bcp.recursos",
+  "pk": 19,
+  "fields": {
+    "cod_rec": "",
+    "nombre": "CoreBanking",
+    "descripcion": "Sistema Core del Banco para el Proceso Operacional",
+    "tipo": 3
+  }
+}
+]
