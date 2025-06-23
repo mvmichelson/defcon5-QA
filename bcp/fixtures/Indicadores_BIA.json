@@ -1,16 +1,3 @@
------- Form AsignaRaci ------
------ Drp_Sec_3_Form--------
-list[0]
------ Drp_Sec_4_Form--------
-list[0]
------ Drp_Sec_5_Form--------
-list[0]
------ Crea_CMP --------
-list[0]
------ Crea_LBC x CMP --------
-list[0]
-Entra a Borra Gestor
-Entra a Listado
 [
 {
   "model": "bcp.indicadores_bia",
