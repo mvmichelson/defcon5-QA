@@ -1,0 +1,29 @@
+[
+{
+  "model": "bcp.tipo_indicador",
+  "pk": 1,
+  "fields": {
+    "nombre": "RTO",
+    "descripcion": "(Tiempo de Recuperacion Objetivo): Tiempo  transcurrido desde el incidente, a partir del cual se generan altos impactos  para el negocio. Representa el tiempo maximo disponible para recuperar la continuidad  operativa del Proceso.",
+    "ponderacion": "50.00"
+  }
+},
+{
+  "model": "bcp.tipo_indicador",
+  "pk": 2,
+  "fields": {
+    "nombre": "RPO",
+    "descripcion": "(Punto de Recuperacion Objetivo): Tiempo  maximo transcurrido desde el ultimo respaldo de los datos hasta el incidente, requerido por los Procedimientos de Recuperacion o Continuidad (PC) para continuar la operacion en contingencia. Representa el volumen maximo de perdida de datos tolerable debido al  incidente.",
+    "ponderacion": "30.00"
+  }
+},
+{
+  "model": "bcp.tipo_indicador",
+  "pk": 3,
+  "fields": {
+    "nombre": "MTD",
+    "descripcion": "(Maximo Tolerable  de Disrupcion): Tiempo maximo desde el levantamiento del Procedimiento de Contingencia en que se puede seguir operando",
+    "ponderacion": "20.00"
+  }
+}
+]
