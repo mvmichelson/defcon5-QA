@@ -1,0 +1,42 @@
+[
+{
+  "model": "bcp.tipo_rr",
+  "pk": 1,
+  "fields": {
+    "nombre": "Servicio B2B",
+    "descripcion": "Servicio provisto de forma externa mediante un Sistema o Aplicacion del proveedor."
+  }
+},
+{
+  "model": "bcp.tipo_rr",
+  "pk": 3,
+  "fields": {
+    "nombre": "Sistema App",
+    "descripcion": "Sistema integrado de  procesos automatizados (programas)  de caracter multiusuario (Legacy, ERP, API, etc)."
+  }
+},
+{
+  "model": "bcp.tipo_rr",
+  "pk": 4,
+  "fields": {
+    "nombre": "Servicio Externo",
+    "descripcion": "Proceso de Negocio  provisto por una empresa externa."
+  }
+},
+{
+  "model": "bcp.tipo_rr",
+  "pk": 5,
+  "fields": {
+    "nombre": "Servicios  TI",
+    "descripcion": "Componente de Software o Hardware basico (Sist.Op. Base Datos, Servidores,etc.)"
+  }
+},
+{
+  "model": "bcp.tipo_rr",
+  "pk": 7,
+  "fields": {
+    "nombre": "ND",
+    "descripcion": "Requiere informacion adicional"
+  }
+}
+]
