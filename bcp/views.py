@@ -7785,9 +7785,10 @@ def importa_backup(request):
             #'tipo_impacto.json',
             #'Nivel_impacto.json',
             #'Indicadores_BIA.json',
-            #'escenarios.json',
-            'tipo_rr.json',
-            'recursos.json',
+            'escenarios.json',
+            'estrategias.json',
+            #'tipo_rr.json',
+            #'recursos.json',
         ]
 
         errores = []

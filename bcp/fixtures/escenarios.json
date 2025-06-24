@@ -36,4 +36,67 @@
     ]
   }
 },
+{
+  "model": "bcp.escenarios",
+  "pk": 5,
+  "fields": {
+    "titulo": "Sin infraestructura  fisica",
+    "descripcion": "La infraestructura fisica ha sufrido deterioro total o parcial que la inhabilitan para su uso.",
+    "estrategias": [
+      2,
+      3,
+      9
+    ]
+  }
+},
+{
+  "model": "bcp.escenarios",
+  "pk": 6,
+  "fields": {
+    "titulo": "Sin Servicio Externo Critico (Presencial)",
+    "descripcion": "El servicio critico externo provisto de manera presencial  por un Proveedor externo no esta disponible.",
+    "estrategias": [
+      5,
+      8
+    ]
+  }
+},
+{
+  "model": "bcp.escenarios",
+  "pk": 7,
+  "fields": {
+    "titulo": "Sin Servicios basicos",
+    "descripcion": "Los Servicios basicos (luz/agua) no estan disponibles,  impidiendo el funcionamiento de las dependencias asociadas.",
+    "estrategias": [
+      9
+    ]
+  }
+},
+{
+  "model": "bcp.escenarios",
+  "pk": 8,
+  "fields": {
+    "titulo": "ERNI",
+    "descripcion": "ESCENARIO DE RIESGO NO IDENTIFICADO.  En una primera fase de analisis no se han identificado Servicios Criticos.",
+    "estrategias": [
+      1,
+      2,
+      3,
+      5,
+      8,
+      9
+    ]
+  }
+},
+{
+  "model": "bcp.escenarios",
+  "pk": 9,
+  "fields": {
+    "titulo": "Caida de Aplicacion",
+    "descripcion": "La Aplicacion Principal sufre caidas funcionales o degradacion en sus tiempos de respuestas que no permiten su uso.",
+    "estrategias": [
+      10
+    ]
+  }
+}
 ]

@@ -1,0 +1,58 @@
+[
+{
+  "model": "bcp.estrategias",
+  "pk": 1,
+  "fields": {
+    "titulo": "Activar DRP",
+    "descripcion": "Se debe poner en operaciones el Site de Contingencias"
+  }
+},
+{
+  "model": "bcp.estrategias",
+  "pk": 2,
+  "fields": {
+    "titulo": "Activar Procedimiento de Contingencia",
+    "descripcion": "Se debe disponibilizar un Procedimiento alternativo adecuadamente documentado."
+  }
+},
+{
+  "model": "bcp.estrategias",
+  "pk": 3,
+  "fields": {
+    "titulo": "Conexion remota",
+    "descripcion": "Se debe habilitar las facilidades VPN para la conexion remota."
+  }
+},
+{
+  "model": "bcp.estrategias",
+  "pk": 5,
+  "fields": {
+    "titulo": "Colaborador de Respaldo",
+    "descripcion": "Se debe capacitar a un colaborador que pueda asumir las tareas del colaborador titular"
+  }
+},
+{
+  "model": "bcp.estrategias",
+  "pk": 8,
+  "fields": {
+    "titulo": "Servicio externo de respaldo",
+    "descripcion": "Disponer de un Proveedor externo altenativo"
+  }
+},
+{
+  "model": "bcp.estrategias",
+  "pk": 9,
+  "fields": {
+    "titulo": "Lugar fisico de respaldo",
+    "descripcion": "Habilitar un lugar fisico de respaldo con todos los recursos necesarios."
+  }
+},
+{
+  "model": "bcp.estrategias",
+  "pk": 10,
+  "fields": {
+    "titulo": "Reversa de instalacion",
+    "descripcion": "Se desisntala la nueva version y se vuelve a instalar la ultima version funcional."
+  }
+}
+]
