@@ -53,21 +53,10 @@ class CreaProcesoForm(forms.Form):
 
 class AsignaRaciForm(forms.Form):
 
-    print('------ Form AsignaRaci ------')
-
-    #Selecciona Gestores del Grupo Autorizador
-    #gestores = Gestor.objects.all()
-    #lista_autorizadores = [] 
-    
-    #for ges in gestores:
-    #    grp=ges.user_gestor.groups
-    #    for g in grp.all():
-    #        if g.name == 'Autorizadores':
-    #            lista_autorizadores.append(ges.user_pk)
+ 
     
     
-    
-    gestor_R = forms.ModelChoiceField(queryset=Gestor.objects.all())
+    gestor_R = forms.ModelChoiceField(queryset=Gestor.objects.all(),  help_text='', label='Gestor Responsable ', required=True)
     gestor_A = forms.ModelChoiceField(queryset=Gestor.objects.all())
     #gestor_C = forms.ModelChoiceField(queryset=User.objects.all(), empty_label=None, help_text='', label='Gestor Consultor   ', required=False)
     gestor_I = forms.ModelChoiceField(queryset=Gestor.objects.all(), required=False)
@@ -719,9 +708,7 @@ class Drp_Sec_3_Form(forms.Form):
     Definicion del alcance del  Drp. 
     El alcance se determina  por los Procesos seleccionados
     """
-    print('----- Drp_Sec_3_Form--------')
-    print(list[0])
-    
+   
     
 
     #Contexto
@@ -768,8 +755,6 @@ class Drp_Sec_4_Form(forms.Form, list):
     Definicion de la Estrategia de REcuperacion del Drp.
 
     """
-    print('----- Drp_Sec_4_Form--------')
-    print(list[0])
     
     desc_estrategia = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={'rows':10, 'cols':100}))
     tipo_site = forms.ModelChoiceField(queryset=Tipo_Site.objects.all())
@@ -778,8 +763,6 @@ class Drp_Sec_4_Form(forms.Form, list):
 class Drp_Sec_5_Form(forms.Form, list):
     """
     Asignacion del Componente  al  DRP. """
-    print('----- Drp_Sec_5_Form--------')
-    print(list[0])
     
     componentes = forms.ModelMultipleChoiceField(queryset=Componentes.objects.all(),
                                           label=_('Componentes:'),
@@ -803,8 +786,6 @@ class Drp_Sec_5_Form(forms.Form, list):
 class Crea_CMP_Form(forms.Form, list):
     """
     Creacion de un Componente  en la  BD. """
-    print('----- Crea_CMP --------')
-    print(list[0])
     
     tipo_act = forms.ModelChoiceField(queryset=Tipo_Componente.objects.all())
     nombre = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={'rows':1, 'cols':100}))
@@ -815,8 +796,6 @@ class Crea_CMP_Form(forms.Form, list):
 class Crea_LBC_Form(forms.Form, list):
     """
     Creacion de un parametro de la LBC de un  Componente. """
-    print('----- Crea_LBC x CMP --------')
-    print(list[0])
     
     nombre = forms.CharField(max_length=100, widget=forms.Textarea(attrs={'rows':1, 'cols':100}))
     descripcion = forms.CharField(max_length=250, widget=forms.Textarea(attrs={'rows':2, 'cols':150}))
@@ -963,7 +942,6 @@ class Borra_Gestor_Form(forms.Form):
     """
     Pantalla de Ingreso Nombre de Usuario
     """
-    print('Entra a Borra Gestor')
 
     gestores=Gestor.objects.all().order_by('apellido')
     

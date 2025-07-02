@@ -696,66 +696,42 @@ def Asigna_Raci(request, pk, etapa):
 
             notifica=form.cleaned_data['notifica']
             
-            #Cambia status del Proceso a x Aprobar
-            if proc_raci.subproceso.gestor_C == form.cleaned_data['gestor_A']:
-                
-                if proc_raci.subproceso.gestor_C == form.cleaned_data['gestor_R']:
-                    # En caso que el Gestor Consultor sea el Gestor Responsable
-                    #Aprobada por Responsable area 
-                    proc_raci.subproceso.status='R'
+            # Cambia status del Proceso a x Aprobar
 
-                    # Crea Log de aprobacion de [R]utorizador
-                    log=Log_Revision()
-                    log.fecha = datetime.date.today()
-                    log.proceso= proc_raci
-                    log.gestor_aut=proc_raci.subproceso.gestor_C
-                    log.seccion=proc_raci.subproceso.fase_status
-                    log.campo="Autorizacion Express"
-                    log.comentario="Aprobado por Nivel [R]esponsable"
-                    log.resuelto=True
-                    log.save()
-                   
+            proc_raci.subproceso.status='A'
 
-                    #Notificar a Gestor I por email
-                    if notifica:
-                        email = proc_raci.subproceso.gestor_I.email
-                        cc_email= proc_raci.subproceso.gestor_C.email
-                        nombre=proc_raci.subproceso.gestor_C.last_name
-                        proceso=proc_raci.path
-                        accion='tomar conocimiento de la puesta en vigencia del '
+            # Notifica por correo a Gestor A            
+            #if notifica:
+            #    email = proc_raci.subproceso.gestor_A.email
+            #    cc_email= proc_raci.subproceso.gestor_C.email
+            #    nombre=proc_raci.subproceso.gestor_C.last_name
+            #    proceso=proc_raci.path
+            #    accion='revisar definicion y aprobar o requerir cambios al '
                 
-                        Manda_Correo(email, cc_email, nombre, proceso, accion)
-                    
-                else:
-                    #Por Vigentear
-                    proc_raci.subproceso.status='r'
+            #    Manda_Correo(email, cc_email, nombre, proceso, accion)
 
-                    #Notificar a Gestor R por email           
-                    if notifica:
-                        email = proc_raci.subproceso.gestor_R.email
-                        cc_email= proc_raci.subproceso.gestor_C.email
-                        nombre=proc_raci.subproceso.gestor_C.last_name
-                        proceso=proc_raci.path
-                        accion='dar visto bueno o requerir cambios para el '
-                
-                        Manda_Correo(email, cc_email, nombre, proceso, accion)
-                        
-            else:
-                #Por Aprobar
-                proc_raci.subproceso.status='A'
-
-                #Notifica por correo a Gestor A            
-                if notifica:
-                    email = proc_raci.subproceso.gestor_A.email
-                    cc_email= proc_raci.subproceso.gestor_C.email
-                    nombre=proc_raci.subproceso.gestor_C.last_name
-                    proceso=proc_raci.path
-                    accion='revisar definicion y aprobar o requerir cambios al '
-                
-                    Manda_Correo(email, cc_email, nombre, proceso, accion)
-                
-                   
+                  
             proc_raci.subproceso.save()
+
+            # Crea Log de aprobacion de [R]utorizador
+            log=Log_Revision()
+            log.fecha = datetime.date.today()
+            log.proceso= proc_raci
+            log.gestor_aut=proc_raci.subproceso.gestor_C
+            log.seccion=proc_raci.subproceso.fase_status
+            log.campo="Asignacion RACI"
+            log.comentario =  "A: "+proc_raci.subproceso.gestor_A.user_gestor.last_name+', '
+            log.comentario += proc_raci.subproceso.gestor_A.user_gestor.first_name+' - '
+            log.comentario += ", R: "+proc_raci.subproceso.gestor_R.user_gestor.last_name+', '
+            log.comentario += proc_raci.subproceso.gestor_R.user_gestor.first_name+' - '
+            if proc_raci.subproceso.gestor_I:
+                log.comentario += ", R: "+proc_raci.subproceso.gestor_I.user_gestor.last_name+', '
+                log.comentario += proc_raci.subproceso.gestor_I.user_gestor.first_name
+            else:
+                log.comentario += ", No se asigna Persona Interesada"
+                
+            log.resuelto=True
+            log.save()
      
             
             # redirect to a new URL:
@@ -3086,10 +3062,15 @@ class ProcedimientosListView(generic.ListView):
     template_name='bcp/proced_cont/proced_list.html'
 
 
-def Lista_Procedimientos(request):
+def Lista_Procedimientos(request, vigente):
     """
     Lista Procedimientos 
     """
+    if vigente == 0:
+        procedimientos_vigentes = True
+    else:
+        procedimientos_vigentes = False
+
     print('-------- Entra a Lista de Procedimientos ----------')
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, pk = 5)
@@ -3117,7 +3098,9 @@ def Lista_Procedimientos(request):
     print('Procesos seleccionados', lista_procesos_v)
 
     return render(request, 'bcp/proced_cont/proced_list.html',
-                  context={'lista_procesos':lista_procesos_v, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
+                  context={'lista_procesos':lista_procesos_v, 'tramo_1':tramo_1,
+                           'tramo_2':tramo_2,
+                           'procedimientos_vigentes':procedimientos_vigentes})
     
 #*****************************************************
 # 5.1  Creacion de Procedimiento de Recuperacion (PC) *
@@ -3200,7 +3183,7 @@ def cr_prcd_a(request, pk):
             print('Grabo Procedimiento')
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('Lista-Proced'))
+            return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
         
         else:
             print(form.errors)
@@ -3742,7 +3725,7 @@ def Env_Aut_Proced(request, pk):
     print('status=',proced.status)
 
     # redirect to a new URL:
-    return HttpResponseRedirect(reverse('Lista-Proced') )
+    return HttpResponseRedirect(reverse('Lista-Proced', args=[1]) )
 
     
 from .forms import Autoriza_Proced_C_Form
@@ -4232,7 +4215,7 @@ def Aut_Proced_C(request, pk):
             
                 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('Lista-Proced'))
+            return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
 
         else:
             print(form.errors)
@@ -4406,7 +4389,7 @@ def Revisa_Proced_B(request, pk):
             
             # redirect to a new URL:
         
-            return HttpResponseRedirect(reverse('Lista-Proced'))
+            return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
 
             
         else:
@@ -4510,7 +4493,7 @@ def ActualizaPC(request, pk):
     proced.status="C"
     proced.save()
 
-    return HttpResponseRedirect(reverse('Lista-Proced'))
+    return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
 
 
 #*******************************
@@ -4532,7 +4515,7 @@ def ConfirmaActivacionPC(request, pk):
 
     proced.save()
 
-    return HttpResponseRedirect(reverse('Lista-Proced'))
+    return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
 
 
 #*********************************************************************************************************************************************
@@ -7258,7 +7241,6 @@ class GestorListView(generic.ListView):
     model = Gestor
     template_name='bcp/conf/gestor_list.html'
 
-    print('Entra a Listado')
 
     #def get_queryset(self):
     #    return Proceso.objects.filter(Proceso.es_subproceso=True).filter(Proceso.subproceso.fase_status=='M')|Proceso.objects.filter(proceso.subproceso.fase_status=='B') 
@@ -7565,32 +7547,34 @@ def Err_Sesion_Mgm(request, ce):
     #if user.is_authenticated:
         #mensaje='Debe iniciar sesion con su nombre de usuario y clave'
         
+    if not request.user.is_authenticated:
+        mensaje='El Usuario no esta en una sesion autenticada. Inicie sesion con su username y clave '
 
-    if ce == '100':
-        mensaje='Debe estar en sesion con su nombre de usuario y clave y  pertenecer al grupo de Administracion'
+    elif ce == '100':
+        mensaje='100: Usuario debe pertenecer al grupo de Administracion'
         
     elif ce == '200':
-        mensaje='Debe estar en sesion con su nombre de usuario y clave y  pertenecer al grupo de Consultores'
+        mensaje='200: Usuario debe pertenecer al grupo de Consultores'
 
     elif ce == '300':
-        mensaje='Debe estar en sesion con su nombre de usuario y clave y  pertenecer al grupo de Autorizadores'
+        mensaje='300: Usuario debe pertenecer al grupo de Autorizadores'
 
     elif ce== '301':
-            mensaje='Debe estar en sesion con su nombre de usuario y clave y  pertenecer al grupo de Consultores o  Autorizadores'
+            mensaje='301: Usuario debe pertenecer al grupo de Consultores o  Autorizadores'
             
     elif ce == '400':
-         mensaje='Debe estar en sesion con su nombre de usuario y clave y  pertenecer al grupo de Gestion de Crisis'
+         mensaje='400: Usuario debe pertenecer al grupo de Gestion de Crisis'
 
     elif ce == '500':
-         mensaje='Debe estar en sesion con su nombre de usuario y clave y  pertenecer al grupo TI'
+         mensaje='500: Usuario debe pertenecer al grupo TI'
          
     elif ce == '600':
         mensaje='Debe abrir una sesion mediante su nombre de usuario y clave'
 
     elif ce == '3000':
-        mensaje='La Poderacion no puede superar el 100 %'
+        mensaje='3000: La Poderacion no puede superar el 100 %'
     elif ce == '3001':
-        mensaje='Puntaje no puede ser 0'
+        mensaje='3001 : Puntaje no puede ser 0'
         
     else:
         mensaje='Error de Sesion no identificado.'
@@ -7735,7 +7719,7 @@ def reset(request):
             print('--- Crea Proceso Raiz')
             raiz= form.cleaned_data['raiz']
             proceso=Proceso()
-            proceso.proceso='root'
+            proceso.proceso='0'
             proceso.nombre=raiz
             proceso.nro_hijos=0
             proceso.save()

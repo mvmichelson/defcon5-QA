@@ -146,7 +146,7 @@ urlpatterns += [
 #  Procedimientos de Recuperacion
 urlpatterns += [
     
-    path('proced_cont/', views.Lista_Procedimientos, name='Lista-Proced'),
+    path('proced_cont/<int:vigente>/lista_pcs/', views.Lista_Procedimientos, name='Lista-Proced'),
     path('proced_cont/<int:pk>/crea_proc_a/', views.cr_prcd_a, name='crea-prcd-a'),
     path('proced_cont/<int:pk>/crea_proc_b/', views.cr_prcd_b, name='crea-proced-B'),
     path('proced_cont/<int:pk>/listas_c/', views.cr_prcd_list, name='lista-c'),
