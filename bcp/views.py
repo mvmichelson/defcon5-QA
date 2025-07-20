@@ -7874,15 +7874,16 @@ from django.http import HttpResponse
 def importa_backup(request):
     try:
         nombres_archivos = [
-            #'tipo_indicador.json',
-            #'parametros_g.json',
-            #'tipo_impacto.json',
-            #'Nivel_impacto.json',
-            #'Indicadores_BIA.json',
+            'usuarios.json'
+            'tipo_indicador.json',
+            'parametros_g.json',
+            'tipo_impacto.json',
+            'Nivel_impacto.json',
+            'Indicadores_BIA.json',
             'escenarios.json',
             'estrategias.json',
-            #'tipo_rr.json',
-            #'recursos.json',
+            'tipo_rr.json',
+            'recursos.json',
         ]
 
         errores = []
