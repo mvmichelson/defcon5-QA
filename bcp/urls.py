@@ -165,10 +165,13 @@ urlpatterns += [
     path('proced_cont/<int:pk>/activa_pc/', views.ActivaDesactivaPc, name='act-des-pc'),
     path('proced_cont/<int:pk>/ok_activa_pc/', views.ConfirmaActivacionPC, name='ok-act-pc'),
 
+    path('proced_cont/<int:pk>/borra_pc/', views.borra_procedimiento, name='borra-prcd'),
+
+
     url(r'^proced_cont/(?P<item>[\w-]+)/(?P<pk>\d+)/(?P<valor>[\w-]+)/$', views.aut_obs_proced, name='obs-proced'),
 
     # Actualiza PC
-    url('proced_cont/<int:pk>/actualiza_pc/', views.ActualizaPC, name='actualiza-pc'),
+    path('proced_cont/<int:pk>/actualiza_pc/', views.ActualizaPC, name='actualiza-pc'),
 
     # Activa/Desactiva PC
     path("procedimientos/toggle/", views.toggle_procedimiento, name="toggle_procedimiento"),  # Obtener estados

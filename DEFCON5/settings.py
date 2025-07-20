@@ -23,9 +23,9 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # SECRET_KEY: sin default para forzar definirla en entorno (evita subirla)
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
 
-ALLOWED_HOSTS = ['defcon5-qa.onrender.com', 'localhost', '127.0.0.1']
+#ALLOWED_HOSTS = ['defcon5-qa.onrender.com', 'localhost', '127.0.0.1']
 
 
 INSTALLED_APPS = [

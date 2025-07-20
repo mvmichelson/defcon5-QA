@@ -72,10 +72,11 @@ defcon={{defcon_est}}
 	{% if proceso.es_subproceso %}
 
 			<!Opcion para crear Procedimiento>
-
-			<a href="{% url 'crea-prcd-a' proceso.pk %}"
-			class="link " data-message="Crea un Procedimiento de Contingencia para el Proceso de Negocio ...">
-			<sa>&#10010</sa></a>
+			{% if not procedimientos_vigentes %}
+				<a href="{% url 'crea-prcd-a' proceso.pk %}"
+				class="link " data-message="Crea un Procedimiento de Contingencia para el Proceso de Negocio ...">
+				<sa>&#10010</sa></a>
+			{%endif%}
 			<a href="{% url 'Detalle-Proceso-V' proceso.pk %}" class="link " data-message="Detalles del Proceso vigente..."><bb>&#128065</bb></a>
 
 			   &#10149 <aa>{{ proceso.nombre }}</aa>	
@@ -108,149 +109,164 @@ defcon={{defcon_est}}
 		<!---=============================-->
 
 		{% if procedimientos_vigentes %}
-		<!-- Si hay que listar Procedimientos vigentes ... -->
+		<!-- Si hay que Listar  Procedimientos vigentes ... -->
 
-		{% if  proceso.subproceso_v.procedimientos_contingencia_v %}
-		<!-- Si existen PC vigentes ... -->
-		
-			<!-- Lista Procedimientos -->
-			{% for proced in proceso.subproceso_v.procedimientos_contingencia_v.all %}
+				{% if  proceso.subproceso_v.procedimientos_contingencia_v %}
+				<!-- Si Proceso Vigente tiene Procedimientos (PC) vigentes ... -->
+				
+					<!-- Lista Procedimientos -->
+					{% for proced in proceso.subproceso_v.procedimientos_contingencia_v.all %}
+						<p><!-- Inicio de la linea por procedimiento desplegado -->
+						<!-- Indenta --> {% for i in proced.codigo %} &nbsp; {% endfor %}	
 
+						<!**********************>
+						<!* Despliega Opciones *>
+						<!**********************>
+						
+						<!-- Opcion para mostrar el Procedimiento vigente -->
+						<a href = "{% url 'det-proced-v' proced.pk  %}" 
+						class="link" data-message="Procedimiento de Contingencia Vigente (Aprobado) ..."><bn>&#128215</bn></a> <!ojo >
+						
 
-			{%endfor%}<!-- Fin Lista Procedimientos Vigentes por Proceso Vigente -->
+						<!**************************>
+						<!*Despliega  Procedimiento*>
+						<!**************************>
 
-		{%else%}
-			Sin Procedimientos vigentes definidos </p>
-		{%endif%} <!-- Fin El Proceso tiene Procedimientos (PC) definidos -->
-	
+						<sa><strong>{{proced.nombre}}</strong></sa>
+						</p> <!Fin de la linea por procedimiento desplegado>
 
+					{%endfor%}<!-- Fin Lista Procedimientos Vigentes por Proceso Vigente -->
+
+				{%else%}
+					Sin Procedimientos vigentes definidos </p>
+				{%endif%} <!-- Fin El Proceso tiene Procedimientos (PC) definidos -->
 
 		{%else%}
 		<!-- Si Hay que listar Procedimientos NO Vigentes (En desarrollo o actualizacion)-->
 		<!-- ================================================================-->
-		{% if  proceso.subproceso_v.procedimientos_contingencia %}
-		<!-- Si el  Proceso tiene Procedimientos (PC) definidos -->
-			<!-- Lista Procedimientos -->
-			{% for proced in proceso.subproceso_v.procedimientos_contingencia.all %}
+				{% if  proceso.subproceso_v.procedimientos_contingencia %}
+				<!-- Si el  Proceso tiene Procedimientos (PC) definidos -->
+					<!-- Lista Procedimientos No Vigentes de Proceso Vigente-->
+					{% for proced in proceso.subproceso_v.procedimientos_contingencia.all %}
 
-				<p><!-- Inicio de la linea por procedimiento desplegado -->
-				<!-- Indenta --> {% for i in proced.codigo %} &nbsp; {% endfor %}	
+						<p><!-- Inicio de la linea por procedimiento desplegado -->
+						<!-- Indenta --> {% for i in proced.codigo %} &nbsp; {% endfor %}	
 
-				<!**********************>
-				<!* Despliega Opciones *>
-				<!**********************>
+						<!**********************>
+						<!* Despliega Opciones *>
+						<!**********************>
 
-				<!En definicion>
-				{% if proced.status == 'C' %}
+						<!En definicion>
+						{% if proced.status == 'C' %}
 
-					{% if request.user.pk == proced.gestor_consultor.user_pk %}
-					<!--- Si el usuario de sesion es gestor consultor -->
-						<!Opcion Ingresa parte B>
-						<a href = "{% url 'crea-proced-B'  proced.pk %}"
-						class="link blink" data-message="Especificacion del Procedimiento de Contingencia ...">
-						<img src="/static/img/manual_pc.webp" width="17" height="17"></a>	
-							
-						<!Opcion Borra>
-						<a href = "{% url 'index'  %}"><bb><strong>&#128465</bb></strong></a> <!Tarro de basura>
-
-					{%else%}
-						<a class="link" data-message="PC en Especificacion x Consultor ({{proced.gestor_consultor}})">
-						<img src="/static/img/manual_pc.webp" width="17" height="17"></a> <!hoja sin lapiz>	
-
-
-					{% endif %}
-
-				{% endif %}
-
-				<!En Autorizacion>
-				<!===============>			
-				{% if proced.status == 'a' %}
-
-					{% if request.user.pk == proced.resp_proceso.user_pk %}			
-					<! Mostrar Procedimiento>
-					<! ir a Autorizacion>
-						<a href = "{% url 'aut-proced' proced.pk %}"
-						class="link blink" data-message="Autorizar PC propuesto ... ">
-						<img src="/static/img/pc_2.png" width="17" height="17">
-						</a> 	
-						
-					{%else%}
-						<a class="link" data-message="En Autorizacion por Gestor Responsable del Proceso de Negocio ... ({{proced.resp_proceso}}) ">
-						<img src="/static/img/pc_2.png" width="17" height="17">
-						</a> 	
-				{%endif%}
-					
-				{% endif %}
-				
-				<!En correccion por Consultor>
-				<!===========================>
-				{% if proced.status == 'x' %}
-				
-
-					{% if request.user.pk == proced.gestor_consultor.user_pk %}
-					<!----- Si usuario en sesion es Consultor ---------->
-						<a href = "{% url 'rev-proced-b'  proced.pk %}"
-						class="link blink" data-message="Revisar Comentarios y Corregir ... ">
-							<img src="/static/img/En_Revision.png" width="17" height="17">
-						</a>
-
-					{%else%}
-					<a class="link" data-message="En Revision y Correccion por Gestor Consultor ({{proced.gestor_consultor}})">
-						<img src="/static/img/En_Revision.png" width="17" height="17">
-					</a>
-
-
-					{%endif%}
-				{% endif %}
-
-				<!Aprobado>
-				<!===============>
-				{% if proced.status == 'A'  %}
-
-					{% if proced.esta_activo == False %}
-						<a  href = "{% url 'actualiza-pc' proced.pk  %}" class="link  confirm-link" con-message=" Confirma Actualizacion del Procedimiento de Contingencias ?" data-message="Actualizacion Procedimiento de Contingencia ..."
-						><img src="/static/img/actualizar.png" width="20" height="20"></a>
-					{%else%}
-						{% if request.user.pk == proced.gestor_ejecutor.user_pk %}
-						<!------ Si el usuario de sesion es el Gestor Ejecutor ------->
-							{% if proced.esta_confirmado %}
-							<!--- Si PC fue confirmado ------->
-								<a href="{% url 'ok-act-pc' proced.pk %}" class="link blink" data-message= "Procedimiento de Contingencia en Ejecucion. Haga Click para finalizar Ejecucion"
-								>&#128214</a>
+							{% if request.user.pk == proced.gestor_consultor.user_pk %}
+							<!--- Si el usuario de sesion es gestor consultor -->
+								<!Opcion Ingresa parte B>
+								<a href = "{% url 'crea-proced-B'  proced.pk %}"
+								class="link blink" data-message="Especificacion del Procedimiento de Contingencia ...">
+								<img src="/static/img/manual_pc.webp" width="17" height="17"></a>	
+									
+								<!Opcion Borra>
+								{% if proced.es_borrable %}
+									<a href = "{% url 'borra-prcd' proced.pk  %}" 
+									class="link confirm-link" con-message="*** Confirma Eliminacion del Procedimiento de Contingencia (PC) ? ***" data-message="Elimina Procedimiento (PC)">
+									<strong><rr>&#128465</rr></strong></a>						
+								{%endif%}
 							{%else%}
-							<!---- Si PC NO ha sido Confirmado por Gestor Ejecutor ------->
-								<a href="{% url 'ok-act-pc' proced.pk %}" class="link blink" data-message="Procedimiento de Contingencia Activado por Comite de Crisis. Haga Click para Confirmacion al Comite"
-								>&#128213</a>
+								<a class="link" data-message="PC en Especificacion x Consultor ({{proced.gestor_consultor}})">
+								<img src="/static/img/manual_pc.webp" width="17" height="17"></a> <!hoja sin lapiz>	
+
 							{% endif %}
-							
-						{%else%}
-						<!--- Si no es Gestor Ejecutor --------->
-							<a class="link" data-message="Procedimiento de Contingencia Activado por Comite de Crisis."
-							>&#128213</a>
 
 						{% endif %}
 
+						<!En Autorizacion>
+						<!===============>			
+						{% if proced.status == 'a' %}
 
-					{% endif %}
+							{% if request.user.pk == proced.resp_proceso.user_pk %}			
+							<! Mostrar Procedimiento>
+							<! ir a Autorizacion>
+								<a href = "{% url 'aut-proced' proced.pk %}"
+								class="link blink" data-message="Autorizar PC propuesto ... ">
+								<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
+								</a> 	
+								
+							{%else%}
+								<a class="link" data-message="En Autorizacion por Gestor Responsable del Proceso de Negocio ... ({{proced.resp_proceso}}) ">
+								<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
+								</a> 	
+						{%endif%}
+							
+						{% endif %}
+						
+						<!En correccion por Consultor>
+						<!===========================>
+						{% if proced.status == 'x' %}
+						
+
+							{% if request.user.pk == proced.gestor_consultor.user_pk %}
+							<!----- Si usuario en sesion es Consultor ---------->
+								<a href = "{% url 'rev-proced-b'  proced.pk %}"
+								class="link blink" data-message="Revisar Comentarios y Corregir ... ">
+									<img src="/static/img/En_Revision.png" width="17" height="17">
+								</a>
+
+							{%else%}
+							<a class="link" data-message="En Revision y Correccion por Gestor Consultor ({{proced.gestor_consultor}})">
+								<img src="/static/img/En_Revision.png" width="17" height="17">
+							</a>
 
 
-				{% endif %}
-				
-				<!-- Opcion para mostrar el Procedimiento vigente -->
-				{% if proced.existe_p_vigente %}
-				<a href = "{% url 'det-proced-v' proced.pk  %}"
-				class="link" data-message="Procedimiento de Contingencia Vigente (Aprobado) ..."><bn>&#128215</bn></a> <!ojo >
-				{%endif%}
-				
+							{%endif%}
+						{% endif %}
 
-				<!**************************>
-				<!*Despliega  Procedimiento*>
-				<!**************************>
+						<!Aprobado>
+						<!===============>
+						{% if proced.status == 'A'  %}
 
-				<sa><strong>{{proced.nombre}}</strong></sa>
-				</p> <!Fin de la linea por procedimiento desplegado>
+							{% if proced.esta_activo == False %}
+								<a  href = "{% url 'actualiza-pc' proced.pk  %}" class="link  confirm-link" con-message=" Confirma Actualizacion del Procedimiento de Contingencias ?" data-message="Actualizacion Procedimiento de Contingencia ..."
+								><img src="/static/img/actualizar.png" width="20" height="20"></a>
+							{%else%}
+								{% if request.user.pk == proced.gestor_ejecutor.user_pk %}
+								<!------ Si el usuario de sesion es el Gestor Ejecutor ------->
+									{% if proced.esta_confirmado %}
+									<!--- Si PC fue confirmado ------->
+										<a href="{% url 'ok-act-pc' proced.pk %}" class="link blink" data-message= "Procedimiento de Contingencia en Ejecucion. Haga Click para finalizar Ejecucion"
+										>&#128214</a>
+									{%else%}
+									<!---- Si PC NO ha sido Confirmado por Gestor Ejecutor ------->
+										<a href="{% url 'ok-act-pc' proced.pk %}" class="link blink" data-message="Procedimiento de Contingencia Activado por Comite de Crisis. Haga Click para Confirmacion al Comite"
+										>&#128213</a>
+									{% endif %}
+									
+								{%else%}
+								<!--- Si no es Gestor Ejecutor --------->
+									<a class="link" data-message="Procedimiento de Contingencia Activado por Comite de Crisis."
+									>&#128213</a>
 
-			{%endfor%} <!-- Fin Lista de Procedimientos de Proceso Vigente-->
+								{% endif %}
+
+
+							{% endif %}
+
+
+						{% endif %}
+						
+						<!-- Opcion para mostrar el Procedimiento en Desarrollo/Actualizacion -->
+						<a href = "{% url 'det-proced' proced.pk  %}"
+						class="link" data-message="Detalle del Procedimiento de Contingencia ..."><bn>&#128065</bn></a>
+						
+
+						<!**************************>
+						<!*Despliega  Procedimiento*>
+						<!**************************>
+
+						<sa><strong>{{proced.nombre}}</strong></sa>
+						</p> <!Fin de la linea por procedimiento desplegado>
+
+					{%endfor%} <!-- Fin Lista de Procedimientos de Proceso Vigente-->
 
 		{%else%}
 			Sin Procedimientos definidos </p>

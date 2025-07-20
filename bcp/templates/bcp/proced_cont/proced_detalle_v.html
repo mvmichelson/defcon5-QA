@@ -7,25 +7,34 @@
 
 {% block content %}
 
-
 	{% block encabezado_auth %}
 	<ul class="encabezado_B">
-    	<strong> *** PROCEDIMIENTO DE RECUPERACION DE CONTINUIDAD  *** (PC - VIGENTE)</strong>
+    	<strong> PROCEDIMIENTO DE CONTINGENCIA / RECUPERACION DE CONTINUIDAD  (PC) VIGENTE</strong>
 	</ul>  
 	{% endblock %}
 
+<div class="flex-container">
+	<div class="flex-item" style="width: 90%;"> 
+		<!---- Identificacion Proceso Matriz ------------------------------->
+		<ul class='encabezado_SB'><h5><strong>PROCESO MATRIZ <strong></h5></ul>
+		<ul class="scr4" >
+		<p>&emsp;<strong>Codigo..........:</strong>&emsp;{{proceso.proceso}}&emsp;<strong>Nombre Proceso...:</strong>{{proceso.path}}</p>
+
+		<p>&emsp;<strong>Descripcion.....:</strong>{{proceso.objetivo}}</p>
+		<br/>
+
+		</ul>
+	</div>
+
+	<div class="flex-item" style="text-align: center; width: 20%;">
+		<img src="/static/img/sello_aprobado.webp" width="150" height="150"></a>
+
+	</div>
+
+</div>
 <a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
 
 
-<!---- Identificacion Proceso Matriz ------------------------------->
-<ul class='encabezado_SB'><h5><strong>PROCESO MATRIZ <strong></h5></ul>
-<ul class="scr4" >
-<p>&emsp;<strong>Codigo..........:</strong>&emsp;{{proceso.proceso}}&emsp;<strong>Nombre Proceso...:</strong>{{proceso.path}}</p>
-
-<p>&emsp;<strong>Descripcion.....:</strong>{{proceso.objetivo}}</p>
-<br/>
-
-</ul>
 
 <!---------------------BLOQUE A -------------------------------------------------->
 <br/><br/>

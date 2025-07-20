@@ -1475,6 +1475,7 @@ def Aut_Asig_Esc(request, pk):
 
                         if not p_vigente_existe:
                             # Si el Proceso Vigente no existe, lo crea.
+
                             # Crea Log de Creacion de Proceso Vigente 
                             log=Log_Revision()
                             log.fecha = datetime.date.today()
@@ -1566,13 +1567,16 @@ def Aut_Asig_Esc(request, pk):
                         else:
                             # Si el Proceso vigente ya existe
 
+                            # Cambios en Proceso Vigente 
+                            # ============================
+
                             print('Modifica el Proceso vigente existente')
 
                             sub_proceso_v=get_object_or_404(SubProceso_V, codigo=proc.subproceso.codigo)
                             sub_proceso_v.fecha_ult_aut=datetime.date.today()
                             detalle_log="Cambios implementados a version "+str(sub_proceso_v.version)+" :-> "
 
-                            # Crea "Log de Creacion" de Proceso Vigente 
+                            # Crea "Log de Creacion" de Proceso Vigente  en log de Revision 
                             log=Log_Revision()
                             log.fecha = datetime.date.today()
                             log.proceso= proc
@@ -3405,6 +3409,12 @@ def cr_prcd_P5(request, pk, fase):
     pk: pk del Procedimiento
     fase: 0: Creacion 1:Revision 
     """
+    print('-- CREA Servicios en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
+    print('fase =', fase)
+
+    #fase_i=int(fase)
+
+
     global url_ant
 
     proced = get_object_or_404(Procedimientos, pk = pk)
@@ -3442,7 +3452,7 @@ def cr_prcd_P5(request, pk, fase):
                      
             # Redirecciona a la lista 
             #return HttpResponseRedirect(url_ant)
-            if fase == '0':
+            if fase == 0:
                 return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
             else:
                 return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
@@ -3469,7 +3479,9 @@ def br_prcd_P5(request, pk, fase):
     fase: 0: Creacion 1:Revision 
 
     """
-    
+    print('-- BORRA Servicios en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
+    print('fase =', fase)
+
     servicio_pc = get_object_or_404(Servicios_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = servicio_pc.pk_padre)
 
@@ -3482,7 +3494,7 @@ def br_prcd_P5(request, pk, fase):
     #Borra Servicio                
     servicio_pc.delete()
     
-    if fase == '0':
+    if fase == 0:
         return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
     else:
         return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
@@ -3498,6 +3510,10 @@ def cr_prcd_P6(request, pk, fase):
     fase: 0: Creacion 1:Revision 
 
     """
+
+    print('-- CREA Contacto en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
+    print('fase =', fase)
+
     proced = get_object_or_404(Procedimientos, pk = pk)
     
     # If this is a POST request then process the Form data
@@ -3529,7 +3545,8 @@ def cr_prcd_P6(request, pk, fase):
             #proced.sec_contactos = num
             proced.save()
 
-            if fase == '0':
+            
+            if fase == 0:
                 return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
             else:
                 return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
@@ -3558,7 +3575,9 @@ def br_prcd_P6(request, pk, fase):
     pk: pk del Procedimiento
     fase: 0: Creacion 1:Revision
     """
-  
+    print('-- BORRA  Contacto en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
+    print('fase =', fase)
+
     contacto_pc = get_object_or_404(Contactos_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = contacto_pc.pk_padre)
 
@@ -3570,7 +3589,7 @@ def br_prcd_P6(request, pk, fase):
    
     contacto_pc.delete()
 
-    if fase == '0':
+    if fase == 0:
         return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
     else:
         return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
@@ -3608,11 +3627,7 @@ def cr_prcd_P7(request, pk, fase):
     acum_h=float(acum/60)
     print('Tiempo acumulado de pasos', acum,'-',acum_h)
 
-
-    #Asigna el formulario creado en Forrms
-    form=CreaProc_P7_Form()
-
-    
+   
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
@@ -3643,7 +3658,7 @@ def cr_prcd_P7(request, pk, fase):
             #proced.save()
             
             # redirect to a new URL:
-            if fase == '0':
+            if fase == 0:
                 return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
             else:
                 return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
@@ -3686,7 +3701,7 @@ def br_prcd_P7(request, pk, fase):
    
     paso_pc.delete()
 
-    if fase == '0':
+    if fase == 0:
         print('vuelva a lista-c')
         return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
     else:
@@ -3698,6 +3713,16 @@ def br_prcd_P7(request, pk, fase):
 #*************************************************************
 # 2.2.4  Borra el Procedimiento de Contingencia              *
 #*************************************************************
+
+def borra_procedimiento(request, pk):
+    "Borra el Procedimiento de Contingencia (PC)"
+
+    proced=get_object_or_404(Procedimientos, pk=pk)
+
+    if proced.es_borrable:
+        proced.delete()
+
+    return HttpResponseRedirect(reverse('Lista-Proced', args=[1]) )
 
 
     
@@ -3821,22 +3846,22 @@ def Aut_Proced_C(request, pk):
                         proced_v = Procedimientos_V()
                         print('>  PC vigente  no existe. Crea version inicial del PC vigente.')
                         detalle_log="Version Inicial."
-                        proced_v.version = 0
+                        proced_v.version = 1  
                         
 
                         proced_v.fecha_c = datetime.date.today()
                         proced_v.pk_padre = proced.pk_padre
                         proced_v.codigo   = proced.codigo
 
-                        #Identificacion del Procedimiento
+                        #Asigna Identificacion del Procedimiento
                         proced_v.nombre = proced.nombre
                         proced_v.tipo = proced.tipo
 
-                        #Contexto
+                        #Asigna Contexto
                         proced_v.escenarios = proced.escenarios
                         proced_v.estrategia = proced.estrategia
 
-                        #Responsables
+                        #Asigna Responsables
                         proced_v.resp_proceso = proced.resp_proceso
                         proced_v.bck_resp = proced.bck_resp
                         proced_v.gestor_ejecutor = proced.gestor_ejecutor 
@@ -3847,7 +3872,7 @@ def Aut_Proced_C(request, pk):
                         proced_v.gestor_consultor = proced.gestor_consultor
                         proced_v.save()
 
-                        #Servicios  
+                        #Asigna Servicios  
                         for spc in proced.servicios_pc.all():
                             # Crea entrada a Servicios
                             servicios_pc_v=Servicios_PC_V()
@@ -3862,9 +3887,9 @@ def Aut_Proced_C(request, pk):
                             proced_v.servicios_pc.add(servicios_pc_v)
 
                         
-                        # Contactos
+                        # Asigna Contactos
                         for con in proced.contactos_pc.all():
-                            # Crea entrada de Contactos
+                            # Crea entrada de Contactos Vigentes
                             contactos_pc_v=Contactos_PC_V()
 
                             contactos_pc_v.pk_padre = con.pk_padre
@@ -3877,9 +3902,9 @@ def Aut_Proced_C(request, pk):
                             contactos_pc_v.save()
                             proced_v.contactos_pc.add(contactos_pc_v)
 
-                        #Pasos del Procedimiento
+                        #Asigna Pasos del Procedimiento
                         for pas in proced.pasos.all():
-                            # Crea entrada de Pasos
+                            # Crea entrada de Pasos Vigentes
                             pasos_v=Pasos_PC_V()
 
                             pasos_v.pk_padre = pas.pk_padre
@@ -3895,269 +3920,353 @@ def Aut_Proced_C(request, pk):
                         proced.existe_p_vigente=True  # Marca que el Procedimiento Vigente existe
                         
                         proced_v.save()
+
                         proced.save()
 
-                        #print('PARA', para)
+                        # asigna el Procedimiento Vigente al Proceso (vigente)
+                        proceso.subproceso_v.save()
+                        proceso.subproceso_v.procedimientos_contingencia_v.add(proced_v)
 
 
                 else:
 
-                        # PC existe. Se modifica 
-                        # ======================
-                        print('> Existe PC vigente. Modifica el Proceso vigente existente')
+                        # Cambios en Procedimiento vigente (PC) existente 
+                        # =======================================
+
+                        print('-- > Existe PC vigente. Lo modifica! ')
 
                         proced_v=get_object_or_404(Procedimientos_V, codigo=codigo_prcd)
 
-                        proced_v.fecha_c = datetime.date.today()
-                        proced_v.version = int(proced_v.version) + 1 
-                        detalle_log="Cambios implementados : "
+                        proced_v.fecha_c = datetime.date.today()        # Fecha de la autorizacion
+                        version=int(proced_v.version)+1 # Incrementa version
+                        proced_v.version = version      # asigna version 
+                        detalle_log="Cambios autorizados a version "+str(version)+" : "
 
-                        nombre_v=proced_v.nombre
-                        nombre_o=proced.nombre
-                        print('nombre_v=',nombre_v,'- nombre_o =', nombre_o)
-                            
+                        hay_cambios=False
+                        # Deteccion de Cambios y actualizacion de Control de Cambios
+                        # ==========================================================
+
+                        # Cambio de Nombre   
                         if proced_v.nombre != proced.nombre:
-                            print('Cambio Nombre')
-                            detalle_log=detalle_log+'Cambio al Nombre "'+proced_v.nombre+'", por "'+proced.nombre+'". '
+                            print('--- Cambio Nombre')
+                            detalle_log=detalle_log+'Cambio al Nombre "'+proced_v.nombre+'", por "'+proced.nombre+'". // '
                             proced_v.nombre = proced.nombre
                             hay_cambios=True
                         else:
-                            print('son iguales')
-                            print('detalle log=', detalle_log)
+                            print('--- Sin Cambio en en nombre')
 
-
+                        # Cambio Tipo
                         if proced_v.tipo != proced.tipo:
-                            print('Cambio Tipo')
-                            detalle_log=detalle_log+'Cambio al Tipo de PC ['+proced_v.tipo.nombre+'], por ['+proced.tipo.nombre+'].'
+                            print('--- Cambio Tipo')
+                            detalle_log=detalle_log+'Cambio al Tipo de PC ['+proced_v.tipo.nombre+'], por ['+proced.tipo.nombre+']. //'
                             proced_v.tipo = proced.tipo
                             hay_cambios=True
-
                         else:
-                            print('tipo: son iguales')
-                            print('detalle log=', detalle_log)
+                            print('--- Sin cambio en Tipo')
 
-                        
+
+                        # Cambio a Escenario
                         if proced_v.escenarios != proced.escenarios:
-                            print('Cambio en Escenarios')
-                            detalle_log=detalle_log+'Cambio al Escenario ['+proced_v.escenarios.titulo+'], por ['+proced.escenarios.titulo+']. '
+                            print('--- Cambio en Escenarios')
+                            detalle_log=detalle_log+'Cambio al Escenario ['+proced_v.escenarios.titulo+'], por ['+proced.escenarios.titulo+']. //'
                             proced_v.escenarios = proced.escenarios
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambio en Escenario')
 
+
+                        # Cambio en Estrategia
                         if proced_v.estrategia != proced.estrategia:
-                            print('CAmbio en Estrategia')
-                            detalle_log=detalle_log+'Cambio a la Estrategia ['+proced_v.estrategia+'], por ['+proced.estrategia+']. '
+                            print('--- Cambio en Estrategia')
+                            detalle_log=detalle_log+'Cambio a la Estrategia ['+proced_v.estrategia+'], por ['+proced.estrategia+']. // '
                             proced_v.estrategia = proced.estrategia
                             hay_cambios=True 
-
-                        print('> Estrategia: detalle log=', detalle_log)
-                        print('hay cambios=', hay_cambios)
-
+                        else:
+                            print('--- Sin cambio en Estrategia')
 
 
-                        # Roles
+
+                        # Cambios en Roles
                         if proced_v.resp_proceso != proced.resp_proceso:
-                            print('Cambio en el Responsable')
+                            print('--- Cambio en el Responsable')
                             detalle_log=detalle_log+'Cambio al Responsable -'+proced_v.resp_proceso.user_gestor.last_name+'-, por -'+proced.resp_proceso.user_gestor.last_name+'-. '
                             proced_v.resp_proceso = proced.resp_proceso
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambio en Responsable')
+
 
                         if proced_v.bck_resp != proced.bck_resp:
-                            print('Cambio en el Respaldo del Responsable')
+                            print('--- Cambio en el Respaldo del Responsable')
                             if proced_v.bck_resp != None and  proced.bck_resp != None:
                                 detalle_log=detalle_log+'Cambio al Respaldo del Responsable -'+proced_v.bck_resp.user_gestor.last_name+'-,'+proced_v.bck_resp.user_gestor.first_name+', por '+proced.bck_resp.user_gestor.last_name+','+proced_v.bck_resp.user_gestor.first_name+'.'
                             elif  proced.bck_resp == None:
                                 detalle_log=detalle_log+'Se elimino al Respaldo del Responsable sin Asignacion definida. '
                             else:
                                 detalle_log=detalle_log+'Se asigna a '+proced.bck_resp.user_gestor.last_name+' Como Respaldo al Responsable.'
-                            print(detalle_log)        
                             proced_v.bck_resp = proced.bck_resp
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambio en Respaldo Responsable')
+
 
                         if proced_v.gestor_ejecutor != proced.gestor_ejecutor:
-                            print('Cambio en el Ejecutor')
-                            detalle_log=detalle_log+'Cambio al Ejecutor '+proced.gestor_ejecutor.user_gestor.last_name+', por '+proced_v.gestor_ejecutor.user_gestor.last_name+'.'
+                            print('--- Cambio en el Ejecutor')
+                            detalle_log=detalle_log+'Cambio al Ejecutor '+proced_v.gestor_ejecutor.user_gestor.last_name+' '+proced_v.gestor_ejecutor.user_gestor.first_name+', por '+proced.gestor_ejecutor.user_gestor.last_name+' '+proced.gestor_ejecutor.user_gestor.first_name+'.'
                             proced_v.gestor_ejecutor = proced.gestor_ejecutor
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambio en Ejecutor')
+
 
                         if proced_v.bck_ejecutor != proced.bck_ejecutor:
-                            print('Cambio en el Respaldo Ejecutor')
-                            if proced_v.bck_ejecutor != None :
+                            print('--- Cambio en el Respaldo Ejecutor')
+                            if proced_v.bck_ejecutor != None : 
                                 detalle_log=detalle_log+'Cambio al Respaldo del Ejecutor '+proced_v.bck_ejecutor.user_gestor.last_name+','+proced_v.bck_ejecutor.user_gestor.first_name+', por '+proced.bck_ejecutor.user_gestor.last_name+','+proced_v.bck_ejecutor.user_gestor.first_name+'.'
                             elif  proced.bck_ejecutor == None:
                                 detalle_log=detalle_log+'Se elimino al Respaldo del Ejecutor sin Asignacion definida. '
                             else:
-                                detalle_log=detalle_log+'Se asigna a '+proced.bck_ejecutor.user_gestor.last_name+' Como Respaldo al Ejecutor.'
+                                detalle_log=detalle_log+'Se asigna a '+proced.bck_ejecutor.user_gestor.last_name+' '+proced.bck_ejecutor.user_gestor.first_name+' Como Respaldo al Ejecutor.'
 
                             proced_v.bck_ejecutor = proced.bck_ejecutor
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambio en Respaldo Ejecutor')
 
                         if proced_v.enlace_c_crisis != proced.enlace_c_crisis:
-                            print('Cambio en el Enlace CC')
-                            detalle_log=detalle_log+'Cambio al Enlace del Comite de Crisis '+proced.enlace_c_crisis.user_gestor.last_name+', por '+proced_v.enlace_c_crisis.user_gestor.last_name+'.'
+                            print('--- Cambio en el Enlace CC')
+                            detalle_log=detalle_log+'Cambio al Enlace del Comite de Crisis '+proced.enlace_c_crisis.user_gestor.last_name+' '+proced.enlace_c_crisis.user_gestor.first_name+', por '+proced_v.enlace_c_crisis.user_gestor.last_name+' '+proced_v.enlace_c_crisis.user_gestor.first_name +'.'
                             proced_v.enlace_c_crisis = proced.enlace_c_crisis
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambio en Enlace')
 
 
                         if proced_v.bck_enlace != proced.bck_enlace:
-                            print('Cambio en el Respaldo Enlace CC')
-                            if proced_v.bck_enlace != None :
-                                detalle_log=detalle_log+'Cambio al Respaldo del Enlace del Comite de Crisis  '+proced_v.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+', por '+proced.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+'.'
-                            elif  proced.bck_ejecutor == None:
+                            print('--- Cambio en el Respaldo Enlace CC')
+                            if proced_v.bck_enlace != None and proced.bck_enlace != None:
+                                detalle_log += 'Cambio del  Respaldo del Enlace del Comite de Crisis sr(a) '+proced_v.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+', por el sr(a) '+proced.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+'.'
+                            elif  proced.bck_enlace == None:
                                 detalle_log=detalle_log+'Se elimino al Respaldo del Enlace del Comite de Crisis sin Asignacion definida. '
                             else:
-                                detalle_log=detalle_log+'Se asigna a '+proced.bck_enlace.user_gestor.last_name+' Como Respaldo del Enlace del Comite de Crisis.'
+                                detalle_log += 'Se asigna a '+ proced.bck_enlace.user_gestor.last_name+' '+proced.bck_enlace.user_gestor.first_name+' Como Respaldo del Enlace del Comite de Crisis.'
 
                             proced_v.bck_enlace = proced.bck_enlace
                             hay_cambios=True
+                        else:
+                            print('--- Sin cambios en Respaldo Enlace')
 
-                        print('>Roles: detalle log=', detalle_log)
-                        print('hay cambios=', hay_cambios)
 
-
+                        detalle_log += './/'
 
                         # Actualiza Servicios
-                        # ====================
-                        # Verifica si se elimino un Servicio
-                        print('> Elimina >>>')
-                        for v in proced_v.servicios_pc.all():
-                            existe=False
-                            print('> **** v=', v.nombre)
-                            for o in proced.servicios_pc.all():
-                                if v.nombre == o.nombre :    # Si esta en el original 
-                                    existe=True
-                                print('> v= ', v.nombre,', ', 'o= ', o.nombre, 'existe = ', existe)
-                            
-                            if  not existe :
-                                detalle_log=detalle_log+'Se elimino  el servicio : "'+v.nombre+'", '
-                                proced_v.servicios_pc.remove(v)
-                                hay_cambios=True
+                        # ===================
+
+                            #impactos_p = list(proc.subproceso.impact_subp.all())
+                            #impactos_v = list(sub_proceso_v.impact_subp.all())
+
+                            # Diccionarios por nombre de impacto
+
+                            #dict_p = {imp.impacto.nombre: imp for imp in impactos_p}
+                            #dict_v = {imp.impacto.nombre: imp for imp in impactos_v}
+
+                            #nombres_p = set(dict_p.keys())
+                            #nombres_v = set(dict_v.keys())
+
+                            #impactos_agregados = nombres_p - nombres_v
+                            #impactos_eliminados = nombres_v - nombres_p
+                            #impactos_comunes = nombres_p & nombres_v
 
 
-                        # Verifica si se agrego un Servicio
-                        print('> Agrega >>>')
-                        for o in proced.servicios_pc.all():
-                            existe=False
-                            for v in proced_v.servicios_pc.all():
-                                if o.nombre == v.nombre: 
-                                        existe=True
-                                print('v= ',v.nombre,', ', 'o= ', o.nombre, 'existe = ', existe)
+                        # Obtener Servicios como conjuntos
+                        servicios_p = list(proced.servicios_pc.all())
+                        servicios_v = list(proced_v.servicios_pc.all())
 
-                            if not existe:
-                                detalle_log=detalle_log+'Se agrego el servicio : "'+o.nombre+'", '
-                                # Crea entrada a Servicios
-                                servicios_pc_v=Servicios_PC_V()
+                        # Diccionarios por nombre de servicio
+                        dict_p = {ser.nombre: ser for ser in servicios_p}
+                        dict_v = {ser.nombre: ser for ser in servicios_v}
 
-                                servicios_pc_v.pk_padre = o.pk_padre 
-                                servicios_pc_v.nombre = o.nombre
-                                servicios_pc_v.objetivo = o.objetivo
-                                servicios_pc_v.contacto = o.contacto
-                                servicios_pc_v.contacto_bck = o.contacto_bck
+                        servicios_p = set(dict_p.keys())
+                        servicios_v = set(dict_v.keys())
 
-                                servicios_pc_v.save()
-                                proced_v.servicios_pc.add(servicios_pc_v)
-                                hay_cambios=True
+                        # Detectar diferencias
+                        servicios_agregados = servicios_p - servicios_v
+                        servicios_eliminados = servicios_v - servicios_p
+                        print('-- servicios_agregados :', servicios_agregados)
+                        print('-- servicios eliminados :', servicios_eliminados)
 
-                        # Actualiza la BD con los Servicios
-                        #proced_v.servicios_pc.set(list(proced.servicios_pc.all()))
-                        proced_v.save()
+                        # Si hay cambios
+                        if servicios_agregados or servicios_eliminados:
+                            hay_cambios = True
 
-                        print('>Servicios: detalle log=', detalle_log)
-                        print('hay cambios=', hay_cambios)
+                            # Actualiza los servicios vigentes a partir de los servicios
+                            servicios_p2 = []
+                            for s in proced.servicios_pc.all():  # s es de Servicios_PC
+                                print('s=', s.nombre)
+                                # Buscar el equivalente en Servicios_PC_V (por nombre en comun)
+                                s_v = Servicios_PC_V.objects.filter(nombre=s.nombre).first()
+                                print('s_v=', s_v)
+                                if s_v:
+                                    servicios_p2.append(s_v)
+                                else:
+                                    # Crea entrada a Servicios
+                                    s_v=Servicios_PC_V()
+                                    s_v.pk_padre = s.pk_padre 
+                                    s_v.nombre = s.nombre
+                                    s_v.objetivo = s.objetivo
+                                    s_v.contacto = s.contacto
+                                    s_v.contacto_bck = s.contacto_bck
+                                    s_v.save()
+
+                                    servicios_p2.append(s_v)
+
+                            print("proced_v PK:", proced_v.pk)
+                            print("Servicios actuales en proced_v:", list(proced_v.servicios_pc.all()))
+                            print("Servicios en lista a asignar:", servicios_p2)
+                            proced_v.save()
+                            proced_v.servicios_pc.set(servicios_p2)
+
+                            detalle_log += "Cambios en Servicios:\n"
+
+                            if servicios_agregados:
+                                detalle_log += 'Servicios Agregados :'
+                                for servicio in servicios_agregados:
+                                    detalle_log += servicio+', '
+
+                            for servicio in servicios_eliminados:
+                                detalle_log += f"- Servicio eliminado: {servicio}\n"
+
+                            detalle_log += './/'
+                            print("CAMBIOS EN SERVICIOS:\n", detalle_log)
+                        else:
+                            print("Sin cambios en servicios.")
                     
 
                         # Actualiza Contactos
                         # ====================
-                        # Verifica si se Elimino un Contacto
-                        for v in proced_v.contactos_pc.all():
-                            existe=False
-                            for o in proced.contactos_pc.all():
-                                if o.nombre == v.nombre:
-                                        existe=True
-                            if not existe:
-                                detalle_log=detalle_log+'Se elimino el Contacto : '+v.nombre+', '
-                                proced_v.contactos_pc.remove(v)
-                                hay_cambios=True
+
+                        # Obtener Contactos como conjuntos
+                        contactos_p = list(proced.contactos_pc.all())
+                        contactos_v = list(proced_v.contactos_pc.all())
+
+                        # Diccionarios por nombre de servicio
+                        dict_p = {ser.nombre: ser for ser in contactos_p}
+                        dict_v = {ser.nombre: ser for ser in contactos_v}
+
+                        contactos_p = set(dict_p.keys())
+                        contactos_v = set(dict_v.keys())
+
+                        # Detectar diferencias
+                        contactos_agregados = contactos_p - contactos_v
+                        contactos_eliminados = contactos_v - contactos_p
+                        print('-- Contactos agregados :', contactos_agregados)
+                        print('-- Contactos eliminados :', contactos_eliminados)
 
 
+                        # Si hay cambios
+                        if contactos_agregados or contactos_eliminados:
+                            hay_cambios = True
 
-                        # Verifica si se Agego un Contacto
-                        for o in proced.contactos_pc.all():
-                            existe=False
-                            for v in proced_v.contactos_pc.all():
-                                if o.nombre == v.nombre: 
-                                        existe=True
-                            if not existe:
-                                detalle_log=detalle_log+'Se agrego  el Contacto : '+o.nombre+', '
-                                # Crea entrada de Contactos
-                                contactos_pc_v=Contactos_PC_V()
+                            # Crea Contactos vigentes 
+                            contactos_p2 = []
+                            for s in proced.contactos_pc.all():  # s es de Contactos_PC
+                                # Buscar el equivalente en Contactos_PC_V (por nombre en comun)
+                                s_v = Contactos_PC_V.objects.filter(nombre=s.nombre).first()
+                                if s_v:
+                                    contactos_p2.append(s_v)
+                                else:
+                                    # Crea entrada de Contactos Vigentes
+                                    s_v = Contactos_PC_V()
+                                    s_v.pk_padre = s.pk_padre
+                                    s_v.cont_int = s.cont_int
+                                    s_v.nombre = s.nombre
+                                    s_v.correo = s.correo
+                                    s_v.tel_lab = s.tel_lab
+                                    s_v.cel_lab = s.cel_lab
+                                    s_v.save()
+                                    contactos_p2.append(s_v)
 
-                                contactos_pc_v.pk_padre = o.pk_padre
-                                contactos_pc_v.cont_int = o.cont_int
-                                contactos_pc_v.nombre = o.nombre
-                                contactos_pc_v.correo = o.correo
-                                contactos_pc_v.tel_lab = o.tel_lab
-                                contactos_pc_v.cel_lab = o.cel_lab
+                            proced_v.contactos_pc.set(contactos_p2)
+                            proced_v.save()
 
-                                contactos_pc_v.save()
-                                proced_v.contactos_pc.add(contactos_pc_v)
+                            detalle_log += "Cambios en Contactos:\n"
 
-                                hay_cambios=True
+                            for contacto in contactos_agregados:
+                                detalle_log += f"+ Contacto agregado: {contacto}\n"
 
-                        # Actualiza la BD de Contactos
-                        #proced_v.contactos_pc.set(proced.contactos_pc.all())
-                        proced_v.save()
-                        
-                        print('> Contactos: detalle log=', detalle_log)
-                        print('hay cambios=', hay_cambios)
+                            for contacto in contactos_eliminados:
+                                    detalle_log += f"- Contacto eliminado: {contacto}\n"
 
+                            detalle_log +='.//'
+                            print("CAMBIOS EN CONTACTOS:\n", detalle_log)
+
+                        else:
+                                print("Sin cambios en contactos.")
 
 
                         # Actualiza Pasos del PC
                         # ======================
-                        # Verifica si se Elimino un Paso
-                        for v in proced_v.pasos.all():
-                            existe=False
-                            for o in proced.pasos.all():
-                                if o.descripcion  == v.descripcion: 
-                                        existe=True
-                            if not existe:
-                                detalle_log=detalle_log+'Se elimino el Paso nro. : '+str(v.nro_paso)+'.-) '+v.descripcion+'-, '
-                                proced_v.pasos.remove(v)
-                                hay_cambios=True
-
-                        # Verifica si se Agrego un Paso
-                        for o in proced.pasos.all():
-                            existe=False
-                            for v in proced_v.pasos.all():
-                                if o.descripcion == v.descripcion: 
-                                        existe=True
-                            if not existe:
-                                detalle_log=detalle_log+'Se agrego el Paso nro. : '+str(o.nro_paso)+'.-) '+o.descripcion+'-, '
-                                # Crea entrada de Pasos
-                                pasos_v=Pasos_PC_V()
-
-                                pasos_v.pk_padre = o.pk_padre
-                                pasos_v.nro_paso = o.nro_paso
-                                pasos_v.descripcion = o.descripcion
-                                pasos_v.ejecutor = o.ejecutor
-                                pasos_v.tiempo_esp = o.tiempo_esp
-
-                                pasos_v.save()
-                                proced_v.pasos.add(pasos_v)
-
-                                hay_cambios=True
-
-                        # Actualiza la BD de Pasos
-                        #proced_v.pasos.set(proced.pasos.all())
-                        proced_v.save()
                         
-                        print('pasos: detalle log=', detalle_log)
-                        print('hay cambios=', hay_cambios)
+                        # Obtener Pasos como conjuntos
+                        pasos_p = list(proced.pasos.all())
+                        pasos_v = list(proced_v.pasos.all())
+
+                        # Diccionarios por nombre de servicio
+                        dict_p = {ser.descripcion: ser for ser in pasos_p}
+                        dict_v = {ser.descripcion: ser for ser in pasos_v}
+
+                        pasos_p = set(dict_p.keys())
+                        pasos_v = set(dict_v.keys())
+
+                        # Detectar diferencias
+                        pasos_agregados = pasos_p - pasos_v
+                        pasos_eliminados = pasos_v - pasos_p
+                        print('-- Pasos agregados :', pasos_agregados)
+                        print('-- Pasos eliminados :', pasos_eliminados)
+
+                        # Si hay cambios
+                        if pasos_agregados or pasos_eliminados:
+                            hay_cambios = True
+
+                            # Actualiza Pasos vigentes 
+                            pasos_p2 = []
+                            for s in proced.pasos.all():  # s es de Pasos_PC
+                                # Buscar el equivalente en Contactos_PC_V (por descripcion)
+                                s_v = Pasos_PC_V.objects.filter(descripcion=s.descripcion).first()
+                                if s_v:
+                                    pasos_p2.append(s_v)
+                                else:
+                                    # Crea  Pasos Vigentes
+                                    s_v=Pasos_PC_V()
+                                    s_v.pk_padre = s.pk_padre
+                                    s_v.nro_paso = s.nro_paso
+                                    s_v.descripcion = s.descripcion
+                                    s_v.ejecutor = s.ejecutor
+                                    s_v.tiempo_esp = s.tiempo_esp
+                                    s_v.save()
+                                    pasos_p2.append(s_v)
+
+                            proced_v.pasos.set(pasos_p2)
+                            proced_v.save()
+
+                            detalle_log += "Cambios en pasos del PC:\n"
+
+                            for paso in pasos_agregados:
+                                detalle_log += f"+ Paso agregado: {paso}\n"
+
+                            for paso in pasos_eliminados:
+                                    detalle_log += f"- Paso eliminado: {paso}\n"
+
+                            detalle_log +='.//'
+                            print("CAMBIOS EN PASOS:\n", detalle_log)
+
+                        else:
+                                print("Sin cambios en pasos.")
 
 
 
                         if not hay_cambios:
-                            detalle_log='Vigenteo sin cambios'
+                            detalle_log='Vigenteo version '+str(version)+' sin cambios en version anterior.'
 
                         print('Detalle log final', detalle_log)
 
@@ -4168,8 +4277,9 @@ def Aut_Proced_C(request, pk):
 
                         # FIN PC existe. Se modifica 
                   
-                # Crea entrada para el Control de Cambios
+                # Crea registro del Control de Cambios
                 # =======================================
+
                 print('> Crea entrada al log de Control de Cambios')
                 log=Control_Cambios()
 
@@ -4461,13 +4571,13 @@ def detalle_procedimiento(request, pk ):
     return render(request, 'bcp/proced_cont/proced_detalle.html', {'proced':proced, 'proceso':proceso})
     
 def detalle_procedimiento_v(request, pk): 
-    """ Detalle del Procedimiento Vigente
-    pk: Identificacion del Procedimiento
+    """ Muestra detalle del Procedimiento Vigente
+    pk: Identificacion del Procedimiento Vigente
     """
 
-    proced = get_object_or_404(Procedimientos, pk = pk)
-    proced_v=get_object_or_404(Procedimientos_V, codigo=proced.codigo)
-    proceso = get_object_or_404(Proceso, pk=proced.pk_padre)
+    #proced = get_object_or_404(Procedimientos, pk = pk)
+    proced_v=get_object_or_404(Procedimientos_V, pk=pk)
+    proceso = get_object_or_404(Proceso, pk=proced_v.pk_padre)
 
     c_cambio=Control_Cambios.objects.filter(procedimiento=proced_v)
 

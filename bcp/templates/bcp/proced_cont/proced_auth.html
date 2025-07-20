@@ -25,10 +25,15 @@
 	<ul class='encabezado_SB'>
 	<h5><strong>Procedimiento de Recuperacion (PC)</strong></h5>
 	</ul>
+	<bn>Revise los datos de definicion propuestos para el Procedimiento de Contingencia. 
+		En caso de alguna observacion, registrela en <img src="/static/img/Comentario_1.png" width="15" height="15">. 
+	</bn>
+	<br/>
+	<br/>
 
 	<ul class="scr4">
 	<p><strong>2.0. Codigo ...: &emsp;</strong> {{proced.codigo}}</p>	
-	<p><strong>2.1. Nombre ...: &emsp;</strong> {{proced.nombre}}
+	<p><strong>2.1. Nombre ..: &emsp;</strong> {{proced.nombre}}
 			<!---------  Comentario de Revision ----->
 			<span class="comment-icon link"  data-message="Comentar Nombre del PC ..."
 			data-id="{{ proced.id }}"
@@ -39,7 +44,7 @@
 			</span>
 			<!---------  Fin Comentario de Revision ----->
 
-	<p><strong>2.2. Tipo ..: &emsp;</strong> {{proced.tipo}}
+	<p><strong>2.2. Tipo ........: &emsp;</strong> {{proced.tipo}}
 			<!---------  Comentario de Revision ----->
 			<span class="comment-icon link"  data-message="Comentar el Tipo de PC ..."
 			data-id="{{ proced.id }}"
@@ -50,20 +55,9 @@
 			</span>
 			<!---------  Fin Comentario de Revision ----->
 
-	<p><strong>2.3. Fecha de creacion.................: &emsp;</strong> {{proced.fecha_c}}</p>
-	<p><strong>2.4. Version....................................: &emsp;</strong> {{proced.version}}
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar version asignada al PC ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar version del PC :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
+	<p><strong>2.3. Fecha de creacion........................: &emsp;</strong> {{proced.fecha_c}}</p>
 
-	<p><strong>3.5. Fecha de ultima modificacion..: </strong> {{proced.fecha_ult_mod}}</p>
-
+	<p><strong>2.4. Fecha de ultima modificacion......: </strong> {{proced.fecha_ult_mod}}</p>
 
 	</ul>
 
@@ -71,6 +65,12 @@
 	<ul class='encabezado_SB'>
 	<h5><strong>Estrategia</strong></h5>
 	</ul>
+		<bn>Revise el Escenario de Riesgo asignado y la Estrategia propuesta para el Procedimiento de Contingencia. 
+		En caso de alguna observacion, registrela en <img src="/static/img/Comentario_1.png" width="15" height="15">. 
+	</bn>
+	<br/>
+	<br/>
+
 	<ul class="scr4">
 	<p><strong>3.1. Escenario(s) a cubrir................: &emsp;</strong> {{proced.escenarios}}
 			<!---------  Comentario de Revision ----->
@@ -416,7 +416,7 @@
 
 			<br/>
 			<!---- Botones de salida ---- -->
-			<a href="{% url 'Lista-Proced' %} "><aa class="button">Volver sin Registrar ...</aa></a>
+			<a href="{% url 'Lista-Proced' 1 %} "><aa class="button">Volver sin Registrar ...</aa></a>
        		<input type="submit" class="button"   value="Registrar" />
 
 		</form>

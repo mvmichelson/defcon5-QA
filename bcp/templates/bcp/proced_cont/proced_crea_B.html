@@ -17,7 +17,7 @@
 	<div class="flex-container">
 
 		<!-- Columna izq ------>
-		<div class="flex-item" style="width: 50%;">
+		<div class="flex-item" style="width: 80%;">
 
 			<h5><strong>Proceso Asociado</strong></h5>
 			<ul class="scr4 BarraScroll" style="background: white;">
@@ -81,7 +81,7 @@
 		</div><!--- Fin columna izq -->
 
 		<!--- Columna der -->
-		<div class="flex-item" style="width:400px; text-align: center;">
+		<div class="flex-item" style="width:200px; text-align: center;">
 			
 			<bn>Puntaje: <ul class="scr4"> {{proceso.subproceso.ranking}}</ul></bn>
 			<br/>
@@ -105,21 +105,16 @@
 	<h5><strong>1. Ingrese datos de Identificacion del PC</strong></h5>
 	<ul class="scr4">
 	<p> 1.1 Nombre..: {{ form.nombre }}</p>
-	<p> 1.2 Version.: {{ form.version}}</p>
-	<p> 1.3 Tipo..: {{form.tipo}}</p>
+	<p> 1.2 Tipo..: {{form.tipo}}</p>
 	</ul>
 
 	<br/>
-	<h5><strong>2. Especifique los Escenarios que cubrira este PC</strong></h5>
-	<ul class="scr4">
-	<p>2.1 Escenarios cubiertos por el Procedimiento (Ver punto 1.3):{{form.escenarios}}</p>
-	</ul>
+	<h5><strong>2. Asigne el Escenario de Riesgo asociado al Proceso - {{proceso.nombre}} - que cubrira este PC</strong></h5>
+	<p>{{form.escenarios}}</p>
 
 	<br/>
 	<h5><strong>3. Describa la Estrategia especifica utilizada por este PC</strong></h5>
-	<ul class="scr4">
-	<p>3.1 Estrategia a aplicar por el Procedimiento :{{form.estrategia}}</p>
-	</ul>
+	<p>{{form.estrategia}}</p>
 
 	<br/>
 	<h5><strong>4. Asigne los Roles a  los Gestores asociados a la aprobacion y ejecucion del PC</strong></h5>

@@ -19,9 +19,8 @@
 	{% block B %}<!--------- SERVICIOS --------------------------------------------->
 	<h5><strong>5. Servicios Requeridos</strong></h5>
 	Indique todos los servicios/recursos que necesita el Procedimiento para su ejecucion
-	&emsp;[{{proced.sec_servicios}}]
 	<br/>
-	<ul class="scr4">
+	<ul class="scr4" style="align-content: center;">
 	{% if servicios %}
 		<table class="lta">
 		   <thead style="background: greenyellow; color:black">
@@ -149,9 +148,9 @@
 				</th>
 			
 		    </tr>
-       		    {% if not forloop.last %}
-        	    {%endif%}
-      		    {%endfor%}
+       		  {% if not forloop.last %}
+        	   {%endif%}
+      		{%endfor%}
 		   {%else%}
 		     Sin servicios definidos.
 		   {%endif%}
@@ -165,7 +164,7 @@
 <!-------- Botones de Salida ------------->
 <br/>
 <a href="{% url 'crea-proced-B' proced.pk %}"><bb class="button" >... Volver</bb></a>
-<a href="{% url 'Lista-Proced' %}"><bb class="button" >Salir</bb></a>
+<a href="{% url 'Lista-Proced' 1 %}"><bb class="button" >Salir</bb></a>
 <a href = "{% url 'env-aut-proced' proced.pk %}"><bb class="button" style="color:brown"><strong class="blink">Envia a Autorizacion</bb></strong></a>
 
 <br/>

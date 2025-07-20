@@ -560,7 +560,7 @@ class CreaProc_P7_Form(forms.Form):
                     ejecutores.append(ges.user_pk)
 
 
-        super(AsignaRaciForm, self).__init__(initial)
+        super(CreaProc_P7_Form, self).__init__(initial)
         self.fields['ejecutor'].queryset = Gestor.objects.filter(user_pk__in = ejecutores)
 
 

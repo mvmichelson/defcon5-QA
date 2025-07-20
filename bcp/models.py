@@ -623,11 +623,11 @@ class Procedimientos(models.Model):
     )
     status = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C', help_text='Estado de la definicion del Proceso')
 
-    existe_p_vigente=models.BooleanField(default=False)   # Marca para verificar si tiene un Procedimiento vigente
+    existe_p_vigente=models.BooleanField(default=False)  # Marca para verificar si tiene un Procedimiento vigente
 
     #Log de Autorizaciones
     log_auth=models.ManyToManyField('LogAut')
-    
+    es_borrable=models.BooleanField(default=True) # Indica que el Procedimiento es Borrable
 
 class Procedimientos_V(models.Model):
     """
@@ -640,7 +640,7 @@ class Procedimientos_V(models.Model):
     version  = models.IntegerField(default=0)
 
     #Fechas
-    fecha_c=models.DateField(auto_now_add=True)        # Autorizacion
+    fecha_c=models.DateField(auto_now_add=True)        # Fecha de Autorizacion
     fecha_ult_mod =models.DateField(auto_now_add=True) 
 
     #Identificacion del Procedimiento
@@ -680,10 +680,6 @@ class Procedimientos_V(models.Model):
 
     #Log de Autorizaciones
     log_auth=models.ManyToManyField('LogAut')
-
-
-
-
 
 
 class Servicios_PC(models.Model):
