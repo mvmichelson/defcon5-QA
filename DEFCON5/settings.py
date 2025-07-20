@@ -77,11 +77,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'DEFCON5.wsgi.application'
 
+#Comfiguracion en Render
+#DATABASES = {
+#    'default': dj_database_url.config(
+#        default=os.getenv("DATABASE_URL", f'sqlite:///{BASE_DIR / "db.sqlite3"}')
+#    )
+#}
+
+#Configuracion DB en Heroku
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv("DATABASE_URL", f'sqlite:///{BASE_DIR / "db.sqlite3"}')
+        default='sqlite:///db.sqlite3',  # Este es fallback local
+        conn_max_age=600,
+        ssl_require=True
     )
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
