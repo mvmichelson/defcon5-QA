@@ -161,8 +161,8 @@
 
 					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{imp.nivel}}" ><bb>{{imp.nivel.nombre}}<bb></th>
 
-					<th scope="row" style="width: 10%; text-align: center;">
-						<a href="{% url 'Asig-Nivel-Imp' imp.pk  'r'  %}" class="link" data-message="Asigna un nivel de Impacto"><img src="/static/img/niveles.jpg" width="25" height="20"></img></a>
+					<th scope="row" style="width: 10%; height: 60px; text-align: center;">
+						<a href="{% url 'Asig-Nivel-Imp' imp.pk  'r'  %}" class="link" data-message="Asigna un nivel de Impacto"><bb class="button"><img src="/static/img/niveles.jpg" width="25" height="20"></img></bb></a>
 					</th>
 	
 				 </tr>
@@ -217,8 +217,8 @@
 
 					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{ind.nivel}}"><bb>{{ind.nivel.nivel}}<bb></th>
 
-					<th scope="row" style="width: 10%; text-align: center;">
-						<a href="{% url 'Asig-Nivel-Ind'  ind.pk  'r'  %}" class="link" data-message="Asigna Nivel"><img src="/static/img/niveles.jpg" width="25" height="20"></img></a>
+					<th scope="row" style="width: 10%; height: 70px; text-align: center;">
+						<a href="{% url 'Asig-Nivel-Ind'  ind.pk  'r'  %}" class="link" data-message="Asigna Nivel"><bb class="button"><img src="/static/img/niveles.jpg" width="25" height="20"></img></bb></a>
 					</th>
 	
 				 </tr>
@@ -257,7 +257,7 @@
 
 	<p> <!-- Botones de Secuencia --></strong>
 		<a href="{% url 'Lista-Evaluaciones' %}" ><bb class="button">... Volver</bb></a>&nbsp;&nbsp;&nbsp;
-		<a href="{% url 'Envia-Auth' proceso.pk  'V' %}"  ><bb class="button">Registrar (Envia a Autorizacion) ...</bb></a>
+		<a href="{% url 'Envia-Auth' proceso.pk  'V' %}"  ><bb class="button">Envia a Autorizacion...</bb></a>
 	</p>
 	<br/>
 

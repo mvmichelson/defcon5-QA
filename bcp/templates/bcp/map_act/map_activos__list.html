@@ -42,6 +42,11 @@
 	
 		</div><!------ Fin Menu Encabezado ---------------------------------->
 
+
+	<!--------------------------------------------------------------------->
+	<!----------------------- Lista de Procesos --------------------------->
+	<!--------------------------------------------------------------------->
+
 	{%block lista%}
 	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 310px">  
                          
@@ -66,15 +71,20 @@
 	   
 				   {%if proceso.subproceso.status != 'R' %} <!Si proceso no vigenteado en esta etapa>
 
-					{% if proceso.subproceso.status == 'C' %}
+					{% if proceso.subproceso.status == 'C' %} 
 
 
 						<!Asignacion de responsables RACI y envio a aprobacion>
-    						<!****************************************************>
+    					<!****************************************************>
 						{%if request.user.pk == proceso.subproceso.gestor_C.user_pk %}
 
 							<a href="{% url 'asigna-raci' proceso.pk  'Mapeo de Servicios Criticos' %}"
 							class="link blink " data-message="Define mapa de Autorizaciones RACI ..."><rr><strong>&#8476</strong></rr>.</a>
+
+							<a href="{% url 'Asigna-Servicio' proceso.pk %}"
+							class="link" data-message="Modificar Servicios/Recursos al Proceso ..."
+							><img src="/static/img/servicio_1.webp" width="17" height="17"></img></a>
+
 
 						{%else%}
 

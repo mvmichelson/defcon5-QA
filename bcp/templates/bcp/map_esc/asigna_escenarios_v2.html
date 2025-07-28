@@ -1,0 +1,123 @@
+<!Programa HTML>
+<!Despliega el formulario para la asignacion de un Activo o Recurso (version 2)>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE ESCENARIOS DE RIESGO:</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proceso.path}}</aa></p>
+	</ul>
+	{% endblock %}
+
+	
+	{% block d_asigna_recu %}
+	<h5><strong>DATOS DEL PROCESO</strong></h5>
+	<!=======================================>
+
+	<ul class="scr4">
+	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
+	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+
+	  {% block Activos %}
+	  <h5><strong>Servicios Criticos asociados al Proceso<strong>&emsp;({{proceso.path}})</h5> 
+	  <!========================================================================================>
+	    
+	   {% if proceso.subproceso.recursos.all %}
+		  <table class="lta">
+			 <thead class="encabezado_A">
+			 <tr>
+			  <th scope="col">Activo/Recurso</th>
+			  <th scope="col">Descripcion</th>
+			  <th scope="col">Tipo</th>
+			  
+			 </tr>
+			 </thead>
+  
+			 <tbody>
+			 {%for act in proceso.subproceso.recursos.all  %}
+			 <tr>
+			  <th scope="row"><aa>{{act.nombre}}</aa></th>
+			  <th scope="row"><aa>{{act.descripcion}}</aa></th>
+			  <th scope="row"><aa>{{act.tipo}}</aa></th>
+			  
+			 </tr>
+					{% if not forloop.last %}
+				 {%endif%}
+				   {%endfor%}
+			 <tbody>
+		  </table>
+	  {% else %}
+		  <br/>
+		  <p> *** Sin Servicios Criticos asociados ***</p>
+	  {%endif%}
+  
+	  <br/>
+	{%endblock%}
+	</ul>
+	{% endblock %}
+
+	{% block asigna_proc %}
+
+	<P>Seleccione  del  cuadro  de  la izquierda aquellos Escenarios de Riesgo  que podrian provocar una disrupcion en la 
+	operacion del Proceso &emsp;-&emsp;<strong>{{proceso.nombre}}</strong>&emsp;- en analisis</p>
+
+
+	<div class="flex-container">
+	<!-- Escenarios Disponibles -->
+	<div class="flex-item" style="width: 50%;">
+		<h4>Escenarios Disponibles</h4>
+		<input type="text" id="filtro_disponibles" placeholder="Filtrar Escenarios...">
+		<ul class="BarraScroll" style="height: 350px;">
+		<table id="tabla_disponibles">
+			<thead><tr><th>Título</th><th>Descripción</th><th></th></tr></thead>
+			<tbody>
+			{% for esc in escenarios_disponibles %}
+				<tr data-id="{{ esc.id }}">
+				<td>{{ esc.titulo }}</td>
+				<td>{{ esc.descripcion }}</td>
+						<td ><button class="button link " data-message="Desasigna Escenario {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
+							style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		</ul>
+	</div>
+
+	<!-- Escenarios Asignados -->
+	<div class="flex-item" style="width: 50%;">
+		<h4>Escenarios Asignados</h4>
+		<input type="text" id="filtro_asignados" placeholder="Filtrar Escenarios...">
+		<ul class="BarraScroll" style="height: 350px;">
+		<table id="tabla_asignados">
+			<thead><tr><th>Título</th><th>Descripción</th><th></th></tr></thead>
+			<tbody id="id_tabla_asignados">
+			{% for esc in escenarios_asignados %}
+				<tr data-id="{{ esc.id }}">
+				<td>{{ esc.titulo }}</td>
+				<td>{{ esc.descripcion }}</td>
+				<td><button class="button link " data-message="Asigna Escenario {{ esc.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_disponibles')"
+				style="background: red; color: white; font-size: 12px; padding: 1px 3px;">◀</button></td>
+
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+		</ul>
+		<!-- Formulario oculto -->
+		<form method="post">
+		{% csrf_token %}
+		<input type="hidden" name="escenarios" id="recursos_input">
+		<button type="submit">Guardar Asignación</button>
+		</form>
+	</div>
+	</div>
+	{% endblock %}
+
+{% endblock %}

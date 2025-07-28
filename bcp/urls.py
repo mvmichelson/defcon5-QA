@@ -106,7 +106,7 @@ urlpatterns += [
 urlpatterns += [
     #url(r'^map_esc/$', views.Map_escenariosListView.as_view(), name='Mapeo-Escenarios'),
     path('map_esc/', views.Lista_Escenarios, name='Lista-Escenarios'),
-    path('map_esc/<int:pk>/asig_esc/', views.Asigna_Escenarios, name='Asigna-Escenarios'),
+    path('map_esc/<int:pk>/asig_esc/', views.asigna_escenarios, name='Asigna-Escenarios'),
     path('map_esc/<int:pk>/aut_asig_esc/', views.Aut_Asig_Esc, name='Aut-Asigna-Escenarios'),
     path('map_esc/<int:pk>/rev_asig_esc/', views.Revisa_Asig_Esc, name='Rev-Asigna-Escenarios'),
 

@@ -85,7 +85,7 @@ defcon={{defcon_est}}
 	<!============================================>					
 	<! Listado de Procedimientos (PC) del Proceso >
 	<! ===========================================>
-	
+
 	{% if proceso.es_subproceso  %} <!-- Si es Subproceso --> 
 	
 		{% if  proceso.subproceso_v.procedimientos_contingencia %}
@@ -211,8 +211,8 @@ defcon={{defcon_est}}
 			<!**************************>
 			<!*Despliega  Procedimiento*>
 			<!**************************>
-
-			<sa><strong>{{proced.nombre}}</strong></sa>
+				Hola
+			<sa><strong>{{proced.nombre}} - [{{proced.escenarios.titulo}}]</strong></sa>
 			</p> <!Fin de la linea por procedimiento desplegado>
 
 			{%endfor%}

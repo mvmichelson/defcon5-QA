@@ -39,7 +39,7 @@
 			
 <ul class="scr4">
        		
-		<p><h6><strong>1. Evaluacion de Impacto por Riesgo :</strong></p>
+		<p><h5><strong>1. Impacto por Riesgo :</strong></h5></p>
 			    <p>Para cada uno de los Riesgos Criticos definidos para el Negocio, asigne 
 					(<img src="/static/img/niveles.jpg" width="20" height="20"></img> ) el 
 					nivel de impacto adecuado para este Proceso.<h6></p>
@@ -64,8 +64,8 @@
 		
 				 {%for imp in impactos.all %} 
 				 <tr>
-					<th scope="row" style="width: 10%; text-align: center;">
-						<a href="{% url 'Asig-Nivel-Imp' imp.pk  'V' %}" class="link" data-message="Asigna un nivel de Impacto"><img src="/static/img/niveles.jpg" width="25" height="20"></img></a>
+					<th scope="row" style="width: 10%; height: 60px;   text-align: center;">
+						<a href="{% url 'Asig-Nivel-Imp' imp.pk  'V' %}" class="link" data-message="Asigna un nivel de Impacto"><bb class="button"><img src="/static/img/niveles.jpg" width="25" height="20"></img></bb></a>
 					</th>
 					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{imp.nivel}}" ><bb>{{imp.nivel.nombre}}<bb></th>
 
@@ -95,8 +95,8 @@
 		 <br/>
 		 <br/>
 
-		<h6><strong>2. Indicadores de Recuperacion:</strong>
-				<p>En base a su conocimiento experto, favor seleccione los indicadores (caracteristicas)
+		<p><h5><strong>2. Indicadores de Recuperacion:</strong></h5></p>
+				<p>En base a su conocimiento experto, asigne el nivel de los indicadores (caracteristicas)
 				    necesarios para el diseño de un Procedimiento de recuperacion de la continuidad de la operacion.<h6></p>
 		<table class="lta">
 			<thead  style="background: blue; color:white">
@@ -115,8 +115,8 @@
 		
 				 {%for ind in indicadores.all %}
 				 <tr>
-					<th scope="row" style="width: 10%; text-align: center;">
-						<a href="{% url 'Asig-Nivel-Ind'  ind.pk  'V' %}" class="link" data-message="Asigna Niveles"><img src="/static/img/niveles.jpg" width="25" height="20"></img></a>
+					<th scope="row" style="width: 10%; height: 70px;   text-align: center;">
+						<a href="{% url 'Asig-Nivel-Ind'  ind.pk  'V' %}" class="link" data-message="Asigna Niveles"><bb class="button"><img src="/static/img/niveles.jpg" width="25" height="20"></img></bb></a>
 					</th>
 					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{ind.nivel}}"><bb>{{ind.nivel.nivel}}<bb></th>
 

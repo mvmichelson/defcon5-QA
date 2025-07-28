@@ -15,6 +15,8 @@ from pathlib import Path
 from decouple import config
 import dj_database_url
 
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # DEBUG: solo default True en desarrollo (local)
@@ -85,13 +87,23 @@ WSGI_APPLICATION = 'DEFCON5.wsgi.application'
 #}
 
 #Configuracion DB en Heroku
+import os
+import dj_database_url
+
+# Por defecto usa SQLite
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',  # Este es fallback local
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+
+# Si está en Heroku, usa DATABASE_URL (PostgreSQL)
+if os.getenv('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(
         conn_max_age=600,
         ssl_require=True
     )
-}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -147,4 +159,7 @@ PASSWORD_HASHERS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+print("DEBUG:", DEBUG)
+print("SECRET_KEY:", SECRET_KEY)
+print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 

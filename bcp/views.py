@@ -2208,7 +2208,7 @@ def rev_asigna_servicio(request, pk):
 
         subproceso.save()  # Guardar los cambios
 
-        return HttpResponseRedirect(reverse('Lista-Recursos'))
+        return HttpResponseRedirect(reverse('Rev-Asigna-Servicios', args=[pk]))
 
     # Cargar recursos disponibles y asignados
     recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
@@ -2749,8 +2749,6 @@ def Asigna_Activos(request, pk):
 
 
 
-
-
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -2770,9 +2768,16 @@ def asigna_servicio(request, pk):
         else:
             subproceso.recursos.clear()  # Si no hay recursos, limpiar asignaciones
 
+        #Cambia el estado para inicio de las autorizaciones
+        subproceso.status='C'
+        subproceso.fase_status='B'
         subproceso.save()  # Guardar los cambios
 
-        return HttpResponseRedirect(reverse('Lista-Recursos'))
+
+
+        #return HttpResponseRedirect(reverse('Asigna-Servicio', args=[pk]))
+        return HttpResponseRedirect(reverse('Lista-Recursos') )
+
 
     # Cargar recursos disponibles y asignados
     recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
@@ -2785,6 +2790,41 @@ def asigna_servicio(request, pk):
         'recursos_disponibles': recursos_disponibles,
         'recursos_asignados': recursos_asignados,
     })
+
+
+def asigna_escenarios(request, pk):
+    proceso = get_object_or_404(Proceso, pk=pk)
+    subproceso = proceso.subproceso
+
+    if request.method == "POST":
+        escenarios_ids = request.POST.get("escenarios", "").split(",")
+        escenarios_ids = [int(e) for e in escenarios_ids if e.isdigit()]
+
+        if escenarios_ids:
+            subproceso.escenarios.set(Escenarios.objects.filter(id__in=escenarios_ids))
+        else:
+            subproceso.escenarios.clear()
+
+        #Cambia el estado para inicio de las autorizaciones
+        subproceso.status='C'
+        subproceso.fase_status='E'
+        subproceso.save()
+
+        #return HttpResponseRedirect(reverse('Asigna-Escenarios', args=[pk]))
+        return HttpResponseRedirect(reverse('Lista-Escenarios') )
+
+
+    escenarios_disponibles = Escenarios.objects.exclude(id__in=subproceso.escenarios.values_list('id', flat=True))
+    escenarios_asignados = subproceso.escenarios.all()
+
+    return render(request, 'bcp/map_esc/asigna_escenarios_v2.html', {
+        'form': ServicioForm(),
+        'proceso': proceso,
+        'subproceso': subproceso,
+        'escenarios_disponibles': escenarios_disponibles,
+        'escenarios_asignados': escenarios_asignados,
+    })
+
 
 #***********************************************
 #4.3 Asigna Impactos e Indicadores a un Proceso*

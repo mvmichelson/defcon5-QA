@@ -41,38 +41,51 @@
 	<div class="flex-item" style="width: 50%;">
 
 	<h4><strong>Servicios/Recursos Disponibles</strong></h4>
+
 	<input type="text" id="filtro_disponibles" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
-	<br/><br/>
-	<table id="tabla_disponibles" class="styled-table">
-		<thead style="background: greenyellow;">
-			<tr style="color:black">
-				<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
-				<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
-				<th >DESCRIPCION</th>
-				<th>  </th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for recurso in recursos_disponibles %}
-				<tr data-id="{{ recurso.id }}" >
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
-					<td ><button class="button link " data-message="Asigna Servicio {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
-						style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
+		<br/><br/>
+
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 350px">  
+
+		<table id="tabla_disponibles" class="styled-table">
+			<thead style="background: greenyellow;">
+				<tr style="color:black">
+					<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
+					<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
+					<th >DESCRIPCION</th>
+					<th>  </th>
 				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+			</thead>
+			
+			<tbody>
+
+
+				{% for recurso in recursos_disponibles %}
+					<tr data-id="{{ recurso.id }}" >
+						<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
+						<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
+						<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
+						<td ><button class="button link " data-message="Asigna Servicio {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
+							style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
+					</tr>
+				{% endfor %}
+
+			</tbody> 
+		</table>
+	</ul>
+
 	<br/><br/><br/>
 	</div><!--- Fin Seccion Disponibles --------------------------------------->
 
 	<!--- Seccion Asignados --------------------------------------->
 	<div class="flex-item" style="width: 50%;">
 
-	<h4><strong>Servicios/Recursos Criticos Asignados</strong></h4>
+	<h4><strong>Servicios/Recursos Criticos Seleccionados</strong></h4>
 	<input type="text" id="filtro_asignados" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
 	<br/><br/>
+
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 350px">  
+
 	<table id="tabla_asignados" class="styled-table">
 		<thead>
 			<tr style="color:black">
@@ -94,15 +107,17 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	</ul> 
 
 		<!-- Formulario oculto -->
 		<br/>
 		<form method="post">
 			{% csrf_token %}
 			<input type="hidden" name="recursos" id="recursos_input">
+
+			<!-- Botones de Salida -->
 			<button  class="button"   type="submit">Guarda Seleccion</button>
-			<a href="{% url 'Envia_Ev_RACI' proceso.pk  'B'  %}"  
-			class="confirm-link link" data-message="Envia a la definicion del esquema de Autorizaciones RACI" con-message="Confirma Envio a Autorizacion RACI ?. Debe guardar ultimo Cambio (flecha verde indica Asignacion no guardada)."><rr class="button">Asigna RACI ...</rr></a>
+
 		</form>
 			
 

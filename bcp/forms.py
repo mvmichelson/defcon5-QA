@@ -301,6 +301,9 @@ class ServicioForm(forms.Form):
     #    model = SubProceso
     #    fields = []
 
+class EscenarioForm(forms.Form):
+    pass
+
 
 #***********************************************************
 #Formulario de Asignacion de Escenario y Amenazas a Proceso*
