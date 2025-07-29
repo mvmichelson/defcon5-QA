@@ -1,0 +1,14 @@
+Inicio exportacion: 29/07/2025 10:07:39.37 
+---------------------------- 
+✅ Exportado Tipo_Indicador 
+✅ Exportado Parametros_G 
+✅ Exportado Tipo_Impacto 
+✅ Exportado Nivel_Impacto 
+✅ Exportado Indicadores_BIA 
+✅ Exportado Escenarios 
+✅ Exportado Estrategias 
+✅ Exportado Tipo_RR 
+✅ Exportado Recursos 
+✅ Exportado  
+---------------------------- 
+Finalizado: 29/07/2025 10:07:47.16 

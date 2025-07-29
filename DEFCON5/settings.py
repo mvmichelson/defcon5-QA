@@ -159,7 +159,4 @@ PASSWORD_HASHERS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-print("DEBUG:", DEBUG)
-print("SECRET_KEY:", SECRET_KEY)
-print("ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
