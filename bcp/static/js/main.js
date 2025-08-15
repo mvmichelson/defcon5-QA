@@ -227,125 +227,131 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 
-  
+// -----------------------------------------------------------------------------------------  
 
 
 // Seleccion de Servicios
 // ======================
 
-// Aseguramos que el script se ejecute solo cuando el DOM esté completamente cargado
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("Entra a Seleccion Servicios ");
+/*
+ main.js - Script unificado de asignación
+ v1.1 - 2025-08-12
+ ----------------------------------------
+ - Soporte para múltiples bloques de asignación con atributo data-asignacion
+ - Filtros para tablas disponibles y asignadas
+ - Botones para mover filas entre tablas, con cambio de color y símbolo
+ - Actualización automática de campo oculto (input hidden) antes de enviar el formulario
+ - Logs detallados añadidos para debug
+ ----------------------------------------
+ Requisitos de HTML:
+ - Contenedor principal con data-asignacion
+ - Tablas con clases: .tabla-disponibles y .tabla-asignados
+ - Inputs de filtro con clases: .filtro-disponibles y .filtro-asignados (opcionales)
+ - Botones de mover con clase: .btn-mover y atributo data-destino ("asignados" o "disponibles")
+ - Campo hidden con clase: .input-seleccion para enviar IDs seleccionados
+*/
 
-    // Verificamos si los elementos existen antes de agregarles event listeners
-    let filtroDisponibles = document.getElementById("filtro_disponibles");
-    let filtroAsignados = document.getElementById("filtro_asignados");
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 main.js v1.1 cargado correctamente");
 
-    if (filtroDisponibles) {
-        filtroDisponibles.addEventListener("input", function() {
-            filtrarTabla("filtro_disponibles", "tabla_disponibles");
-        });
-    } else {
-        console.warn("⚠️ Elemento 'filtro_disponibles' no encontrado en el DOM.");
-    }
-
-    if (filtroAsignados) {
-        filtroAsignados.addEventListener("input", function() {
-            filtrarTabla("filtro_asignados", "tabla_asignados");
-        });
-    } else {
-        console.warn("⚠️ Elemento 'filtro_asignados' no encontrado en el DOM.");
-    }
-
-    // Asegurar que el formulario actualiza el input oculto antes de enviarse
-    let formulario = document.querySelector("form");
-    if (formulario) {
-        formulario.addEventListener("submit", function(event) {
-            actualizarRecursosSeleccionados();
-        });
-    }
+    // Inicializar todos los bloques de asignación que existan en la página
+    const bloques = document.querySelectorAll("[data-asignacion]");
+    console.log(`🔹 Encontrados ${bloques.length} bloques de asignación`);
+    bloques.forEach(function (bloque, index) {
+        console.log(`➡️ Inicializando bloque #${index + 1}`);
+        inicializarAsignacion(bloque);
+    });
 });
 
-function moverRecurso(boton, tablaDestinoId) {
-    let fila = boton.closest("tr");  // Encuentra la fila del botón
-    let tablaOrigen = fila.closest("table");  // Encuentra la tabla de origen
+function inicializarAsignacion(contenedor) {
+    let filtroDisponibles = contenedor.querySelector(".filtro-disponibles");
+    let filtroAsignados = contenedor.querySelector(".filtro-asignados");
+    let tablaDisponibles = contenedor.querySelector(".tabla-disponibles");
+    let tablaAsignados = contenedor.querySelector(".tabla-asignados");
+
+    console.log("  Inicializando filtros y botones en el bloque");
+
+    if (filtroDisponibles) {
+        filtroDisponibles.addEventListener("input", function () {
+            console.log("  ▶ Filtrando tabla disponibles");
+            filtrarTabla(filtroDisponibles, tablaDisponibles);
+        });
+    }
+    if (filtroAsignados) {
+        filtroAsignados.addEventListener("input", function () {
+            console.log("  ▶ Filtrando tabla asignados");
+            filtrarTabla(filtroAsignados, tablaAsignados);
+        });
+    }
+
+    contenedor.querySelectorAll(".btn-mover").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+            console.log(`  ▶ Botón mover clickeado, destino actual: ${btn.dataset.destino}`);
+            moverFila(btn, contenedor);
+        });
+    });
+
+    let formulario = contenedor.closest("form");
+    if (formulario) {
+        formulario.addEventListener("submit", function () {
+            console.log("  ▶ Formulario enviado, actualizando selección");
+            actualizarSeleccionados(contenedor);
+        });
+    }
+}
+
+function moverFila(boton, contenedor) {
+    let fila = boton.closest("tr");
     let tablaDestino;
 
-    // Determinar a qué tabla mover la fila
-    if (tablaDestinoId === "id_tabla_asignados") {
-        tablaDestino = document.querySelector("#tabla_asignados tbody");
-    } else if (tablaDestinoId === "id_tabla_disponibles") {
-        tablaDestino = document.querySelector("#tabla_disponibles tbody");
+    if (boton.dataset.destino === "asignados") {
+        tablaDestino = contenedor.querySelector(".tabla-asignados tbody");
+        boton.dataset.destino = "disponibles";
+        boton.textContent = "⏪";
+        boton.style.background = "red";
+        boton.style.color = "white";
+        console.log(`    ↪ Moviendo fila ID ${fila.dataset.id} a asignados`);
     } else {
-        console.error(`Error: La tabla destino con id '${tablaDestinoId}' no existe.`);
-        return;
+        tablaDestino = contenedor.querySelector(".tabla-disponibles tbody");
+        boton.dataset.destino = "asignados";
+        boton.textContent = "⏩";
+        boton.style.background = "lightgreen";
+        boton.style.color = "black";
+        console.log(`    ↪ Moviendo fila ID ${fila.dataset.id} a disponibles`);
     }
 
-    if (!tablaDestino) {
-        console.error(`Error: No se encontró el tbody de la tabla destino con id '${tablaDestinoId}'.`);
-        return;
-    }
-
-    // Mover la fila a la nueva tabla
     tablaDestino.appendChild(fila);
-
-    // Cambiar el botón para mover en sentido contrario
-    if (tablaDestinoId === "id_tabla_asignados") {
-        boton.innerHTML = "◀";
-        boton.setAttribute("onclick", "moverRecurso(this, 'id_tabla_disponibles')");
-    } else {
-        boton.innerHTML = "▶";
-        boton.setAttribute("onclick", "moverRecurso(this, 'id_tabla_asignados')");
-    }
-
-    // Actualizar el campo oculto después de mover
-    actualizarRecursosSeleccionados();
+    actualizarSeleccionados(contenedor);
 }
 
-function actualizarRecursosSeleccionados() {
-    let recursosInput = document.getElementById("recursos_input");
-    let filas = document.querySelectorAll("#tabla_asignados tbody tr");
+function actualizarSeleccionados(contenedor) {
+    let inputHidden = contenedor.querySelector(".input-seleccion");
+    let filas = contenedor.querySelectorAll(".tabla-asignados tbody tr");
+    let ids = [];
 
-    let recursosSeleccionados = [];
-    filas.forEach(fila => {
-        let recursoId = fila.getAttribute("data-id");
-        if (recursoId) {
-            recursosSeleccionados.push(recursoId);
-        }
+    filas.forEach(f => {
+        let id = f.dataset.id;
+        if (id) ids.push(id);
     });
 
-    console.log("Recursos seleccionados antes de enviar:", recursosSeleccionados);
-
-    // Actualizar el campo oculto con los IDs de los recursos asignados
-    recursosInput.value = recursosSeleccionados.join(",");
+    inputHidden.value = ids.join(",");
+    console.log(`  ✔ IDs seleccionados actualizados: [${inputHidden.value}]`);
 }
 
-// Función para filtrar la tabla
-function filtrarTabla(inputId, tablaId) {
-    let filtro = document.getElementById(inputId);
-    let tabla = document.getElementById(tablaId);
-    if (!filtro || !tabla) {
-        console.warn(`⚠️ No se encontró el elemento con id '${inputId}' o '${tablaId}'.`);
-        return;
-    }
-
-    let filtroTexto = filtro.value.toLowerCase();
-    let filas = tabla.querySelectorAll("tbody tr");
-
-    filas.forEach(fila => {
-        let textoFila = fila.innerText.toLowerCase();
-        if (textoFila.includes(filtroTexto)) {
-            fila.style.display = "";
-        } else {
-            fila.style.display = "none";
-        }
+function filtrarTabla(input, tabla) {
+    let texto = input.value.toLowerCase();
+    tabla.querySelectorAll("tbody tr").forEach(function (fila) {
+        let visible = fila.innerText.toLowerCase().includes(texto);
+        fila.style.display = visible ? "" : "none";
     });
+    console.log(`  🔎 Filtrado aplicado con texto: "${input.value}"`);
 }
 
-console.log("Script main.js ejecutado correctamente.");
+// ======================================================================================
+
 
 // Activa/Desactiva PC
-// ===================
+// =====================================================================================
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("main.js en Activa/Desactiva cargado correctamente");
@@ -428,5 +434,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
     }
 });
+// ==========================================================================================
 
 

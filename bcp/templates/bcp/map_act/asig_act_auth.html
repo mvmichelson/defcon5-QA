@@ -116,7 +116,7 @@
 		   </thead>
 
 		   <tbody>
-		   {%for act in activos.all  %}
+		   {%for act in recursos_asignados  %}
 		   <tr>
 			<th scope="row"><bb>{{act.tipo.nombre}}<bb></th>
 			<th scope="row"><bb>{{act.nombre}}<bb></th>
@@ -156,7 +156,7 @@
 		   </thead>
 
 		   <tbody>
-		   {%for act_d  in activos_disp.all  %}
+		   {%for act_d  in recursos_disponibles %}
 		   {% if  act_d not in activos.all %}
 		     <tr>
 			  <th scope="row"><bb>{{act_d.tipo.nombre}}<bb></th>

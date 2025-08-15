@@ -21,8 +21,11 @@
 		{%block C%}
 		<form action="" method="post">
         {% csrf_token %}
+		<bn>Declarar el objetivo principal del Plan de Recuperacion de Procesamiento (DRP):
+		</bn>
+		<br/>
         		
-        <p><strong>Objetivos del DRP</strong>:&emsp;{{ form.objetivo }} 
+        <p>{{ form.objetivo }}</p> 
 			
         <input type="submit" value="Registrar" />
 		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>

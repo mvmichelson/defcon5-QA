@@ -41,378 +41,484 @@
         
                 
                 
-                <!-- Organizacion  DRP -->
+                <!-- 1.- Organizacion  DRP -->
+                <!-- ===================== -->
+
                 <tr>
                 <th scope="row"><bb>1.<bb></th>
                 <th scope="row"><bb>Organizacion</bb></th>
-                {% if drp.status_2 == 'A' %}
+
+
+                {% if drp.status_2 == 'R' %}
                         <th scope="row"><bb>Autorizado</bb></th>
+
+                        <!-- Accion  -->
                         <th scope="row">
-                        <!--Aprobado -->
-                        <a ><aa>&#9989</aa></a>
-                        
+                                <!--Aprobado -->
+                                <a ><aa>&#9989</aa></a>
                         </th>
-                {%else%}
-                  {% if drp.status_2 == 'C' %}
+
+                {%elif drp.status_2 == 'C' %}
                         <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                        {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Responsables-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                           {% if drp.resp_drp  %}
-                                
-                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 2  %}"><aa>&#128229</aa></a>
-                        
-                           {%endif%}
-                        {%endif%}
-                        </th>
-                  {%endif%}
 
-                  {% if drp.status_2 == 'a' %}
+                        <!-- Accion -->
+                        <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a class="link blink" data-message="Definir Roles del DRP ..." 
+                                        href="{% url 'Responsables-DRP' drp.pk %}"><aa>&#128209</aa></a>
+                                        {% if drp.resp_drp  %}
+                                                &nbsp;<a class="link blink" data-message="Envia a Autorizacion ..."
+                                                href="{% url 'Envia-Aut-DRP' drp.pk 2  %}"><aa>&#128229</aa></a>
+                                        {%endif%}
+                                {%endif%}
+                        </th>
+                        <!-- Fin Accion -->
+
+                {%elif drp.status_2 == 'a' %}
                         <th scope="row"><bb>En Autorizacion</bb></th>
-                        <th scope="row">
-                        <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a href="{% url 'Autoriza-DRP' drp.pk 2  %}"><aa>&#128273</aa></a> 
-                        {%else%}
-                                <a ><aa>&#128274</aa></a>
-                        {% endif %}
-                        </th>
-                  {%endif%}
 
-                  {% if drp.status_2 == 'x' %}
+                        <!-- Accion -->
+                        <th scope="row">
+                                <!--Verifica si el usuario de sesion es el Gestor Responsable -->
+                                {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
+                                        <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                        href="{% url 'Autoriza-DRP' drp.pk 2  %}"><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
+                                {% endif %}
+                        </th>
+
+                {%elif drp.status_2 == 'r' %}
+                        <th scope="row"><bb>En Autorizacion</bb></th>
+
+                        <!-- Accion -->
+                        <th scope="row">
+                                <!--Verifica si el usuario de sesion es el Gestor Responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                        href="{% url 'Autoriza-DRP-V' drp.pk 2  %}"><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
+                                {% endif %}
+                        </th>
+
+                {%elif drp.status_2 == 'x' %}
                       <th scope="row"><bb>En Revision</bb></th>
                       <th scope="row">
                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Revisa-Resp-DRP' drp.pk %}"><aa>&#128270</aa></a>
+                                <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                href="{% url 'Revisa-Resp-DRP' drp.pk %}"><aa>&#128270</aa></a>
                         {% else  %}
-                                <a ><aa>&#128274</aa></a>
+                                <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
                         {%endif%}
                        </th>
-                   {%endif%}
+
                 {%endif%}
                 </tr>
 
-                <!-- Objetivo del DRP -->
+
+
+                <!-- 2.- Objetivo del DRP -->
+                <!-- ==================== -->
                 <tr>
-                        <th scope="row"><bb>2.<bb></th>
-                        <th scope="row"><bb>Objetivo </bb></th>
-                        {% if drp.status_1 == 'A' %}
-                           <th scope="row"><bb>Autorizado</bb></th>
-                           <th scope="row">
-                           <!--Aprobado -->
-                           <a ><aa>&#9989</aa></a>
+                <th scope="row"><bb>2.<bb></th>
+                <th scope="row"><bb>Objetivo </bb></th>
+
                         
-                        </th>
-                        {%else%}
-                           {% if drp.status_1 == 'C' %}
+                {% if drp.status_2 == "R" %}
+                <!-- Verifica que la Estructura Organizacional del DRP este resuelta -->
+
+                        {% if drp.status_1 == 'R' %}
+                                <th scope="row"><bb>Autorizado</bb></th>
+                                <th scope="row">
+                                <!--Aprobado -->
+                                        <a ><aa>&#9989</aa></a>
+                                </th>
+
+
+                        {%elif drp.status_1 == 'C' %}
                                 <th scope="row"><bb>En Definicion</bb></th>
                                 <th scope="row">
                                 <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                 {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                        <a href="{% url 'Objetivo-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                                   {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                                      &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 1  %}"><aa>&#128229</aa></a>
-                                   {%endif%}
+                                        <a class="link blink" data-message="Definir Objetivo del DRP ..."
+                                        href="{% url 'Objetivo-DRP' drp.pk %}"><aa>&#128209</aa></a>
+
+                                        {% if  drp.introduccion != '' %}
+                                                &nbsp;<a class="link" data-message="Envia a Autorizar ..."
+                                                href="{% url 'Envia-Aut-DRP' drp.pk 1  %}"><aa>&#128229</aa></a>
+                                        {%endif%}
                                 {%endif%}
                                 </th>
-                           {%endif%}
-                           {% if drp.status_1 == 'a' %}
+                                        
+                        {%elif drp.status_1 == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk  %}
+                                        <a class="link blink" data-message="Autorizar ..."
+                                        href="{% url 'Autoriza-DRP' drp.pk 1  %}"><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}"
+                                        >&#128274</a>
+                                {% endif %}
+                                </th>
+
+                        {%elif drp.status_1 == 'r' %}
                                 <th scope="row"><bb>En Autorizacion</bb></th>
                                 <th scope="row">
                                 <!--Verifica si el usuario de sesion es el gestor responsable -->
                                 {% if request.user.pk == drp.resp_drp.user_pk  %}
-                                        <a href="{% url 'Autoriza-DRP' drp.pk 1  %}"><aa>&#128273</aa></a> 
+                                        <a class="link blink" data-message="Autorizar ..."
+                                        href="{% url 'Autoriza-DRP-V' drp.pk 1  %}"><aa>&#128273</aa></a> 
                                 {%else%}
-                                        <a ><aa>&#128274</aa></a>
+                                        <a class="link" data-message="En Autorizacion por Responsable del DRP- {{drp.resp_drp}}"
+                                        >&#128274</a>
                                 {% endif %}
                                 </th>
-                           {%endif%}
-                           {% if drp.status_1 == 'x' %}
+
+                                
+                        {%elif drp.status_1 == 'x' %}
                                 <th scope="row"><bb>En Revision</bb></th>
                                 <th scope="row">
-                                <!--Verifica si el usuario de sesion es el gestor responsable -->
-                                {% if request.user.pk == drp.resp_drp.user_pk  %}
-                                        <a href="{% url 'Revisa-Obj-DRP' drp.pk %}"><aa>&#128270</aa></a>
-                                {%else%}
-                                        <a ><aa>&#128274</aa></a>
-                                {% endif %}
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a class="link blink" data-message="Revisar observaciones a Objetivo del DRP"
+                                        href="{% url 'Revisa-Obj-DRP' drp.pk %}"><aa>&#128270</aa></a>
+                                {% else  %}
+                                        <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
+                                {%endif%}
                                 </th>
-                           {%endif%}
-
                         {%endif%} 
-                </tr>
+                        </tr>
 
-                <!-- Alcance del DRP -->
+                {%endif%} <!-- Fin Verifica que la Estructura Organizacional del DRP este resuelta -->
+
+                <!-- 3.- Alcance del DRP -->
+                <!-- =================== -->
+
                 <tr>
                 <th scope="row"><bb>3.<bb></th>
                 <th scope="row"><bb>Alcance</bb></th>
-                {% if drp.status_3 == 'A' %}
-                        <th scope="row"><bb>Autorizado</bb></th>
-                        <th scope="row">
-                        <!--Aprobado -->
-                        <a ><aa>&#9989</aa></a>
-             
-                </th>
-                {%else%}
 
-                   <!-- Envia a autorizacion Alcance -->
-                   {% if drp.status_3 == 'C' %}
-                        <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                        {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Alcance-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                           {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 3  %}"><aa>&#128229</aa></a>
-                           {%endif%}
+
+                {% if drp.status_2 == "R" %}
+                <!-- Verifica que la Estructura Organizacional del DRP este resuelta -->
+
+
+                        {% if drp.status_3 == 'A' %}
+                                <th scope="row"><bb>Autorizado</bb></th>
+                                <th scope="row">
+                                <!--Aprobado -->
+                                <a ><aa>&#9989</aa></a>
+                                </th>
+                        <!-- Envia a autorizacion Alcance -->
+                        {% elif drp.status_3 == 'C' %}
+                                <th scope="row"><bb>En Definicion</bb></th>
+                                <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a href="{% url 'Alcance-DRP' drp.pk %}"><aa>&#128209</aa></a>
+                                {% if drp.resp_drp and drp.status_2 == 'A'  %}
+                                        &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 3  %}"><aa>&#128229</aa></a>
+                                {%endif%}
+                                {%endif%}
+                                </th>
                         {%endif%}
-                        </th>
-                   {%endif%}
 
-                   <!-- Autoriza Alcance -->
-                   {% if drp.status_3 == 'a' %}
-                        <th scope="row"><bb>En Autorizacion</bb></th>
-                        <th scope="row">
-                        <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a href="{% url 'Autoriza-DRP' drp.pk 3  %}"><aa>&#128273</aa></a>  
-                        {%else%}
-                                <a ><aa>&#128274</aa></a>
-                        {% endif %}
-                        </th>
-                   {%endif%}
-
-                   <!-- Revisa Alcance -->
-                   {% if drp.status_3 == 'x' %}
-                   <th scope="row"><bb>En Revision</bb></th>
-                   <th scope="row">
-                      <!--Verifica si el usuario de sesion es el gestor responsable -->
-                      {% if request.user.pk == drp.resp_drp.user_pk  %}
-                           <a href="{% url 'Revisa-Alcance-DRP' drp.pk %}"><aa>&#128270</aa></a>
-                      {%else%}
-                           <a ><aa>&#128274</aa></a>
-                      {% endif %}
-                   </th>
-                  {%endif%}
-                {%endif%} 
-                </tr>
-
-                <!-- Estrategia de Recuperacion -->
-                <tr>
-                <th scope="row"><bb>4.<bb></th>
-                <th scope="row"><bb>Estrategia de Recuperacion </bb></th>
-                {% if drp.status_4 == 'A' %}
-                        <th scope="row"><bb>Autorizado</bb></th>
-                        <th scope="row">
-                        <!--Aprobado -->
-                        <a ><aa>&#9989</aa></a>
-             
-                </th>
-                {%else%}
-                   {% if drp.status_4 == 'C' %}
-                        <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                         <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                   {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                         <a href="{% url 'Estrategia-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                       {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                            &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 4  %}"><aa>&#128229</aa></a>
-                       {%endif%}
-                    {%endif%}
-                    </th>
-                   {%endif%}
-
-                   {% if drp.status_4 == 'a' %}
-                        <th scope="row"><bb>En Autorizacion</bb></th>
-                        <th scope="row">
-                        <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a href="{% url 'Autoriza-DRP' drp.pk 4  %}"><aa>&#128273</aa></a> 
-                        {%else%}
-                                <a ><aa>&#128274</aa></a>
-                        {% endif %}
-                        </th>
-                
-                   {%endif%}
-
-                   <!-- Revisa Alcance -->
-                   {% if drp.status_4 == 'x' %}
-                   <th scope="row"><bb>En Revision</bb></th>
-                   <th scope="row">
-                      <!--Verifica si el usuario de sesion es el gestor responsable -->
-                      {% if request.user.pk == drp.resp_drp.user_pk  %}
-                           <a href="{% url 'Revisa-Estrategia-DRP' drp.pk %}"><aa>&#128270</aa></a>
-                      {%else%}
-                           <a ><aa>&#128274</aa></a>
-                      {% endif %}
-                   </th>
-                  {%endif%}
-                {%endif%} 
-                </tr>
-                
-                <tr>
-                <th scope="row"><bb>5.<bb></th>
-                <th scope="row"><bb>Especificacion Tecnica Site de Contingencia </bb></th>
-                {% if drp.status_5 == 'A' %}
-                        <th scope="row"><bb>Autorizado</bb></th>
-                        <th scope="row">
-                        <!--Aprobado -->
-                        <a ><aa>&#9989</aa></a>
-             
-                </th>
-                {%else%}
-                   {% if drp.status_5 == 'C' %}
-                        <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                        {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Lista-CMP' drp.pk %}"><aa>&#128209</aa></a>
-                          {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 5  %}"><aa>&#128229</aa></a>
-                          {%endif%}
+                        <!-- Autoriza Alcance -->
+                        {% if drp.status_3 == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a href="{% url 'Autoriza-DRP' drp.pk 3  %}"><aa>&#128273</aa></a>  
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
                         {%endif%}
-                        </th>
-                   {%endif%}
-                   {% if drp.status_5 == 'a' %}
-                        <th scope="row"><bb>En Autorizacion</bb></th>
-                        <th scope="row">
-                        <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a href="{% url 'Autoriza-DRP' drp.pk 5  %}"><aa>&#128273</aa></a>
-                        {%else%}
-                                <a ><aa>&#128274</aa></a>
-                        {% endif %}
-                        </th>
-                
-                    {%endif%}
-                    <!-- Revisa Especificacion Tecnica Site -->
-                   {% if drp.status_5 == 'x' %}
-                   <th scope="row"><bb>En Revision</bb></th>
-                   <th scope="row">
-                      <!--Verifica si el usuario de sesion es el gestor responsable -->
-                      {% if request.user.pk == drp.resp_drp.user_pk  %}
-                           <a href="{% url 'Revisa-Especif_Tec-DRP' drp.pk %}"><aa>&#128270</aa></a>
-                      {%else%}
-                           <a ><aa>&#128274</aa></a>
-                      {% endif %}
-                   </th>
-                  {%endif%}
 
-                {%endif%} 
-                </tr>
- 
-                <tr>
-                <th scope="row"><bb>6.<bb></th>
-                <th scope="row"><bb>Servicios criticos </bb></th>
-                {% if drp.status_6 == 'A' %}
-                        <th scope="row"><bb>Autorizado</bb></th>
+                        <!-- Revisa Alcance -->
+                        {% if drp.status_3 == 'x' %}
+                        <th scope="row"><bb>En Revision</bb></th>
                         <th scope="row">
-                        <!--Aprobado -->
-                        <a ><aa>&#9989</aa></a></th>
-
-                {%else%}
-                   {% if drp.status_6 == 'C' %}
-                        <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                        {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Lista-SC' drp.pk %}"><aa>&#128209</aa></a>
-                          {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 6  %}"><aa>&#128229</aa></a>
-                          {%endif%}
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk  %}
+                                        <a href="{% url 'Revisa-Alcance-DRP' drp.pk %}"><aa>&#128270</aa></a>
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
                         {%endif%}
-                        </th>
-                   {%endif%}
-                   {% if drp.status_6 == 'a' %}
-                        <th scope="row"><bb>En Autorizacion</bb></th>
-                        <th scope="row">
-                        <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a href="{% url 'Autoriza-DRP' drp.pk 6  %}"><aa>&#128273</aa></a> 
-                        {%else%}
-                                <a ><aa>&#128274</aa></a>
-                        {% endif %}
-                        </th>
-                
-                   {%endif%}
-                      <!-- Revisa Especificacion de Servicios Criticos -->
-                      {% if drp.status_6 == 'x' %}
-                      <th scope="row"><bb>En Revision</bb></th>
-                      <th scope="row">
-                         <!--Verifica si el usuario de sesion es el gestor responsable -->
-                         {% if request.user.pk == drp.resp_drp.user_pk  %}
-                              <a href="{% url 'Revisa-SC-DRP' drp.pk %}"><aa>&#128270</aa></a>
-                         {%else%}
-                              <a ><aa>&#128274</aa></a>
-                         {% endif %}
-                      </th>
-                     {%endif%}
-                {%endif%} 
+
+                {%endif%} <!-- Fin Verifica que la Estructura Organizacional del DRP este resuelta -->
                 </tr>
 
-                <tr>
-                <th scope="row"><bb>7.<bb></th>
-                <th scope="row"><bb>Procedimiento de Recuperacion</bb></th>
-                {% if drp.status_7 == 'C' %}
-                        <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                        {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Lista-Pasos-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                          {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 7  %}"><aa>&#128229</aa></a>
-                          {%endif%}
-                        {%endif%}
-                        </th>
-                {%endif%}
-                {% if drp.status_7 == 'a' %}
-                        <th scope="row"><bb>En Autorizacion</bb></th>
-                        <th scope="row">
-                        <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a ><aa>&#128273</aa></a> 
-                        {%else%}
-                                <a ><aa>&#128274</aa></a>
-                        {% endif %}
-                        </th>
-                
-                {%endif%} 
-                </tr>
 
-                <tr>
-                <th scope="row"><bb>Anexo-A<bb></th>
-                <th scope="row"><bb>Nomina de Contactos</bb></th>
-                {% if drp.status_A == 'C' %}
-                        <th scope="row"><bb>En Definicion</bb></th>
-                        <th scope="row">
-                        <!-- Verifica si el usuario sesion es el Gestor Consultor -->
-                        {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                <a href="{% url 'Lista-Contactos-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                          {% if drp.resp_drp and drp.status_2 == 'A'  %}
-                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 8  %}"><aa>&#128229</aa></a>
-                          {%endif%}
-                        {%endif%}
+
+                        <!-- 4.- Estrategia de Recuperacion -->
+                        <!-- ============================== -->
+
+
+                        <tr>
+                        <th scope="row"><bb>4.<bb></th>
+                        <th scope="row"><bb>Estrategia de Recuperacion </bb></th>
+                        {% if drp.status_4 == 'A' %}
+                                <th scope="row"><bb>Autorizado</bb></th>
+                                <th scope="row">
+                                <!--Aprobado -->
+                                <a ><aa>&#9989</aa></a>
+                
                         </th>
-                {%endif%}
-                {% if drp.status_A == 'a' %}
-                        <th scope="row"><bb>En Autorizacion</bb></th>
+                        {%else%}
+                        {% if drp.status_4 == 'C' %}
+                                <th scope="row"><bb>En Definicion</bb></th>
+                                <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a href="{% url 'Estrategia-DRP' drp.pk %}"><aa>&#128209</aa></a>
+                                        {% if drp.resp_drp and drp.status_2 == 'A'  %}
+                                                &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 4  %}"><aa>&#128229</aa></a>
+                                        {%endif%}
+                                {%endif%}
+                        </th>
+                        {%endif%}
+
+                        {% if drp.status_4 == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a href="{% url 'Autoriza-DRP' drp.pk 4  %}"><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
+                        
+                        {%endif%}
+
+                        <!-- Revisa Alcance -->
+                        {% if drp.status_4 == 'x' %}
+                        <th scope="row"><bb>En Revision</bb></th>
                         <th scope="row">
                         <!--Verifica si el usuario de sesion es el gestor responsable -->
-                        {% if request.user.pk == drp.resp_drp.user_pk %}
-                                <a ><aa>&#128273</aa></a> 
+                        {% if request.user.pk == drp.resp_drp.user_pk  %}
+                                <a href="{% url 'Revisa-Estrategia-DRP' drp.pk %}"><aa>&#128270</aa></a>
                         {%else%}
                                 <a ><aa>&#128274</aa></a>
                         {% endif %}
                         </th>
+                        {%endif%}
+                        {%endif%} 
+                        </tr>
+
+                        <!-- 5.- Especificacion Tecnica -->
+                        <!-- ========================== -->
+
+                        
+                        <tr>
+                        <th scope="row"><bb>5.<bb></th>
+                        <th scope="row"><bb>Especificacion Tecnica Site de Contingencia </bb></th>
+                        {% if drp.status_5 == 'A' %}
+                                <th scope="row"><bb>Autorizado</bb></th>
+                                <th scope="row">
+                                <!--Aprobado -->
+                                <a ><aa>&#9989</aa></a>
                 
-                {%endif%}
-                </tr>
+                        </th>
+                        {%else%}
+                        {% if drp.status_5 == 'C' %}
+                                <th scope="row"><bb>En Definicion</bb></th>
+                                <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a href="{% url 'Lista-CMP' drp.pk %}"><aa>&#128209</aa></a>
+                                {% if drp.resp_drp and drp.status_2 == 'A'  %}
+                                        &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 5  %}"><aa>&#128229</aa></a>
+                                {%endif%}
+                                {%endif%}
+                                </th>
+                        {%endif%}
+                        {% if drp.status_5 == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a href="{% url 'Autoriza-DRP' drp.pk 5  %}"><aa>&#128273</aa></a>
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
+                        
+                        {%endif%}
+                        <!-- Revisa Especificacion Tecnica Site -->
+                        {% if drp.status_5 == 'x' %}
+                        <th scope="row"><bb>En Revision</bb></th>
+                        <th scope="row">
+                        <!--Verifica si el usuario de sesion es el gestor responsable -->
+                        {% if request.user.pk == drp.resp_drp.user_pk  %}
+                                <a href="{% url 'Revisa-Especif_Tec-DRP' drp.pk %}"><aa>&#128270</aa></a>
+                        {%else%}
+                                <a ><aa>&#128274</aa></a>
+                        {% endif %}
+                        </th>
+                        {%endif%}
+
+                        {%endif%} 
+                        </tr>
+
+                        <!-- 6.- Servicios Criticos -->
+                        <!-- ====================== -->
+
+        
+                        <tr>
+                        <th scope="row"><bb>6.<bb></th>
+                        <th scope="row"><bb>Servicios criticos </bb></th>
+                        {% if drp.status_6 == 'A' %}
+                                <th scope="row"><bb>Autorizado</bb></th>
+                                <th scope="row">
+                                <!--Aprobado -->
+                                <a ><aa>&#9989</aa></a></th>
+
+                        {%elif drp.status_6 == 'C' %}
+                                <th scope="row"><bb>En Definicion</bb></th>
+                                <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a href="{% url 'Lista-SC' drp.pk %}"><aa>&#128209</aa></a>
+                                {% if drp.resp_drp and drp.status_2 == 'A'  %}
+                                        &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 6  %}"><aa>&#128229</aa></a>
+                                {%endif%}
+                                {%endif%}
+                                </th>
+
+                        {%elif drp.status_6 == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a href="{% url 'Autoriza-DRP' drp.pk 6  %}"><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
+                        
+                        <!-- Revisa Especificacion de Servicios Criticos -->
+                        {%elif drp.status_6 == 'x' %}
+                        <th scope="row"><bb>En Revision</bb></th>
+                        <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk  %}
+                                <a href="{% url 'Revisa-SC-DRP' drp.pk %}"><aa>&#128270</aa></a>
+                                {%else%}
+                                <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                        </th>
+                        {%endif%} 
+                        </tr>
+
+                        <!-- 7.- Procedimiento de Recuperacion -->
+                        <!-- ================================= -->
+
+
+                        <tr>
+                        <th scope="row"><bb>7.<bb></th>
+                        <th scope="row"><bb>Procedimiento de Recuperacion</bb></th>
+                        {% if drp.status_7 == 'C' %}
+                                <th scope="row"><bb>En Definicion</bb></th>
+                                <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a href="{% url 'Lista-Pasos-DRP' drp.pk %}"><aa>&#128209</aa></a>
+                                {% if drp.resp_drp and drp.status_2 == 'A'  %}
+                                        &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 7  %}"><aa>&#128229</aa></a>
+                                {%endif%}
+                                {%endif%}
+                                </th>
+                        {%elif drp.status_7 == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a ><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
+                        
+                        {%endif%} 
+                        </tr>
+
+                        <!-- Anexo A.- Nomina de Contactos  -->
+                        <!-- ============================== -->
+
+
+                        <tr>
+                        <th scope="row"><bb>Anexo-A<bb></th>
+                        <th scope="row"><bb>Nomina de Contactos</bb></th>
+                        {% if drp.status_A == 'C' %}
+                                <th scope="row"><bb>En Definicion</bb></th>
+                                <th scope="row">
+                                <!-- Verifica si el usuario sesion es el Gestor Consultor -->
+                                {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
+                                        <a href="{% url 'Lista-Contactos-DRP' drp.pk %}"><aa>&#128209</aa></a>
+                                {% if drp.resp_drp and drp.status_2 == 'A'  %}
+                                        &nbsp;<a href="{% url 'Envia-Aut-DRP' drp.pk 8  %}"><aa>&#128229</aa></a>
+                                {%endif%}
+                                {%endif%}
+                                </th>
+                        {%elif drp.status_A == 'a' %}
+                                <th scope="row"><bb>En Autorizacion</bb></th>
+                                <th scope="row">
+                                <!--Verifica si el usuario de sesion es el gestor responsable -->
+                                {% if request.user.pk == drp.resp_drp.user_pk %}
+                                        <a ><aa>&#128273</aa></a> 
+                                {%else%}
+                                        <a ><aa>&#128274</aa></a>
+                                {% endif %}
+                                </th>
+                        
+                        {%endif%}
+                 
+                        </tr>
+
+
         </tbody>
 
 </table>
 <br/>
 <a href="{% url 'Lista-DRP' %}"><span style='font-size:30px;'>&#128281</span></a>
 <br/>
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
 {% endblock %}

@@ -43,19 +43,27 @@
         {% csrf_token %}
         
 	{% block A %}
-	<br/>
 	<h5><strong>Procedimiento de Contingencia</strong></h5>
 	<ul class="scr4">
-	<p><strong> 2.1 Nombre..:</strong>&emsp; {{ form.nombre }}</p>
-	<p><strong> 2.2 Version.:</strong>&emsp; {{ form.version}}</p>
-	<p><strong> 2.3 Tipo..: </strong>&emsp; {{form.tipo}}</p>
+	<div class="flex-container">
+		<div class="flex-item">
+		<p><strong> 2.1 Nombre..:</strong>&emsp;</p>
+		<p><strong> 2.2 Tipo..: </strong>&emsp;</p>
+		</div>
+		<div class="flex-item">
+		<p><strong> <p>{{ form.nombre }}</p>
+		<p><strong> <p>{{form.tipo}}</p>
+		</div>
+
+	</div>
 	</ul>
 	{% endblock %}
 
+	<!--- Boton de Salida ---->
+    <input type="submit" class="button" value="Crear Procedimiento" />
 
-        <input type="submit" class="button" value="Crear Procedimiento" />
     </form>
-
+	<br/><br/>
 	<!---- Despliega el nombre del codigo html -->
 	<aa style="font-size: 8px;">[prcd_crea_A]</aa>
 {% endblock %}

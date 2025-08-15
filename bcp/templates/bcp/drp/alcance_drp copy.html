@@ -1,0 +1,38 @@
+<!Programa HTML>
+<!Despliega el formulario para la asignacion del Alcance al DRP>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE ALCANCE AL DRP</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	</ul>
+	{% endblock %}
+	
+
+	{% block asigna_proc %}
+	<h5><strong>ASIGNACION DE ALCANCE </strong></h5>
+	<!===================================================>
+	<ul class="scr3">
+	<P>Seleccione del cuadro de la izquierda aquellos Procesos que seran considerados dentro del alcance de operacion que cubrirá
+		este Plan de Recupercion del Procesamiento de Datos (DRP). Estos procesos corresponden a una seleccion de aquellos que
+		contemplan como estrategia de recuperacion la activacion de un Site de Contingencias.</p>
+	
+    	<form action="" method="post">
+        	{% csrf_token %}
+       		{{form.media}}
+        	<p>{{form.procesos }}</p>
+		<br/>
+   		<br/>	
+        <p><input type="submit" value="Registrar y Salir" /></p>
+    	</form>
+	</ul>
+	{% endblock %}
+
+{% endblock %}

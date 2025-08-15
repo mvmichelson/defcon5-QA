@@ -1,0 +1,512 @@
+Actua como experto en django. Considera el siguiente script: // Seleccion de Servicios
+// ======================
+
+// Aseguramos que el script se ejecute solo cuando el DOM esté completamente cargado
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("Entra a Seleccion Servicios ");
+
+    // Verificamos si los elementos existen antes de agregarles event listeners
+    let filtroDisponibles = document.getElementById("filtro_disponibles");
+    let filtroAsignados = document.getElementById("filtro_asignados");
+
+    if (filtroDisponibles) {
+        filtroDisponibles.addEventListener("input", function() {
+            filtrarTabla("filtro_disponibles", "tabla_disponibles");
+        });
+    } else {
+        console.warn("⚠️ Elemento 'filtro_disponibles' no encontrado en el DOM.");
+    }
+
+    if (filtroAsignados) {
+        filtroAsignados.addEventListener("input", function() {
+            filtrarTabla("filtro_asignados", "tabla_asignados");
+        });
+    } else {
+        console.warn("⚠️ Elemento 'filtro_asignados' no encontrado en el DOM.");
+    }
+
+    // Asegurar que el formulario actualiza el input oculto antes de enviarse
+    let formulario = document.querySelector("form");
+    if (formulario) {
+        formulario.addEventListener("submit", function(event) {
+            actualizarRecursosSeleccionados();
+        });
+    }
+});
+
+function moverRecurso(boton, tablaDestinoId) {
+    let fila = boton.closest("tr");  // Encuentra la fila del botón
+    let tablaOrigen = fila.closest("table");  // Encuentra la tabla de origen
+    let tablaDestino;
+
+    // Determinar a qué tabla mover la fila
+    if (tablaDestinoId === "id_tabla_asignados") {
+        tablaDestino = document.querySelector("#tabla_asignados tbody");
+    } else if (tablaDestinoId === "id_tabla_disponibles") {
+        tablaDestino = document.querySelector("#tabla_disponibles tbody");
+    } else {
+        console.error(Error: La tabla destino con id '${tablaDestinoId}' no existe.);
+        return;
+    }
+
+    if (!tablaDestino) {
+        console.error(Error: No se encontró el tbody de la tabla destino con id '${tablaDestinoId}'.);
+        return;
+    }
+
+    // Mover la fila a la nueva tabla
+    tablaDestino.appendChild(fila);
+
+    // Cambiar el botón para mover en sentido contrario
+    if (tablaDestinoId === "id_tabla_asignados") {
+        boton.innerHTML = "◀";
+        boton.setAttribute("onclick", "moverRecurso(this, 'id_tabla_disponibles')");
+    } else {
+        boton.innerHTML = "▶";
+        boton.setAttribute("onclick", "moverRecurso(this, 'id_tabla_asignados')");
+    }
+
+    // Actualizar el campo oculto después de mover
+    actualizarRecursosSeleccionados();
+}
+
+function actualizarRecursosSeleccionados() {
+    let recursosInput = document.getElementById("recursos_input");
+    let filas = document.querySelectorAll("#tabla_asignados tbody tr");
+
+    let recursosSeleccionados = [];
+    filas.forEach(fila => {
+        let recursoId = fila.getAttribute("data-id");
+        if (recursoId) {
+            recursosSeleccionados.push(recursoId);
+        }
+    });
+
+    console.log("Recursos seleccionados antes de enviar:", recursosSeleccionados);
+
+    // Actualizar el campo oculto con los IDs de los recursos asignados
+    recursosInput.value = recursosSeleccionados.join(",");
+}
+
+// Función para filtrar la tabla
+function filtrarTabla(inputId, tablaId) {
+    let filtro = document.getElementById(inputId);
+    let tabla = document.getElementById(tablaId);
+    if (!filtro || !tabla) {
+        console.warn(⚠️ No se encontró el elemento con id '${inputId}' o '${tablaId}'.);
+        return;
+    }
+
+    let filtroTexto = filtro.value.toLowerCase();
+    let filas = tabla.querySelectorAll("tbody tr");
+
+    filas.forEach(fila => {
+        let textoFila = fila.innerText.toLowerCase();
+        if (textoFila.includes(filtroTexto)) {
+            fila.style.display = "";
+        } else {
+            fila.style.display = "none";
+        }
+    });
+}
+
+console.log("Script main.js ejecutado correctamente.");.
+
+Considera el siguiente View:
+def asigna_servicio(request, pk):
+    proceso = get_object_or_404(Proceso, pk=pk)
+    subproceso = proceso.subproceso
+
+    if request.method == "POST":
+        recursos_ids = request.POST.get("recursos", "").split(",")  # Obtener los recursos seleccionados
+        recursos_ids = [int(r) for r in recursos_ids if r.isdigit()]  # Filtrar solo los números válidos
+
+        if recursos_ids:
+            subproceso.recursos.set(Recursos.objects.filter(id__in=recursos_ids))  # Asignar recursos
+        else:
+            subproceso.recursos.clear()  # Si no hay recursos, limpiar asignaciones
+
+        subproceso.save()  # Guardar los cambios
+
+        return HttpResponseRedirect(reverse('Asigna-Servicio', args=[pk]))
+
+    # Cargar recursos disponibles y asignados
+    recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
+    recursos_asignados = subproceso.recursos.all()
+
+    return render(request, 'bcp/map_act/asigna_activos_v2.html', {
+        'form': ServicioForm(),
+        'proceso': proceso,
+        'subproceso': subproceso,
+        'recursos_disponibles': recursos_disponibles,
+        'recursos_asignados': recursos_asignados,
+    }).
+    Considera el siguiente form:
+    from django import forms
+from .models import SubProceso, Recursos
+
+class ServicioForm(forms.Form):
+
+    pass     # Utilizado para pasar los datos de Recursos directo a JS
+
+    #recursos = forms.ModelMultipleChoiceField(
+    #    queryset=Recursos.objects.all(),
+    #    required=False,
+    #    widget=forms.SelectMultiple(attrs={'id': 'id_recursos_seleccionados'})  # Se usará en JS
+    #)
+
+    #class Meta:
+    #    model = SubProceso
+    #    fields = []
+    y el siguiente Template:
+    <!Programa HTML>
+<!Despliega el formulario para la creacion de un Activo o Recurso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% load static %} 
+
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_B">
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE SERVICIOS CRITICOS:</strong></aa></strong></p>
+	</ul>
+	<ul class="encabezado_SB">
+	<p><aa>{{proceso.path}}</aa></p>
+	</ul>
+	{% endblock %}
+
+	
+	{% block d_asigna_recu %}
+	<h5><strong>DATOS DEL PROCESO</strong></h5>
+	<!=======================================>
+
+	<ul class="scr4">
+	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
+	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+	</ul>
+	{% endblock %}
+
+	{% block asigna_proc %}
+	<br/>
+	<h5><strong>ASIGNACION DE SERVICIOS CRITICOS</strong></h5>
+	<!===================================================>
+	<P>Seleccione del listado de la izquierda aquellos Servicios o Recursos que son indispensables para la 
+	operacion del Proceso -<strong> {{proceso.nombre}}</strong>-.</p>
+	
+	<!---- Bloque A --------------------------------------------------------------->
+	<div class="flex-container">
+	<!--- Seccion Disponibles --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<h4><strong>Servicios/Recursos Disponibles</strong></h4>
+
+	<input type="text" id="filtro_disponibles" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
+		<br/><br/>
+
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 350px">  
+
+		<table id="tabla_disponibles" class="styled-table">
+			<thead style="background: greenyellow;">
+				<tr style="color:black">
+					<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
+					<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
+					<th >DESCRIPCION</th>
+					<th>  </th>
+				</tr>
+			</thead>
+			
+			<tbody>
+
+
+				{% for recurso in recursos_disponibles %}
+					<tr data-id="{{ recurso.id }}" >
+						<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
+						<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
+						<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
+						<td ><button class="button link " data-message="Asigna Servicio {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
+							style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
+					</tr>
+				{% endfor %}
+
+			</tbody>
+		</table>
+	</ul>
+
+	<br/><br/><br/>
+	</div><!--- Fin Seccion Disponibles --------------------------------------->
+
+	<!--- Seccion Asignados --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<h4><strong>Servicios/Recursos Criticos Seleccionados</strong></h4>
+	<input type="text" id="filtro_asignados" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
+	<br/><br/>
+
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 350px">  
+
+	<table id="tabla_asignados" class="styled-table">
+		<thead>
+			<tr style="color:black">
+				<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
+				<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
+				<th >DESCRIPCION</th>
+				<th>  </th>
+			</tr>
+		</thead>
+		<tbody id="id_tabla_asignados">
+			{% for recurso in recursos_asignados %}
+				<tr data-id="{{ recurso.id }}">
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
+					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
+					<td>
+					<button style="background: red; color: white; font-size: 12px; padding: 1px 3px;" class="button link " data-message="Des-Asigna Servicio / Recurso ..." onclick="moverRecurso(this, 'id_tabla_disponibles')">◀</button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	</ul> 
+
+		<!-- Formulario oculto -->
+		<br/>
+		<form method="post">
+			{% csrf_token %}
+			<input type="hidden" name="recursos" id="recursos_input">
+
+			<!-- Botones de Salida -->
+			<a href="{% url 'Lista-Recursos'  %}"  
+			class="confirm-link link" data-message="Vuelve sin grabar" con-message="Desea Salir sin Grabar?"><rr class="button">... Volver</rr></a>
+
+			<button  class="button"   type="submit">Guarda Seleccion</button>
+
+			<a href="{% url 'Envia_Ev_RACI' proceso.pk  'B'  %}"  
+			class="confirm-link link" data-message="Envia a la definicion del esquema de Autorizaciones RACI" con-message="Confirma Envio a Autorizacion RACI ?. Debe guardar ultimo Cambio (flecha verde indica Asignacion no guardada)."><rr class="button">Asigna RACI ...</rr></a>
+		</form>
+			
+
+	</div><!--- Fin Seccion Asignados --------------------------------------->
+
+</div><!------- Fin Bloque A ------->
+
+
+
+	{% endblock %}
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+
+<br/>
+<aa style="font-size: 8px;">[asigna_activos_v2]</aa>
+{% endblock %}.
+Por favor genera los codigos equivalentes para hacer una seleccion a partir del modelo '"SubProceso_V"
+(Procesos disponibles) y registralos en el campo "procesos_drp" del modelo "DRP" (Procesos seleccionados).
+Los procesos disponibles deben ser filtrados por el campo "escenarios" donde "estrategias.activa_drp=True".
+Los modelos a considerar son:
+class SubProceso_V(models.Model):
+    """
+    Datos de Proceso Evaluable Vigente (aprobado)
+    """""
+    # Campos del Proceso
+    nombre = models.CharField(max_length=50, default="")
+    objetivo = models.TextField(max_length=500, blank=True, help_text='Describa el principal objetivo del Proceso')
+    version= models.IntegerField(default=0)
+    
+    pk_padre = models.IntegerField(default=0)
+    codigo = models.CharField(max_length=50, blank=True) # Codigo del Proceso original
+    path=models.CharField(max_length=200, blank=True)
+    fecha_ult_aut=models.DateField(auto_now_add=True)
+    
+    #Campos para implementar un modelo RACI
+    gestor_R = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_r', null=True, blank=True)
+    gestor_A = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_a', null=True, blank=True)
+    gestor_C = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_c', null=True, blank=True)
+    gestor_I = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='subproceso_v_i', null=True, blank=True)
+
+    #Impactos e Indicadores de recuperacion
+ 
+    impact_subp = models.ManyToManyField('Impactos_Asig_v', related_name= 'impactos_v', blank=True) 
+    indicador_subp= models.ManyToManyField('Indicadores_Asig_v', related_name= 'indicadores_v', blank=True) 
+
+    ranking =  models.DecimalField(max_digits=5, decimal_places=2, default=000.00)
+    
+    #Registra el estado de Autorizacion RACI
+    #PROC_STATUS = (
+    #    ('R', 'Vigenteado'),
+    #    ('r', 'x Vigentear R'),
+    #    ('A', 'x Aprobar A'),
+    #    ('C', 'En Dfncn C'),
+    #    ('x', 'En Revision C'), 
+    #)
+    #status = models.CharField(max_length=1, choices=PROC_STATUS, blank=True, default='C', help_text='Estado de la definicion del Proceso')
+
+    #Registra la Fase en el desarrollo del  bcp
+    #FASE_STATUS = (
+    #    ('M', 'Fase Procesos'),
+    #    ('V', 'Fase BIA'),
+    #    ('B', 'Fase Activos'),
+    #    ('E', 'Fase Escenarios'),
+    #)
+
+    #fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del bcp')
+
+    recursos=models.ManyToManyField('Recursos', blank=False)
+
+    escenarios=models.ManyToManyField('Escenarios', blank=False)
+
+    procedimientos_contingencia = models.ManyToManyField('Procedimientos', blank=True)
+    procedimientos_contingencia_v = models.ManyToManyField('Procedimientos_V', blank=True)
+
+    nro_prdto = models.IntegerField(default=0)
+
+    log_revision=models.ManyToManyField('Log_Revision', blank=True)
+
+    #log_control_cambio=models.ManyToManyField('Log_Revision', blank=False, null=False)
+    
+
+
+
+    class Meta:
+        ordering = ["path"]
+    
+    def __str__(self):
+        """
+        String que representa al objeto 
+        """
+        return self.path
+
+
+class Drp(models.Model):
+    """
+    Datos del DRP
+    """
+
+    codigo  = models.CharField(max_length= 8, blank=False, default='0000')
+    version = models.CharField(max_length= 5, blank=False, default='0000')
+    
+    #Fechas
+    fecha_c=models.DateField(auto_now_add=True)
+    fecha_ult_mod =models.DateField(auto_now_add=True)
+
+    #Identificacion del DRP
+    nombre = models.CharField(max_length= 100, blank=False)
+    introduccion = models.CharField(max_length= 2000, blank=True)
+
+    #Responsables
+    resp_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='resp_drp', null=True, blank=True)
+    bck_resp_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='bck_resp_drp', null=True, blank=True)
+
+    gestor_ejecutor_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='gestor_ejecutor_drp', null=True)
+    bck_ejecutor_drp  = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='bck_ejecutor_drp', null=True)
+
+    enlace_c_crisis_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='enlace_c_crisis_drp',  null=True)
+    bck_enlace_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='bck_enlace_drp', null=True)
+
+    gestor_consultor_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='gestor_consultor_drp', null=True)
+
+    #Servicios y Contactos necesarios                                       
+    servicios_drp = models.ManyToManyField('Servicios_PC')
+    contactos_drp = models.ManyToManyField('Contactos_PC')
+
+    #Pasos del DRP
+    pasos_drp = models.ManyToManyField('Pasos_PC')
+
+ 
+    #Estado del Procedimiento y Archivo adjunto                                            
+    esta_activo=models.BooleanField(default=False)
+    #archivo = models.FileField(upload_to="archivos/", null=True, blank=True)
+
+
+    PROCED_STATUS = (
+        ('R', 'Vigenteado'),
+        ('r', 'X Vigentear R'),
+        ('A', 'Aprobado'),
+        ('a', 'x Aprobar A'),
+        ('C', 'En Dfncn C'),
+        ('x', 'En Revision C'), 
+        
+    )
+    status_1 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C') 
+    status_2 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_3 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_4 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_5 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_6 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_7 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_A = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_t = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True)
+
+
+    # Log de Autorizaciones
+    log_auth_drp=models.ManyToManyField('LogAut')
+
+    #Alcance
+
+    procesos_drp=models.ManyToManyField('SubProceso')
+
+    # Estrategia de Recuperacion
+
+    tipo_Site = models.ForeignKey('Tipo_Site', on_delete=models.SET_NULL, related_name='tipo_site', null=True)
+    desc_estrategia = models.CharField(max_length= 1000, blank=True)
+    disposicion_componentes=models.ForeignKey('Tipo_Disp', on_delete=models.SET_NULL, related_name='tipo_disp', null=True)
+
+    # Especificacion Tecnica (Componentes Sw/Hw del DRP)
+
+    componentes=models.ManyToManyField('Componentes')
+
+    def get_absolute_url(self):
+        """
+        Devuelve el URL a una instancia particular 
+        """
+        return reverse('Indice-DRP', args=[str(self.id)])
+
+class Escenarios(models.Model):
+    """
+    Entidad: Escenarios
+             Registra los posibles escenarios catatroficos al
+             que pueden ser expuestos los Procesos
+    """
+
+    titulo = models.CharField(max_length= 50, blank=True)
+    descripcion = models.TextField(max_length=500, blank=True, help_text='Describa el escenarios')
+    #amnzas = models.ManyToManyField('Amenazas', related_name= 'Amenazas_Escenarios')
+    estrategias = models.ManyToManyField('Estrategias')
+
+    def __str__(self):
+        return self.titulo+' :'+self.descripcion
+
+class Estrategias(models.Model):
+    """
+    Entidad: Escenarios
+             Registra los posibles estrategias para la recuperacion
+             de la continuidad operativa de manera alternativa
+            
+    """
+    titulo = models.CharField(max_length= 50, blank=True)
+    descripcion = models.TextField(max_length=500, blank=True, help_text='Describa la Estrategia')
+    activa_drp=models.BooleanField(default=False)
+
+gracias!.     

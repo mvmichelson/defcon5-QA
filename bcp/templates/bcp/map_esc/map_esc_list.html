@@ -74,10 +74,10 @@
 							<a href="{% url 'asigna-raci' proceso.pk 'Analisis de Impacto'  %}"
 							class="link blink " data-message="Define ciclo de Autorizaciones RACI ..."><rr><strong>&#8476</strong></rr>..</a>
 
-							<a href="{% url 'Asigna-Escenarios' proceso.pk %}"
+							<!-- <a href="{% url 'Asigna-Escenarios' proceso.pk %}"
 							class="link" data-message="Modificar Escenario de Riesgo ...">
 							<img src="/static/img/Escenarios.png" width="20" height="20"></img></a>
-
+				  			-->
 
 						{%else%}
 
@@ -199,7 +199,7 @@
 				<!Si el Proceso no se encuentra  en aprobacion en fases anteriores>
 
 				<!Opcion para ver detalle del Proceso>
-			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><bb>&#128065</bb></a>
+			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><bb class="link" data-message="Detalle del Proceso ...">&#128065</bb></a>
 
 				<!Despliega codigo y nombre del Proceso>
                             	<aa> &nbsp;&nbsp; &#10149 {{ proceso.nombre }}</aa>

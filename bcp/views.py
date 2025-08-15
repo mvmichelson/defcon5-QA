@@ -347,7 +347,7 @@ def Detalle_Proceso(request, pk):
 def Detalle_Proceso_V(request, pk):
     """
     muestra todos los datos asociados al proceso vigente
-    pk
+    pk: Recibe identificacion del Proceso 
     """
     print('------- Detalle del Proceso Vigente -----------------')
 
@@ -360,6 +360,22 @@ def Detalle_Proceso_V(request, pk):
     return render(request, 'bcp/proceso_detail_v.html',
                   context={'proceso':proceso, 'control_c':control_cambios})
 
+def Detalle_Proceso_V2(request, pk):
+    """
+    muestra todos los datos asociados al proceso vigente
+    pk: Recibe identificacion del subproceso vigente (proceso.subproceso_v)
+    """
+    print('------- Detalle del Proceso Vigente -----------------')
+
+    spv=get_object_or_404(SubProceso_V,pk=pk)
+    proceso=spv.proceso
+    print('pk del proceso=', proceso.pk)
+
+    control_cambios=Control_Cambios.objects.filter(proceso=proceso.subproceso_v)
+    print('comentarios=', control_cambios)
+
+    return render(request, 'bcp/proceso_detail_v.html',
+                  context={'proceso':proceso, 'control_c':control_cambios})
 
 
 #********************************************
@@ -1164,19 +1180,21 @@ def borra_obs_proceso(request, pk):
 
 
 #*********************************************************
-#3.4 Autorizacion RACI de Asignacion de Activos a Proceso*
+#3.4 Autorizacion de Asignacion de Activos a Proceso*
 #*********************************************************
 from .forms import Autoriza_Act_x_Proc_Form
 import datetime
 
 def Aut_Asig_Act(request, pk):
 
+    print('--- Entra a Vista: Autorizacion de ASignacion Aut_Asig_Act')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[300] ))
     
     model = Proceso
     proc = get_object_or_404(Proceso, pk = pk)
+    subproceso=proc.subproceso
     activos=proc.subproceso.recursos
     activos_disp=Recursos.objects.all().order_by('tipo')
     
@@ -1329,6 +1347,7 @@ def Aut_Asig_Act(request, pk):
             return HttpResponseRedirect(reverse('Lista-Recursos') )
 
         else:
+
             print(form.errors)
             return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
         
@@ -1339,9 +1358,17 @@ def Aut_Asig_Act(request, pk):
                                         'notifica':False
                                         }
                              )
-                                        
+
+        # Cargar recursos disponibles y asignados
+        recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
+        recursos_asignados = subproceso.recursos.all()
+        print('---- recursos_asignados=', recursos_asignados)
+
+
         return render(request, 'bcp/map_act/asig_act_auth.html', {'form': form,
                                                                   'proceso':proc,
+                                                                  'recursos_disponibles':recursos_disponibles,
+                                                                  'recursos_asignados':recursos_asignados,
                                                                   'activos':activos,
                                                                   'activos_disp':activos_disp,
                                                                   'comentarios':comentarios_a})
@@ -1435,7 +1462,7 @@ def Aut_Asig_Esc(request, pk):
                     log.proceso= proc
                     log.gestor_aut=usr_aut
                     log.seccion="E"
-                    log.campo="Autorizado por:"+aut
+                    log.campo="Observada por:"+aut
                     log.comentario="Asignacion de Escenarios de Riesgo observada por Gestor Autorizador. Se envia a Gestor Consultor para Revision."
                     log.resuelto=True
                     log.save()
@@ -1562,6 +1589,8 @@ def Aut_Asig_Esc(request, pk):
 
                             sub_proceso_v.save()
                             proc.subproceso_v = sub_proceso_v
+                            proc.save()
+                            print('Actualiza tabla de procesos')
 
 
                         else:
@@ -1851,6 +1880,7 @@ def Aut_Asig_Esc(request, pk):
                         # Actualiza Base 
                         # proc.subproceso_v=sub_proceso_v
                         proc.save()
+                        print('--- Actualiza Tabla de Procesos')
 
                         # Crea entrada para el Control de Cambios
                         # =======================================
@@ -1881,7 +1911,7 @@ def Aut_Asig_Esc(request, pk):
                         log.proceso= proc
                         log.gestor_aut=usr_aut
                         log.seccion="E"
-                        log.campo="Autorizado por:"+aut
+                        log.campo="Observada por:"+aut
                         log.comentario="Asignacion de Escenarios de Riesgo observada por Gestor Responsable. Se envia a Gestor Consultor para Revision."
                         log.resuelto=True
                         log.save()
@@ -2229,7 +2259,7 @@ def rev_asigna_servicio(request, pk):
 #*************************************************************************************
 from .forms import Revisa_Asig_Esc_Form
 
-def Revisa_Asig_Esc(request, pk):
+def Revisa_Asig_Esc(request, pk): 
 
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Consultores']):
@@ -2237,6 +2267,7 @@ def Revisa_Asig_Esc(request, pk):
     
     model = Proceso
     proc_rev=get_object_or_404(Proceso, pk = pk)
+
 
     # Rescata los Comentarios 
     comentarios_proceso=Log_Revision.objects.filter(proceso=proc_rev)
@@ -2335,7 +2366,58 @@ def Revisa_Asig_Esc(request, pk):
                                                                       'proceso':proc_rev,
                                                                       'comentarios':comentarios_m})
     
-    
+def rev_asigna_escenarios(request, pk):
+    """ ----------------------------------------------------------------
+    Revisa e implementa los Comentarios realizados por los Supervisores 
+    pk: Pk del Proceso.
+    --------------------------------------------------------------------
+    """
+
+    # Verifica si el usuario en sesion esta habilitado
+    if not es_del_grupo([request.user, 'Consultores']):
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[200] ))
+
+    proceso = get_object_or_404(Proceso, pk=pk)
+    subproceso = proceso.subproceso
+
+    # Rescata los Comentarios 
+    comentarios_proceso=Log_Revision.objects.filter(proceso=proceso)
+    comentarios_b=[]
+    for com in comentarios_proceso:
+        if com.seccion == "E":
+            comentarios_b.append(com)
+            
+
+    if request.method == "POST":
+        escenarios_ids = request.POST.get("escenarios", "").split(",")
+        escenarios_ids = [int(e) for e in escenarios_ids if e.isdigit()]
+
+        if escenarios_ids:
+            subproceso.escenarios.set(Escenarios.objects.filter(id__in=escenarios_ids))
+        else:
+            subproceso.escenarios.clear()
+
+        #Cambia el estado para inicio de las autorizaciones
+        subproceso.status='A' # Aprobacion Gestor Autorizador
+        subproceso.fase_status='E'
+        subproceso.save()
+
+        #return HttpResponseRedirect(reverse('Asigna-Escenarios', args=[pk]))
+        return HttpResponseRedirect(reverse('Lista-Escenarios') )
+
+
+    escenarios_disponibles = Escenarios.objects.exclude(id__in=subproceso.escenarios.values_list('id', flat=True))
+    escenarios_asignados = subproceso.escenarios.all()
+
+    return render(request, 'bcp/map_esc/asigna_esc_revisa.html', {
+        'form': EscenarioForm(),
+        'proceso': proceso,
+        'subproceso': subproceso,
+        'comentarios':comentarios_b,
+        'escenarios_disponibles': escenarios_disponibles,
+        'escenarios_asignados': escenarios_asignados,
+    })
+  
 
 #****************************************************************************
 # 3.9 Revision de Asignacion BIA  a Proceso con autorizazion RACI rechazada *
@@ -2573,7 +2655,24 @@ def Crea_Rev_OC(request):
             except Proceso.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Proceso no encontrado"})
 
+        elif seccion[0] == "D":
+        # El Comentario proviene de la Fase de definicion del DRP
+            try:
+                    drp = Drp.objects.get(id=obj_id)
+                    print('** DRP =', drp)
+                    log_revision = Log_Revision(fecha=fecha_hoy,
+                                                drp=drp,
+                                                gestor_aut=usuario_sesion,
+                                                seccion=seccion, 
+                                                campo=campo,
+                                                comentario=comentario)
+                    log_revision.save()
+                    return JsonResponse({"success": True})
+            except Proceso.DoesNotExist:
+                return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+
         else:
+        # El Comentario proviene de la Fase de Mapeo de Procesos
             try:
                     proceso = Proceso.objects.get(id=obj_id)
                     print('** proceso =', proceso)
@@ -2760,37 +2859,31 @@ def asigna_servicio(request, pk):
     subproceso = proceso.subproceso
 
     if request.method == "POST":
-        recursos_ids = request.POST.get("recursos", "").split(",")  # Obtener los recursos seleccionados
-        recursos_ids = [int(r) for r in recursos_ids if r.isdigit()]  # Filtrar solo los números válidos
+        recursos_ids_str = request.POST.get("recursos", "")
+        recursos_ids = [int(r) for r in recursos_ids_str.split(",") if r.isdigit()]
 
         if recursos_ids:
-            subproceso.recursos.set(Recursos.objects.filter(id__in=recursos_ids))  # Asignar recursos
+            subproceso.recursos.set(Recursos.objects.filter(id__in=recursos_ids))
         else:
-            subproceso.recursos.clear()  # Si no hay recursos, limpiar asignaciones
+            subproceso.recursos.clear()
 
-        #Cambia el estado para inicio de las autorizaciones
-        subproceso.status='C'
-        subproceso.fase_status='B'
-        subproceso.save()  # Guardar los cambios
+        subproceso.status = 'C'
+        subproceso.fase_status = 'B'
+        subproceso.save()
 
+        return redirect(reverse('Lista-Recursos'))
 
-
-        #return HttpResponseRedirect(reverse('Asigna-Servicio', args=[pk]))
-        return HttpResponseRedirect(reverse('Lista-Recursos') )
-
-
-    # Cargar recursos disponibles y asignados
-    recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
     recursos_asignados = subproceso.recursos.all()
+    recursos_disponibles = Recursos.objects.exclude(id__in=recursos_asignados.values_list('id', flat=True))
 
     return render(request, 'bcp/map_act/asigna_activos_v2.html', {
-        'form': ServicioForm(),
         'proceso': proceso,
         'subproceso': subproceso,
         'recursos_disponibles': recursos_disponibles,
         'recursos_asignados': recursos_asignados,
     })
 
+from .forms import EscenarioForm
 
 def asigna_escenarios(request, pk):
     proceso = get_object_or_404(Proceso, pk=pk)
@@ -2818,7 +2911,7 @@ def asigna_escenarios(request, pk):
     escenarios_asignados = subproceso.escenarios.all()
 
     return render(request, 'bcp/map_esc/asigna_escenarios_v2.html', {
-        'form': ServicioForm(),
+        'form': EscenarioForm(),
         'proceso': proceso,
         'subproceso': subproceso,
         'escenarios_disponibles': escenarios_disponibles,
@@ -3433,8 +3526,13 @@ def cr_prcd_b(request, pk):
                                 )
 
     
-        return render(request, 'bcp/proced_cont/proced_crea_B.html', {'form': form, 'proced':proced, 'proceso':proceso, 'escenarios':escenarios,
-                                                                      'servicios':servicios, 'contactos':contactos,'pasos':pasos})
+        return render(request, 'bcp/proced_cont/proced_crea_B.html', {'form': form,
+                                                                      'proced':proced,
+                                                                      'proceso':proceso,
+                                                                      'escenarios':escenarios,
+                                                                      'servicios':servicios,
+                                                                      'contactos':contactos,
+                                                                      'pasos':pasos})
 
 
 #*************************************************************
@@ -5027,7 +5125,7 @@ def Drp_Sec_2(request, pk):
                     contacto.cel_lab=respaldo_enl.cod_area.codigo+respaldo_enl.fono_c
                     contacto.save()
                     drp.contactos_drp.add(contacto)
-                    print('Crea respaldo enlace=', contacto0302.nombre)
+                    print('Crea respaldo enlace=', contacto.nombre)
 
             # Cambia status y graba al equipo de Gestores
             drp.status_t='C'
@@ -5103,6 +5201,43 @@ def Drp_Sec_3(request, pk):
         form = Drp_Sec_3_Form(initial={ 'procesos':set(p2)})
         return render(request, 'bcp/drp/alcance_drp.html', {'drp':drp, 'form':form})
 
+
+#****************************************************
+# 6.7.v2 Definicion del Alcance del DRP (version 2) *
+#****************************************************
+
+# views.py
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Drp, SubProceso_V
+
+def asigna_procesos_drp(request, pk):
+    """ Asigna al DRP los Procesos que seran cubiertos. 
+        Filtra por aquellos que tienen activa_drp=True en su Estrategia Asociada. 
+        """
+    
+    drp = get_object_or_404(Drp, pk=pk)
+
+    if request.method == "POST":
+        ids = request.POST.get("procesos_ids", "")
+        drp.procesos_drp.clear()
+        if ids.strip():
+            procesos_seleccionados = SubProceso_V.objects.filter(id__in=ids.split(","))
+            drp.procesos_drp.set(procesos_seleccionados)
+
+
+        return redirect(drp.get_absolute_url())
+
+    procesos_disponibles = SubProceso_V.objects.filter(
+        escenarios__estrategias__activa_drp=True
+    ).exclude(id__in=drp.procesos_drp.all()).distinct()
+
+    procesos_asignados = drp.procesos_drp.all()
+
+    return render(request, "bcp/drp/alcance_drp.html", {
+        "drp": drp,
+        "procesos_disponibles": procesos_disponibles,
+        "procesos_asignados": procesos_asignados,
+    })
 
 
 #*******************************************
@@ -5819,21 +5954,21 @@ def Env_Aut_DRP(request, pk, sec):
     
     drp = get_object_or_404(Drp, pk = pk)
 
-    if sec == '1':
+    if sec == 1:
         drp.status_1 = 'a'
-    elif sec == '2':
+    elif sec == 2:
         drp.status_2 = 'a'
-    elif sec == '3':
+    elif sec == 3:
         drp.status_3 = 'a'
-    elif sec == '4':
+    elif sec == 4:
         drp.status_4 = 'a'
-    elif sec == '5':
+    elif sec == 5:
         drp.status_5 = 'a'
-    elif sec == '6':
+    elif sec == 6:
         drp.status_6 = 'a'
-    elif sec == '7':
+    elif sec == 7:
         drp.status_7 = 'a'
-    elif sec == '8':
+    elif sec == 8:
         drp.status_A = 'a'
 
     drp.status_t='a'
@@ -5845,10 +5980,17 @@ def Env_Aut_DRP(request, pk, sec):
 from .forms import AutorizaRaciForm
 import datetime
 
+# ************************************************
+# *******  Autorizaciones del DRP ****************
+# ************************************************
+
+
 def Aut_Drp(request, pk, sec):
     """
-    Autorizacion de la seccion (sec) del DRP 
+    Autorizacion/Observacion  del Jefe de Operacion a la seccion (sec) del DRP 
     """
+    print('------- Autoriza Seccion: ', sec )
+    print('Pk=', pk )
 
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
@@ -5856,152 +5998,174 @@ def Aut_Drp(request, pk, sec):
     
     #model = Proceso
     drp = get_object_or_404(Drp, pk = pk)
-
         
     #proceso= get_object_or_404(Proceso, pk = proced.pk_padre)
 
-    if sec == '3':
+    if sec == 3:
         procesos_asig = drp.procesos_drp
         procesos_disp = SubProceso.objects.all()
         for p in procesos_asig.all():
             print(p.path)
 
-    if sec == '5':
+    if sec == 5:
         compo_asig = drp.componentes
         compo_disp = Componentes.objects.all()
 
-    if sec == '6':
+    if sec == 6:
         servicios_asig = drp.servicios_drp
         servicios_disp = Servicios_PC.objects.all()
 
-    elif sec == '8':
+    elif sec == 8:
         contactos = drp.contactos_drp
-    elif sec == '7':
+    elif sec == 7:
         pasos = drp.pasos_drp
 
 
     form = AutorizaRaciForm() #Utiliza el Formulario para la autorizacion de Procesos
-    aut=LogAut()
-
     
     #Asigna al usuario de sesion como Autorizador
     print('asigna usuario sesion')
-    pk_usr_sesion= request.user.pk
-    aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    print('usuario de sesion',aut.gestor_aprobador)
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
 
-     
-    aut.cod_proceso=drp.codigo 
-
+  
     if request.method=='POST':
 
         form = AutorizaRaciForm(request.POST)
         
         if form.is_valid():
-            
-            #Registra autorizacion en log
-                                
-            aut.fecha=datetime.date.today()
-            #aut.p_status=proced.status+'P'
-            aut.observacion=form.cleaned_data['comentario']
-            aprobado=form.cleaned_data['aprobacion']
-            aut.Aprobado=aprobado           
-            notifica=form.cleaned_data['notifica']
-            
-            
+                     
             #Actualiza los status
+            #====================
+
+            aprobado=form.cleaned_data['aprobacion']
+            # notifica=form.cleaned_data['notifica']
+
                             
             if aprobado:
                 # Aprobado
-                if sec == '1':
-                    drp.status_1='A'
-                    s='Seccio Objetivo del DRP'
-                    print('status=',drp.status_1)
-                if sec == '2':
-                    drp.status_2='A'
-                    s='Seccio 2. Organizacion'
-                    print('status=',drp.status_2)
-                if sec == '3':
-                    drp.status_3='A'
-                    s='Seccio 3. Alcance'
-                    print('status=',drp.status_3)
-                if sec == '4':
-                    drp.status_4='A'
-                    s='Seccio 4. Estrategia'
-                    print('status=',drp.status_4)
-                if sec == '5':
-                    drp.status_5='A'
-                    s='Seccio 5. Esp.Tecnica'
-                    print('status=',drp.status_5)
-                if sec == '6':
-                    drp.status_6='A'
-                    s='Seccio 6. Serv.Criticos'
-                    print('status=',drp.status_6)
-                if sec == '7':
-                    drp.status_7='A'
-                    s='Seccio 7. Procedimiento'
-                    print('status=',drp.status_7)
-                if sec == '8':
-                    drp.status_A='A'
-                    s='Anexo A. Contactos'
-                    print('status=',drp.status_A)
-                
-                aut.p_status='A'+'D'
-                aut.item=s+' Aprobado por Gestor Responsable'
-                
+
+                if sec == 1:
+                    drp.status_1='r'
+                    comentario="Definicion de Objetivo DRP aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable "
+                    seccion="D1"
+
+
+                if sec == 2:
+                    drp.status_2='r'
+                    comentario="Asignacion de Roles aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D2"
+                    
+                if sec == 3:
+                    drp.status_3='r'
+                    comentario="Especificacion de Alcance aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D3"
+
+                if sec == 4:
+                    drp.status_4='r'
+                    comentario="Especificacion de Estrategia aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D4"
+
+                if sec == 5:
+                    drp.status_5='r'
+                    comentario="Especificacion Tecnica aprobada por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D5"
+
+                if sec == 6:
+                    drp.status_6='r'
+                    comentario="Especificacion de Servicios Criticos aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D6"
+
+                if sec == 7:
+                    drp.status_7='r'
+                    comentario="Especificacion del Procedimiento aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D7"
+
+                if sec == 8:
+                    drp.status_A='r'
+                    comentario="Especificacion de Contactos aprobado por Jefe Operativo del DRP. En Autorizacion por Gestor Responsable"
+                    seccion="D8"
+
+                # Crea Log de aprobacion de Autorizador
+                log=Log_Revision()
+                log.fecha = datetime.date.today()
+                log.drp= drp
+                log.gestor_aut=usr_aut
+                log.seccion=seccion
+                log.campo="Autorizado por:"+aut
+                log.comentario=comentario
+                log.resuelto=True
+                log.save()
 
                 #Prepara mensaje x correo
+                #========================
                 #nombre=proced.resp_proceso.user_gestor.last_name
                 #email = proc_rev.subproceso.gestor_R.user_gestor.email
                 #accion='dar visto bueno o requerir cambios para el '
                     
             else:
                 #Rechazado
-                if sec == '1':
+                #=========
+
+
+                if sec == 1:
                     drp.status_1='x'
-                    s='Seccio Objetivo del DRP'
-                    print('status=',drp.status_1)
-                if sec == '2':
+                    comentario="Especificacion de Objetivo DRP  observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D1"
+
+                if sec == 2:
                     drp.status_2='x'
-                    s='Seccio 2. Organizacion'
-                    print('status=',drp.status_2)
-                if sec == '3':
+                    comentario="Asignacion de Roles observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D2"
+
+                if sec == 3:
                     drp.status_3='x'
-                    s='Seccio 3. Alcance'
-                    print('status=',drp.status_3)
-                if sec == '4':
-                    drp.status_4='x'
-                    s='Seccio 4. Estrategia'
-                    print('status=',drp.status_4)
-                if sec == '5':
-                    drp.status_5='x'
-                    s='Seccio 5. Esp.Tecnica'
-                    print('status=',drp.status_5)
-                if sec == '6':
-                    drp.status_6='x'
-                    s='Seccio 6. Serv.Criticos'
-                    print('status=',drp.status_6)
-                if sec == '7':
-                    drp.status_7='x'
-                    s='Seccio 7. Procedimiento'
-                    print('status=',drp.status_7)
-                if sec == '8':
-                    drp.status_A='x'
-                    s='Anexo A. Contactos'
-                    print('status=',drp.status_A)
-
-
-
-                aut.p_status='x'+'D'
-                aut.item=s+' Enviado a Gestor Consultor para revision de Observaciones'
+                    comentario="Especificacion de Alcance observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D3"
                     
+                if sec == 4:
+                    drp.status_4='x'
+                    comentario="Estrategia de Recuperacion observada por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D4"
+                    
+                if sec == 5:
+                    drp.status_5='x'
+                    comentario="Especificacion Tecnica observada por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D5"
+                    
+                if sec == 6:
+                    drp.status_6='x'
+                    comentario="Especificacion de Servicios Criticos observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D6"
+                    
+                if sec == 7:
+                    drp.status_7='x'
+                    comentario="Especificacion de Procedimiento observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D7"
+                    
+                if sec == 8:
+                    drp.status_A='x'
+                    comentario="Especificacion de Contactos observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D7"
+
+                # Crea Log de aprobacion de Autorizador
+                log=Log_Revision()
+                log.fecha = datetime.date.today()
+                log.drp= drp
+                log.gestor_aut=usr_aut
+                log.seccion=seccion
+                log.campo="Observado por:"+aut
+                log.comentario=comentario
+                log.resuelto=True
+                   
                 #email = proc_rev.subproceso.gestor_C.user_gestor.email
                 #accion='Tomar accion sobre las modificaciones solicitadas por el gestor Autorizador para el'
                     
            
-            #Graba en Base de Datos                
-            aut.save()
-            drp.log_auth_drp.add(aut)      
+            #Graba en Base de Datos
+            log.save()                
             drp.save()
             
                 
@@ -6020,39 +6184,316 @@ def Aut_Drp(request, pk, sec):
                                         }
                              )
 
-        if sec == '1':    # 2. Objetivo                           
-            return render(request, 'bcp/drp/drp_s1_auth.html', {'form': form, 'drp':drp})
+        if sec == 1:    # 2. Objetivo 
+
+            # Selecciona Comentarios sobre Escenarios
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D1":
+                    comentarios.append(com)
+
+
+            return render(request, 'bcp/drp/drp_s1_auth.html', {'form':
+                                                                form,
+                                                                'drp':drp,
+                                                                'comentarios':comentarios})
         
-        if sec == '2':    # 1. Organizacion                            
-            return render(request, 'bcp/drp/drp_s2_auth.html', {'form': form, 'drp':drp})
+        if sec == 2:    # 1. Organizacion
+
+            # Selecciona Comentarios sobre Escenarios
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D2":
+                    comentarios.append(com)
+                            
+            return render(request, 'bcp/drp/drp_s2_auth.html', {'form': form, 
+                                                                'drp':drp,
+                                                                'comentarios':comentarios})
         
-        if sec == '3':    # 3. Alcance                           
+        if sec == 3:    # 3. Alcance                           
             return render(request, 'bcp/drp/drp_s3_auth.html',
                         {'form': form, 'drp':drp, 'procesos_disp':procesos_disp, 'procesos_asig':procesos_asig})
         
-        if sec == '4':    # 4. Estrategia de Recuperacion                         
+        if sec == 4:    # 4. Estrategia de Recuperacion                         
             return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form, 'drp':drp})
         
-        if sec == '5':    # 5. Especificacion Tecnica del Site de Contingencias                           
+        if sec == 5:    # 5. Especificacion Tecnica del Site de Contingencias                           
             return render(request, 'bcp/drp/drp_s5_auth.html',  {'form': form, 'drp':drp,
                                                                  'compo_asig':compo_asig,
                                                                  'compo_disp':compo_disp})
         
-        if sec == '6':   # 6. Servicios Criticos                         
+        if sec == 6:   # 6. Servicios Criticos                         
             return render(request, 'bcp/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
                                                                   'servicios_asig':servicios_asig,
                                                                   'servicios_disp':servicios_disp
                                                                   })
         
-        if sec == '7':                            
+        if sec == 7:                            
             return render(request, 'bcp/proced_cont/proced_auth.html',
                         {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
                         'contactos':contactos, 'pasos':pasos})
-        if sec == 'A':                            
+        if sec == 8:                            
             return render(request, 'bcp/proced_cont/proced_auth.html',
                         {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
                         'contactos':contactos, 'pasos':pasos})
         
+
+# -------------------------------------------------------------------------
+
+def Aut_Drp_V(request, pk, sec):
+    """
+    Autorizacion/Observacion  del Responsable DRP a la seccion (sec) del DRP 
+    """
+    print('------- Autoriza Seccion: ', sec )
+    print('Pk=', pk )
+
+    # Verifica si el usuario en sesion esta habilitado
+    if not es_del_grupo([request.user, 'Autorizadores']):
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
+    
+    #model = Proceso
+    drp = get_object_or_404(Drp, pk = pk)
+        
+    #proceso= get_object_or_404(Proceso, pk = proced.pk_padre)
+
+    if sec == 3:
+        procesos_asig = drp.procesos_drp
+        procesos_disp = SubProceso.objects.all()
+        for p in procesos_asig.all():
+            print(p.path)
+
+    if sec == 5:
+        compo_asig = drp.componentes
+        compo_disp = Componentes.objects.all()
+
+    if sec == 6:
+        servicios_asig = drp.servicios_drp
+        servicios_disp = Servicios_PC.objects.all()
+
+    elif sec == 8:
+        contactos = drp.contactos_drp
+    elif sec == 7:
+        pasos = drp.pasos_drp
+
+
+    form = AutorizaRaciForm() #Utiliza el Formulario para la autorizacion de Procesos
+    
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
+  
+    if request.method=='POST':
+
+        form = AutorizaRaciForm(request.POST)
+        
+        if form.is_valid():
+                     
+            #Actualiza los status
+            #====================
+
+            aprobado=form.cleaned_data['aprobacion']
+            # notifica=form.cleaned_data['notifica']
+
+                            
+            if aprobado:
+                # Aprobado
+
+                if sec == 1:
+                    drp.status_1='R'
+                    comentario="Especificacion del Objetivo del DRP aprobado por Responsable del DRP."
+                    seccion="D1"
+
+
+                if sec == 2:
+                    drp.status_2='R'
+                    comentario="Asignacion de Roles aprobado por Responsable del DRP."
+                    seccion="D2"
+                    
+                if sec == 3:
+                    drp.status_3='R'
+                    comentario="Especificacion del Alcance del DRP aprobado por Responsable del DRP."
+                    seccion="D3"
+
+                if sec == 4:
+                    drp.status_4='R'
+                    comentario="Estrategia del DRP aprobada por Responsable del DRP."
+                    seccion="D4"
+
+                if sec == 5:
+                    drp.status_5='R'
+                    comentario="Especificacion Tecnica aprobada por Responsable del DRP."
+                    seccion="D5"
+
+                if sec == 6:
+                    drp.status_6='R'
+                    comentario="Especificacion del Servicios Criticos aprobado por Responsable del DRP."
+                    seccion="D6"
+
+                if sec == 7:
+                    drp.status_7='R'
+                    comentario="Procedimiento de Recuperacion aprobado por Responsable del DRP."
+                    seccion="D7"
+
+                if sec == 8:
+                    drp.status_A='R'
+                    comentario="Especificacion del Contactos aprobado por Responsable del DRP."
+                    seccion="D1"
+
+                # Crea Log de aprobacion de Autorizador
+                log=Log_Revision()
+                log.fecha = datetime.date.today()
+                log.drp= drp
+                log.gestor_aut=usr_aut
+                log.seccion=seccion
+                log.campo="Autorizado por:"+aut
+                log.comentario=comentario
+                log.resuelto=True
+                log.save()
+
+                #Prepara mensaje x correo
+                #========================
+                #nombre=proced.resp_proceso.user_gestor.last_name
+                #email = proc_rev.subproceso.gestor_R.user_gestor.email
+                #accion='dar visto bueno o requerir cambios para el '
+                    
+            else:
+                #Rechazado
+                #=========
+
+
+                if sec == 1:
+                    drp.status_1='x'
+                    comentario="Definicion de Objetivo observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D1"
+
+                if sec == 2:
+                    drp.status_2='x'
+                    comentario="Asignacion de Roles observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
+                    seccion="D2"
+
+                if sec == 3:
+                    drp.status_3='x'
+                    s='Seccio 3. Alcance'
+                    print('status=',drp.status_3)
+                if sec == 4:
+                    drp.status_4='x'
+                    s='Seccio 4. Estrategia'
+                    print('status=',drp.status_4)
+                if sec == 5:
+                    drp.status_5='x'
+                    s='Seccio 5. Esp.Tecnica'
+                    print('status=',drp.status_5)
+                if sec == 6:
+                    drp.status_6='x'
+                    s='Seccio 6. Serv.Criticos'
+                    print('status=',drp.status_6)
+                if sec == 7:
+                    drp.status_7='x'
+                    s='Seccio 7. Procedimiento'
+                    print('status=',drp.status_7)
+                if sec == 8:
+                    drp.status_A='x'
+                    s='Anexo A. Contactos'
+                    print('status=',drp.status_A)
+
+                # Crea Log de aprobacion de Autorizador
+                log=Log_Revision()
+                log.fecha = datetime.date.today()
+                log.drp= drp
+                log.gestor_aut=usr_aut
+                log.seccion=seccion
+                log.campo="Observado por:"+aut
+                log.comentario=comentario
+                log.resuelto=True
+                   
+                #email = proc_rev.subproceso.gestor_C.user_gestor.email
+                #accion='Tomar accion sobre las modificaciones solicitadas por el gestor Autorizador para el'
+                    
+           
+            #Graba en Base de Datos
+            log.save()                
+            drp.save()
+            
+                
+            # Vuelve al Indice del DRP
+            return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
+
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+        
+    else:
+    
+        form = AutorizaRaciForm(initial= {
+                                        'aprobacion':False,
+                                        'notifica':False
+                                        }
+                             )
+
+        if sec == 1:    # 2. Objetivo  
+
+            # Selecciona Comentarios sobre Escenarios
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D1":
+                    comentarios.append(com)
+                         
+            return render(request, 'bcp/drp/drp_s1_auth.html', {'form': form, 
+                                                                'drp':drp,
+                                                                'comentarios':comentarios})
+        
+        if sec == 2:    # 1. Organizacion
+
+            # Selecciona Comentarios sobre Escenarios
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D2":
+                    comentarios.append(com)
+                            
+            return render(request, 'bcp/drp/drp_s2_auth.html', {'form': form, 
+                                                                'drp':drp,
+                                                                'comentarios':comentarios})
+        
+        if sec == 3:    # 3. Alcance                           
+            return render(request, 'bcp/drp/drp_s3_auth.html',
+                          
+                        {'form': form, 'drp':drp, 'procesos_disp':procesos_disp, 'procesos_asig':procesos_asig})
+        
+        if sec == 4:    # 4. Estrategia de Recuperacion                         
+            return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form, 'drp':drp})
+        
+        if sec == 5:    # 5. Especificacion Tecnica del Site de Contingencias                           
+            return render(request, 'bcp/drp/drp_s5_auth.html',  {'form': form, 'drp':drp,
+                                                                 'compo_asig':compo_asig,
+                                                                 'compo_disp':compo_disp})
+        
+        if sec == 6:   # 6. Servicios Criticos                         
+            return render(request, 'bcp/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
+                                                                  'servicios_asig':servicios_asig,
+                                                                  'servicios_disp':servicios_disp
+                                                                  })
+        
+        if sec == 7:                            
+            return render(request, 'bcp/proced_cont/proced_auth.html',
+                        {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
+                        'contactos':contactos, 'pasos':pasos})
+        if sec == 8:                            
+            return render(request, 'bcp/proced_cont/proced_auth.html',
+                        {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
+                        'contactos':contactos, 'pasos':pasos})
+        
+
+# -------------------------------------------------------------------------
+
+
 
 
 
@@ -6216,23 +6657,20 @@ def Rev_S2_Drp(request, pk):
     #model = Proceso
     drp = get_object_or_404(Drp, pk = pk)
     print('asigna drp', drp)
-   
-    #aut=LogAut()
 
-    
-    #Asigna al usuario de sesion como Autorizador
-    #print('asigna usuario sesion')
-    #pk_usr_sesion= request.user.pk
-    #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    #print('usuario de sesion',aut.gestor_aprobador)
-     
-    #aut.cod_proceso=drp.codigo 
+    # Selecciona Comentarios 
+    comentarios_drp=Log_Revision.objects.filter(drp=drp)
+    comentarios=[]
+    for com in comentarios_drp:
+        if com.seccion == "D2": # Comentarios sobre las Asignaiones de Roles del DRP
+            comentarios.append(com)
 
+ 
     if request.method=='POST':
 
         form=Drp_Sec_2_Form(request.POST)
 
-                      
+                    
         if form.is_valid():
             
             
@@ -6451,7 +6889,9 @@ def Rev_S2_Drp(request, pk):
                              )
 
                                  
-        return render(request, 'bcp/drp/drp_s2_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s2_rev.html', {'form': form,
+                                                           'drp':drp,
+                                                           'comentarios':comentarios})
         
 
 #******************************************************
@@ -6470,16 +6910,12 @@ def Rev_S1_Drp(request, pk):
     #model = Proceso
     drp = get_object_or_404(Drp, pk = pk)
        
-    #aut=LogAut()
-
-    
-    #Asigna al usuario de sesion como Autorizador
-    #print('asigna usuario sesion')
-    #pk_usr_sesion= request.user.pk
-    #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    #print('usuario de sesion',aut.gestor_aprobador)
-     
-    #aut.cod_proceso=drp.codigo 
+    # Selecciona Comentarios 
+    comentarios_drp=Log_Revision.objects.filter(drp=drp)
+    comentarios=[]
+    for com in comentarios_drp:
+        if com.seccion == "D1": # Comentarios sobre las declaracion de Objetivo del DRP
+            comentarios.append(com)
 
     if request.method=='POST':
 
@@ -6513,7 +6949,9 @@ def Rev_S1_Drp(request, pk):
                              )
 
                                  
-        return render(request, 'bcp/drp/drp_s1_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s1_rev.html', {'form': form,
+                                                           'drp':drp,
+                                                           'comentarios':comentarios})
     
 
 #*****************************************************
@@ -6533,16 +6971,12 @@ def Rev_S3_Drp(request, pk):
     #model = Proceso
     drp = get_object_or_404(Drp, pk = pk)
        
-    #aut=LogAut()
-
-    
-    #Asigna al usuario de sesion como Autorizador
-    #print('asigna usuario sesion')
-    #pk_usr_sesion= request.user.pk
-    #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    #print('usuario de sesion',aut.gestor_aprobador)
-     
-    #aut.cod_proceso=drp.codigo 
+    # Selecciona Comentarios 
+    comentarios_drp=Log_Revision.objects.filter(drp=drp)
+    comentarios=[]
+    for com in comentarios_drp:
+        if com.seccion == "D3": # Comentarios 
+            comentarios.append(com)
 
     if request.method=='POST':
 
@@ -6578,7 +7012,9 @@ def Rev_S3_Drp(request, pk):
         form = Drp_Sec_3_Form(initial={ 'procesos':set(p2)})
 
                                  
-        return render(request, 'bcp/drp/drp_s3_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s3_rev.html', {'form': form,
+                                                           'drp':drp,
+                                                           'comentarios':comentarios})
 
 
 #*****************************************************
@@ -6598,6 +7034,12 @@ def Rev_S4_Drp(request, pk):
     #model = Proceso
     drp = get_object_or_404(Drp, pk = pk)
        
+    # Selecciona Comentarios 
+    comentarios_drp=Log_Revision.objects.filter(drp=drp)
+    comentarios=[]
+    for com in comentarios_drp:
+        if com.seccion == "D4": # Comentarios 
+            comentarios.append(com)
 
     if request.method=='POST':
 
@@ -6637,7 +7079,9 @@ def Rev_S4_Drp(request, pk):
                                        })
 
                                  
-        return render(request, 'bcp/drp/drp_s4_rev.html', {'form': form, 'drp':drp})
+        return render(request, 'bcp/drp/drp_s4_rev.html', {'form': form,
+                                                           'drp':drp,
+                                                           'comentarios':comentarios})
 
 
 #***************************************************************

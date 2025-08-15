@@ -134,43 +134,99 @@
 {% block rev_asigna_proc %}
 <h5><strong>REVISION DE ASIGNACION DE ESCENARIOS DE RIESGO</strong></h5>
 <!=====================================================================>
-<ul class="scr3">
+<ul class="scr4">
 
-<h5><P>Seleccione del cuadro de la izquierda aquellos <strong>Escenarios</strong>  que, de acuerdo a lo señalado por el <strong>Gestor Autorizador</strong> en  las observaciones (Seccion 1 del Formulario),
+<P>Seleccione del cuadro de la izquierda aquellos <strong>Escenarios</strong>  que, de acuerdo a lo señalado por el <strong>Gestor Autorizador</strong> en  las observaciones (Seccion 1 del Formulario),
 deben ser incorporados a la seleccion de Escenarios de Riesgo  asociados al Proceso <strong>{{proceso.nombre}}</strong>.</p>
 <p>De-seleccione del cuadro de la derecha aquellos <strong>Escenarios de Riesgo</strong> que, de acuerdo a lo señalado por
-el <strong>Gestor Autorizador</strong>, <strong>NO</strong> deben ser asociado al Proceso.</p><h5>
+el <strong>Gestor Autorizador</strong>, <strong>NO</strong> deben ser asociado al Proceso.</p>
 	
-    	<form action="" method="post">
-        	{% csrf_token %}
-       		{{ form.media}}
-        	<p>{{ form.escenarios}}
-		<br/>
-		<p><span style='font-size:20px;'>&#128231&emsp;</span>Notifica?..:{{ form.notifica}}</p>
-       		<br/>	
-        	<p><input type="submit" value="Registrar y Salir" /></p>
-    	</form>
+	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
+	<!---------------------------------------------->
 
-</ul>
+	<div data-asignacion>
+		<form method="post">
+			{% csrf_token %}
+			
+			<!-- Filtros y tablas -->
+			<div style="display:flex; gap:20px;">
+
+				<!-- Escenarios Disponibles -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Escenarios de Riesgo Disponibles</strong></h5>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
+
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: greenyellow;">
+							<tr style="color:black">
+								<th style="width:30%;">Escenario:</th>
+								<th>Descripción</th>
+								<th style="width:10%;">Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for escenario in escenarios_disponibles %}
+							<tr data-id="{{ escenario.id }}">
+								<td>{{ escenario.titulo }}</td>
+								<td>{{ escenario.descripcion }}</td>
+								<td>
+									<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
+								</td>
+							</tr>
+						{% empty %}
+							<tr><td colspan="3" style="text-align:center;">No hay escenarios disponibles.</td></tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					</ul>
+				</div>
+
+				<!-- Escenarios Asignados -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Escenarios de Riesgo Seleccionados</strong></h5>
+					<input type="text" class="filtro-asignados" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
+
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: lightblue;">
+							<tr style="color:black">
+								<th style="width:30%;">Escenario:</th>
+								<th>Descripción</th>
+								<th style="width:10%;">Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for escenario in escenarios_asignados %}
+							<tr data-id="{{ escenario.id }}">
+								<td>{{ escenario.titulo }}</td>
+								<td>{{ escenario.descripcion }}</td>
+								<td>
+									<button type="button" class="btn-mover button " data-destino="disponibles" style="background: red; color: white; font-size:12px;">⏪</button>
+								</td>
+							</tr>
+						{% empty %}
+							<tr><td colspan="3" style="text-align:center;">No hay escenarios asignados.</td></tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					</ul>
+				</div>
+
+			</div>
+
+			<!-- Campo hidden para IDs -->
+			<input type="hidden" name="escenarios" class="input-seleccion" value="">
+
+			<br/>
+			<button type="submit" class="button">Guardar Selección</button>
+		</form>
+	</div>
+	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
 {% endblock %}
 
-<!-- Globo de cómic -->
-<div id="comicBalloon"></div>
-
-<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
-<div id="confirmation-dialog" class="hidden">
-    <div class="dialog-content">
-        <p id="confirmation-message"></p>
-        <button id="confirm-yes">Sí</button>
-        <button id="confirm-no">No</button>
-        </div>
-    </div>
-
-	<p> <!-- Botones de Secuencia --></strong>
-		<a href="{% url 'Lista-Evaluaciones' %}" ><bb class="button">... Volver</bb></a>&nbsp;&nbsp;&nbsp;
-		<a href="{% url 'Envia-Auth' proceso.pk  'E' %}"  ><bb class="button">Registrar (Envia a Autorizacion) ...</bb></a>
-	</p>
-	<br/>
 
 	<!----- CSS para Scripts --------------->
 	<!-------------------------------------->
@@ -199,8 +255,9 @@ el <strong>Gestor Autorizador</strong>, <strong>NO</strong> deben ser asociado a
 	
 
 <!-------------------------------------->
+</ul>
 
-
+<br/><br/><br/>
 <!--- Despliega el nombre del programa -->
 <p style="font-size: 8px; color:green">asigna_esc_revisa</p>
 

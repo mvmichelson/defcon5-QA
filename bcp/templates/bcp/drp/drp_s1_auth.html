@@ -17,11 +17,107 @@
 	{% endblock %}
 	
 
-	{%block Objetivo%}
-	<p><h5><strong>DECLARACION OBJETIVO DRP</strong></h5>
+	<!-------------------------------- Bloque A -------------------------------->
+<div class="flex-container">
+
+  <!--------- Columna 1 --------------->
+  <div class="flex-item" style="width: 45%;"> 
+	<ul class="scr4" style="text-align: center;"><strong>OBJETIVO DEL DRP</strong></ul>
+	
+	<bn>Revise los declaracion de objetivos del DRP. Si existe alguna observacion, registrela 
+	en (<img src="/static/img/Comentario_1.png" width="15" height="15">) frente al item correspondiente.</p>
+
 	<ul class="scr2">
-	<p>{{drp.introduccion}}</p>
+	<p>{{drp.introduccion}}
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar la Especificacion de Objetivo del DRP ... "
+					data-id="{{ drp.id }}" # Pk del DRP
+					data-sec="D1"           
+					data-field="Revisar la Especificacion de Objetivo del DRP"
+					> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+
+	</p>
 	</ul>
+
+
+  </div><!--------- Fin Columna 1 --------------->
+
+
+<!----- Seccion  Block de Comentarios (Autorizador) ---------->
+<div class="flex-text" style="width: 52%;">
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Block de Comentarios de Revision</strong>
+	</ul>
+
+	<ul class="BarraScroll" style="height: 310px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+		<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10;">Est.</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+
+					{% for com in comentarios %}
+						{%if com.gestor_aut != drp.gestor_consultor_drp %}
+							<tr style="font-size: 9px;">
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}
+								(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+								</p>
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}</p>
+							</th>
+	
+						{%endif%}
+
+							<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+							<th scope="row" style="width: 10; text-align: center;">
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+
+								{% if com.resuelto %}
+									&#9989
+								{%else%}
+									&#10067
+								{%endif%}
+							{%endif%}
+							<!-- Borra Comentario -->
+							</th>
+								
+							</tr>
+								{% if not forloop.last %}
+								{%endif%}
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+			
+			<!-- Fin Log Comentarios -->
+			
+	</ul>
+
+</div>  <!---- FIN Seccion  Block de Comentarios (Autorizador) --------->
+
+</div><!-------------------------------- Fin Bloque A -------------------------------->
+
+
+
+	{%block Objetivo%}
+	
 	{%endblock%}
  
 	{%block Conclusion%}
@@ -32,19 +128,50 @@
 		<form action="" method="post">
 			{% csrf_token %}
         		
-        	<p><strong>Indique <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si la declaracion del Objetivo del DRP
-			le parece correcta y desea autorizar.</strong></p>
-			
-			<p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p>
+			<p><strong>Marque <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si la Declaracion de Objetivos 
+			le parecen  correctos y desea autorizar. En caso de Registrar sin autorizar,  el formulario
+			sera devuelto al Gestor de Continuidad para su revision y correccion en base a sus comentarios 
+			(<img src="/static/img/Comentario_1.png" width="15" height="15">). </strong></p>
+
 			<br/>
-			<br/>
-        	<input type="submit" value="Registrar" />
+        	<input class="button"     type="submit" value="Registrar" /><br><br><br>
 	    </form>
 		{%endblock%}
 	</ul>
 
 	{% endblock %}
 	
+	<!----- CSS para Scripts --------------->
+	<!-------------------------------------->
+
+	<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+	<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------------Fin CSS ------------------------>
+
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[drp_s1_auth]</aa>	
 
 {% endblock %}
 

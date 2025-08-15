@@ -56,6 +56,7 @@ urlpatterns += [
     #url(r'^proceso/(?P<pk>\d+)$', views.ProcesoDetailView.as_view(), name='Detalle-Procesos'),
     path('proceso/<int:pk>/detalle_proceso/', views.Detalle_Proceso, name='Detalle-Proceso'),
     path('proceso/<int:pk>/det_proceso_v/', views.Detalle_Proceso_V, name='Detalle-Proceso-V'),
+    path('proceso/<int:pk>/det_proceso_v2/', views.Detalle_Proceso_V2, name='Detalle-Proceso-V2'),
     path('proceso/<slug:pk>/crea_p/', views.crea_proceso, name='crea-procesos'),
 
     path('proceso/<slug:pk>/act_p/', views.Actualiza_Mapeo, name='actualiza-mapeo'),
@@ -108,7 +109,8 @@ urlpatterns += [
     path('map_esc/', views.Lista_Escenarios, name='Lista-Escenarios'),
     path('map_esc/<int:pk>/asig_esc/', views.asigna_escenarios, name='Asigna-Escenarios'),
     path('map_esc/<int:pk>/aut_asig_esc/', views.Aut_Asig_Esc, name='Aut-Asigna-Escenarios'),
-    path('map_esc/<int:pk>/rev_asig_esc/', views.Revisa_Asig_Esc, name='Rev-Asigna-Escenarios'),
+    #path('map_esc/<int:pk>/rev_asig_esc/', views.Revisa_Asig_Esc, name='Rev-Asigna-Escenarios'),
+    path('map_esc/<int:pk>/rev_asig_esc/', views.rev_asigna_escenarios, name='Rev-Asigna-Escenarios'),
 
 ]
 
@@ -189,7 +191,8 @@ urlpatterns += [
     path('drp/<int:pk>/indice/', views.Indice_DRP, name='Indice-DRP'),
     path('drp/<int:pk>/objetivo/', views.Drp_Sec_1, name='Objetivo-DRP'),
     path('drp/<int:pk>/responsable/', views.Drp_Sec_2, name='Responsables-DRP'),
-    path('drp/<int:pk>/alcance/', views.Drp_Sec_3, name='Alcance-DRP'),
+    #path('drp/<int:pk>/alcance/', views.Drp_Sec_3, name='Alcance-DRP'),
+    path('drp/<int:pk>/asig_alcance/', views.asigna_procesos_drp, name='Alcance-DRP'),
     path('drp/<int:pk>/estrategia/', views.Drp_Sec_4, name='Estrategia-DRP'),
     path('drp/<int:pk>/listaCmp/', views.Lista_CMP, name='Lista-CMP'),
     path('drp/<int:pk>/<int:accion>/asigna_cmp/', views.Asigna_CMP, name='Asigna-CMP'),
@@ -203,8 +206,9 @@ urlpatterns += [
     path('drp/<int:pk>/crea_p6_drp/', views.cr_drp_P6, name='crea-P6-DRP'),
     path('drp/<int:pk>/borra_p6_drp/', views.br_drp_P6, name='borra-P6-DRP'),
     path('drp/<int:pk>/modifica_p6_drp/', views.md_drp_P6, name='modifica-P6-DRP'),
-    path('drp/<int:pk>/<int:sec>/', views.Env_Aut_DRP, name='Envia-Aut-DRP'),
+    path('drp/<int:pk>/<int:sec>/envia_aut/', views.Env_Aut_DRP, name='Envia-Aut-DRP'),
     path('drp/<int:pk>/<int:sec>/aut_drp/', views.Aut_Drp, name='Autoriza-DRP'),
+    path('drp/<int:pk>/<int:sec>/aut_drp_v/', views.Aut_Drp_V, name='Autoriza-DRP-V'),
     path('drp/<int:pk>/revisa_resp_drp/', views.Rev_S2_Drp, name='Revisa-Resp-DRP'),
     path('drp/<int:pk>/rev_obj_drp/', views.Rev_S1_Drp, name='Revisa-Obj-DRP'),
     path('drp/<int:pk>/rev_alc_drp/', views.Rev_S3_Drp, name='Revisa-Alcance-DRP'),

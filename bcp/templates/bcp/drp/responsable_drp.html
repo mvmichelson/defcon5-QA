@@ -18,15 +18,47 @@
 
 
 	{% block Drp %}
+	<ul class="scr4">
+		<p>Asignar los roles del DRP encargados de autorizar las distintas etapas de su diseño, implementacion, ejecucios e implementacion
+		de acuerdo a las siguientes definiciones:</p>
+		<br/>
+		<p><strong>Responsable DRP:</strong> Es el responsable de la Gestion de las Tecnologias de la Informacion de la organizacion. Corresponde
+		al Chief Information Officer (CIO) Gerente de Tecnologia o a quien este delegue formalmente.</p>
+
+		<p><strong>Jefe Operativo DRP:</strong> Es el responsable de:</p> 
+		<p>1.- La definición de estrategia de recuperación,</p>
+		<p>2.- Adquisición / configuración de la infraestructura del DRP,</p>
+		<p>3.- Implementación técnica del DRP, definiendo los protocolos y procedimientos de recuperacion,</p>
+		<p>4.- Ejecucion y Monitoreo del DRP en Contingencia y</p>
+		<p>5.- Pruebas, simulacros, mejora continua y actuaizacion  del DRP,</p>
+		<p>Corresponde al Chief Technology Officer (CTO) o al  Gerente/Subgerente/Jefe de Infraestructura TI de la organizacion.</p>
+
+		<p><strong>Enlace Comite de Crisis:</strong> Corresponde la integrante del Comite de Crisis designado para entablar y mantener 
+		la comunicacion con este comite durante un incidente contingente.</p>
+		<p><strong>Gestor de Continuidad:</strong> Es el encargado de conducir, asesorar, coordinar y facilitar  las actividades y procesos de 
+			Gestion de Continuidad de Negocio </p>
+		
+
+
+
+	</ul>
 
 	<ul class="scr4">
 		<form action="" method="post">
     	{% csrf_token %}
-		
-		<p><strong>Responsable del Proceso ..:</strong>&emsp;{{form.resp_drp}}&emsp; Respaldo:&emsp;{{form.bck_resp}}</p>
-		<p><strong>Ejecutor Procedimiento ......:</strong>&emsp;{{form.gestor_ejecutor}}&emsp; Respaldo:&emsp;{{form.bck_ejecutor}}</p>
-		<p><strong>Enlace Comite Crisis ..........:</strong>&emsp;{{form.enlace_c_crisis}}&emsp; Respaldo:&emsp;{{form.bck_enlace}}</p>
-		<p><strong>Gestor Consultor ................:&emsp;{{drp.gestor_consultor_drp}} </strong></p>
+		<div class="flex-container">
+			<div class="flex-item">	
+			<p><strong>Responsable DRP ...:</strong>&emsp;{{form.resp_drp}}</p> 
+			<p><strong>Jefe Operativo DRP :</strong>&emsp;{{form.gestor_ejecutor}}</p>
+			<p><strong>Enlace Comite Crisis :</strong>&emsp;{{form.enlace_c_crisis}}</p> 
+			<p><strong>Gestor de Continuidad :</strong>&emsp;{{drp.gestor_consultor_drp}}</p>
+			</div>
+			<div class="flex-item">
+			<p>Respaldo:&emsp;{{form.bck_resp}}</p>
+			<p>Respaldo:&emsp;{{form.bck_ejecutor}}</p>
+			<p>Respaldo:&emsp;{{form.bck_enlace}}</p>
+			</div>
+		</div>
 		<br/>
 		<input type="submit" value="Registrar" />
 		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
@@ -35,5 +67,7 @@
 	</ul>
 	{% endblock %}
 
-
+<!-- Nombre del template-->
+<br/><br/>
+<p style="font-size: 8px;">responsable_drp.html</p>
 {% endblock %}

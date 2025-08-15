@@ -19,7 +19,7 @@
 
 	
 <!----- Bloque A ---------------------------------->
-<div class="flex-container">
+<div class="flex-container"> 
 	
 	<!------------- Seccion Datos del Proceso -------------------->
 	<div class="flex-item" style="width: 45%;">
@@ -128,72 +128,88 @@
 	<P>Seleccione del listado de la izquierda aquellos Servicios o Recursos que son indispensables para la 
 	operacion del Proceso -<strong> {{proceso.nombre}}</strong>-.</p>
 	
-	<!---- Bloque A --------------------------------------------------------------->
-	<div class="flex-container">
-	<!--- Seccion Disponibles --------------------------------------->
-	<div class="flex-item" style="width: 50%;">
+	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
+	<!---------------------------------------------->
+	<div data-asignacion>
 
-	<h4><strong>Servicios/Recursos Disponibles</strong></h4>
-	<input type="text" id="filtro_disponibles" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
-	<br/><br/>
-	<table id="tabla_disponibles" class="styled-table">
-		<thead style="background: greenyellow;">
-			<tr style="color:black">
-				<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
-				<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
-				<th >DESCRIPCION</th>
-				<th>  </th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for recurso in recursos_disponibles %}
-				<tr data-id="{{ recurso.id }}" >
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
-					<td ><button class="button link " data-message="Asigna Servicio {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
-						style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-	<br/><br/><br/>
-	</div><!--- Fin Seccion Disponibles --------------------------------------->
-
-	<!--- Seccion Asignados --------------------------------------->
-	<div class="flex-item" style="width: 50%;">
-
-	<h4><strong>Servicios/Recursos Criticos Asignados</strong></h4>
-	<input type="text" id="filtro_asignados" placeholder="Filtrar Servicios..." style="background: rgb(239, 239, 170);">
-	<br/><br/>
-	<table id="tabla_asignados" class="styled-table">
-		<thead>
-			<tr style="color:black">
-				<th style="font-size: 12px; padding: 1px 5px; width: 10px;">TIPO</th>
-				<th style="font-size: 12px; padding: 1px 5px; width: 30px;">NOMBRE</th>
-				<th >DESCRIPCION</th>
-				<th>  </th>
-			</tr>
-		</thead>
-		<tbody id="id_tabla_asignados">
-			{% for recurso in recursos_asignados %}
-				<tr data-id="{{ recurso.id }}">
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.tipo.nombre }}</td>
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.nombre }}</td>
-					<td style="font-size: 12px; padding: 1px 5px;">{{ recurso.descripcion }}</td>
-					<td>
-					<button style="background: red; color: white; font-size: 12px; padding: 1px 3px;" class="button link " data-message="Des-Asigna Servicio / Recurso ..." onclick="moverRecurso(this, 'id_tabla_disponibles')">◀</button></td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-
-		<!-- Formulario oculto -->
-		<br/>
 		<form method="post">
 			{% csrf_token %}
-			<input type="hidden" name="recursos" id="recursos_input">
+			
+			<!-- Filtros y tablas -->
+			<div style="display:flex; gap:20px;">
 
+				<!-- Servicios Disponibles -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Servicios/Recursos Disponibles</strong></h5>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+						<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+							<thead style="background: greenyellow;">
+								<tr style=color:black;">
+									<th style="width:10%;">Tipo</th>
+									<th style="width:30%;">Nombre</th>
+									<th>Descripción</th>
+									<th style="width:10%;">Acción</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for recurso in recursos_disponibles %}
+								<tr data-id="{{ recurso.id }}">
+									<td>{{ recurso.tipo.nombre }}</td>
+									<td>{{ recurso.nombre }}</td>
+									<td>{{ recurso.descripcion }}</td>
+									<td>
+										<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
+									</td>
+								</tr>
+							{% empty %}
+								<tr><td colspan="4" style="text-align:center;">No hay recursos disponibles.</td></tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</ul>
+				</div>
+
+				<!-- Servicios Asignados -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Servicios/Recursos Seleccionados</strong></h5>
+					<input type="text" class="filtro-asignados" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: lightblue;">
+							<tr style="color:black">
+								<th style="width:10%;">Tipo</th>
+								<th style="width:30%;">Nombre</th>
+								<th>Descripción</th>
+								<th style="width:10%;">Acción</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for recurso in recursos_asignados %}
+							<tr data-id="{{ recurso.id }}">
+								<td>{{ recurso.tipo.nombre }}</td>
+								<td>{{ recurso.nombre }}</td>
+								<td>{{ recurso.descripcion }}</td>
+								<td>
+									<button type="button" class="btn-mover button" data-destino="disponibles" style="background: red; color: white; font-size:12px;">⏪</button>
+								</td>
+							</tr>
+						{% empty %}
+							<tr><td colspan="4" style="text-align:center;">No hay recursos asignados.</td></tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</ul>
+				</div>
+
+			</div>
+
+			<!-- Campo hidden para IDs -->
+			<input type="hidden" name="recursos" class="input-seleccion" value="">
+
+			<br/>
 			<!-- Botones de Salida -->
 			<a href="{% url 'Lista-Recursos'  %}"  
 			class="confirm-link link" data-message="Vuelve sin grabar" con-message="Desea Salir sin Grabar?"><rr class="button">... Volver</rr></a>
@@ -202,15 +218,11 @@
 
 			<a href="{% url 'Envia-Auth' proceso.pk  'B' %}"  
 			class="confirm-link link" data-message="Envia al Gestor Autorizador para su Revision ..." con-message="Confirma Envio a Autorizacion ?"
-			><bb class="button">Envia a Autorizacion</bb></a> 
+			><bb class="button">Envia a Autorizacion</bb></a>
+			<br/><br/>
 		</form>
-			
-
-	</div><!--- Fin Seccion Asignados --------------------------------------->
-
-</div><!------- Fin Bloque A ------->
-
-
+	</div>
+	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
 
 	{% endblock %}
 

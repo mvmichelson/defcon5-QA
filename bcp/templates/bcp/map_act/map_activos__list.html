@@ -79,11 +79,12 @@
 						{%if request.user.pk == proceso.subproceso.gestor_C.user_pk %}
 
 							<a href="{% url 'asigna-raci' proceso.pk  'Mapeo de Servicios Criticos' %}"
-							class="link blink " data-message="Define mapa de Autorizaciones RACI ..."><rr><strong>&#8476</strong></rr>.</a>
+							class="link blink " data-message="Define mapa de Autorizaciones RACI ...">.<rr><strong>&#8476</strong></rr>.</a>
 
-							<a href="{% url 'Asigna-Servicio' proceso.pk %}"
+							<!-- <a href="{% url 'Asigna-Servicio' proceso.pk %}"
 							class="link" data-message="Modificar Servicios/Recursos al Proceso ..."
 							><img src="/static/img/servicio_1.webp" width="17" height="17"></img></a>
+				  -->
 
 
 						{%else%}
@@ -205,9 +206,9 @@
 				<!Si el Proceso no se encuentra  en aprobacion en fases anteriores>
 
 				<!Opcion para ver detalle del Proceso>
-			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><bb>&#128065</bb></a>
+			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><bb class="link" data-message="Detalle del Proceso ...">&#128065</bb></a>
 
-				<!-- Despliega nombre del Proceso -->
+				<!-- Despliega nombre del Proceso --> 
                             	<aa> &nbsp;&nbsp; &#10149 {{ proceso.nombre }} </aa>
  				</p> <!Salta linea al desplegar el nombre del Proceso>
 

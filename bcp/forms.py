@@ -676,31 +676,52 @@ class Drp_Sec_2_Form(forms.Form):
     def __init__(self, initial):
 
         # Seleccion por grupos
-        selec_TI = []
-        selec_ejecutor = []
-        ejecutor_TI = []
+        #selec_TI = []
+        #selec_ejecutor = []
+        #ejecutor_TI = []
+
         selec_Gestion_de_Crisis=[]
+
+        Autorizadores_TI=[]
+        Ejecutores_TI=[]
 
         gestores=Gestor.objects.all()
         for ges in gestores:
             grp=ges.user_gestor.groups
+            es_TI=False
+            es_Aut=False
+            es_Ejec=False
+
             for g in grp.all():
+            # Analiza los grupos asociados al gestor
                 if g.name == 'TI':
-                    selec_TI.append(ges.user_pk)
+                    es_TI=True
+                    #selec_TI.append(ges.user_pk)
+                if g.name== 'Autorizadores':
+                    es_Aut=True
+                if g.name == 'Ejecutores':
+                    es_Ejec=True
+                    #selec_ejecutor.append(ges.user_pk)
+
                 if g.name == 'Gestion de Crisis':
                     selec_Gestion_de_Crisis.append(ges.user_pk)
-                if g.name == 'Ejecutores':
-                    selec_ejecutor.append(ges.user_pk)
+            
+            if es_TI and es_Aut:
+                Autorizadores_TI.append(ges.user_pk)
+            if es_TI and es_Ejec:
+                Ejecutores_TI.append(ges.user_pk)
 
-            if ges.user_pk in selec_TI and ges.user_pk in selec_ejecutor:
-                ejecutor_TI.append(ges.user_pk) 
+
+
+            #if ges.user_pk in selec_TI and ges.user_pk in selec_ejecutor:
+            #    ejecutor_TI.append(ges.user_pk) 
 
 
         super(Drp_Sec_2_Form, self).__init__(initial)
-        self.fields['resp_drp'].queryset = Gestor.objects.filter(user_pk__in = selec_TI)
-        self.fields['bck_resp'].queryset = Gestor.objects.filter(user_pk__in = selec_TI)
-        self.fields['gestor_ejecutor'].queryset = Gestor.objects.filter(user_pk__in = ejecutor_TI)
-        self.fields['bck_ejecutor'].queryset = Gestor.objects.filter(user_pk__in = ejecutor_TI)
+        self.fields['resp_drp'].queryset = Gestor.objects.filter(user_pk__in = Autorizadores_TI)
+        self.fields['bck_resp'].queryset = Gestor.objects.filter(user_pk__in = Autorizadores_TI)
+        self.fields['gestor_ejecutor'].queryset = Gestor.objects.filter(user_pk__in = Autorizadores_TI)
+        self.fields['bck_ejecutor'].queryset = Gestor.objects.filter(user_pk__in = Autorizadores_TI)
         self.fields['enlace_c_crisis'].queryset = Gestor.objects.filter(user_pk__in = selec_Gestion_de_Crisis)
         self.fields['bck_enlace'].queryset = Gestor.objects.filter(user_pk__in = selec_Gestion_de_Crisis)
         

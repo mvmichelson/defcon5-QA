@@ -8,7 +8,7 @@
 
 	{% block enc_activo %}
 	<ul class="encabezado_B">
-        <p><aa><strong>FORMULARIO DE ASIGNACION DE ESCENARIOS DE RIESGO:</strong></aa></strong></p>
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE ESCENARIOS DE RIESGO:</strong></aa></p>
 	</ul>
 	<ul class="encabezado_SB">
 	<p><aa>{{proceso.path}}</aa></p>
@@ -25,7 +25,7 @@
 	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
 
 	  {% block Activos %}
-	  <h5><strong>Servicios Criticos asociados al Proceso<strong>&emsp;({{proceso.path}})</h5> 
+	  <h5><strong>Servicios Criticos asociados al Proceso</strong>&emsp;({{proceso.path}})</h5> 
 	  <!========================================================================================>
 	    
 	   {% if proceso.subproceso.recursos.all %}
@@ -68,56 +68,117 @@
 	operacion del Proceso &emsp;-&emsp;<strong>{{proceso.nombre}}</strong>&emsp;- en analisis</p>
 
 
-	<div class="flex-container">
-	<!-- Escenarios Disponibles -->
-	<div class="flex-item" style="width: 50%;">
-		<h4>Escenarios Disponibles</h4>
-		<input type="text" id="filtro_disponibles" placeholder="Filtrar Escenarios...">
-		<ul class="BarraScroll" style="height: 350px;">
-		<table id="tabla_disponibles">
-			<thead><tr><th>Título</th><th>Descripción</th><th></th></tr></thead>
-			<tbody>
-			{% for esc in escenarios_disponibles %}
-				<tr data-id="{{ esc.id }}">
-				<td>{{ esc.titulo }}</td>
-				<td>{{ esc.descripcion }}</td>
-						<td ><button class="button link " data-message="Desasigna Escenario {{ recurso.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_asignados')"
-							style="font-size: 12px; padding: 1px 3px; background: rgb(157, 240, 157);">▶</button></td>
-				</tr>
-			{% endfor %}
-			</tbody>
-		</table>
-		</ul>
-	</div>
 
-	<!-- Escenarios Asignados -->
-	<div class="flex-item" style="width: 50%;">
-		<h4>Escenarios Asignados</h4>
-		<input type="text" id="filtro_asignados" placeholder="Filtrar Escenarios...">
-		<ul class="BarraScroll" style="height: 350px;">
-		<table id="tabla_asignados">
-			<thead><tr><th>Título</th><th>Descripción</th><th></th></tr></thead>
-			<tbody id="id_tabla_asignados">
-			{% for esc in escenarios_asignados %}
-				<tr data-id="{{ esc.id }}">
-				<td>{{ esc.titulo }}</td>
-				<td>{{ esc.descripcion }}</td>
-				<td><button class="button link " data-message="Asigna Escenario {{ esc.nombre }} ..." onclick="moverRecurso(this, 'id_tabla_disponibles')"
-				style="background: red; color: white; font-size: 12px; padding: 1px 3px;">◀</button></td>
+	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
+	<!---------------------------------------------->
 
-				</tr>
-			{% endfor %}
-			</tbody>
-		</table>
-		</ul>
-		<!-- Formulario oculto -->
+	<div data-asignacion>
 		<form method="post">
-		{% csrf_token %}
-		<input type="hidden" name="escenarios" id="recursos_input">
-		<button type="submit">Guardar Asignación</button>
+			{% csrf_token %}
+			
+			<!-- Filtros y tablas -->
+			<div style="display:flex; gap:20px;">
+
+				<!-- Escenarios Disponibles -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Escenarios de Riesgo Disponibles</strong></h5>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: greenyellow;">
+							<tr style="color:black">
+								<th style="width:30%;">Escenario:</th>
+								<th>Descripción</th>
+								<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;">***⏩***</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for escenario in escenarios_disponibles %}
+							<tr data-id="{{ escenario.id }}">
+								<td>{{ escenario.titulo }}</td>
+								<td>{{ escenario.descripcion }}</td>
+								<td>
+									<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
+								</td>
+							</tr>
+						{% empty %}
+							<tr><td colspan="3" style="text-align:center;">No hay escenarios disponibles.</td></tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					</ul>
+				</div>
+
+				<!-- Escenarios Asignados -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Escenarios de Riesgo Seleccionados</strong></h5>
+					<input type="text" class="filtro-asignados" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: lightblue;">
+							<tr style="color:black">
+								<th style="width:30%;">Escenario:</th>
+								<th>Descripción</th>
+								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" >***⏪***</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for escenario in escenarios_asignados %}
+							<tr data-id="{{ escenario.id }}">
+								<td>{{ escenario.titulo }}</td>
+								<td>{{ escenario.descripcion }}</td>
+								<td>
+									<button type="button" class="btn-mover button " data-destino="disponibles" style="background: red; color: white; font-size:12px;">⏪</button>
+								</td>
+							</tr>
+						{% empty %}
+							<tr><td colspan="3" style="text-align:center;">No hay escenarios asignados.</td></tr>
+						{% endfor %}
+						</tbody>
+					</table>
+					</ul>
+				</div>
+
+			</div>
+
+			<!-- Campo hidden para IDs -->
+			<input type="hidden" name="escenarios" class="input-seleccion" value="">
+
+			<br/>
+			<button type="submit" class="button">Guardar Selección</button>
 		</form>
 	</div>
-	</div>
-	{% endblock %}
+	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+
+<br/>
+<aa style="font-size: 8px;">[asigna_escenarios_v2]</aa>
+
+{% endblock %}
 
 {% endblock %}

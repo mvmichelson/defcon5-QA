@@ -383,6 +383,8 @@ class Estrategias(models.Model):
     """
     titulo = models.CharField(max_length= 50, blank=True)
     descripcion = models.TextField(max_length=500, blank=True, help_text='Describa la Estrategia')
+    activa_drp=models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.titulo+' / '+self.descripcion
@@ -853,7 +855,7 @@ class Drp(models.Model):
         ('x', 'En Revision C'), 
         
     )
-    status_1 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
+    status_1 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C') 
     status_2 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
     status_3 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
     status_4 = models.CharField(max_length=1, choices=PROCED_STATUS, blank=True, default='C')
@@ -869,7 +871,7 @@ class Drp(models.Model):
 
     #Alcance
 
-    procesos_drp=models.ManyToManyField('SubProceso')
+    procesos_drp=models.ManyToManyField('SubProceso_V')
 
     # Estrategia de Recuperacion
 
@@ -972,6 +974,7 @@ class Log_Revision(models.Model):
 
     proceso= models.ForeignKey(Proceso, on_delete=models.CASCADE, null=True)
     procedimiento= models.ForeignKey(Procedimientos, on_delete=models.CASCADE, null=True)
+    drp= models.ForeignKey(Drp, on_delete=models.CASCADE, null=True)
 
     gestor_aut = models.ForeignKey(Gestor, on_delete=models.CASCADE, null=True)
     seccion=models.CharField(max_length=2, blank=True)

@@ -21,62 +21,96 @@
 
 			<h5><strong>Proceso Asociado</strong></h5>
 			<ul class="scr4 BarraScroll" style="background: white;">
+
 				<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
 				<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
 				<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
 				<br/>
-			<h5><strong>Indicadores de Recuperacion<strong></h5>
 
-				<table class="lta">
-					<thead class="encabezado_C" style="background: blue; color: white;">
-					<tr>
-							<th scope="col">Indicador</th>
-							<th scope="col">Nivel Asignado</th>
-							<th scope="col">Descripcion</th>
-					</tr>
-					</thead>
-		
-					<tbody>
-					
-					{% for ind in proceso.subproceso.indicador_subp.all %}
-		
-					<tr>
-						<th scope="row"><bb style="font-size: 10px;">{{ind.indicador.nombre}}</bb></th>
-						<th scope="row"><aa style="font-size: 10px;">{{ind.nivel.nivel}}</aa></th>
-						<th scope="row"><aa style="font-size: 10px;">{{ind.nivel.definicion}}</aa></th>
-					</tr>
-		
-					{%endfor%}
-		
+				<h5><strong>Indicadores de Recuperacion<strong></h5>
+
+					<table class="lta">
+						<thead class="encabezado_C" style="background: blue; color: white;">
+						<tr>
+								<th scope="col">Indicador</th>
+								<th scope="col">Nivel Asignado</th>
+								<th scope="col">Descripcion</th>
+						</tr>
+						</thead>
+			
+						<tbody>
 						
-					</tbody>
-		
-				</table>
-			<br/>
+						{% for ind in proceso.subproceso.indicador_subp.all %}
+			
+						<tr>
+							<th scope="row"><bb style="font-size: 10px;">{{ind.indicador.nombre}}</bb></th>
+							<th scope="row"><aa style="font-size: 10px;">{{ind.nivel.nivel}}</aa></th>
+							<th scope="row"><aa style="font-size: 10px;">{{ind.nivel.definicion}}</aa></th>
+						</tr>
+			
+						{%endfor%}
+			
+							
+						</tbody>
+			
+					</table>
+				<br/>
+
+				<h5><strong>Servicios Criticos<strong></h5>
+
+					<table class="lta">
+						<thead class="encabezado_C" style="background: rgb(255, 230, 0); color: white;">
+						<tr style="color:black">
+								<th scope="col">Tipo</th>
+								<th scope="col">Nombre</th>
+								<th scope="col">Descripcion</th>
+						</tr>
+						</thead>
+			
+						<tbody>
+						
+						{% for rec in proceso.subproceso.recursos.all %}
+			
+						<tr>
+							<th scope="row"><bb style="font-size: 10px;">{{rec.tipo}}</bb></th>
+							<th scope="row"><aa style="font-size: 10px;">{{rec.nombre}}</aa></th>
+							<th scope="row"><aa style="font-size: 10px;">{{rec.descripcion}}</aa></th>
+						</tr>
+			
+						{%endfor%}
+			
+							
+						</tbody>
+			
+					</table>
+				<br/>
 			
 
-				<h6><strong>Escenarios de Riesgo (ER) asociados al Proceso</strong></h6>
-				<table class="lta">
-				<thead class = 'encabezado_C'>
-				<tr>
-					<th scope="col">Escenario</th>
-					<th scope="col">Descripcion</th>
-					
-				</tr>
-				</thead>
+				<h6><strong>Escenarios de Riesgo</strong></h6>
+					<table class="lta">
+					<thead class = 'encabezado_C'>
+					<tr>
+						<th scope="col">Escenario</th>
+						<th scope="col">Descripcion</th>
+						
+					</tr>
+					</thead>
 
-				<tbody>
-				{%for esc in escenarios.all  %}
-				<tr>
-					<th scope="row"><bb style="font-size: 10px;">{{esc.titulo}}<bb></th>
-					<th scope="row"><bb style="font-size: 10px;">{{esc.descripcion}}<bb></th>
-					
-				</tr>
-					{% if not forloop.last %}
-					{%endif%}
-					{%endfor%}
-				<tbody>
-				</table>
+					<tbody>
+					{%for esc in escenarios.all  %}
+					<tr>
+						<th scope="row"><bb style="font-size: 10px;">{{esc.titulo}}<bb></th>
+						<th scope="row"><bb style="font-size: 10px;">{{esc.descripcion}}<bb></th>
+						
+					</tr>
+						{% if not forloop.last %}
+						{%endif%}
+						{%endfor%}
+					<tbody>
+					</table>
+
+
+
 			</ul>
 		</div><!--- Fin columna izq -->
 

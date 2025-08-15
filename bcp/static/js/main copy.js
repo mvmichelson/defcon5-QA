@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Aseguramos que el script se ejecute solo cuando el DOM esté completamente cargado
 document.addEventListener("DOMContentLoaded", function() {
-    console.log("main.js cargado correctamente");
+    console.log("Entra a Seleccion Servicios ");
 
     // Verificamos si los elementos existen antes de agregarles event listeners
     let filtroDisponibles = document.getElementById("filtro_disponibles");
@@ -256,52 +256,69 @@ document.addEventListener("DOMContentLoaded", function() {
     } else {
         console.warn("⚠️ Elemento 'filtro_asignados' no encontrado en el DOM.");
     }
+
+    // Asegurar que el formulario actualiza el input oculto antes de enviarse
+    let formulario = document.querySelector("form");
+    if (formulario) {
+        formulario.addEventListener("submit", function(event) {
+            actualizarRecursosSeleccionados();
+        });
+    }
 });
 
-// Hacer la función moverRecurso accesible globalmente
 function moverRecurso(boton, tablaDestinoId) {
-    let fila = boton.closest("tr");
-    let nuevaTabla = document.getElementById(tablaDestinoId);
+    let fila = boton.closest("tr");  // Encuentra la fila del botón
+    let tablaOrigen = fila.closest("table");  // Encuentra la tabla de origen
+    let tablaDestino;
 
-    if (!fila) {
-        console.warn("⚠️ Error al mover recurso: la fila no existe.");
+    // Determinar a qué tabla mover la fila
+    if (tablaDestinoId === "id_tabla_asignados") {
+        tablaDestino = document.querySelector("#tabla_asignados tbody");
+    } else if (tablaDestinoId === "id_tabla_disponibles") {
+        tablaDestino = document.querySelector("#tabla_disponibles tbody");
+    } else {
+        console.error(`Error: La tabla destino con id '${tablaDestinoId}' no existe.`);
         return;
     }
 
-    if (!nuevaTabla) {
-        console.warn(`⚠️ Error al mover recurso: la tabla destino con id '${tablaDestinoId}' no existe.`);
+    if (!tablaDestino) {
+        console.error(`Error: No se encontró el tbody de la tabla destino con id '${tablaDestinoId}'.`);
         return;
     }
 
-    // Verificar si `tablaDestinoId` es un <tbody> o si debemos buscarlo dentro de la tabla
-    let nuevoTbody = nuevaTabla.tagName === "TBODY" ? nuevaTabla : nuevaTabla.querySelector("tbody");
+    // Mover la fila a la nueva tabla
+    tablaDestino.appendChild(fila);
 
-    // Si no existe un <tbody>, lo creamos para evitar errores
-    if (!nuevoTbody) {
-        console.warn(`⚠️ La tabla destino '${tablaDestinoId}' no tiene un <tbody>. Creando uno...`);
-        nuevoTbody = document.createElement("tbody");
-        nuevaTabla.appendChild(nuevoTbody);
+    // Cambiar el botón para mover en sentido contrario
+    if (tablaDestinoId === "id_tabla_asignados") {
+        boton.innerHTML = "◀";
+        boton.setAttribute("onclick", "moverRecurso(this, 'id_tabla_disponibles')");
+    } else {
+        boton.innerHTML = "▶";
+        boton.setAttribute("onclick", "moverRecurso(this, 'id_tabla_asignados')");
     }
 
-    // Cambiar el botón para que mueva en sentido contrario
-    let nuevoBoton = fila.querySelector("button");
-    if (nuevoBoton) {
-        let nuevaTablaId = fila.closest("table")?.id; // Obtener el id correcto de la tabla origen
-        if (!nuevaTablaId) {
-            console.warn("⚠️ No se pudo determinar la tabla de origen.");
-            return;
-        }
-        nuevoBoton.onclick = function() {
-            moverRecurso(this, nuevaTablaId);
-        };
-    }
-
-    // Mover la fila al nuevo <tbody>
-    nuevoTbody.appendChild(fila);
+    // Actualizar el campo oculto después de mover
+    actualizarRecursosSeleccionados();
 }
 
-// Asignar la función a `window` para asegurar su accesibilidad global
-window.moverRecurso = moverRecurso;
+function actualizarRecursosSeleccionados() {
+    let recursosInput = document.getElementById("recursos_input");
+    let filas = document.querySelectorAll("#tabla_asignados tbody tr");
+
+    let recursosSeleccionados = [];
+    filas.forEach(fila => {
+        let recursoId = fila.getAttribute("data-id");
+        if (recursoId) {
+            recursosSeleccionados.push(recursoId);
+        }
+    });
+
+    console.log("Recursos seleccionados antes de enviar:", recursosSeleccionados);
+
+    // Actualizar el campo oculto con los IDs de los recursos asignados
+    recursosInput.value = recursosSeleccionados.join(",");
+}
 
 // Función para filtrar la tabla
 function filtrarTabla(inputId, tablaId) {
@@ -325,6 +342,91 @@ function filtrarTabla(inputId, tablaId) {
     });
 }
 
-// Confirmar que el script se cargó sin errores
 console.log("Script main.js ejecutado correctamente.");
+
+// Activa/Desactiva PC
+// ===================
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("main.js en Activa/Desactiva cargado correctamente");
+
+    // Cargar estados actuales de los switches al iniciar la página
+    fetch("/bcp/procedimientos/toggle/")  
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            data.forEach(proc => {
+                let toggle = document.querySelector(`#toggle-activo-${proc.id}`);
+                if (toggle) {
+                    toggle.checked = proc.esta_activo;
+                }
+            });
+        })
+        .catch(error => console.error("Error al obtener estados:", error));
+
+    // Agregar eventos a los switch
+    document.querySelectorAll("input[id^='toggle-activo-']").forEach(function (toggle) {
+        toggle.addEventListener("change", function () {
+            let procedimientoId = this.dataset.id;
+            let isChecked = this.checked;
+
+            console.log("Intentando cambiar estado...");
+            console.log(`Switch cambiado: ${procedimientoId}, Estado: ${isChecked}`);
+
+            if (!procedimientoId) {
+                console.error("Error: No se encontró el ID del procedimiento en el dataset.");
+                return;
+            }
+
+            console.log(`Enviando petición a: /bcp/procedimientos/toggle/${procedimientoId}/`); 
+            
+            fetch(`/bcp/procedimientos/toggle/${procedimientoId}/`, {  
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                body: JSON.stringify({ esta_activo: isChecked })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Respuesta recibida:", data);
+                if (data.success) {  
+                    console.log("Estado cambiado correctamente:", data.nuevo_estado);
+                } else {
+                    alert("Error al actualizar el estado.");
+                    toggle.checked = !isChecked;
+                }
+            })
+            .catch(error => {
+                console.error("Error en la petición:", error);
+                toggle.checked = !isChecked;
+            });
+        });
+    });
+
+    // Función para obtener el token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            document.cookie.split(';').forEach(cookie => {
+                let trimmed = cookie.trim();
+                if (trimmed.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+                }
+            });
+        }
+        return cookieValue;
+    }
+});
+
 

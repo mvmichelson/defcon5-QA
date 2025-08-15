@@ -21,7 +21,7 @@ defcon={{defcon_est}}
 	{% if procedimientos_vigentes %}
 		<!---- Opcion 1 ----->
 		<div class="flex-item" style="width: 50%;">
-		<ul class="encabezado_B"  style="background: rgba(255, 153, 0, 0.5);">
+		<ul class="encabezado_B"  style="background: rgba(255, 153, 0, 0.1);">
 			<img src="/static/img/manual_pc.webp" width="30" height="30">
 			<a href="{% url 'Lista-Proced' 0 %}"><strong><aa>APROBADOS VIGENTES</aa></strong></a>
 		</ul>
@@ -29,22 +29,22 @@ defcon={{defcon_est}}
 
 		<!---- Opcion 2 ----->
 		<div class="flex-item" style="width: 50%;">
-			<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.5);">
-			<a href="{% url 'Lista-Proced' 1  %}"><strong><aa>EN DESARROLLO / ACTUALIZACION</aa></strong></a>		</ul>
+			<ul class="encabezado_B" >
+			<a href="{% url 'Lista-Proced' 1  %}"><aa>EN DESARROLLO / ACTUALIZACION</aa></a>		</ul>
 		</div><!---- Fin  Opcion 2 ----->
 	
 	{%else%}
 
 		<!---- Opcion 1 ----->
 		<div class="flex-item" style="width: 50%;">
-		<ul class="encabezado_B"  style="background: rgba(255, 153, 0, 0.5);">
-			<a href="{% url 'Lista-Proced' 0 %}"><strong><aa>APROBADOS VIGENTES</aa></strong></a>
+		<ul class="encabezado_B" >
+			<a href="{% url 'Lista-Proced' 0 %}"><aa>APROBADOS VIGENTES</aa></a>
 		</ul>
 		</div><!---- Fin  Opcion 1 ----->
 
 		<!---- Opcion 2 ----->
 		<div class="flex-item" style="width: 50%;">
-			<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.5);">
+			<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.1);">
 			<img src="/static/img/manual_pc.webp" width="30" height="30">
 			<a href="{% url 'Lista-Proced' 1  %}"><strong><aa>EN DESARROLLO / ACTUALIZACION</aa></strong></a>
 		    </ul>
@@ -55,7 +55,7 @@ defcon={{defcon_est}}
 	</div><!------ Fin Menu Encabezado ---------------------------------->
 
 
-<ul class="BarraScroll" style="height: 300px; background: rgba(255, 153, 0, 0.5)">  
+<ul class="BarraScroll" style="height: 300px; background: rgba(255, 153, 0, 0.1)">  
                          
 {% if lista_procesos %}
 
