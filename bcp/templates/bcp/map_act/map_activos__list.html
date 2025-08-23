@@ -81,10 +81,10 @@
 							<a href="{% url 'asigna-raci' proceso.pk  'Mapeo de Servicios Criticos' %}"
 							class="link blink " data-message="Define mapa de Autorizaciones RACI ...">.<rr><strong>&#8476</strong></rr>.</a>
 
-							<!-- <a href="{% url 'Asigna-Servicio' proceso.pk %}"
-							class="link" data-message="Modificar Servicios/Recursos al Proceso ..."
+							<a href="{% url 'Asigna-Servicio' proceso.pk %}"
+							class="link blink" data-message="Modificar Servicios/Recursos al Proceso ..."
 							><img src="/static/img/servicio_1.webp" width="17" height="17"></img></a>
-				  -->
+				  
 
 
 						{%else%}
@@ -139,7 +139,11 @@
 						  	<a href="{% url 'Rev-Asigna-Servicios' proceso.pk %}"
 							class="link blink " data-message="Revisar Comentarios e implementar ...">
 							<img src="/static/img/revision_servicio.png" width="20" height="20"></img>
-						</a>
+							</a>
+
+						  	<a href="{% url 'Envia-Auth' proceso.pk 'B' %}"
+							class="link blink" data-message="Envia a Autorizacion ...">&#128229</a>
+ 
 						{%else%}
 						<!-- Si usuario sesion NO es Consultor -->
 							<yy class="link" data-message="En revision por Gestor Consultor ({{proceso.subproceso.gestor_C}})">

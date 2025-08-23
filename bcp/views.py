@@ -1272,7 +1272,7 @@ def Aut_Asig_Act(request, pk):
                     log.proceso= proc
                     log.gestor_aut=usr_aut
                     log.seccion="B"
-                    log.campo="Autorizado por:"+aut
+                    log.campo="Observado por:"+aut
                     log.comentario="Asignacion de Servicios Criticos observado por Gestor Autorizador. Se envia a Gestor Consultor para su Revision."
                     log.resuelto=True
                     log.save()
@@ -2220,6 +2220,8 @@ def rev_asigna_servicio(request, pk):
     proceso = get_object_or_404(Proceso, pk=pk)
     subproceso = proceso.subproceso
 
+
+
     # Rescata los Comentarios 
     comentarios_proceso=Log_Revision.objects.filter(proceso=proceso)
     comentarios_b=[]
@@ -2233,12 +2235,16 @@ def rev_asigna_servicio(request, pk):
 
         if recursos_ids:
             subproceso.recursos.set(Recursos.objects.filter(id__in=recursos_ids))  # Asignar recursos
-        else:
-            subproceso.recursos.clear()  # Si no hay recursos, limpiar asignaciones
+        #else:
+            #subproceso.recursos.clear()  # Si no hay recursos, limpiar asignaciones
+
+
 
         subproceso.save()  # Guardar los cambios
 
-        return HttpResponseRedirect(reverse('Rev-Asigna-Servicios', args=[pk]))
+        #return HttpResponseRedirect(reverse('Lista-Servicios', args=[pk]))
+        return HttpResponseRedirect(reverse('Lista-Recursos'))
+
 
     # Cargar recursos disponibles y asignados
     recursos_disponibles = Recursos.objects.exclude(id__in=subproceso.recursos.values_list('id', flat=True))
@@ -2380,6 +2386,14 @@ def rev_asigna_escenarios(request, pk):
     proceso = get_object_or_404(Proceso, pk=pk)
     subproceso = proceso.subproceso
 
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
+
     # Rescata los Comentarios 
     comentarios_proceso=Log_Revision.objects.filter(proceso=proceso)
     comentarios_b=[]
@@ -2394,12 +2408,14 @@ def rev_asigna_escenarios(request, pk):
 
         if escenarios_ids:
             subproceso.escenarios.set(Escenarios.objects.filter(id__in=escenarios_ids))
-        else:
-            subproceso.escenarios.clear()
+        #else:
+            #subproceso.escenarios.clear()
+
+
 
         #Cambia el estado para inicio de las autorizaciones
-        subproceso.status='A' # Aprobacion Gestor Autorizador
-        subproceso.fase_status='E'
+        #subproceso.status='A' # Aprobacion Gestor Autorizador
+        #subproceso.fase_status='E'
         subproceso.save()
 
         #return HttpResponseRedirect(reverse('Asigna-Escenarios', args=[pk]))
@@ -2426,6 +2442,9 @@ from .forms import Revisa_Asig_BIA_Form
 
 def Revisa_Asig_BIA(request, pk):
 
+    print('-- Revisa Asignacion BIA (Revisa_Asig_BIA)')
+    print('------------------------------------------')
+
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Consultores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[200] ))
@@ -2440,14 +2459,14 @@ def Revisa_Asig_BIA(request, pk):
     indicador_pc=proceso.subproceso.indicador_subp
     nro_indicador_pc=indicador_pc.count()
 
-    print('impactos_pc=', impactos_pc)
-    print(not impactos_pc)
+    #print('impactos_pc=', impactos_pc)
+    #print(not impactos_pc)
 
 
     if  nro_impactos_pc == 0:
-        print('entra')
+        #print('entra')
         impactos = Tipo_Impacto.objects.all()
-        print('Tipo de Impacto Maestro =', impactos)
+        #print('Tipo de Impacto Maestro =', impactos)
 
         for imp in impactos:
             asigna_imp=Impactos_Asig()
@@ -2456,21 +2475,22 @@ def Revisa_Asig_BIA(request, pk):
             asigna_imp.save()
             impactos_pc.add(asigna_imp)
             proceso.save()
-    else:
-         print('NO entra')
+    #else:
+         #print('NO entra')
+
 
     # Calculo de Puntaje de Impacto.
     total_imp=00.00
     puntaje=00.00
     for imp2 in impactos_pc.all():
         pond=imp2.impacto.ponderacion
-        print('imp2.nivel=', imp2.nivel)
+        #print('imp2.nivel=', imp2.nivel)
         if imp2.nivel:
             puntaje=imp2.nivel.valor*pond/100   # calcula la ponderacion del valor del nivel
             total_imp=total_imp+float(puntaje)
-        print('riesgo=', imp2.impacto.nombre, 'pond=', pond/100, 'puntaje pond=', puntaje)
+        #print('riesgo=', imp2.impacto.nombre, 'pond=', pond/100, 'puntaje pond=', puntaje)
               
-    print('total=', total_imp)
+    #print('total=', total_imp)
 
 
     if nro_indicador_pc == 0:
@@ -2491,9 +2511,9 @@ def Revisa_Asig_BIA(request, pk):
         if ind2.nivel:
             puntaje=float(ind2.nivel.valor)
             total_ind=total_ind+puntaje
-        print('indicador =', ind2.indicador.nombre,  'puntaje =', puntaje)
+        #print('indicador =', ind2.indicador.nombre,  'puntaje =', puntaje)
               
-    print('total=', total_ind)
+    #print('total=', total_ind)
 
     total_pro=total_imp+total_ind
     if total_pro != total_pro_ant:
@@ -2527,7 +2547,10 @@ def Revisa_Asig_BIA(request, pk):
            
 
             #Cambia status del Proceso a x Aprobar
+
+            # Si el Gestor Autorizador es igual al Gestor Consultor
             if proceso.subproceso.gestor_C == proceso.subproceso.gestor_A:
+                print('Si Gestor Consultor = Gestor Autorizador')
                 
                 if proceso.subproceso.gestor_C == proceso.subproceso.gestor_R:
                     #Aprobada por Responsable area 
@@ -2559,8 +2582,13 @@ def Revisa_Asig_BIA(request, pk):
                         Manda_Correo(email, cc_email, nombre, proceso, accion)
                         
             else:
+            # Si el Gestor Consultor y Gestor Autorizador son distintos
+                print('Si Gestor Consultor = Gestor Autorizador')
+
                 #Por Aprobar
                 proceso.subproceso.status='A'
+
+
 
                 #Notifica por correo a Gestor A            
                 if notifica:
@@ -2575,8 +2603,7 @@ def Revisa_Asig_BIA(request, pk):
                    
             proceso.subproceso.save()
             proceso.save()
-     
-          
+         
             
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('Lista-Evaluaciones') )
@@ -2864,8 +2891,8 @@ def asigna_servicio(request, pk):
 
         if recursos_ids:
             subproceso.recursos.set(Recursos.objects.filter(id__in=recursos_ids))
-        else:
-            subproceso.recursos.clear()
+        #else:
+            #subproceso.recursos.clear()
 
         subproceso.status = 'C'
         subproceso.fase_status = 'B'
@@ -2895,8 +2922,8 @@ def asigna_escenarios(request, pk):
 
         if escenarios_ids:
             subproceso.escenarios.set(Escenarios.objects.filter(id__in=escenarios_ids))
-        else:
-            subproceso.escenarios.clear()
+        #else:
+            #subproceso.escenarios.clear()
 
         #Cambia el estado para inicio de las autorizaciones
         subproceso.status='C'
@@ -3162,18 +3189,60 @@ def Envia_Auth(request, pk, etapa):
 
     proceso.subproceso.status="A"
 
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
 
     if etapa=="V":
+        # Crea Log de aprobacion de Autorizador
+        log=Log_Revision()
+        log.fecha = datetime.date.today()
+        log.proceso= proceso
+        log.gestor_aut=usr_aut
+        log.seccion="V"
+        log.campo="Corregido por:"+aut
+        log.comentario="BIA corregida por Gestor Consultor. Se envia a Gestor Autorizador."
+        log.resuelto=True
+        log.save()
+
         proceso.subproceso.fase_status="V"
         proceso.subproceso.save()
         return HttpResponseRedirect(reverse('Lista-Evaluaciones'))
     
     elif etapa == "B":
+
+        # Crea Log de aprobacion de Autorizador
+        log=Log_Revision()
+        log.fecha = datetime.date.today()
+        log.proceso= proceso
+        log.gestor_aut=usr_aut
+        log.seccion="B"
+        log.campo="Corregido por:"+aut
+        log.comentario="Asignacion de Servicios Criticos corregida por Gestor Consultor. Se envia a Gestor Autorizador."
+        log.resuelto=True
+        log.save()
+
         proceso.subproceso.fase_status="B"
         proceso.subproceso.save()
         return HttpResponseRedirect(reverse('Lista-Recursos'))
     
     elif etapa == "E":
+
+        # Crea Log de aprobacion de Autorizador
+        log=Log_Revision()
+        log.fecha = datetime.date.today()
+        log.proceso= proceso
+        log.gestor_aut=usr_aut
+        log.seccion="E"
+        log.campo="Corregido por:"+aut
+        log.comentario="Asignacion de Escenarios de Riesgo corregida por Gestor Consultor. Se envia a Gestor Autorizador."
+        log.resuelto=True
+        log.save()
+
         proceso.subproceso.fase_status="E"
         proceso.subproceso.save()
         return HttpResponseRedirect(reverse('Lista-Escenarios'))
