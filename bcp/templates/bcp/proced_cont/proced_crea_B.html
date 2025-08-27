@@ -8,7 +8,7 @@
 
 	{% block encabezado_detalle %}
 	<ul class="encabezado_A">
-        <aa><strong>FORMULARIO DE ESPECIFICACION DE PROCEDIMIENTO DE RECUPERACION </strong></aa>
+        <aa><strong>FORMULARIO DE ESPECIFICACION DE PROCEDIMIENTO DE CONTINGENCIA</strong></aa>
         </ul>
 	{% endblock %}
 
@@ -20,7 +20,7 @@
 		<div class="flex-item" style="width: 80%;">
 
 			<h5><strong>Proceso Asociado</strong></h5>
-			<ul class="scr4 BarraScroll" style="background: white;">
+			<ul class="scr4 BarraScroll" style="background: rgb(212, 230, 200);">
 
 				<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
 				<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
@@ -117,7 +117,7 @@
 		<!--- Columna der -->
 		<div class="flex-item" style="width:200px; text-align: center;">
 			
-			<bn>Puntaje: <ul class="scr4"> {{proceso.subproceso.ranking}}</ul></bn>
+			<bn>Puntaje: <ul class="scr4" style="background: rgb(212, 230, 200);"> {{proceso.subproceso.ranking}}</ul></bn>
 			<br/>
 			<img src="/static/img/manual_pc.webp" width="100" height="100"></a>
 
@@ -138,8 +138,8 @@
 	<br/>
 	<h5><strong>1. Ingrese datos de Identificacion del PC</strong></h5>
 	<ul class="scr4">
-	<p> 1.1 Nombre..: {{ form.nombre }}</p>
-	<p> 1.2 Tipo..: {{form.tipo}}</p>
+	<p> Nombre..: {{ form.nombre }}</p>
+	<p> <!-- 1.2 Tipo..: {{form.tipo}}</p> -->
 	</ul>
 
 	<br/>

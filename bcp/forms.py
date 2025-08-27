@@ -404,7 +404,7 @@ class CreaProc_A_Form(forms.Form):
 
     #Identificacion del Procedimiento
     nombre = forms.CharField(max_length= 100, label='Nombre :', widget=forms.Textarea(attrs={'rows':1, 'cols':100}))
-    tipo = forms.ModelChoiceField(queryset=Tipo_Proc.objects.all())
+    #tipo = forms.ModelChoiceField(queryset=Tipo_Proc.objects.all())
 
     
 
@@ -433,7 +433,7 @@ class CreaProc_B_Form(forms.Form):
 
     #Identificacion del Procedimiento
     nombre = forms.CharField(max_length= 100, label='Nombre :', widget=forms.Textarea(attrs={'rows':1, 'cols':100, 'class':'inbox_3'}))
-    tipo = forms.ModelChoiceField(queryset=Tipo_Proc.objects.all())
+    #tipo = forms.ModelChoiceField(queryset=Tipo_Proc.objects.all())
 
     #Contexto
     escenarios = forms.ModelChoiceField(queryset=Escenarios.objects.all(),

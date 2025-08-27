@@ -22,7 +22,7 @@
 	<!-- Columna izq ------>
 	<div class="flex-item" style=" width: 50%;">
 	<h5><strong>Proceso Asociado</strong></h5>
-	<ul class="scr4" style="background: white;">
+	<ul class="scr4" style="background: rgb(212, 230, 200);">
 	<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
 	<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
 	<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
@@ -32,7 +32,7 @@
 	<!--- Columna der -->
 	<div class="flex-item" style="text-align: center">
 		<bb style="text-align: center">Puntaje:
-			<ul class="scr4"> {{proceso.subproceso.ranking}}</ul> 
+			<ul class="scr4" style="background: rgb(212, 230, 200);"> {{proceso.subproceso.ranking}}</ul> 
 		</bb>
 	</div><!--- Fin Columna der -->
 
@@ -48,11 +48,11 @@
 	<div class="flex-container">
 		<div class="flex-item">
 		<p><strong> 2.1 Nombre..:</strong>&emsp;</p>
-		<p><strong> 2.2 Tipo..: </strong>&emsp;</p>
+		<!-- <p><strong> 2.2 Tipo..: </strong>&emsp;</p> -->
 		</div>
 		<div class="flex-item">
 		<p><strong> <p>{{ form.nombre }}</p>
-		<p><strong> <p>{{form.tipo}}</p>
+		<!-- <p><strong> <p>{{form.tipo}}</p> --> 
 		</div>
 
 	</div>

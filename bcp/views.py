@@ -3366,7 +3366,7 @@ def cr_prcd_a(request, pk):
             proced.pk_padre=pk
             
             proced.nombre = form.cleaned_data['nombre']
-            proced.tipo = form.cleaned_data['tipo']
+            #proced.tipo = form.cleaned_data['tipo'] Dato en revision
 
 
             #Asigna al usuario de sesion como gestor consultor
@@ -3377,7 +3377,7 @@ def cr_prcd_a(request, pk):
             proced.gestor_consultor = usuario_ges
             
 
-            #Asigna estarus C : En definicion 
+            #Asigna estatus C : En definicion 
             proced.status = 'C'
             
             #Graba Procedimiento
@@ -3454,7 +3454,7 @@ def cr_prcd_b(request, pk):
 
                         
             proced.nombre = form.cleaned_data['nombre']
-            proced.tipo = form.cleaned_data['tipo']
+            #proced.tipo = form.cleaned_data['tipo'] 
             
             proced.escenarios = form.cleaned_data['escenarios']
 
@@ -4662,7 +4662,10 @@ def Revisa_Proced_B(request, pk):
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
-        form = Revisa_Proced_B_Form(request.POST)
+        #form = Revisa_Proced_B_Form(request.POST)
+        form = CreaProc_B_Form(request.POST)
+        form = CreaProc_B_Form(request.POST  or None, param=escenarios.all()) # Envia Escenarios del Proceso
+
         
         # Check if the form is valid:
         
