@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h1>Auditoría de integridad — Reparación</h1>
+
+<form method="post" action="{% url 'reparar_integridad' %}">
+  {% csrf_token %}
+  <p><strong>Advertencia:</strong> haga respaldo de la BD antes de ejecutar reparaciones.</p>
+
+  <label for="action">Acción:</label>
+  <select name="action" id="action">
+    <option value="clean_orphans">Limpiar orfanos (establecer NULL cuando posible; remover M2M faltantes)</option>
+    <option value="delete_orphans">Eliminar registros huérfanos (destructivo)</option>
+    <option value="apply_defaults">Aplicar valores por defecto (se requiere default_map)</option>
+  </select>
+
+  <p>Si eliges <code>apply_defaults</code>, ingresa JSON en <em>default_map</em> con formato:
+  <pre>{"Modelo.campo": pk, "Modelo.m2m": [1,2]}</pre>
+  </p>
+  <textarea name="default_map" rows="6" cols="80">{}</textarea>
+
+  <p>
+    Confirmar (escriba <strong>yes</strong>): <input type="text" name="confirm" />
+  </p>
+
+  <button type="submit">Ejecutar reparación</button>
+</form>
+
+<hr>
+<h2>Problemas detectados (extracto)</h2>
+<p>La página mostrará un resumen (ejemplo). Si quieres el informe completo usa <a href="{% url 'auditoria_integridad' %}?format=json">descargar JSON</a>.</p>
+
+{% endblock %}

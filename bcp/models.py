@@ -304,7 +304,7 @@ class Recursos(models.Model):
         """
         String que representa al objeto 
         """
-        return '['+self.tipo.nombre+'].:'+self.nombre+':{'+self.descripcion+'}'
+        return  self.nombre+': '+self.descripcion
 
 
 
@@ -552,7 +552,7 @@ class Incidentes(models.Model):
     amenazas_i = models.ManyToManyField('Amenazas', blank=False)
 
     # Procesos y Escenarios de Riesgo asociados al Incidente
-    procesos_i = models.ManyToManyField('SubProceso')
+    procesos_i = models.ManyToManyField('SubProceso_V')
     escenarios_i = models.ManyToManyField('Escenarios')
 
     changed=models.BooleanField(default=False)

@@ -90,7 +90,13 @@
 # 7. Proposito General
 #=======================
 
+# Manda correo de Notificacion
+# Manejo de Errores
+# Valida el acceso de la sesion
+# Manejo de Graficos
+# Reinicia BD
 
+# Respaldo / Recuperacion de la BD
 
 
 # ============================================================================================
@@ -101,7 +107,7 @@ from queue import Full
 from django.shortcuts import render
 from django.contrib import messages
 
-# Create your views here.
+# Modelos del Sistema.
 
 from .models import Proceso, SubProceso, LogAut, Recursos, Tipo_RR, Gestor, Escenarios, Amenazas, Estrategias, Tipo_Impacto, Nivel_Impacto, Tipo_Impacto_P, Nivel_Impacto_P
 from .models import Drp, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC 
@@ -229,9 +235,9 @@ def Lista_Procesos(request):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
     
     #Determina tramos de criticidad del Proceso
-    bia_bajo  = get_object_or_404(Parametros_G, pk = 5)
-    bia_medio = get_object_or_404(Parametros_G, pk = 6)
-    bia_alto  = get_object_or_404(Parametros_G, pk = 7)
+    bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
+    bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
+    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
 
     tramo_1 = float(bia_bajo.valor_2)/100*5
     tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
@@ -256,9 +262,9 @@ def Lista_Recursos(request):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
     
     #Determina tramos de criticidad del Proceso
-    bia_bajo  = get_object_or_404(Parametros_G, pk = 5)
-    bia_medio = get_object_or_404(Parametros_G, pk = 6)
-    bia_alto  = get_object_or_404(Parametros_G, pk = 7)
+    bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
+    bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
+    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
 
     tramo_1 = float(bia_bajo.valor_2)/100*5
     tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
@@ -282,9 +288,9 @@ def Lista_Escenarios(request):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
 
     #Determina tramos de criticidad del Proceso
-    bia_bajo  = get_object_or_404(Parametros_G, pk = 5)
-    bia_medio = get_object_or_404(Parametros_G, pk = 6)
-    bia_alto  = get_object_or_404(Parametros_G, pk = 7)
+    bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
+    bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
+    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
 
     tramo_1 = float(bia_bajo.valor_2)/100*5
     tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
@@ -310,9 +316,9 @@ def Lista_Evaluaciones(request):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
     
     #Determina tramos de criticidad del Proceso
-    bia_bajo  = get_object_or_404(Parametros_G, pk = 5)
-    bia_medio = get_object_or_404(Parametros_G, pk = 6)
-    bia_alto  = get_object_or_404(Parametros_G, pk = 7)
+    bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
+    bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
+    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
 
     tramo_1 = float(bia_bajo.valor_2)/100*5
     tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
@@ -365,7 +371,7 @@ def Detalle_Proceso_V2(request, pk):
     muestra todos los datos asociados al proceso vigente
     pk: Recibe identificacion del subproceso vigente (proceso.subproceso_v)
     """
-    print('------- Detalle del Proceso Vigente -----------------')
+    print('------- Detalle del Proceso Vigente 2 -----------------')
 
     spv=get_object_or_404(SubProceso_V,pk=pk)
     proceso=spv.proceso
@@ -3279,9 +3285,9 @@ def Lista_Procedimientos(request, vigente):
 
     print('-------- Entra a Lista de Procedimientos ----------')
     #Determina tramos de criticidad del Proceso
-    bia_bajo  = get_object_or_404(Parametros_G, pk = 5)
-    bia_medio = get_object_or_404(Parametros_G, pk = 6)
-    bia_alto  = get_object_or_404(Parametros_G, pk = 7)
+    bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
+    bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
+    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
 
     tramo_1 = float(bia_bajo.valor_2)/100*5
     tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
@@ -3440,7 +3446,7 @@ def cr_prcd_b(request, pk):
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
-        form = CreaProc_B_Form(request.POST)
+        #form = CreaProc_B_Form(request.POST)
         form = CreaProc_B_Form(request.POST  or None, param=escenarios.all()) # Envia Escenarios del Proceso
 
         
@@ -3463,6 +3469,7 @@ def cr_prcd_b(request, pk):
 
 
             responsable = form.cleaned_data['resp_proceso']
+            print('responsable :',  responsable.user_gestor.email)
             proced.resp_proceso = responsable
 
             respaldo_resp = form.cleaned_data['bck_resp']
@@ -7268,7 +7275,7 @@ def Declara_Inc(request):
             incidente.save()
             
             # Rescata correlativo de Incidente. 
-            parametro = get_object_or_404(Parametros_G, pk = 2)
+            parametro = get_object_or_404(Parametros_G, nombre = 'FOLIO INCIDENTES')
 
             # Define codigo del incidente
             f_i = incidente.fecha.strftime('%d-%m-%Y')
@@ -7287,9 +7294,11 @@ def Declara_Inc(request):
             incidente.amenazas_i.set(amenazas_declaradas)
 
 
-
             # Selecciona los Procesos asociados al incidente en base a las amenazas declaradas
             # =================================================================================
+
+            # Identifica los escenarios alcanzados
+            # ------------------------------------
 
             # Recorre amenazas declaradas
             for amenaza in amenazas_declaradas:
@@ -7300,23 +7309,30 @@ def Declara_Inc(request):
 
                     # Identifica a los Procesos Vigentes asociados al "escenario".
                     sprocesos=SubProceso_V.objects.all()
+                    sprocesos_selec=[]
                     for sproc in sprocesos:
                         
                         # Selecciona los Escenarios que estan Asociados al Sproceso
                         esc_en_sproc=sproc.escenarios # Escenarios asociados al Proceso
+                        escenarios_selec=[]
                         for esc in esc_en_sproc.all():
 
                             # Si el Escenario en la "amenaza" es igual al Escenario en el Sproceso
                             if escenario == esc:
                                 # Asigna el Escenario a los Escenarios del Incidente
-                                incidente.escenarios_i.add(esc)
+                                if not esc in escenarios_selec:
+                                    escenarios_selec.append(esc)
+                                    incidente.escenarios_i.add(esc)
 
-                                # Asigna el Proceso a los Procesos del Incidente
-                                pk_padre=sproc.pk_padre
-                                proceso=get_object_or_404(Proceso, pk=pk_padre)
-                                incidente.procesos_i.add(sproc)
+                                    # Asigna el Proceso a los Procesos del Incidente
+                                    #pk_padre=sproc.pk_padre
+                                    #proceso=get_object_or_404(Proceso, pk=pk_padre)
+                                if not sproc in sprocesos_selec:
+                                    sprocesos_selec.append(sproc)
+                                    incidente.procesos_i.add(sproc)
 
-                            
+            #print('-- Procesos   Sel.=', sprocesos_selec)
+            #print('-- Escenarios Sel.=', escenarios_selec)                
                 
             #Graba en BD
             print('Grabo incidente')
@@ -7391,13 +7407,74 @@ def Modifica_Inc(request, pk):
             print('Formato valido')
             
             #Graba intancias en Registro
-            p1 = form.cleaned_data['amenazas_i']
-            incidente.amenazas_i.set(p1)
+            nuevas_amenazas_declaradas = form.cleaned_data['amenazas_i']
+            incidente.amenazas_i.set(nuevas_amenazas_declaradas)
             incidente.changed=True
+            #incidente.save()
 
-            #Graba en BD
+            # Selecciona los nuevos Procesos y Escenarios asociados al incidente en base a las nuevas amenazas declaradas
+            # ===========================================================================================================
+
+            # Identifica los escenarios alcanzados
+            # ------------------------------------
+
+
+            #incidente.escenarios_i.clear() # Borra todos los escenarios del incidente
+            #incidente.procesos_i.clear() # Borra todos los procesos antiguos del incidente
+
+            sprocesos=SubProceso_V.objects.all() # rescata todos los subprocesos vigentes
+            sprocesos_selec=[]
+            escenarios_selec=[]
+
+            # Recorre las nuevas amenazas declaradas
+            print('---- Recorre nuevas amenazas :.', nuevas_amenazas_declaradas)
+
+            for amenaza in nuevas_amenazas_declaradas:
+                print('--- Amenaza: ', amenaza)
+
+                # Recorre los Escenarios de cada "amenaza" declarada
+                escenarios_en_amenaza=amenaza.landscape
+                #incidente.save()
+
+                for escenario in escenarios_en_amenaza.all():
+
+                    # Identifica a los Procesos Vigentes asociados al nuevo escenario.
+                    for sproc in sprocesos:
+                        
+                        # Selecciona los Escenarios que estan Asociados al Sproceso
+                        esc_en_sproc=sproc.escenarios # Escenarios asociados al Proceso
+                        
+                        for esc in esc_en_sproc.all():
+
+                            # Si el Escenario en la "amenaza" es igual al Escenario en el Sproceso
+                            if escenario == esc:
+
+                                # Asigna el Escenario a los Escenarios del Incidente
+                                if not esc in escenarios_selec:
+                                    escenarios_selec.append(esc)
+                                    #incidente.escenarios_i.add(esc)
+                                    #incidente.save()
+                                    print('--- Nuevo escenario :', esc.titulo)
+
+                                    # Asigna el Proceso a los Procesos del Incidente
+                                    #pk_padre=sproc.pk_padre
+                                    #proceso=get_object_or_404(Proceso, pk=pk_padre)
+                                if not sproc in sprocesos_selec:
+                                    sprocesos_selec.append(sproc)
+                                    #incidente.procesos_i.add(sproc)
+                                    #incidente.save()
+                                    print('--- Nuevo Proceso :', sproc.nombre)
+
+
+            print('----- escenarios selecc:', escenarios_selec)
+            print('----- sprocesos_selecc: ', sprocesos_selec)
+            incidente.escenarios_i.set(escenarios_selec)
+            incidente.procesos_i.set(sprocesos_selec)
             incidente.save()
 
+            #print('-- Procesos   Sel.=', sprocesos_selec)
+            #print('-- Escenarios Sel.=', escenarios_selec)                
+                
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('Lista-Incidentes'))                          
 
@@ -7427,12 +7504,18 @@ def Perfil_Inc(request, pk):
 
 
     incidente = get_object_or_404(Incidentes, pk = pk)
-    print('incidente=', incidente)
+    print('incidente=', incidente.nombre_r)
+
 
     procesos_inc = incidente.procesos_i
-    escenarios_inc = incidente.escenarios_i
-    amenazas_inc = incidente.amenazas_i
+    #escenarios_inc=incidente.escenarios_i
 
+    escenarios_inc = [] 
+    for esc in incidente.escenarios_i.all():
+        print('-- Escenarios:', esc.titulo)
+        escenarios_inc.append(esc.titulo)
+
+    amenazas_inc = incidente.amenazas_i
 
     # Identifica al Comite de Crisis.
     comite=[]
@@ -7443,46 +7526,6 @@ def Perfil_Inc(request, pk):
                 comite.append(integrante)
     print('integrantes del comite =', comite)
 
-
-    #--------------------- Si se agregaron o quitaron amenazas, Recalcula los Escenarios y Procesos involucrados 
-    print('cambio en amenazas=',incidente.changed)
-    if incidente.changed:
-
-        incidente.escenarios_i.set([])  # Borra todas las relaciones con Escenarios
-        incidente.procesos_i.set([])  # Borra todas las relaciones con Procesos
-
-        # Recorre nueva lista de amenazas
-        for amenaza in amenazas_inc.all():
-
-                # Recorre los Escenarios de cada "amenaza" declarada
-                escenarios_en_amenaza=amenaza.landscape
-                for escenario in escenarios_en_amenaza.all():
-
-                    # Identifica los Procesos asociados al "escenario".
-                    sprocesos=SubProceso.objects.all()
-                    for sproc in sprocesos:
-                        
-                        # Selecciona los Escenarios que estan Asociados al Sproceso
-                        esc_en_sproc=sproc.escenarios # Escenarios asociados al Proceso
-                        for esc in esc_en_sproc.all():
-
-                            # Si el Escenario en la "amenaza" es igual al Escenario en el Sproceso
-                            if escenario == esc:
-                                # Asigna el Escenario a los Escenarios del Incidente
-                                incidente.escenarios_i.add(esc)
-
-                                # Asigna el Proceso a los Procesos del Incidente
-                                pk_padre=sproc.pk_padre
-                                proceso=get_object_or_404(Proceso, pk=pk_padre)
-                                incidente.procesos_i.add(sproc)
-
-                            
-                
-        #Graba en BD
-        print('Grabo incidente')
-        incidente.changed=False
-        incidente.save()
-        #-------------------- Fin Si se agregaron o quitaron amenazas
 
     # Estadisticas de Proceso
     # -----------------------
@@ -7545,6 +7588,7 @@ def Perfil_Inc(request, pk):
     
 
     return render(request,'bcp/inc_mgm/perfil_inc.html', {'incidente':incidente,
+                                                          'escenarios_inc':escenarios_inc,
                                                           'comite':comite,
                                                           'amenazas':amenazas_inc,
                                                           'n_procesos':n_procesos,
@@ -7666,17 +7710,47 @@ def toggle_procedimiento(request, procedimiento_id=None):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            procedimiento = Procedimientos.objects.get(id=procedimiento_id)
-            procedimiento.esta_activo = data.get("esta_activo", False)
+            procedimiento = Procedimientos_V.objects.get(id=procedimiento_id)
+            nuevo_estado = data.get("esta_activo", False)
+            procedimiento.esta_activo = nuevo_estado
             procedimiento.save()
+
+            # --------------------------------------------
+            # 🚀 Aquí se dispara el envío de correo
+            # --------------------------------------------
+            try:
+                accion = "Activado"  if nuevo_estado  else "Desactivado"
+                if nuevo_estado:
+                    accion="Activado PC: "+procedimiento.nombre
+                else:
+                    accion="Desactivado PC: "+procedimiento.nombre
+
+                # Ojo: debes definir de dónde obtienes email y cc_email
+                # puede ser del procedimiento mismo o del usuario logeado
+                email = "destinatario@dominio.com"   # <- reemplazar
+                cc_email = "cc@dominio.com"          # <- reemplazar
+                nombre = procedimiento.nombre
+                #proceso = procedimiento.proceso.nombre if procedimiento.proceso else "N/A"
+
+                #Manda_Correo(email, cc_email, nombre, proceso, accion)
+                print('Se envia correo de', accion)
+
+
+            except Exception as e:
+                print(f"⚠️ Error enviando correo: {e}")
+
             return JsonResponse({"success": True, "nuevo_estado": procedimiento.esta_activo})
+
+       
+
         except Procedimientos.DoesNotExist:
             return JsonResponse({"success": False, "error": "Procedimiento no encontrado"}, status=404)
         except json.JSONDecodeError:
             return JsonResponse({"success": False, "error": "Error en JSON"}, status=400)
 
     elif request.method == "GET":
-        procedimientos = Procedimientos.objects.values("id", "esta_activo")
+        procedimientos = Procedimientos_V.objects.values("id", "esta_activo")
+        print('--- PC Activo ---')
         return JsonResponse(list(procedimientos), safe=False)
 
     return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
@@ -7844,7 +7918,7 @@ def Crea_G(request):
         form = Crea_Gestor_Form()
         form2= Crea_Gestor2_Form()
         
-        return render(request, 'bcp/conf/crea_gestor.html', {'form':form, 'form2':form2} )
+        return render(request, 'bcp/conf/gestor/crea_gestor.html', {'form':form, 'form2':form2} )
 
 
 from .forms import Borra_Gestor_Form
@@ -7896,7 +7970,7 @@ def Borra_Gestor(request):
         
         form = Borra_Gestor_Form()
         
-    return render(request,'bcp/conf/borra_gestor.html', {'form':form})
+    return render(request,'bcp/conf/gestor/borra_gestor.html', {'form':form})
     
 
 
@@ -7905,7 +7979,7 @@ class GestorListView(generic.ListView):
     Generic class-based view listing - Listado de Gestores para asignacion de Grupos.
     """
     model = Gestor
-    template_name='bcp/conf/gestor_list.html'
+    template_name='bcp/conf/gestor/gestor_list.html'
 
 
     #def get_queryset(self):
@@ -7961,7 +8035,7 @@ def Asigna_Grupo(request, pk):
         p2 = usuario.groups.all()
         form = Asigna_Grupo_Form(initial= {'grupos':set(p2)})
                                         
-        return render(request, 'bcp/conf/asigna_grupos.html', {'form': form, 'usuario':usuario})
+        return render(request, 'bcp/conf/gestor/asigna_grupos.html', {'form': form, 'usuario':usuario})
 
 
 
@@ -8467,4 +8541,843 @@ def importa_backup(request):
 
     except Exception as e:
         return HttpResponse(f"❌ Error inesperado: {e}")
+    
+#************************************
+#* Respaldo / Recuperacion de la BD *
+#************************************
+
+import io
+import zipfile
+import datetime
+import json
+from django.core import serializers
+from django.http import HttpResponse
+from django.apps import apps
+
+def respaldo_json_zip(request):
+    """
+    Genera un ZIP con un archivo JSON por cada modelo de la app 'bcp'
+    y lo devuelve como descarga.
+    Incluye relaciones ManyToMany explícitas en la clave 'm2m'.
+    """
+    MODELOS = apps.get_app_config("bcp").get_models()
+
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for modelo in MODELOS:
+            nombre = modelo.__name__
+            try:
+                registros = []
+                for obj in modelo.objects.all():
+                    base = serializers.serialize("json", [obj])
+                    base_data = json.loads(base)[0]
+
+                    # Capturar M2M explícitamente
+                    m2m_data = {}
+                    for field in obj._meta.many_to_many:
+                        rel_ids = list(getattr(obj, field.name).values_list("id", flat=True))
+                        m2m_data[field.name] = rel_ids
+
+                    base_data["m2m"] = m2m_data
+                    registros.append(base_data)
+
+                # Guardar archivo JSON en ZIP
+                json_data = json.dumps(registros, indent=2, ensure_ascii=False)
+                zipf.writestr(f"{nombre}.json", json_data)
+
+                print(f"[OK] Respaldo generado para el modelo: {nombre}")
+
+            except Exception as e:
+                print(f"[ERROR] No se pudo respaldar el modelo {nombre}: {e}")
+
+    buffer.seek(0)
+    fecha = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"respaldo_{fecha}.zip"
+
+    response = HttpResponse(buffer, content_type="application/zip")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
+
+# ==================================================================
+
+
+import os
+import json
+import zipfile
+import tempfile
+from django.shortcuts import render
+from django.contrib.auth.models import User, Group
+from django.apps import apps
+from django.db import transaction
+
+
+
+
+def recuperar_json_zip(request):
+    """
+    Vista para restaurar datos desde un archivo ZIP de respaldo.
+    - Triple pasada: 1) crear objetos (preservando PKs), 2) asignar FKs/M2M,
+      3) reintentos para relaciones pendientes.
+    - Log detallado y resumen de pendientes.
+    """
+
+    # --- FK_MAP: adapta/añade según tu modelo (usa los nombres tal como aparecen en apps.get_model("bcp", name)) ---
+    FK_MAP = {
+        # Usuarios y Grupos
+        "Grupos.grupo": Group,
+        "Gestor.user_gestor": User,
+        "Gestor.area": "Area",
+        "Gestor.cod_area": "Cod_Area",
+
+        # Recursos y Tipos
+        "Recursos.tipo": "Tipo_RR",
+        "Nivel_Impacto.tipo": "Tipo_Impacto",
+        "Indicadores_BIA.tipo": "Tipo_Indicador",
+        "Impactos_Asig.impacto": "Tipo_Impacto",
+        "Impactos_Asig_v.impacto": "Tipo_Impacto",
+        "Impactos_Asig.nivel": "Nivel_Impacto",
+        "Impactos_Asig_v.nivel": "Nivel_Impacto",
+        "Indicadores_Asig.indicador": "Tipo_Indicador",
+        "Indicadores_Asig_v.indicador": "Tipo_Indicador",
+        "Indicadores_Asig.nivel": "Indicadores_BIA",
+        "Indicadores_Asig_v.nivel": "Indicadores_BIA",
+
+        # Procedimientos (FKs directas y backups)
+        "Procedimientos.tipo": "Tipo_Proc",
+        "Procedimientos_V.tipo": "Tipo_Proc",
+        "Procedimientos.escenarios": "Escenarios",
+        "Procedimientos_V.escenarios": "Escenarios",
+        "Procedimientos.resp_proceso": "Gestor",
+        "Procedimientos_V.resp_proceso": "Gestor",
+        "Procedimientos.bck_resp": "Gestor",
+        "Procedimientos_V.bck_resp": "Gestor",
+        "Procedimientos.gestor_ejecutor": "Gestor",
+        "Procedimientos_V.gestor_ejecutor": "Gestor",
+        "Procedimientos.bck_ejecutor": "Gestor",
+        "Procedimientos_V.bck_ejecutor": "Gestor",
+        "Procedimientos.enlace_c_crisis": "Gestor",
+        "Procedimientos_V.enlace_c_crisis": "Gestor",
+        "Procedimientos.bck_enlace": "Gestor",
+        "Procedimientos_V.bck_enlace": "Gestor",
+        "Procedimientos.gestor_consultor": "Gestor",
+        "Procedimientos_V.gestor_consultor": "Gestor",
+
+        # Componentes
+        "Componentes.tipo_act": "Tipo_Componente",
+
+        # Logs
+        "LogAut.gestor_aprobador": "Gestor",
+        "Log_Revision.proceso": "Proceso",
+        "Log_Revision.procedimiento": "Procedimientos",
+        "Log_Revision.drp": "Drp",
+        "Log_Revision.gestor_aut": "Gestor",
+
+        # Control de cambios
+        "Control_Cambios.proceso": "SubProceso_V",
+        "Control_Cambios.procedimiento": "Procedimientos_V",
+        "Control_Cambios.gestor_aut": "Gestor",
+
+        # Pasos PC
+        "Pasos_PC.ejecutor": "Gestor",
+        "Pasos_PC_V.ejecutor": "Gestor",
+
+        # DRP
+        "Drp.resp_drp": "Gestor",
+        "Drp.bck_resp_drp": "Gestor",
+        "Drp.gestor_ejecutor_drp": "Gestor",
+        "Drp.bck_ejecutor_drp": "Gestor",
+        "Drp.enlace_c_crisis_drp": "Gestor",
+        "Drp.bck_enlace_drp": "Gestor",
+        "Drp.gestor_consultor_drp": "Gestor",
+        "Drp.tipo_Site": "Tipo_Site",
+        "Drp.disposicion_componentes": "Tipo_Disp",
+
+        # SubProcesos
+        "SubProceso.gestor_R": "Gestor",
+        "SubProceso_V.gestor_R": "Gestor",
+        "SubProceso.gestor_A": "Gestor",
+        "SubProceso_V.gestor_A": "Gestor",
+        "SubProceso.gestor_C": "Gestor",
+        "SubProceso_V.gestor_C": "Gestor",
+        "SubProceso.gestor_I": "Gestor",
+        "SubProceso_V.gestor_I": "Gestor",
+
+        # Procesos (OneToOne)
+        "Proceso.subproceso": "SubProceso",
+        "Proceso.subproceso_v": "SubProceso_V",
+    }
+
+    # Orden sugerido para borrado y lectura (no condiciona la resolución final gracias a la 3ª pasada)
+    ORDEN_MODELOS = [
+        "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador",
+        "Tipo_Impacto", "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P",
+        "Tipo_Proc", "Tipo_Site", "Tipo_Disp", "Tipo_Componente",
+        "Gestor", "Recursos", "Escenarios", "Amenazas", "Estrategias", "Parametros_G",
+        "Indicadores_BIA", "Drp", "Proceso", "SubProceso", "SubProceso_V",
+        "Impactos_Asig", "Impactos_Asig_v", "Indicadores_Asig", "Indicadores_Asig_v",
+        "Procedimientos", "Procedimientos_V",
+        "Servicios_PC", "Servicios_PC_V",
+        "Pasos_PC", "Pasos_PC_V",
+        "Contactos_PC", "Contactos_PC_V",
+        "Componentes", "LBC",
+        "LogAut", "Log_Revision", "Control_Cambios",
+        "Incidentes",
+    ]
+
+    log = []
+    id_map = {}  # 'ModelName.PK' -> instancia creada
+    data_map = {}  # 'ModelName' -> lista de records cargados desde JSON
+
+    def safe_str(obj):
+        try:
+            return str(obj)
+        except Exception:
+            return f"{obj.__class__.__name__}({getattr(obj, 'pk', '?')})"
+
+    if request.method == "POST" and request.FILES.get("zipfile"):
+        zip_file = request.FILES["zipfile"]
+
+        # Extraer ZIP en tempdir
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            zip_path = os.path.join(tmpdirname, "upload.zip")
+            with open(zip_path, "wb") as f:
+                for chunk in zip_file.chunks():
+                    f.write(chunk)
+            with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                zip_ref.extractall(tmpdirname)
+
+            # --- Cargar todos los JSON primero (sin tocar DB aún) ---
+            for model_name in ORDEN_MODELOS:
+                file_path = os.path.join(tmpdirname, f"{model_name}.json")
+                if not os.path.exists(file_path):
+                    log.append(f"[SKIP] {model_name}: no encontrado en ZIP.")
+                    continue
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    data_map[model_name] = data
+                except Exception as e:
+                    log.append(f"[ERROR] {model_name}: fallo al leer JSON: {e}")
+                    data_map[model_name] = []
+
+            # --- BORRAR datos existentes (en ORDEN_MODELOS) ---
+            for model_name in ORDEN_MODELOS:
+                try:
+                    model = apps.get_model("bcp", model_name)
+                except LookupError:
+                    log.append(f"[WARN] Modelo {model_name} no existe en la app.")
+                    continue
+                try:
+                    deleted, _ = model.objects.all().delete()
+                    log.append(f"[DELETE] {model_name}: eliminados {deleted}")
+                except Exception as e:
+                    log.append(f"[ERROR] {model_name}: error al eliminar: {e}")
+
+            # --- PRIMERA PASADA: crear placeholders (preservando PKs), sin FKs ni M2M ---
+            created_counts = defaultdict(int)
+            create_errors = defaultdict(int)
+            for model_name in ORDEN_MODELOS:
+                data = data_map.get(model_name, [])
+                if not data:
+                    continue
+                try:
+                    model = apps.get_model("bcp", model_name)
+                except LookupError:
+                    continue
+
+                for record in data:
+                    pk = record.get("pk")
+                    fields = record.get("fields", {})
+                    try:
+                        # crear instancia con PK original
+                        obj = model(pk=pk)
+                        # asignar SOLO campos no-relacionales y no-M2M
+                        for field, value in fields.items():
+                            if value is None:
+                                continue
+                            try:
+                                fmeta = model._meta.get_field(field)
+                                # si es relación (FK / OneToOne) o M2M -> saltar en primera pasada
+                                if getattr(fmeta, 'many_to_many', False) or getattr(fmeta, 'is_relation', False):
+                                    continue
+                                # intento asignar directo (puede fallar para campos especiales)
+                                setattr(obj, field, value)
+                            except FieldDoesNotExist:
+                                # Si el campo no existe, intentar asignarlo _por si_ el JSON tiene extras
+                                try:
+                                    setattr(obj, field, value)
+                                except Exception:
+                                    pass
+                            except Exception:
+                                # si falla la asignación, ignoramos y continuamos; se registrará si es crítico
+                                pass
+                        # guardar preservando pk
+                        try:
+                            obj.save(force_insert=True)
+                        except Exception:
+                            # fallback (si force_insert falla por algún motivo)
+                            obj.save()
+                        id_map[f"{model_name}.{pk}"] = obj
+                        created_counts[model_name] += 1
+                    except Exception as e:
+                        create_errors[model_name] += 1
+                        log.append(f"[ERROR] {model_name}: no pudo crear pk={pk} :: {e}")
+
+            # registrar creación por modelo
+            for model_name in ORDEN_MODELOS:
+                if created_counts.get(model_name, 0) or create_errors.get(model_name, 0):
+                    log.append(f"[CREATED] {model_name}: placeholders creados {created_counts.get(model_name,0)}, errores {create_errors.get(model_name,0)}")
+
+            # --- SEGUNDA PASADA: intentar asignar FKs y M2M (primer intento) ---
+            fk_unresolved = []   # lista de tuples para reintentos: (model_name, pk, field, target_model_name_or_type, target_pk)
+            m2m_unresolved = []  # tuples: (model_name, pk, field, missing_ids, present_ids)
+            fk_errors_count = defaultdict(int)
+            m2m_errors_count = defaultdict(int)
+
+            for model_name in ORDEN_MODELOS:
+                data = data_map.get(model_name, [])
+                if not data:
+                    # aún queremos registrar OK con 0 importados si archivo vacío?
+                    continue
+                try:
+                    model = apps.get_model("bcp", model_name)
+                except LookupError:
+                    continue
+
+                for record in data:
+                    pk = record.get("pk")
+                    fields = record.get("fields", {})
+                    m2m_fields = record.get("m2m", {})
+                    obj = id_map.get(f"{model_name}.{pk}")
+                    if not obj:
+                        log.append(f"[ERROR] {model_name}: placeholder pk={pk} no encontrado en id_map")
+                        continue
+
+                    # FKs (según FK_MAP preferentemente, fallback genérico)
+                    for field, value in fields.items():
+                        if value is None:
+                            continue
+                        key = f"{model_name}.{field}"
+                        # ignorar si no es relación conocida o si valor vacío
+                        try:
+                            fmeta = model._meta.get_field(field)
+                        except FieldDoesNotExist:
+                            fmeta = None
+
+                        # si no es campo relacional o es M2M, saltear (M2M se maneja luego)
+                        if fmeta and getattr(fmeta, 'many_to_many', False):
+                            continue
+                        if fmeta and not getattr(fmeta, 'is_relation', False) and key not in FK_MAP:
+                            continue
+
+                        if key in FK_MAP:
+                            target = FK_MAP[key]
+                        else:
+                            # fallback: deducir target por la metadata del campo
+                            if fmeta and getattr(fmeta, 'is_relation', False):
+                                rel = fmeta.remote_field
+                                target = rel.model.__name__ if hasattr(rel.model, '__name__') else rel.model
+                            else:
+                                # no es relacion conocida -> ignorar
+                                continue
+
+                        # resolver target value (usar id_map preferente)
+                        resolved = None
+                        try:
+                            if target == User:
+                                resolved = User.objects.filter(pk=value).first()
+                            elif target == Group:
+                                resolved = Group.objects.filter(pk=value).first()
+                            else:
+                                # target is model name string
+                                target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
+                                if target_name:
+                                    resolved = id_map.get(f"{target_name}.{value}") or apps.get_model("bcp", target_name).objects.filter(pk=value).first()
+                                else:
+                                    resolved = None
+                        except Exception:
+                            resolved = None
+
+                        if not resolved:
+                            # marcar para reintento
+                            fk_unresolved.append((model_name, pk, field, target, value))
+                            fk_errors_count[model_name] += 1
+                            # log estilo compacto (no inundar demasiado)
+                            log.append(f"[FK-MISS] {model_name}.{field}: {safe_str(obj)} esperaba {getattr(target, '__name__', target)}({value}) → no encontrado")
+                        else:
+                            # asignar y guardar inmediatamente
+                            try:
+                                setattr(obj, field, resolved)
+                                obj.save()
+                            except Exception as e:
+                                fk_errors_count[model_name] += 1
+                                log.append(f"[FK-ERROR] {model_name}.{field}: {safe_str(obj)} -> {getattr(target,'__name__',target)}({value}) :: {e}")
+
+                    # M2M: tratar con .set()
+                    for field, ids in m2m_fields.items():
+                        try:
+                            fmeta = model._meta.get_field(field)
+                            related_model = fmeta.related_model
+                        except Exception as e:
+                            m2m_unresolved.append((model_name, pk, field, ids, []))
+                            m2m_errors_count[model_name] += len(ids)
+                            log.append(f"[M2M-ERROR] {model_name}.{field}: {safe_str(obj)} -> no se pudo determinar modelo relacionado :: {e}")
+                            continue
+
+                        present = []
+                        missing = []
+                        for rel_pk in ids:
+                            rel_obj = id_map.get(f"{related_model.__name__}.{rel_pk}") or related_model.objects.filter(pk=rel_pk).first()
+                            if rel_obj:
+                                present.append(rel_obj)
+                            else:
+                                missing.append(rel_pk)
+
+                        try:
+                            # asignar los presentes (puede ser lista vacía)
+                            getattr(obj, field).set(present)
+                            obj.save()
+                            if missing:
+                                m2m_unresolved.append((model_name, pk, field, missing, [o.pk for o in present]))
+                                m2m_errors_count[model_name] += len(missing)
+                                log.append(f"[M2M-MISS] {model_name}.{field}: {safe_str(obj)} → faltaron {len(missing)} ({missing})")
+                        except Exception as e:
+                            m2m_unresolved.append((model_name, pk, field, ids, []))
+                            m2m_errors_count[model_name] += len(ids)
+                            log.append(f"[M2M-ERROR] {model_name}.{field}: {safe_str(obj)} :: {e}")
+
+            # --- TERCERA PASADA: reintentar FKs y M2M pendientes hasta max_attempts ---
+            max_attempts = 6
+            attempt = 0
+            resolved_any = True
+            # transformar listas en sets/dicts para manipular
+            fk_pending = fk_unresolved[:]
+            m2m_pending = m2m_unresolved[:]
+
+            while attempt < max_attempts and (fk_pending or m2m_pending) and resolved_any:
+                attempt += 1
+                resolved_any = False
+                new_fk_pending = []
+                # reintentar FKs
+                for (model_name, pk, field, target, value) in fk_pending:
+                    try:
+                        obj = id_map.get(f"{model_name}.{pk}")
+                        if not obj:
+                            new_fk_pending.append((model_name, pk, field, target, value))
+                            continue
+
+                        resolved = None
+                        if target == User:
+                            resolved = User.objects.filter(pk=value).first()
+                        elif target == Group:
+                            resolved = Group.objects.filter(pk=value).first()
+                        else:
+                            target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
+                            if target_name:
+                                resolved = id_map.get(f"{target_name}.{value}") or apps.get_model("bcp", target_name).objects.filter(pk=value).first()
+
+                        if not resolved:
+                            new_fk_pending.append((model_name, pk, field, target, value))
+                            continue
+
+                        # asignar y guardar
+                        setattr(obj, field, resolved)
+                        obj.save()
+                        resolved_any = True
+                        # log de re-asignacion exitosa (compacto)
+                        log.append(f"[FK-RETRY-OK] {model_name}.{field}: {safe_str(obj)} <- {getattr(resolved,'pk', '?')}")
+                    except Exception as e:
+                        new_fk_pending.append((model_name, pk, field, target, value))
+                        log.append(f"[FK-RETRY-ERR] {model_name}.{field}: pk={pk} :: {e}")
+
+                fk_pending = new_fk_pending
+
+                # reintentar M2M
+                new_m2m_pending = []
+                for (model_name, pk, field, missing_ids, present_ids) in m2m_pending:
+                    try:
+                        obj = id_map.get(f"{model_name}.{pk}")
+                        if not obj:
+                            new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                            continue
+                        model = apps.get_model("bcp", model_name)
+                        fmeta = model._meta.get_field(field)
+                        related_model = fmeta.related_model
+
+                        # intentar resolver missings
+                        newly_found = []
+                        still_missing = []
+                        for rel_pk in missing_ids:
+                            rel_obj = id_map.get(f"{related_model.__name__}.{rel_pk}") or related_model.objects.filter(pk=rel_pk).first()
+                            if rel_obj:
+                                newly_found.append(rel_obj)
+                            else:
+                                still_missing.append(rel_pk)
+
+                        # recuperar los presentes (siempre reconsigue)
+                        already = [ id_map.get(f"{related_model.__name__}.{rid}") or related_model.objects.filter(pk=rid).first() for rid in present_ids ]
+                        already = [o for o in (already or []) if o]
+
+                        all_to_set = already + newly_found
+                        try:
+                            getattr(obj, field).set(all_to_set)
+                            obj.save()
+                            if still_missing:
+                                new_m2m_pending.append((model_name, pk, field, still_missing, [o.pk for o in all_to_set]))
+                                log.append(f"[M2M-RETRY-PARTIAL] {model_name}.{field}: {safe_str(obj)} → aún faltan {len(still_missing)} ({still_missing})")
+                            else:
+                                resolved_any = True
+                                log.append(f"[M2M-RETRY-OK] {model_name}.{field}: {safe_str(obj)} <- {len(all_to_set)} items")
+                        except Exception as e:
+                            new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                            log.append(f"[M2M-RETRY-ERR] {model_name}.{field}: {safe_str(obj)} :: {e}")
+
+                    except Exception as e:
+                        new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                        log.append(f"[M2M-RETRY-ERR] {model_name}.{field}: pk={pk} :: {e}")
+
+                m2m_pending = new_m2m_pending
+
+            # --- RESÚMENES FINALES por modelo (OK / pendientes) ---
+            # contar importados por modelo (cantidad de registros en JSON)
+            for model_name in ORDEN_MODELOS:
+                total = len(data_map.get(model_name, []))
+                fk_errs = sum(1 for t in fk_pending if t[0] == model_name)
+                m2m_errs = sum(len(t[3]) for t in m2m_pending if t[0] == model_name)
+                # Si ya hubo creaciones registradas, mostrar OK; si no, omitir
+                if total > 0:
+                    if fk_errs == 0 and m2m_errs == 0:
+                        log.append(f"[OK] {model_name}: importados {total} (FK errores=0, M2M errores=0)")
+                    else:
+                        log.append(f"[OK] {model_name}: importados {total} (FK errores={fk_errs}, M2M errores={m2m_errs})")
+
+            # Detalle final de pendientes (por registro) para que puedas identificarlos
+            if fk_pending:
+                for model_name, pk, field, target, value in fk_pending:
+                    log.append(f"[PENDIENTE-FK] {model_name}.{field}: pk={pk} esperaba {getattr(target,'__name__',target)}({value})")
+            if m2m_pending:
+                for model_name, pk, field, missing_ids, present in m2m_pending:
+                    log.append(f"[PENDIENTE-M2M] {model_name}.{field}: pk={pk} faltan {len(missing_ids)} ({missing_ids})")
+
+        # fin temporarydir
+
+        return render(request, "bcp/conf/dbm/recuperar_form.html", {"log": log})
+
+    # GET -> formulario
+    return render(request, "bcp/conf/dbm/recuperar_form.html", {"log": None})
+
+
+
+import io
+import json
+import zipfile
+import tempfile
+import datetime
+from django.apps import apps
+from django.shortcuts import render, redirect
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
+from django.contrib.admin.views.decorators import staff_member_required
+from django.db import transaction, models as dj_models
+from django.contrib import messages
+
+@staff_member_required
+def auditoria_integridad(request):
+    """
+    Auditoría de integridad para la app 'bcp'.
+    GET -> muestra el informe (HTML).
+    GET ?format=json -> devuelve JSON con el informe.
+    (Solo usuarios staff pueden ejecutarla.)
+    """
+    app_label = "bcp"
+    models_list = list(apps.get_app_config(app_label).get_models())
+
+    report = []
+    total_issues = 0
+
+    for model in models_list:
+        model_name = model.__name__
+        model_issues = []
+
+        # 1) ForeignKey / OneToOne checks
+        for field in model._meta.get_fields():
+            if isinstance(field, (dj_models.ForeignKey, dj_models.OneToOneField)):
+                # resolver modelo destino
+                target = field.remote_field.model
+                if isinstance(target, str):
+                    if "." in target:
+                        app_name, model_short = target.split(".", 1)
+                        target = apps.get_model(app_name, model_short)
+                    else:
+                        target = apps.get_model(app_label, target)
+
+                # 1.a) registros con NULL cuando field.null == False
+                if not field.null:
+                    null_qs = model.objects.filter(**{f"{field.name}__isnull": True})
+                    null_count = null_qs.count()
+                    if null_count:
+                        sample = list(null_qs.values_list("pk", flat=True)[:10])
+                        model_issues.append({
+                            "type": "missing_required_fk",
+                            "field": field.name,
+                            "target": target.__name__,
+                            "count": null_count,
+                            "sample_pks": sample,
+                        })
+                        total_issues += null_count
+
+                # 1.b) FK huérfanas: ids presentes en fk_id pero no existen en target
+                ids_qs = model.objects.exclude(**{f"{field.name}__isnull": True}).values_list(f"{field.name}_id", flat=True).distinct()
+                ids = [i for i in ids_qs if i is not None]
+                if ids:
+                    existing_ids = set(target.objects.filter(pk__in=ids).values_list("pk", flat=True))
+                    missing_ids = set(ids) - existing_ids
+                    if missing_ids:
+                        sample_records = list(model.objects.filter(**{f"{field.name}_id__in": list(missing_ids)}).values("pk")[:10])
+                        model_issues.append({
+                            "type": "orphaned_fk",
+                            "field": field.name,
+                            "target": target.__name__,
+                            "missing_ids": list(missing_ids)[:200],
+                            "sample_records": sample_records,
+                        })
+                        total_issues += len(missing_ids)
+
+        # 2) ManyToMany checks (solo relaciones M2M reales, no auto_created)
+        for field in model._meta.get_fields():
+            if field.many_to_many and not getattr(field, "auto_created", False):
+                related_model = field.remote_field.model
+                if isinstance(related_model, str):
+                    if "." in related_model:
+                        app_name, model_short = related_model.split(".", 1)
+                        related_model = apps.get_model(app_name, model_short)
+                    else:
+                        related_model = apps.get_model(app_label, related_model)
+
+                m2m_orphans = []
+                # iteramos; en tablas grandes puede tardar: optimizable
+                for obj in model.objects.all():
+                    ids = list(getattr(obj, field.name).values_list("pk", flat=True))
+                    if not ids:
+                        continue
+                    existing = set(related_model.objects.filter(pk__in=ids).values_list("pk", flat=True))
+                    missing = set(ids) - existing
+                    if missing:
+                        m2m_orphans.append({"obj_pk": obj.pk, "missing_ids": list(missing)})
+                if m2m_orphans:
+                    model_issues.append({
+                        "type": "m2m_orphaned",
+                        "field": field.name,
+                        "related_model": related_model.__name__,
+                        "details_count": len(m2m_orphans),
+                        "details_sample": m2m_orphans[:10],
+                    })
+                    total_issues += sum(len(d["missing_ids"]) for d in m2m_orphans)
+
+        if model_issues:
+            report.append({"model": model_name, "issues": model_issues})
+
+    if request.GET.get("format") == "json":
+        return JsonResponse({"report": report, "total_issues": total_issues}, safe=False)
+
+    return render(request, "bcp/conf/dbm/auditoria_integridad.html", {"report": report, "total_issues": total_issues})
+
+
+@staff_member_required
+def reparar_integridad(request):
+    """
+    Vista para reparar problemas detectados por auditoria_integridad.
+    - GET: muestra la misma auditoria con un formulario para elegir la acción.
+    - POST: ejecuta la reparación solicitada (confirmar 'confirm' = 'yes').
+    Parámetros POST esperados:
+        action: 'clean_orphans' | 'delete_orphans' | 'apply_defaults'
+        default_map (opcional): JSON string mapping "Model.field" -> default_pk (o list for M2M)
+        confirm: must be "yes"
+    """
+    # recalcular informe (reusamos la lógica de auditoria, simplificada)
+    app_label = "bcp"
+    models_list = list(apps.get_app_config(app_label).get_models())
+
+    # recomputar reporte (igual que auditoria_integridad)
+    report = []
+    for model in models_list:
+        model_name = model.__name__
+        model_issues = []
+
+        for field in model._meta.get_fields():
+            if isinstance(field, (dj_models.ForeignKey, dj_models.OneToOneField)):
+                target = field.remote_field.model
+                if isinstance(target, str):
+                    if "." in target:
+                        app_name, model_short = target.split(".", 1)
+                        target = apps.get_model(app_name, model_short)
+                    else:
+                        target = apps.get_model(app_label, target)
+
+                if not field.null:
+                    null_qs = model.objects.filter(**{f"{field.name}__isnull": True})
+                    null_count = null_qs.count()
+                    if null_count:
+                        sample = list(null_qs.values_list("pk", flat=True)[:10])
+                        model_issues.append({
+                            "type": "missing_required_fk",
+                            "field": field.name,
+                            "target": target.__name__,
+                            "count": null_count,
+                            "sample_pks": sample,
+                        })
+
+                ids_qs = model.objects.exclude(**{f"{field.name}__isnull": True}).values_list(f"{field.name}_id", flat=True).distinct()
+                ids = [i for i in ids_qs if i is not None]
+                if ids:
+                    existing_ids = set(target.objects.filter(pk__in=ids).values_list("pk", flat=True))
+                    missing_ids = set(ids) - existing_ids
+                    if missing_ids:
+                        sample_records = list(model.objects.filter(**{f"{field.name}_id__in": list(missing_ids)}).values("pk")[:10])
+                        model_issues.append({
+                            "type": "orphaned_fk",
+                            "field": field.name,
+                            "target": target.__name__,
+                            "missing_ids": list(missing_ids)[:200],
+                            "sample_records": sample_records,
+                        })
+
+            if field.many_to_many and not getattr(field, "auto_created", False):
+                related_model = field.remote_field.model
+                if isinstance(related_model, str):
+                    if "." in related_model:
+                        app_name, model_short = related_model.split(".", 1)
+                        related_model = apps.get_model(app_name, model_short)
+                    else:
+                        related_model = apps.get_model(app_label, related_model)
+
+                m2m_orphans = []
+                for obj in model.objects.all():
+                    ids = list(getattr(obj, field.name).values_list("pk", flat=True))
+                    if not ids:
+                        continue
+                    existing = set(related_model.objects.filter(pk__in=ids).values_list("pk", flat=True))
+                    missing = set(ids) - existing
+                    if missing:
+                        m2m_orphans.append({"obj_pk": obj.pk, "missing_ids": list(missing)})
+                if m2m_orphans:
+                    model_issues.append({
+                        "type": "m2m_orphaned",
+                        "field": field.name,
+                        "related_model": related_model.__name__,
+                        "details_count": len(m2m_orphans),
+                        "details_sample": m2m_orphans[:10],
+                    })
+
+        if model_issues:
+            report.append({"model": model_name, "issues": model_issues})
+
+    if request.method == "GET":
+        return render(request, "bcp/conf/auditoria_integridad_reparar.html", {"report": report})
+
+    # POST -> ejecutar reparación
+    action = request.POST.get("action")
+    confirm = request.POST.get("confirm")
+    default_map_raw = request.POST.get("default_map", "{}")
+
+    if confirm != "yes":
+        return HttpResponseBadRequest("Debe confirmar la operación (confirm=yes).")
+
+    try:
+        default_map = json.loads(default_map_raw) if default_map_raw else {}
+    except Exception:
+        return HttpResponseBadRequest("default_map debe ser JSON válido.")
+
+    # Ejecución de la reparación
+    results = []
+    with transaction.atomic():
+        for item in report:
+            model_name = item["model"]
+            model = apps.get_model(app_label, model_name)
+            for issue in item["issues"]:
+                if issue["type"] == "orphaned_fk":
+                    field_name = issue["field"]
+                    missing_ids = issue["missing_ids"]
+                    # Acción: clean_orphans => set NULL si permite; delete_orphans => delete; apply_defaults => set default if provided
+                    if action == "clean_orphans":
+                        field_obj = model._meta.get_field(field_name)
+                        if field_obj.null:
+                            q = model.objects.filter(**{f"{field_name}_id__in": missing_ids})
+                            updated = q.update(**{f"{field_name}": None})
+                            results.append({"model": model_name, "field": field_name, "action": "set_null", "count": updated})
+                        else:
+                            results.append({"model": model_name, "field": field_name, "action": "skip_set_null_not_nullable", "count": 0})
+                    elif action == "delete_orphans":
+                        q = model.objects.filter(**{f"{field_name}_id__in": missing_ids})
+                        deleted_count, _ = q.delete()
+                        results.append({"model": model_name, "field": field_name, "action": "delete_records", "count": deleted_count})
+                    elif action == "apply_defaults":
+                        key = f"{model_name}.{field_name}"
+                        if key in default_map:
+                            default_pk = default_map[key]
+                            target_model = model._meta.get_field(field_name).remote_field.model
+                            try:
+                                default_obj = target_model.objects.get(pk=default_pk)
+                                q = model.objects.filter(**{f"{field_name}_id__in": missing_ids})
+                                updated = q.update(**{f"{field_name}": default_obj})
+                                results.append({"model": model_name, "field": field_name, "action": f"set_default:{default_pk}", "count": updated})
+                            except Exception as e:
+                                results.append({"model": model_name, "field": field_name, "action": "set_default_failed", "error": str(e)})
+                        else:
+                            results.append({"model": model_name, "field": field_name, "action": "no_default_provided", "count": 0})
+                elif issue["type"] == "missing_required_fk":
+                    field_name = issue["field"]
+                    if action == "apply_defaults":
+                        key = f"{model_name}.{field_name}"
+                        if key in default_map:
+                            default_pk = default_map[key]
+                            target_field = model._meta.get_field(field_name).remote_field.model
+                            try:
+                                default_obj = target_field.objects.get(pk=default_pk)
+                                q = model.objects.filter(**{f"{field_name}__isnull": True})
+                                updated = q.update(**{f"{field_name}": default_obj})
+                                results.append({"model": model_name, "field": field_name, "action": f"set_default_missing:{default_pk}", "count": updated})
+                            except Exception as e:
+                                results.append({"model": model_name, "field": field_name, "action": "set_default_failed", "error": str(e)})
+                        else:
+                            results.append({"model": model_name, "field": field_name, "action": "no_default_provided", "count": 0})
+                    elif action == "delete_orphans":
+                        q = model.objects.filter(**{f"{field_name}__isnull": True})
+                        deleted_count, _ = q.delete()
+                        results.append({"model": model_name, "field": field_name, "action": "delete_records_missing_required", "count": deleted_count})
+                    else:
+                        results.append({"model": model_name, "field": field_name, "action": "skip_missing_required", "count": 0})
+                elif issue["type"] == "m2m_orphaned":
+                    field_name = issue["field"]
+                    # remove missing ids from M2M (safe)
+                    if action in ("clean_orphans", "delete_orphans", "apply_defaults"):
+                        related_model = None
+                        for f in model._meta.get_fields():
+                            if f.many_to_many and f.name == field_name:
+                                related_model = f.remote_field.model
+                                break
+                        if related_model is None:
+                            results.append({"model": model_name, "field": field_name, "action": "related_model_not_found"})
+                            continue
+
+                        # recorrer sample o todos (aquí recorremos todos)
+                        removed_total = 0
+                        for obj in model.objects.all():
+                            ids = list(getattr(obj, field_name).values_list("pk", flat=True))
+                            if not ids:
+                                continue
+                            existing = set(related_model.objects.filter(pk__in=ids).values_list("pk", flat=True))
+                            missing = set(ids) - existing
+                            if not missing:
+                                continue
+                            # quitar los missing
+                            kept = [i for i in ids if i in existing]
+                            getattr(obj, field_name).set(kept)
+                            removed_total += len(missing)
+                        results.append({"model": model_name, "field": field_name, "action": "remove_missing_from_m2m", "count": removed_total})
+
+    # Al final mostrar resultados
+    return render(request, "bcp/conf/dbm/auditoria_reparacion_result.html", {"results": results})
+
+
+
 

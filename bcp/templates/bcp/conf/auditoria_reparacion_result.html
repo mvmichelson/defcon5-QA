@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<h1>Resultados de la reparación</h1>
+
+{% if not results %}
+  <p>No se ejecutó ninguna acción o no hubo resultados.</p>
+{% else %}
+  <ul>
+  {% for r in results %}
+    <li>{{ r.model }}.{{ r.field }} → {{ r.action }} ({{ r.count|default:"-" }}) {% if r.error %} Error: {{ r.error }}{% endif %}</li>
+  {% endfor %}
+  </ul>
+{% endif %}
+
+<p><a href="{% url 'auditoria_integridad' %}">Volver a auditoría</a></p>
+{% endblock %}

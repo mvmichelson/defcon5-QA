@@ -17,17 +17,15 @@ Opcion */
 
 /* Switch Activa/Desactiva Procedimiento de Contingencia */
 
-/* ===========================================================================================*/
 
-/*body {
+
+
+
+
+
+
+body {
   margin: 0;
-}*/
-
-/* Espacio para el contenido del extend de base_generic.html*/
-.col-sm-10 {
-    margin-top: 0;
-    padding-top: 0px;    /* distancia desde el encabezado */
-    padding-left: 0px;   /* espacio lateral desde sidebar */
 }
 
 .chart {
@@ -54,6 +52,7 @@ Opcion */
 .encabezado {
 	color:blue;
 	background: rgba(0, 128, 0, 0.5); /* Green background */
+	/*text-align: right; */
 	font-size: 30px;
 	padding: 2px;
 }
@@ -62,13 +61,17 @@ Opcion */
 	background: rgba(255, 153, 0, 0.9); /* Encabezado salmon*/
 	text-align: center;
 	font-size: 15px;
+	/* font-color: white; */
 	padding: 2px;
     border-radius: 5px;
 	border: 1px solid black;
 }
 
 .encabezado_B {
+	/* background:rgba(0, 111, 134, 0.5) /* Azul agua */
+
 	text-align: center;
+	/* font-size: 15px;*/
 	padding: 5px;
 	border: 1px solid black;
 	border-radius: 5px;
@@ -78,15 +81,22 @@ Opcion */
 .encabezado_N {
 	background:black; /* Negro*/
 	text-align: center;
+	/* font-size: 15px;*/
 	padding: 10px;
+	
 }
 
 .encabezado_SB {
+	/* background:rgba(255, 99, 71, 0.3); /* papel rozado */
 	text-align: center;
+	/* font-size: 15px;*/
 	padding: 0px;
 	border: 2px solid green;
 	border-radius: 5px;
+	
 }
+
+
 
 .encabezado_C {
 	background:rgba(255, 0, 0, 0.8); /*Color Rojo tomate*/
@@ -106,10 +116,9 @@ Opcion */
 	padding: 5px;
 }
 
-/* antiguo (borrar si no hay problemas con el nuevo)
 .sidebar-nav {
 	font-family: sans-serif;
-    font-size: 1.1rem;
+    	font-size: 1.1rem;
 	border: 1px solid black;
 	border-radius: 10px;
 	margin-top:0px;
@@ -117,20 +126,22 @@ Opcion */
 	width:100%;
 	padding: 10px;
 	list-style: none;
+	/* background: rgba(0, 128, 0, 0.3) /* Green background with 30% opacity */
+	
 }
-*/
 
 .sesion {
 	height:0;
 	text-align: right;
 	padding: 0;
-	background: rgba(0, 128, 0, 0.3);
+	background: rgba(0, 128, 0, 0.3); /* Green background with 30% opacity */
 	height: 100%;
 }
 
 .FondoP {
-	background: rgba(0, 128, 0, 0.3);
+	background: rgba(0, 128, 0, 0.3); /* Green background with 30% opacity */
 	margin-right: 70px;
+
 }
 
 .Fondo_C {
@@ -142,7 +153,7 @@ Opcion */
 }
 
 .FondoD {
-	background: rgba(0, 0, 102, 0.9);
+	background: rgba(0, 0, 102, 0.9);   /* Fondo Azul */
 	width: 100%;
 	height: auth;
 	border: 2px solid black;
@@ -159,26 +170,30 @@ a {
 	height:20px;
 	width:20px;
 	padding:5px;
+	
 }
 
 aa {
 	margin-top:5px;
 	font-family: sans-serif;
-    font-size: 1.2rem;
+    	font-size: 1.2rem;
 	color:green;
 	padding:0px;
+		
 }
 
 ab {	
 	margin-top:5px;
 	font-family: sans-serif;
-    font-size: 3rem;
+    	font-size: 3rem;
 	color:green;
+		
 }
 
 bl {
 	margin-top:5px;
 	color:white;
+		
 }
 
 bb { 
@@ -186,6 +201,7 @@ bb {
 	font-size: 13px;
 }
 
+/* Usado para mensajes en pantalla */
 bn {               
 	color:black;
 	font-family: sans-serif;
@@ -197,11 +213,10 @@ am {
 	color:rgba(255, 215, 0, 1);
 }
 
-sa { 	
-    margin-top:5px;                      
+sa { 	margin-top:5px;                      
 	color:rgba(255, 153, 0, 0.9); 
 	font-family: sans-serif;
-    font-size: 1.2rem;
+    	font-size: 1.2rem;
 }
 
 rr {
@@ -217,11 +232,12 @@ der {
 ii { 
 	text-align: left;
 	width:100%;
-}
+
+   }
 
 tm {
 	font-family: sans-serif;
-    font-size: 1.0rem;	
+    	font-size: 1.0rem;	
 }
 
 
@@ -235,18 +251,19 @@ tm {
     padding: 2px;
     overflow-y: scroll;
     border-radius: 5px;
-    box-sizing: border-box;
-}
+    box-sizing: border-box;}
     
 .BarraScroll_Ext {
     margin:0;
     width: 100%; 
     height: 100%; 
+    
     overflow-y: scroll;
-}	
+    }	
+
 
 .scr {
-  background:rgba(0, 128, 0, 0.2);
+  background:rgba(0, 128, 0, 0.2);/* Fondo verde agua (usado en fondos de listas  de Mapeo) */
   width: 100%;
   height: 60vh;
   border: 1px solid black;
@@ -254,14 +271,14 @@ tm {
 }
 
 .scrb {
-  background: rgba(255, 153, 0, 0.3);
+  background: rgba(255, 153, 0, 0.3); /* Fondo ladrillo  (usado en fondos de listas  de Procedimientos de Contingencia) */
   width: 100%;
   height: 60vh;
   border: 1px solid black;
   overflow: scroll;
 }
 
-.scr2 {
+.scr2 { /* Usar para porcion superior de pantalla */
   background: rgba(222, 220, 220, 0.5);  
   width: 100%;
   height: 50vh;
@@ -270,7 +287,7 @@ tm {
   padding:5px;
 }
 
-.scr3 {
+.scr3 {  /* Usar para porcion inferior de pantalla */
   background: rgba(255, 99, 71, 0.2);  
   width: 100%;
   height: auth;
@@ -279,20 +296,23 @@ tm {
   padding:5px;
 }
 
-.scr4 {
+/* Marcos sin Scroll */	
+
+.scr4 {  /*  */
   background: rgba(222, 220, 220, 0.5);  
   width: 100%;
   height: auth;
   border: 1px solid black;
   padding:5px;
   border-radius: 10px;
+
 }
 
 /* Cuadros */
 
 thead,
 tfoot {
-    background-color: rgba(0, 0, 153, 0.8);
+    background-color: rgba(0, 0, 153, 0.8); /*#3f87a6;*/
     color: #fff;
 }
 
@@ -301,9 +321,12 @@ tenc {
     color: #fff;
 }
 
+
 tbody {
-    background-color: white;
+    background-color: white;  /*#e4f0f5;*/ 
+    
 }
+
 
 caption {
     padding: 10px;
@@ -321,13 +344,14 @@ caption {
 
 td,
 th {
-    border: 1px solid  rgb(0,0,102);
+    border: 1px solid  rgb(0,0,102);          /* rgb(190, 190, 190);*/
     padding: 1px 10px;
 }
 
 td {
     text-align: rigth;
 }
+
 
 /* ComboBox */
 
@@ -358,20 +382,22 @@ textarea{
     width:450px;
 }
 
+
 .blink {
     animation: blinker 1.0s linear infinite;
+    /*color: red;*/
+    /*font-family: sans-serif;*/
 }
-
 @keyframes blinker {
-    50% {
-        opacity: 0;
-    }
+            50% {
+                opacity: 0;
+   }
 }
 
 /* ----- BOX DE ENTRADAS DE DATOS (Widgets)  ------ */
 
 .inbox_1 {
-  	background: rgba(255, 153, 0, 0.1);
+  	background: rgba(255, 153, 0, 0.1); /* Fondo ladrillo  (usado en fondos de listas  de Procedimientos de Contingencia) */
  	width: 100%;
   	height: 60%;
   	border: 1px solid black;
@@ -380,24 +406,31 @@ textarea{
 }
 
 .inbox_2 {
-  	width: 100%;
+  	
+ 	width: 100%;
   	height: 30%;
   	border: 1px solid black;
 	border-radius: 10px;
+  	
 }
 
 .inbox_3 {
-  	border: 1px solid black;
+  	
+ 	border: 1px solid black;
 	border-radius: 10px;
+  	
 }
+
 
 /* Figuras de Diagrama */
 /* =================== */
 
+/* Rectangulo en 3D */
+
 .rectangle-3d {
     width: 150px;
     height: 100px;
-    background-color: #007bff;
+    background-color: #007bff; /* Color del rectángulo */
     color: #fff;
     display: flex;
     justify-content: center;
@@ -405,39 +438,47 @@ textarea{
     font-size: 50px;
     font-weight: bold;
     text-align: center;
-    transform: perspective(500px) rotateY(-30deg);
-    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.5);
-    border: 2px solid #0056b3;
+    transform: perspective(500px) rotateY(-30deg); /* Efecto 3D desde el ángulo derecho */
+    box-shadow: 5px 10px 15px rgba(0, 0, 0, 0.5); /* Sombra para dar profundidad */
+    border: 2px solid #0056b3; /* Borde opcional */
 }
 
 .rectangle-3d .text {
-    transform: rotateY(30deg);
+    transform: rotateY(30deg); /* Alinea el texto correctamente en el rectángulo 3D */
 }
 
+
+/* Círculo en 3D */
 .circle-3d {
     width: 100px;
     height: 100px;
-    background: linear-gradient(145deg, #3cb371, #2e8b57);
+    background: linear-gradient(145deg, #3cb371, #2e8b57); /* Efecto degradado para 3D */
     border-radius: 50%;
-    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3), -10px -10px 15px rgba(255, 255, 255, 0.3);
-    transform: rotateY(20deg);
+    box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3), -10px -10px 15px rgba(255, 255, 255, 0.3); /* Profundidad */
+    transform: rotateY(20deg); /* Vista desde el ángulo derecho */
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
 }
 
+/* Texto centrado */
 .text {
     color: white;
     font-size: 1.2rem;
     font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     text-align: center;
-    z-index: 1;
+    z-index: 1; /* Asegura que el texto esté visible */
 }
+
+
+
 
 /* Sectores de Pagina */
 /* ================== */
+
+/* Basico */
 
 .sector {
 	width: 50%;
@@ -445,45 +486,109 @@ textarea{
 	padding: 10px;
 }
 
-/*Grid Layout para manejar sectores*/
+/* Uso:
+<div class="sector">
+<h2>Texto en el sector izquierdo</h2>
+<p>Aquí va el contenido textual.</p>
+</div>
+
+<div class="sector">
+<h2>Imagen en el sector derecho</h2>
+<img src="imagen2.jpg" alt="Descripción">
+</div>
+*/
+
+/*Grid Layout para manejar sectores
+El CSS Grid te permite definir sectores con precisión en una cuadrícula. (Columnas)*/
 
 .grid-container {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
-}
+    }
 
 .grid-item {
         padding: 20px;
         border: 1px solid #ccc;
-}
+    }
 
-/* Flexbox para distribución flexible */
+/* Uso:
+<div class="grid-container">
+    <div class="grid-item">
+        <h2>Texto en el sector 1</h2>
+        <p>Contenido de texto aquí.</p>
+    </div>
+    <div class="grid-item">
+        <h2>Imagen en el sector 2</h2>
+        <img src="imagen3.jpg" alt="Descripción">
+    </div>
+</div>
+*/
+
+/* Flexbox para distribución flexible
+El sistema Flexbox permite organizar 
+sectores de manera flexible, ajustándose al tamaño del contenedor. */
 
 .flex-container {
         display: flex;
         justify-content: space-between;
-}
+    }
 
 .flex-item {
         width: auth;
         padding: 5px;
-}
-
-/* Responsive Design */
-
-@media (max-width: 768px) {
-    .flex-container {
-        flex-direction: column;
+        /*border: 1px solid #ddd;*/
     }
-    .flex-item {
+
+
+/* Uso: 
+<div class="flex-container">
+    <div class="flex-item">
+        <h2>Texto en el sector izquierdo</h2>
+        <p>Este es el contenido textual de este sector.</p>
+    </div>
+
+    <div class="flex-item">
+        <h2>Imagen en el sector derecho</h2>
+        <img src="imagen4.jpg" alt="Descripción de la imagen">
+    </div>
+</div>
+*/
+
+/* Responsive Design para manejar sectores en diferentes dispositivos
+Puedes usar media queries en CSS para hacer que los sectores cambien
+ su diseño en función del tamaño de la pantalla (por ejemplo, en móviles).
+
+<style>
+    .sector {
         width: 100%;
-        margin-bottom: 10px;
+        padding: 10px;
     }
-}
 
-/* Mensajes de tipo Comic */
+    @media (min-width: 768px) {
+        .sector {
+            width: 50%;
+            float: left;
+        }
+    }
+</style>
 
+<div class="sector">
+    <h2>Sector 1</h2>
+    <p>Texto en el sector 1.</p>
+</div>
+
+<div class="sector">
+    <h2>Sector 2</h2>
+    <img src="imagen5.jpg" alt="Descripción de la imagen">
+</div>
+
+ */
+
+/* Mensajes de tipo Comic para dar instrucciones con posicionamiento del cursor en la 
+Opcion */
+
+/* Ocultar el globo por defecto */
 #comicBalloon {
     position: absolute;
     display: none;
@@ -498,23 +603,31 @@ textarea{
 }
 
 /* Efectos de Pantalla */
+/* =================== */
 
 .aparecer-abajo {
 	opacity: 0;
-	transform: translateY(100px);
-	animation: aparecer 1s ease-out forwards;
+	transform: translateY(100px);  /* Mueve hacia abajo */
+	animation: aparecer 1s ease-out forwards; /* Duración y suavidad de la animación */
 }
 
 @keyframes aparecer {
 	to {
 		opacity: 1;
-		transform: translateY(0);
+		transform: translateY(0);  /* Elemento vuelve a su posición original */
 	}
 }
 
+/* Uso:
+  <div class="aparecer-abajo">
+        Este texto aparece desde abajo con un efecto suave.
+    </div>
+*/
+
+
 .aparecer-lento {
 	opacity: 0;
-	animation: fadeIn 1s ease-in forwards;
+	animation: fadeIn 1s ease-in forwards; /* Aparece en 3 segundos */
 }
 
 @keyframes fadeIn {
@@ -523,20 +636,32 @@ textarea{
 	}
 }
 
+/* Uso:
+ <div class="aparecer-lento">
+        Este texto aparece lentamente.
+    </div>
+*/
+
 .aparecer-lado {
 	opacity: 0;
-	transform: translateX(-100px);
+	transform: translateX(-100px);  /* Mueve el elemento hacia la izquierda */
 	animation: slideIn 2s ease-out forwards;
 }
 
 @keyframes slideIn {
 	to {
 		opacity: 1;
-		transform: translateX(0);
+		transform: translateX(0);  /* Vuelve a su posición original */
 	}
 }
+/* Uso:
+ <div class="aparecer-lado">
+        Este texto aparece desde la izquierda.
+    </div>
+*/
 
 /* Caja de Confirmacion de Borrado de Regisro */
+/* ========================================== */
 
 .hidden {
     display: none;
@@ -581,7 +706,10 @@ button {
     color: white;
 }
 
-/* Botones de Opcion */
+
+
+/* Botones de Opcion  */
+/* ================= */
 
 .button {
     display: inline-block;
@@ -596,53 +724,55 @@ button {
     border: 2px solid black;
     border-radius: 5%; 
     box-shadow: 0 5px rgb(74, 71, 71);
-}
-
-.button:hover {
+  }
+  
+  .button:hover {
       color: white;
       background-color: red;
       border-radius: 5%;
-}
-
-.button:active {
+    }
+  
+  .button:active {
     color:white;
     background-color: green;
     border-radius: 5%;
     box-shadow: 0 10px #666;
     transform: translateX(6px); 
-}
-
-/* ---- Boton en Imagen ---- */
-.container {
-    position: relative;
-    width: 100%;
-    max-width: 400px;
-}
-
-.container img {
-    width: 100%;
-    height: auto;
-}
-
-.container .btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #f1cb0c;
-    color: black;
-    font-size: 16px;
-    padding: 16px 30px;
-    border: 1px #efecdb;
-    cursor: pointer;
-    border-radius: 10px;
-    text-align: center;
-}
-
-.container .btn:hover {
-    background-color: black;
-    color: rgb(240, 175, 10);
-}
+  }
+  
+  ---- Boton en Imagen ----
+  .container {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+    
+    .container img {
+      width: 100%;
+      height: auto;
+    }
+    
+    .container .btn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+      background-color: #f1cb0c;
+      color: black;
+      font-size: 16px;
+      padding: 16px 30px;
+      border: 1px #efecdb;
+      cursor: pointer;
+      border-radius: 10px;
+      text-align: center;
+    }
+    
+    .container .btn:hover {
+      background-color: black;
+      color: rgb(240, 175, 10);
+    }
+  
 
 /* Despliegue en Revision de Evaluacion O.C. */
 
@@ -656,20 +786,23 @@ button {
 	border-radius: 8px;
     padding: 5px;
     z-index: 500;
-    display: block;
+    display: block; /* Asegura que el cuadro esté visible */
 }
 
 .hidden {
     display: none;
 }
 
+    
 /* Indentaciones de texto */
+/* ====================== */
 
-.indenta { padding-left: 120px; }
-.indenta_ctrl { padding-left: 310px; }
-.indenta_obs  { padding-left: 350px; }
+.indenta { padding-left: 120px; /* Ajusta la cantidad de indentación deseada */ }
+.indenta_ctrl { padding-left: 310px; /* Ajusta la cantidad de indentación deseada */ }
+.indenta_obs  { padding-left: 350px; /* Ajusta la cantidad de indentación deseada */ }
 
 /* Bordes de la Tabla de Seleccion de opciones */
+/* =========================================== */
 
 .styled-table {
     width: 100%;
@@ -686,9 +819,11 @@ button {
     background-color: #f2f2f2;
 }
 
-/* Switch Activa/Desactiva Procedimiento de Contingencia */
 
-.switch {
+/* Switch Activa/Desactiva Procedimiento de Contingencia */
+/* ===================================================== */
+
+   .switch {
     position: relative;
     display: inline-block;
     width: 35px;
@@ -732,150 +867,4 @@ input:checked + .slider {
 
 input:checked + .slider:before {
     transform: translateX(20px);
-}
-
-/* ===================== NUEVAS MEJORAS PARA TEMPLATE ===================== */
-
-/* Tablas: filas alternadas y hover */
-.lta tbody tr:nth-child(odd) {
-    background-color: #f7f9fc;
-}
-
-.lta tbody tr:nth-child(even) {
-    background-color: #ffffff;
-}
-
-.lta tbody tr:hover {
-    background-color: #d1e7fd;
-}
-
-/* Encabezados de tablas */
-.lta thead th {
-    background-color: #1f4e79;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-}
-
-/* Scroll mejorado con suavizado */
-.BarraScroll {
-    scrollbar-width: thin;
-    scrollbar-color: #1f4e79 #d9d9d9;
-}
-
-/* Para navegadores Webkit */
-.BarraScroll::-webkit-scrollbar {
-    width: 8px;
-}
-
-.BarraScroll::-webkit-scrollbar-track {
-    background: #d9d9d9;
-    border-radius: 5px;
-}
-
-.BarraScroll::-webkit-scrollbar-thumb {
-    background-color: #1f4e79;
-    border-radius: 5px;
-    border: 2px solid #d9d9d9;
-}
-
-/* Ajuste de links e iconos */
-a span {
-    transition: transform 0.2s ease;
-}
-
-a span:hover {
-    transform: scale(1.2);
-}
-
-/* Bordes de celdas más suaves */
-.lta td, .lta th {
-    border: 1px solid #1f4e79;
-    padding: 5px 8px;
-    font-size: 0.95rem;
-}
-
-/* Mejor contraste en scroll interno */
-.BarraScroll {
-    background-color: #f5f5f5;
-    padding: 5px;
-}
-
-/* Flex-item responsive */
-.flex-item {
-    min-width: 250px;
-    max-width: 48%;
-    box-sizing: border-box;
-}
-
-/* ===================== MENÚ LATERAL ===================== */
-.sidebar-nav {
-    width: 150px;
-    background: rgba(0, 128, 0, 0.5);
-    padding: 12px;
-    border-radius: 10px;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-/* Título principal del menú */
-.sidebar-nav .menu-title {
-    font-size: 1.3rem;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 15px;
-    padding-bottom: 5px;
-    border-bottom: 2px solid rgba(255,255,255,0.3);
-}
-
-/* Secciones internas */
-.sidebar-nav .menu-section {
-    margin-top: 20px;
-    margin-bottom: 8px;
-    font-size: 1rem;
-    font-weight: bold;
-    color: #d1f2d1;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Lista limpia */
-.sidebar-nav .menu-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-/* Enlaces */
-.sidebar-nav .menu-link {
-    display: flex;
-    align-items: center;
-    gap: 4px;               /* espacio entre ícono y texto */
-    padding: 16px 6px;
-    margin: 3px 0;
-    border-radius: 6px;
-    color: #fff;
-    text-decoration: none;
-    font-size: 1.0rem;
-    line-height: 1.4;
-    transition: background 0.3s, padding-left 0.2s;
-}
-
-/* Íconos */
-.sidebar-nav .menu-link .icon {
-    font-size: 1.1rem;      /* todos los iconos se normalizan */
-    width: 20px;            /* reserva espacio fijo */
-    text-align: center;
-}
-
-/* Hover */
-.sidebar-nav .menu-link:hover {
-    background: rgba(255,255,255,0.2);
-    padding-left: 14px;
-}
-
-/* Activo */
-.sidebar-nav .menu-link.active {
-    background: rgba(255,255,255,0.3);
-    font-weight: bold;
-    border-left: 3px solid yellow;
 }

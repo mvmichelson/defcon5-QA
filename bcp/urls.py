@@ -24,7 +24,6 @@ urlpatterns = [
 
     # Pagina Principal y utilidades
     path('', views.index, name='index'),         # Pagina Principal
-    path('reinicia/', views.reset, name='reinicia_bd'),     # Reinicia la Base de Datos
 
     path('get_chart/', views.get_chart, name='get_chart'),
     #url(r'^$', views.Base_GenericPageView.as_view(), name='base_generic'),
@@ -45,6 +44,22 @@ urlpatterns = [
    
     #url(r'^procesos/$', views.ProcesoListView.as_view(), name='Lista-Procesos'),
     #url(r'^proceso/(?P<pk>[-\w]+)/renew/$', views.crea_proceso.as_view(), name='Crea-Procesos'),
+
+
+    # Adm. de BD
+    # ==========
+
+    path('reinicia/', views.reset, name='reinicia_bd'),     # Reinicia la Base de Datos
+
+    # Respalda / Recupera la BD
+    path("respaldar-json/", views.respaldo_json_zip, name="respaldar_json_zip"), # Respalda BD
+    #path("recuperar-json/", views.recuperar_json_zip, name="recuperar_json_zip"), 
+    path("recuperar-form/", views.recuperar_json_zip, name="recuperar_form"),   # Recuperacion de Respaldo
+    path("auditoria-integridad/", views.auditoria_integridad, name="auditoria_integridad"),
+    path("auditoria-integridad/reparar/", views.reparar_integridad, name="reparar_integridad"),
+
+
+
 
 ]
 

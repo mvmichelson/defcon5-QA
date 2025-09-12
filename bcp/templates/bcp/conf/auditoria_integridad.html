@@ -1,0 +1,41 @@
+{% extends "base_generic.html" %}   
+
+{% block content %}
+<h1>Auditoría de integridad — bcp</h1>
+<p>Total issues detectadas: <strong>{{ total_issues }}</strong></p>
+
+{% if not report %}
+  <p>No se detectaron problemas.</p>
+{% endif %}
+
+{% for m in report %}
+  <hr>
+  <h2>Modelo: {{ m.model }}</h2>
+  <ul>
+  {% for issue in m.issues %}
+    <li>
+      {% if issue.type == "missing_required_fk" %}
+        <strong>FK requerida NULL</strong> — campo: <code>{{ issue.field }}</code> → destino <code>{{ issue.target }}</code>.
+        Registros NULL: {{ issue.count }}. Ejemplos PK: {{ issue.sample_pks }}.
+      {% elif issue.type == "orphaned_fk" %}
+        <strong>FK huérfana</strong> — campo: <code>{{ issue.field }}</code> → destino <code>{{ issue.target }}</code>.
+        IDs faltantes: {{ issue.missing_ids|length }} (muestra: {{ issue.missing_ids }}). Registros de ejemplo: {{ issue.sample_records }}.
+      {% elif issue.type == "m2m_orphaned" %}
+        <strong>M2M huérfana</strong> — campo: <code>{{ issue.field }}</code> → relacionado <code>{{ issue.related_model }}</code>.
+        Objetos afectados: {{ issue.details_count }}. Muestra: {{ issue.details_sample }}.
+      {% else %}
+        {{ issue }}
+      {% endif %}
+    </li>
+  {% endfor %}
+  </ul>
+{% endfor %}
+
+<p>
+  Opciones:
+  <ul>
+    <li>Descargar JSON: <a href="?format=json">/bcp/auditoria-integridad/?format=json</a></li>
+    <li>Arreglos automáticos: no están habilitados por seguridad en esta vista. Puedo darte un endpoint separado (POST seguro) para intentar correcciones (p.ej. marcar NULLs, borrar huérfanos o asignar un valor por defecto) — dime si quieres que lo agregue.</li>
+  </ul>
+</p>
+{% endblock %}

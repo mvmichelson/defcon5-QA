@@ -1,0 +1,40 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Recuperar datos desde respaldo (ZIP)</h2>
+
+    <!-- Formulario -->
+    <form method="post" enctype="multipart/form-data" class="mb-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="zipfile" class="form-label">Seleccione archivo ZIP:</label>
+            <input type="file" name="zipfile" id="zipfile" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Recuperar</button>
+    </form>
+
+    <!-- Resultados -->
+    {% if log %}
+        <h4 class="mt-4">Resultado de la recuperación</h4>
+        <div class="card mt-3">
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for line in log %}
+                        <li class="list-group-item {% if '[ERROR]' in line %}list-group-item-danger
+                                                  {% elif '[WARN]' in line %}list-group-item-warning
+                                                  {% elif '[OK]' in line %}list-group-item-success
+                                                  {% else %}list-group-item-light{% endif %}">
+                            {{ line }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% elif log is not none %}
+        <div class="alert alert-info mt-4">
+            No se procesaron datos.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -10,18 +10,18 @@
 
 	{% block enc_activo %}
 	<ul class="encabezado_B">
-        <am><p class="blink"><strong>REPORTE DE PERFIL DE INCIDENTE&emsp;{{incidente.codigo}}</strong></p></am>
+        <rr><p class="blink"><strong>REPORTE DE PERFIL DE INCIDENTE&emsp;{{incidente.codigo}}</strong></p></rr>
 	</ul>
 	{% endblock %}
 
 
-<!------- Bloque 0 --------------------------------------------------------------->
-<div class="flex-container" style="width: 100%;">
+<!-- /******************************* Bloque 0 *************************************/ -->
+<div class="flex-container">
 
 	<!------------ Seccion 1 Reporte ---------->
-	<div class="flex-item"style="width: 47%;">
+	<div class="flex-item" style="width: 100%; height: 300px;">
 		<ul class="encabezado_SB"><h5><strong>REPORTE</strong></h5></ul>
-		<ul class="scr2" style="width: 100%;">
+		<ul class="scr2" style="width: 100%; height: 300px;">
 			<br/>
 				<p><strong>Codigo...............:<strong>&emsp;{{incidente.codigo}}</p>
 				<p><strong>Fecha................:<strong>&emsp;{{incidente.fecha}}</p>
@@ -30,7 +30,7 @@
 				<br/>
 				
 				<h5><strong>Descripcion:</strong></h5>
-				{{incidente.descripcion}}
+				<ul>{{incidente.descripcion}}</ul>
 				<br/>
 				
 				<h5><strong>Amenazas reportadas:</strong></h5>
@@ -66,8 +66,8 @@
 
 	<!------------ Seccion 2 Lista del Comite de Crisis ---------->
 	<div class="flex-item" >
-	<ul class="encabezado_SB"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
-	<ul class="scr2" style="height: 100px;">
+	<ul class="encabezado_SB" style="width: 400px;"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
+	<ul class="scr2" style="width: 400px; height: 300px;">
 	<table class="lta">
 		<thead>
 			<tr>
@@ -96,17 +96,13 @@
 	</ul>
 	
 	<br/>
-	<ul class="encabezado_SB"><h5><strong>GENERALES</strong></h5></ul>
-	<ul class="scr4">
-		<p><strong>Numero de Procesos Alcanzados :&ensp;{{n_procesos}}</strong></p>
-		<p><strong>Puntaje Promedio ...........................:&ensp;{{puntaje_x |floatformat:2}}</strong></p>
-	</ul>
 
 
 	</div><!------------ Fin Seccion 2 Lista del Comite de Crisis ---------->
 
 
-</div><!------- Bloque 0  --------------------------------------------------------------->
+</div><!-- /******************************* Fin Bloque 0 *************************************/ -->
+
 
 
 <br/>
@@ -114,12 +110,28 @@
 <br/>
 <ul class="scr4">
 
-<!------- Bloque A --------------------------------------------------------------->
+
+<!-- /******************************* Bloque A *************************************/ -->
 <div class="flex-container" style="width: 100%;">
 
-	<!------------ Seccion 1 Indicdores de Impactos ---------->
-	<div class="flex-item" style="width: 35%; text-align: center">
+	<!-- COLUMNA IZQUIERDA ----->
+	<div class="flex-item" style="width: 35%;">
+	<ul class="encabezado_SB" style="background: yellow;"><h5><strong>GENERALES</strong></h5></ul>
+	<br/>
+	<ul class="scr4" style="background: white;">
+		<br/>
+		<p><strong>Numero de Procesos Alcanzados :&ensp;{{n_procesos}}</strong></p>
+		<p><strong>Puntaje Promedio ...........:&ensp;{{puntaje_x |floatformat:2}}</strong></p>
+	</ul>
 
+		
+
+
+	</div><!------------ FIN COLUMNA IZQUIERDA ---------->
+
+	<!------------ COLUMNA CENTRAL  ---------->
+	<div class="flex-item"style="width: 36%;">
+		<!------------ Indicadores de Impactos ---------->
 		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Indicadores de Impacto</strong></h5></ul>
 		<br/>
 		<table class="lta">
@@ -144,34 +156,13 @@
 				{% endfor %}
 			</tbody>		
 			</table>
-		
-		  	<br/><br/>
-			<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Servicios / Recursos </strong></h5></ul>
-			<br/>
-			<table class="lta">
-				<thead>
-					<tr>
-					<th scope="col">Servicios/Recursos</th>
-					<th scope="col"># Procesos</th>
-		
-					</tr> 
-				</thead>
-			
-				<tbody>
-					{% for recurso, cantidad  in estadistica_recursos.items %}
-							<tr>
-								<td>{{ recurso }}</td>
-								<td>{{ cantidad }}</td>
-							</tr>
-					{% endfor %}
-				</tbody>		
-				</table>
-	
+		<!------------ Fin Indicadores de Impactos ---------->
 
-	</div><!------------ Fin Seccion 1 Indicadores de Impacto ---------->
+	</div><!------FIN COLUMNA CENTRAL  --------->
 
-	<!------------ Seccion 2 Indicadores de Recuperacion ---------->
-	<div class="flex-item"style="width: 36%;">
+	<!------------ COLUMNA DERECHA   ---------->
+	<div class="flex-item"style="width: 34%;">
+	<!----- Indicadores de Recuperacion ------------->
 	<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Indicadores de Recuperacion</strong></h5></ul>
 	<br/>
 	<table class="lta">
@@ -195,15 +186,22 @@
 				{% endfor %}
 			{% endfor %}
 		</tbody>		
-		</table>
+	</table>
+	<!----- Fin Indicadores de Recuperacion ------------->
 
 
 
+	</div><!-------- FIN COLUMNA DERECHA ---------->
 
-	</div><!------------ Fin Seccion 2 Datos Generales del alcance de Impacto ---------->
+</div>
+<!-- /******************************* Fin Bloque A  *************************************/ -->
 
-	<!------------ Seccion 3 Escenarios de Riesgo  ---------->
-	<div class="flex-item"style="width: 34%;">
+<!-- /******************************* Bloque B *************************************/ -->
+<div class="flex-container">
+	<!------------ COLUMNA IZQUIERDA ---------->
+	<div class="flex-item" style="width: 33%;">
+			
+		<!---- Escenarios de Riesgo ---------->
 		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Escenarios de Riesgo </strong></h5></ul>
 		<br/>
 		<table class="lta">
@@ -218,47 +216,94 @@
 			<tbody>
 				{% for escenario, cantidad  in estadistica_escenarios.items %}
 						<tr>
-							<td>{{ escenario }}</td>
-							<td>{{ cantidad }}</td>
+						{%if escenario in escenarios_inc %}
+							<td><strong class="blink" style="color: red;">{{ escenario }}</strong></td>
+							<td style="text-align: center;"><strong class="blink" style="color: red;">{{ cantidad }}</strong></td>
+						{%else%}
+							<td><a style="color: grey;">{{ escenario }}</a></td>
+							<td style="text-align: center;"><a style="color: grey;">{{ cantidad }}</a></td>
+
+						{%endif%}
 						</tr>
 				{% endfor %}
 			</tbody>		
-			</table>
+		</table>
+		<!---- Fin Escenarios de Riesgo ---------->
 
-		</div><!------------ Fin Seccion 2 Datos Generales del alcance de Impacto ---------->
-</div><!------- Fin Bloque A --------------------------------------------------------------->
+	</div><!------FIN COLUMNA IZQUIERDA  ---------->
 
+	<!------------ COLUMNA CENTRO ---------->
+	<div class="flex-item" style="width: 33%;">
+
+		<!------------- Servicios / Recursos ------->
+		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Servicios / Recursos </strong></h5></ul>
+		<br/>
+		<table class="lta">
+				<thead>
+					<tr>
+					<th scope="col">Servicios/Recursos</th>
+					<th scope="col"># Procesos</th>
+		
+					</tr> 
+				</thead>
+			
+				<tbody>
+					{% for recurso, cantidad  in estadistica_recursos.items %}
+							<tr>
+								<td>{{ recurso }}</td>
+								<td>{{ cantidad }}</td>
+							</tr>
+					{% endfor %}
+				</tbody>		
+				</table>
+		<!------------- Fin Servicios / Recursos ------->
+
+
+	</div><!------FIN COLUMNA CENTRO  ---------->
+
+	<!------------ COLUMNA DERECHA ---------->
+	<div class="flex-item" style="width: 33%;">
+			
+
+	</div><!------FIN COLUMNA DERECHA  ---------->
+
+
+</div>
+<!-- /******************************* Bloque B *************************************/ -->
 
 
 
 </ul>	
 
-<!------- Bloque B --------------------------------------------------------------->
-
 <br/>
 <br/>
-<ul class="encabezado_SB"><h5><strong>MATRIZ DE PROCEDIMIENTOS</strong></h5></ul>
+<ul class="encabezado_SB"><h5><strong>MATRIZ DE CONTINGENCIAS</strong></h5></ul>
 
 <ul class="scr2" style="height: 390px;">
 <table class="lta">
 	<thead>
-		<tr>
-		<th scope="col" style="background: green; width: 300px; font-size: 20px;">PROCESO</th>
-		<th scope="col" style="background: green; width: 200px; font-size: 20px; text-align: center;">RTO</th>
+		<tr> <!--- Encabezado ------>
+			<th scope="col" style="background: green; width: 300px; font-size: 20px;">PROCESO</th>
+			<th scope="col" style="background: green; width: 200px; font-size: 20px; text-align: center;">RTO</th>
 
-		<th scope="col" style="background: black;"></th>
+			<th scope="col" style="background: black;"></th>
 
-		{% for escenario, _ in estadistica_escenarios.items %}
-		<th scope="col" style="background: black; width: 100px;" >{{ escenario}}</th>
-		{% endfor %}
+			<!-- Despliega Columnas con Escenarios -->
+			{% for escenario, _ in estadistica_escenarios.items %}
+				{% if escenario in escenarios_inc %}
+				<th scope="col" style="background: black; width: 100px; height: 100px;" >{{ escenario}}</th>
+				{%endif%}
+			{% endfor %}
+
 		</tr> 
-	</thead>
+	</thead><!--- Fin Encabezado ------>
 
 	<tbody>
 		{% for proc in procesos.all %}
 		<tr>
-			<td scope="row" style="width: 300px; padding: 1px  5px;">{{proc.path}}</td>
-			{%for ind in proc.indicador_subp.all %}
+			<td scope="row" style="width: 300px; padding: 1px  5px;">
+				<a href="{% url 'Detalle-Proceso-V2'  proc.pk %}" style="color:green">{{proc.path}}</a></td>
+			{%for ind in proc.indicador_subp.all %} <!-- Busca indicador RTO -->
 				{%if ind.indicador.nombre == 'RTO' %}
 					<td scope="row" style="width: 200px; padding: 1px  5px;">{{ind.nivel.definicion}}</td>
 				{%endif%}
@@ -266,34 +311,42 @@
 
 			<td scope="row" style="background: black;"></td>
 			
-				{% for escenario, _ in estadistica_escenarios.items %}
-				<!---- Inicio de la Fila ------>
-				<td scope="row" style="text-align: center; padding: 1px  5px;">
-				
-					{% for prc in proc.procedimientos_contingencia.all %}
-					
-						<!--- Si el escenario  es igual a escenario del Procedimiento -->
-						{% if escenario == prc.escenarios.titulo %}
-						
-							<a href = "{% url 'det-proced'  prc.pk %}" 
-							class="link" data-message="Procedimiento de Contingencia (PC) .: {{prc.nombre}}"
-							><p style="font-size: 25px;">&#128215</p></a>
+			{% for escenario, _ in estadistica_escenarios.items %}
 
-							<!--- Activa / Desactiva Procedimiento -->
-							<label class="switch" >
-								<input type="checkbox" id="toggle-activo-{{ prc.id }}" 
-									data-id="{{ prc.id }}"> 
-									{% if procedimiento.esta_activo %}checked{% endif %}
-								<span class="slider link" data-message="Activa/Desactiva el PC .:{{prc.nombre}}" ></span>
-							</label>
-												
-							<!--- Fin Activa/Desactiva ----->
-						
-						{%endif%}
+				{%if escenario in escenarios_inc %}
+
+					<!---- Inicio de la Fila ------>
+					<td scope="row" style="text-align: center; padding: 1px  5px; width: 100px; height: 100px;">
 					
-					{%endfor%}
-				</td> <!---- Fin de la Fila ------>
-				{% endfor %}
+						{% for prc in proc.procedimientos_contingencia_v.all %}
+											
+							<!--- Si el escenario es igual al escenario del Procedimiento -->
+							{% if escenario == prc.escenarios.titulo %}
+							
+								<a href="{% url 'det-proced-v' prc.pk %}" 
+								class="link" 
+								data-message="Procedimiento de Contingencia (PC) .: {{ prc.nombre }}">
+								<p style="font-size: 25px;">&#128215</p>
+								</a>
+
+								<!--- Activa / Desactiva Procedimiento -->
+								<label class="switch">
+									<input type="checkbox" id="toggle-activo-{{ prc.id }}" 
+										data-id="{{ prc.id }}"
+										{% if prc.esta_activo %}checked{% endif %}>  
+									<span class="slider link" 
+										data-message="Activa/Desactiva el PC .: {{ prc.nombre }}">
+									</span>
+								</label>
+								<!--- Fin Activa/Desactiva ----->
+								<!---- Estado del procedimiento -->
+							
+							{% endif %}
+						{% endfor %}
+					</td> <!---- Fin de la Fila ------>
+
+				{%endif%}
+			{% endfor %}
 
 
 		</tr>
@@ -303,20 +356,6 @@
 </ul>
 <br/><br/><br/>
 
-<div class="flex-container">
-	<!------------ Seccion 1 Lista del Comite de Crisis ---------->
-	<div class="flex-item" style="width: 50%;">
-			
-
-	</div><!------------ Fin Seccion 1 Lista del Comite de Crisis ---------->
-
-	<!------------ Seccion 2 Datos Generales del alcance de Impacto ---------->
-
-	</div><!------------ Fin Seccion 2 Datos Generales del alcance de Impacto ---------->
-
-
-
-</div><!------- Fin Bloque B --------------------------------------------------------------->
 
 
 	<!----- CSS para Scripts ----------------------------------->
@@ -345,6 +384,9 @@
 		
 
 	<!--------- Fin CSS para Scripts ------------------------->
+
+<br/>
+<p style="font-size: 8px;">[perfil_inc]</p>
 
 
 {% endblock %}
