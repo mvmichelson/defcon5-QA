@@ -151,6 +151,12 @@ selec_TI=[]
 
 # Fin variables Globales
 
+# ===============================================================================================
+# 
+#================================================================================================
+
+
+
 class Base_GenericPageView(TemplateView):
     
     model = Parametros_G
@@ -649,11 +655,19 @@ def Actualiza_Mapeo(request, pk):
     Cambia el estado de un Proceso autorizado en todas sus fases para su actualizacion
     """
     print('-- Actualiza Mapeo :')
+
     proceso=get_object_or_404(Proceso, pk=pk)
     print('--- Proceso :', proceso)
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Consultores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
+
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
 
     proceso.subproceso.status="C"
     proceso.subproceso.fase_status="M"
@@ -1708,6 +1722,7 @@ def Aut_Asig_Esc(request, pk):
                             for nombre in impactos_agregados:
                                 imp_p = dict_p[nombre]
                                 imp_v, created = Impactos_Asig_v.objects.get_or_create(
+                                    pk_proc=pk,
                                     impacto=imp_p.impacto,
                                     nivel=imp_p.nivel
                                 )
@@ -1717,6 +1732,7 @@ def Aut_Asig_Esc(request, pk):
                             for nombre in cambios_nivel:
                                 imp_p = dict_p[nombre]
                                 imp_v, created = Impactos_Asig_v.objects.get_or_create(
+                                    pk_proc=pk,
                                     impacto=imp_p.impacto,
                                     nivel=imp_p.nivel
                                 )
@@ -1776,6 +1792,7 @@ def Aut_Asig_Esc(request, pk):
                             for nombre in indicadores_agregados:
                                 ind_p = dict_ip[nombre]
                                 ind_v, created = Indicadores_Asig_v.objects.get_or_create(
+                                    pk_proc=pk,
                                     indicador=ind_p.indicador,
                                     nivel=ind_p.nivel
                                 )
@@ -1785,6 +1802,7 @@ def Aut_Asig_Esc(request, pk):
                             for nombre in cambios_nivel_ind:
                                 ind_p = dict_ip[nombre]
                                 ind_v, created = Indicadores_Asig_v.objects.get_or_create(
+                                    pk_proc=pk,
                                     indicador=ind_p.indicador,
                                     nivel=ind_p.nivel
                                 )
