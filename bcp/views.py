@@ -7918,7 +7918,7 @@ def Crea_G(request):
         form = Crea_Gestor_Form()
         form2= Crea_Gestor2_Form()
         
-        return render(request, 'bcp/conf/gestor/crea_gestor.html', {'form':form, 'form2':form2} )
+        return render(request, 'bcp/conf/crea_gestor.html', {'form':form, 'form2':form2} )
 
 
 from .forms import Borra_Gestor_Form
@@ -7970,7 +7970,7 @@ def Borra_Gestor(request):
         
         form = Borra_Gestor_Form()
         
-    return render(request,'bcp/conf/gestor/borra_gestor.html', {'form':form})
+    return render(request,'bcp/conf/borra_gestor.html', {'form':form})
     
 
 
@@ -7979,7 +7979,7 @@ class GestorListView(generic.ListView):
     Generic class-based view listing - Listado de Gestores para asignacion de Grupos.
     """
     model = Gestor
-    template_name='bcp/conf/gestor/gestor_list.html'
+    template_name='bcp/conf/gestor_list.html'
 
 
     #def get_queryset(self):
@@ -8035,7 +8035,7 @@ def Asigna_Grupo(request, pk):
         p2 = usuario.groups.all()
         form = Asigna_Grupo_Form(initial= {'grupos':set(p2)})
                                         
-        return render(request, 'bcp/conf/gestor/asigna_grupos.html', {'form': form, 'usuario':usuario})
+        return render(request, 'bcp/conf/asigna_grupos.html', {'form': form, 'usuario':usuario})
 
 
 
@@ -9061,10 +9061,10 @@ def recuperar_json_zip(request):
 
         # fin temporarydir
 
-        return render(request, "bcp/conf/dbm/recuperar_form.html", {"log": log})
+        return render(request, "bcp/conf/recuperar_form.html", {"log": log})
 
     # GET -> formulario
-    return render(request, "bcp/conf/dbm/recuperar_form.html", {"log": None})
+    return render(request, "bcp/conf/recuperar_form.html", {"log": None})
 
 
 
@@ -9179,7 +9179,7 @@ def auditoria_integridad(request):
     if request.GET.get("format") == "json":
         return JsonResponse({"report": report, "total_issues": total_issues}, safe=False)
 
-    return render(request, "bcp/conf/dbm/auditoria_integridad.html", {"report": report, "total_issues": total_issues})
+    return render(request, "bcp/conf/auditoria_integridad.html", {"report": report, "total_issues": total_issues})
 
 
 @staff_member_required
@@ -9376,7 +9376,7 @@ def reparar_integridad(request):
                         results.append({"model": model_name, "field": field_name, "action": "remove_missing_from_m2m", "count": removed_total})
 
     # Al final mostrar resultados
-    return render(request, "bcp/conf/dbm/auditoria_reparacion_result.html", {"results": results})
+    return render(request, "bcp/conf/auditoria_reparacion_result.html", {"results": results})
 
 
 
