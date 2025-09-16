@@ -8628,6 +8628,8 @@ from django.contrib.auth.models import User, Group
 from django.apps import apps
 from django.db import transaction
 from django.db import connection
+from django.db.models import AutoField
+
 
 
 
@@ -9092,7 +9094,7 @@ def recuperar_json_zip(request):
                 continue  # si el modelo no existe en la app, saltar
 
             pk_field = model._meta.pk
-            if not isinstance(pk_field, models.AutoField):
+            if not isinstance(pk_field, AutoField):
                 continue  # si la PK no es autoincremental, saltar
 
             table = model._meta.db_table
