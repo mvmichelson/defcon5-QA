@@ -8627,6 +8627,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User, Group
 from django.apps import apps
 from django.db import transaction
+from django.db import connection
 
 
 
@@ -9080,6 +9081,32 @@ def recuperar_json_zip(request):
         # fin temporarydir
 
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
+    
+    # --- Ajustar secuencias de todas las tablas restauradas ---
+
+    with connection.cursor() as cursor:
+        for model_name in ORDEN_MODELOS:
+            try:
+                model = apps.get_model("bcp", model_name)
+            except LookupError:
+                continue  # si el modelo no existe en la app, saltar
+
+            pk_field = model._meta.pk
+            if not isinstance(pk_field, models.AutoField):
+                continue  # si la PK no es autoincremental, saltar
+
+            table = model._meta.db_table
+            pk_name = pk_field.name
+            seq_name = f"{table}_{pk_name}_seq"
+
+            try:
+                cursor.execute(
+                    f"SELECT setval('{seq_name}', COALESCE((SELECT MAX({pk_name}) FROM {table}), 0) + 1, false);"
+                )
+                log.append(f"[SEQ-RESET] {model_name}: secuencia {seq_name} ajustada correctamente.")
+            except Exception as e:
+                log.append(f"[SEQ-ERROR] {model_name}: no se pudo ajustar secuencia {seq_name} :: {e}")
+
 
     # GET -> formulario
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
