@@ -9082,37 +9082,36 @@ def recuperar_json_zip(request):
 
         # fin temporarydir
 
+
+        # --- Ajustar secuencias de todas las tablas restauradas ---
+        if connection.vendor == "postgresql":
+            
+            with connection.cursor() as cursor:
+                for model_name in ORDEN_MODELOS:
+                    try:
+                        model = apps.get_model("bcp", model_name)
+                    except LookupError:
+                        continue
+
+                    pk_field = model._meta.pk
+                    if not isinstance(pk_field, AutoField):
+                        continue
+
+                    table = model._meta.db_table
+                    pk_name = pk_field.name
+                    seq_name = f"{table}_{pk_name}_seq"
+
+                    try:
+                        cursor.execute(
+                            f"SELECT setval('{seq_name}', COALESCE((SELECT MAX({pk_name}) FROM {table}), 0) + 1, false);"
+                        )
+                        log.append(f"[SEQ-RESET] {model_name}: secuencia {seq_name} ajustada correctamente.")
+                    except Exception as e:
+                        log.append(f"[SEQ-ERROR] {model_name}: no se pudo ajustar secuencia {seq_name} :: {e}")
+
+
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
     
-    # --- Ajustar secuencias de todas las tablas restauradas ---
-
-
-    if connection.vendor == "postgresql":
-        with connection.cursor() as cursor:
-            for model_name in ORDEN_MODELOS:
-                try:
-                    model = apps.get_model("bcp", model_name)
-                except LookupError:
-                    continue
-
-                pk_field = model._meta.pk
-                if not isinstance(pk_field, AutoField):
-                    continue
-
-                table = model._meta.db_table
-                pk_name = pk_field.name
-                seq_name = f"{table}_{pk_name}_seq"
-
-                try:
-                    cursor.execute(
-                        f"SELECT setval('{seq_name}', COALESCE((SELECT MAX({pk_name}) FROM {table}), 0) + 1, false);"
-                    )
-                    log.append(f"[SEQ-RESET] {model_name}: secuencia {seq_name} ajustada correctamente.")
-                except Exception as e:
-                    log.append(f"[SEQ-ERROR] {model_name}: no se pudo ajustar secuencia {seq_name} :: {e}")
-
-
-
 
     # GET -> formulario
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
