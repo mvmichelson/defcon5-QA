@@ -8575,10 +8575,13 @@ from django.apps import apps
 def respaldo_json_zip(request):
     """
     Genera un ZIP con un archivo JSON por cada modelo de la app 'bcp'
-    y lo devuelve como descarga.
+    y agrega además User y Group.
     Incluye relaciones ManyToMany explícitas en la clave 'm2m'.
     """
-    MODELOS = apps.get_app_config("bcp").get_models()
+    from django.contrib.auth.models import User, Group
+
+    # Modelos de la app bcp + User y Group
+    MODELOS = list(apps.get_app_config("bcp").get_models()) + [User, Group]
 
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zipf:
@@ -8618,7 +8621,6 @@ def respaldo_json_zip(request):
 
 # ==================================================================
 
-
 import os
 import json
 import zipfile
@@ -8631,9 +8633,23 @@ from django.db import connection
 from django.db.models import AutoField
 
 
+import os
+import io
+import json
+import zipfile
+import tempfile
+import datetime
+from collections import defaultdict
 
+from django.shortcuts import render
+from django.apps import apps
+from django.db import connection
+from django.db.models import AutoField
+from django.core import serializers
+from django.core.exceptions import FieldDoesNotExist
+from django.contrib.auth.models import User, Group
 
-
+# --- La función completa ---
 def recuperar_json_zip(request):
     """
     Vista para restaurar datos desde un archivo ZIP de respaldo.
@@ -8641,10 +8657,9 @@ def recuperar_json_zip(request):
       3) reintentos para relaciones pendientes.
     - Log detallado y resumen de pendientes.
     """
-
     # --- FK_MAP: adapta/añade según tu modelo (usa los nombres tal como aparecen en apps.get_model("bcp", name)) ---
     FK_MAP = {
-        # Usuarios y Grupos
+        # Usuarios y Grupos (ejemplo: campo en modelo bcp que referencia a User/Group)
         "Grupos.grupo": Group,
         "Gestor.user_gestor": User,
         "Gestor.area": "Area",
@@ -8728,8 +8743,11 @@ def recuperar_json_zip(request):
         "Proceso.subproceso_v": "SubProceso_V",
     }
 
-    # Orden sugerido para borrado y lectura (no condiciona la resolución final gracias a la 3ª pasada)
+    # Orden sugerido para borrado y lectura
     ORDEN_MODELOS = [
+        # agregar Django Group y User al inicio para sobrescribirlos primero
+        "Group", "User",
+        # luego los modelos de la app bcp (como en tu original)
         "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador",
         "Tipo_Impacto", "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P",
         "Tipo_Proc", "Tipo_Site", "Tipo_Disp", "Tipo_Componente",
@@ -8782,9 +8800,15 @@ def recuperar_json_zip(request):
                     data_map[model_name] = []
 
             # --- BORRAR datos existentes (en ORDEN_MODELOS) ---
+            # Borrar Django Group/User si existen y luego modelos bcp en el orden indicado.
             for model_name in ORDEN_MODELOS:
                 try:
-                    model = apps.get_model("bcp", model_name)
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
                 except LookupError:
                     log.append(f"[WARN] Modelo {model_name} no existe en la app.")
                     continue
@@ -8801,16 +8825,24 @@ def recuperar_json_zip(request):
                 data = data_map.get(model_name, [])
                 if not data:
                     continue
+
+                # resolver clase de modelo
                 try:
-                    model = apps.get_model("bcp", model_name)
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
                 except LookupError:
+                    log.append(f"[WARN] Modelo {model_name} no existe en bcp; se omite creación.")
                     continue
 
                 for record in data:
                     pk = record.get("pk")
                     fields = record.get("fields", {})
                     try:
-                        # crear instancia con PK original
+                        # crear instancia con PK original (sin relaciones)
                         obj = model(pk=pk)
                         # asignar SOLO campos no-relacionales y no-M2M
                         for field, value in fields.items():
@@ -8824,13 +8856,13 @@ def recuperar_json_zip(request):
                                 # intento asignar directo (puede fallar para campos especiales)
                                 setattr(obj, field, value)
                             except FieldDoesNotExist:
-                                # Si el campo no existe, intentar asignarlo _por si_ el JSON tiene extras
+                                # campo no existe en el modelo actual; intentar asignar por si JSON tiene extras
                                 try:
                                     setattr(obj, field, value)
                                 except Exception:
                                     pass
                             except Exception:
-                                # si falla la asignación, ignoramos y continuamos; se registrará si es crítico
+                                # ignorar errores puntuales de asignación en la primera pasada
                                 pass
                         # guardar preservando pk
                         try:
@@ -8858,10 +8890,15 @@ def recuperar_json_zip(request):
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
                 if not data:
-                    # aún queremos registrar OK con 0 importados si archivo vacío?
                     continue
+
                 try:
-                    model = apps.get_model("bcp", model_name)
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
                 except LookupError:
                     continue
 
@@ -8879,18 +8916,20 @@ def recuperar_json_zip(request):
                         if value is None:
                             continue
                         key = f"{model_name}.{field}"
-                        # ignorar si no es relación conocida o si valor vacío
+                        # intentar obtener metadatos del campo
                         try:
                             fmeta = model._meta.get_field(field)
                         except FieldDoesNotExist:
                             fmeta = None
 
-                        # si no es campo relacional o es M2M, saltear (M2M se maneja luego)
+                        # si es M2M, la manejamos más abajo
                         if fmeta and getattr(fmeta, 'many_to_many', False):
                             continue
+                        # si no es campo relacional y no está en FK_MAP, saltar
                         if fmeta and not getattr(fmeta, 'is_relation', False) and key not in FK_MAP:
                             continue
 
+                        # decidir target (FK_MAP tiene prioridad)
                         if key in FK_MAP:
                             target = FK_MAP[key]
                         else:
@@ -8910,7 +8949,7 @@ def recuperar_json_zip(request):
                             elif target == Group:
                                 resolved = Group.objects.filter(pk=value).first()
                             else:
-                                # target is model name string
+                                # target may be a string with model name defined in FK_MAP or a model class
                                 target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
                                 if target_name:
                                     resolved = id_map.get(f"{target_name}.{value}") or apps.get_model("bcp", target_name).objects.filter(pk=value).first()
@@ -8923,7 +8962,6 @@ def recuperar_json_zip(request):
                             # marcar para reintento
                             fk_unresolved.append((model_name, pk, field, target, value))
                             fk_errors_count[model_name] += 1
-                            # log estilo compacto (no inundar demasiado)
                             log.append(f"[FK-MISS] {model_name}.{field}: {safe_str(obj)} esperaba {getattr(target, '__name__', target)}({value}) → no encontrado")
                         else:
                             # asignar y guardar inmediatamente
@@ -8971,7 +9009,6 @@ def recuperar_json_zip(request):
             max_attempts = 6
             attempt = 0
             resolved_any = True
-            # transformar listas en sets/dicts para manipular
             fk_pending = fk_unresolved[:]
             m2m_pending = m2m_unresolved[:]
 
@@ -9005,7 +9042,6 @@ def recuperar_json_zip(request):
                         setattr(obj, field, resolved)
                         obj.save()
                         resolved_any = True
-                        # log de re-asignacion exitosa (compacto)
                         log.append(f"[FK-RETRY-OK] {model_name}.{field}: {safe_str(obj)} <- {getattr(resolved,'pk', '?')}")
                     except Exception as e:
                         new_fk_pending.append((model_name, pk, field, target, value))
@@ -9021,7 +9057,19 @@ def recuperar_json_zip(request):
                         if not obj:
                             new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
                             continue
-                        model = apps.get_model("bcp", model_name)
+
+                        try:
+                            model = apps.get_model("bcp", model_name)
+                        except LookupError:
+                            # si el modelo pending es User/Group, resolvemos su clase
+                            if model_name == "User":
+                                model = User
+                            elif model_name == "Group":
+                                model = Group
+                            else:
+                                new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                                continue
+
                         fmeta = model._meta.get_field(field)
                         related_model = fmeta.related_model
 
@@ -9060,19 +9108,17 @@ def recuperar_json_zip(request):
                 m2m_pending = new_m2m_pending
 
             # --- RESÚMENES FINALES por modelo (OK / pendientes) ---
-            # contar importados por modelo (cantidad de registros en JSON)
             for model_name in ORDEN_MODELOS:
                 total = len(data_map.get(model_name, []))
                 fk_errs = sum(1 for t in fk_pending if t[0] == model_name)
                 m2m_errs = sum(len(t[3]) for t in m2m_pending if t[0] == model_name)
-                # Si ya hubo creaciones registradas, mostrar OK; si no, omitir
                 if total > 0:
                     if fk_errs == 0 and m2m_errs == 0:
                         log.append(f"[OK] {model_name}: importados {total} (FK errores=0, M2M errores=0)")
                     else:
                         log.append(f"[OK] {model_name}: importados {total} (FK errores={fk_errs}, M2M errores={m2m_errs})")
 
-            # Detalle final de pendientes (por registro) para que puedas identificarlos
+            # Detalle final de pendientes (por registro)
             if fk_pending:
                 for model_name, pk, field, target, value in fk_pending:
                     log.append(f"[PENDIENTE-FK] {model_name}.{field}: pk={pk} esperaba {getattr(target,'__name__',target)}({value})")
@@ -9082,14 +9128,17 @@ def recuperar_json_zip(request):
 
         # fin temporarydir
 
-
         # --- Ajustar secuencias de todas las tablas restauradas ---
         if connection.vendor == "postgresql":
-            
             with connection.cursor() as cursor:
                 for model_name in ORDEN_MODELOS:
                     try:
-                        model = apps.get_model("bcp", model_name)
+                        if model_name == "User":
+                            model = User
+                        elif model_name == "Group":
+                            model = Group
+                        else:
+                            model = apps.get_model("bcp", model_name)
                     except LookupError:
                         continue
 
@@ -9102,6 +9151,7 @@ def recuperar_json_zip(request):
                     seq_name = f"{table}_{pk_name}_seq"
 
                     try:
+                        # setval: ajustar la secuencia al MAX(pk) + 1
                         cursor.execute(
                             f"SELECT setval('{seq_name}', COALESCE((SELECT MAX({pk_name}) FROM {table}), 0) + 1, false);"
                         )
@@ -9109,13 +9159,12 @@ def recuperar_json_zip(request):
                     except Exception as e:
                         log.append(f"[SEQ-ERROR] {model_name}: no se pudo ajustar secuencia {seq_name} :: {e}")
 
-
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
-    
 
     # GET -> formulario
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
 
+# ===============================================================================================
 
 
 import io
