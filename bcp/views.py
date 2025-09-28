@@ -8621,17 +8621,7 @@ def respaldo_json_zip(request):
 
 # ==================================================================
 
-import os
-import json
-import zipfile
-import tempfile
-from django.shortcuts import render
-from django.contrib.auth.models import User, Group
-from django.apps import apps
 from django.db import transaction
-from django.db import connection
-from django.db.models import AutoField
-
 
 import os
 import io
@@ -8649,7 +8639,6 @@ from django.core import serializers
 from django.core.exceptions import FieldDoesNotExist
 from django.contrib.auth.models import User, Group
 
-# --- La función completa ---
 def recuperar_json_zip(request):
     """
     Vista para restaurar datos desde un archivo ZIP de respaldo.
@@ -8818,7 +8807,10 @@ def recuperar_json_zip(request):
                 except Exception as e:
                     log.append(f"[ERROR] {model_name}: error al eliminar: {e}")
 
+            # ----------------------------------------------------------------------------
             # --- PRIMERA PASADA: crear placeholders (preservando PKs), sin FKs ni M2M ---
+            # ----------------------------------------------------------------------------
+
             created_counts = defaultdict(int)
             create_errors = defaultdict(int)
             for model_name in ORDEN_MODELOS:
@@ -8850,38 +8842,51 @@ def recuperar_json_zip(request):
                                 continue
                             try:
                                 fmeta = model._meta.get_field(field)
-                                # si es relación (FK / OneToOne) o M2M -> saltar en primera pasada
                                 if getattr(fmeta, 'many_to_many', False) or getattr(fmeta, 'is_relation', False):
                                     continue
-                                # intento asignar directo (puede fallar para campos especiales)
                                 setattr(obj, field, value)
                             except FieldDoesNotExist:
-                                # campo no existe en el modelo actual; intentar asignar por si JSON tiene extras
                                 try:
                                     setattr(obj, field, value)
                                 except Exception:
                                     pass
                             except Exception:
-                                # ignorar errores puntuales de asignación en la primera pasada
                                 pass
+
                         # guardar preservando pk
                         try:
                             obj.save(force_insert=True)
                         except Exception:
-                            # fallback (si force_insert falla por algún motivo)
                             obj.save()
+
+                        # --- Forzar fechas originales (evita que auto_now/auto_now_add las reemplace) ---
+                        date_fields = [
+                            f.name for f in model._meta.get_fields()
+                            if f.get_internal_type() in ("DateTimeField", "DateField")
+                        ]
+                        update_data = {f: fields[f] for f in date_fields if f in fields}
+                        if update_data:
+                            model.objects.filter(pk=obj.pk).update(**update_data)
+
                         id_map[f"{model_name}.{pk}"] = obj
                         created_counts[model_name] += 1
                     except Exception as e:
                         create_errors[model_name] += 1
                         log.append(f"[ERROR] {model_name}: no pudo crear pk={pk} :: {e}")
 
+
+            # Fin Primera pasada -------------------
+
             # registrar creación por modelo
             for model_name in ORDEN_MODELOS:
                 if created_counts.get(model_name, 0) or create_errors.get(model_name, 0):
                     log.append(f"[CREATED] {model_name}: placeholders creados {created_counts.get(model_name,0)}, errores {create_errors.get(model_name,0)}")
 
+
+            # -------------------------------------------------------------------
             # --- SEGUNDA PASADA: intentar asignar FKs y M2M (primer intento) ---
+            # -------------------------------------------------------------------
+
             fk_unresolved = []   # lista de tuples para reintentos: (model_name, pk, field, target_model_name_or_type, target_pk)
             m2m_unresolved = []  # tuples: (model_name, pk, field, missing_ids, present_ids)
             fk_errors_count = defaultdict(int)
@@ -9057,19 +9062,7 @@ def recuperar_json_zip(request):
                         if not obj:
                             new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
                             continue
-
-                        try:
-                            model = apps.get_model("bcp", model_name)
-                        except LookupError:
-                            # si el modelo pending es User/Group, resolvemos su clase
-                            if model_name == "User":
-                                model = User
-                            elif model_name == "Group":
-                                model = Group
-                            else:
-                                new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
-                                continue
-
+                        model = apps.get_model("bcp", model_name)
                         fmeta = model._meta.get_field(field)
                         related_model = fmeta.related_model
 
@@ -9127,6 +9120,37 @@ def recuperar_json_zip(request):
                     log.append(f"[PENDIENTE-M2M] {model_name}.{field}: pk={pk} faltan {len(missing_ids)} ({missing_ids})")
 
         # fin temporarydir
+
+        # --- AJUSTE FINAL DE FECHAS (para preservar valores originales) ---
+        for model_name, records in data_map.items():
+            if not records:
+                continue
+            try:
+                if model_name == "User":
+                    model = User
+                elif model_name == "Group":
+                    model = Group
+                else:
+                    model = apps.get_model("bcp", model_name)
+            except LookupError:
+                continue
+
+            date_fields = [
+                f.name for f in model._meta.get_fields()
+                if f.get_internal_type() in ("DateTimeField", "DateField")
+            ]
+            if not date_fields:
+                continue
+
+            for record in records:
+                pk = record.get("pk")
+                fields = record.get("fields", {})
+                update_data = {f: fields[f] for f in date_fields if f in fields}
+                if update_data:
+                    try:
+                        model.objects.filter(pk=pk).update(**update_data)
+                    except Exception as e:
+                        log.append(f"[DATE-ERROR] {model_name}: pk={pk} no pudo actualizar fechas :: {e}")
 
         # --- Ajustar secuencias de todas las tablas restauradas ---
         if connection.vendor == "postgresql":
