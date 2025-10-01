@@ -82,6 +82,8 @@
 # 6.14.3   Revision de Alcance  del DRP
 # 6.14.5 Revision Especificacion Tecnica Site de Contingencias 
 
+# 6.15  Detalle del DRP en Desarrollo/Actualizacion
+
 
 # 6. Maestros
 # Administracion de Riesgo/Impacto 
@@ -4910,7 +4912,7 @@ def Crea_Drp(request):
     
     # Determinacion de Codigo a asignar.
 
-    cod = get_object_or_404(Parametros_G, pk = 8)
+    cod = get_object_or_404(Parametros_G, nombre='CORRELATIVO_DRP')
     codigo = 'DRP-'+str(cod.valor_2) 
     cod.valor_2=cod.valor_2+1
     cod.save()
@@ -7255,6 +7257,17 @@ def Rev_S6_Drp(request, pk):
 
     return render(request, 'bcp/drp/drp_s6_rev.html', {'drp':drp,'lista_sc':lista_sc})
 
+
+#****************************************************
+# 6.15  Detalle del DRP en Desarrollo/Actualizacion *
+#****************************************************
+
+def detalle_drp(request, pk):
+
+    drp = get_object_or_404(Drp, pk = pk)
+
+    return render(request, 'bcp/drp/drp_detalle.html', {'drp':drp})
+                  
 #*********************************************** Fin DRP ************************************************************************************
 
 

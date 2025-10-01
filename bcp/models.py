@@ -186,7 +186,7 @@ class SubProceso_V(models.Model):
     procedimientos_contingencia = models.ManyToManyField('Procedimientos', blank=True)
     procedimientos_contingencia_v = models.ManyToManyField('Procedimientos_V', blank=True)
 
-    nro_prdto = models.IntegerField(default=0)
+    nro_prdto = models.IntegerField(default=0) # Cantidad de Procedimientos 
 
     log_revision=models.ManyToManyField('Log_Revision', blank=True)
 
@@ -940,9 +940,9 @@ class Componentes(models.Model):
         """
         return reverse('Lista-CMP', args=[str(self.id)])
     
-    def __str__(self):
+    #def __str__(self):
         
-        return self.tipo_act.tipo+':'+self.codigo+':'+self.nombre+':'+self.descripcion
+        #return self.tipo_act+':'+self.codigo+':'+self.nombre+':'+self.descripcion
 
 
 class Tipo_Componente(models.Model):

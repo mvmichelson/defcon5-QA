@@ -201,15 +201,23 @@ urlpatterns += [
 urlpatterns += [
 
     path('drp/', views.Lista_DRP, name='Lista-DRP'),
+
+    path('drp/detalle_drp/<int:pk>/', views.detalle_drp, name='Detalle-DRP'),
+
     path('drp/crea_drp/', views.Crea_Drp, name='Crea-DRP'),
     path('drp/borra_drp/<int:pk>/', views.Borra_Drp, name='Borra-DRP'),
+
+    # Secciones DRP - Definicion / Actualizacion 
+    # ------------------------------------------
     path('drp/<int:pk>/indice/', views.Indice_DRP, name='Indice-DRP'),
+
     path('drp/<int:pk>/objetivo/', views.Drp_Sec_1, name='Objetivo-DRP'),
     path('drp/<int:pk>/responsable/', views.Drp_Sec_2, name='Responsables-DRP'),
     #path('drp/<int:pk>/alcance/', views.Drp_Sec_3, name='Alcance-DRP'),
     path('drp/<int:pk>/asig_alcance/', views.asigna_procesos_drp, name='Alcance-DRP'),
     path('drp/<int:pk>/estrategia/', views.Drp_Sec_4, name='Estrategia-DRP'),
     path('drp/<int:pk>/listaCmp/', views.Lista_CMP, name='Lista-CMP'),
+
     path('drp/<int:pk>/<int:accion>/asigna_cmp/', views.Asigna_CMP, name='Asigna-CMP'),
     path('drp/<int:pk>/listaServCrtc/', views.Lista_Serv_Crtc, name='Lista-SC'),
     path('drp/<int:pk>/<int:acc>/crea_p5_drp/', views.cr_drp_P5, name='crea-P5-DRP'),
@@ -221,6 +229,7 @@ urlpatterns += [
     path('drp/<int:pk>/crea_p6_drp/', views.cr_drp_P6, name='crea-P6-DRP'),
     path('drp/<int:pk>/borra_p6_drp/', views.br_drp_P6, name='borra-P6-DRP'),
     path('drp/<int:pk>/modifica_p6_drp/', views.md_drp_P6, name='modifica-P6-DRP'),
+    
     path('drp/<int:pk>/<int:sec>/envia_aut/', views.Env_Aut_DRP, name='Envia-Aut-DRP'),
     path('drp/<int:pk>/<int:sec>/aut_drp/', views.Aut_Drp, name='Autoriza-DRP'),
     path('drp/<int:pk>/<int:sec>/aut_drp_v/', views.Aut_Drp_V, name='Autoriza-DRP-V'),

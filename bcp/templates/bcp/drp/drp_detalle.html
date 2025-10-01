@@ -1,0 +1,154 @@
+<! Programa HTML>
+<! Muestra Detalle del DRP en Desarrollo / Actualizacion >
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+	<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+	<ul class="encabezado_A">
+    	<strong> PROCEDIMIENTO DE RECUPERACION DEL PROCESAMIENTO DE DATOS (DRP) EN DESARROLLO/ACTUALIZACION</strong>
+	</ul>  
+
+
+
+	<!-- Datos basicos del DRP -------------------->
+	<ul class="scr4">
+		<p><strong>Codigo...:</strong> {{drp.codigo}}</p>
+		<p><strong>Nombre....:</strong> {{drp.nombre}}</p>
+
+	</ul>
+
+	<!-- Seccion 1. Estructura Organizativa ------->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 1. Estructura Organizativa</h4></strong></ul>
+	<p>Esta Seccion describe los roles y gestores asignados para la aprobacion y ejecucion del Plan de Contingencias (DRP).
+	</p>
+
+	<ul class="scr4">
+
+		<div class="flex-container">
+			<div class="flex-item">	
+			<p><strong>Responsable DRP ...:</strong>&emsp;{{drp.resp_drp}}</p> 
+			<p><strong>Jefe Operativo DRP :</strong>&emsp;{{drp.gestor_ejecutor_drp}}</p>
+			<p><strong>Enlace Comite Crisis :</strong>&emsp;{{drp.enlace_c_crisis_drp}}</p> 
+			<p><strong>Gestor de Continuidad :</strong>&emsp;{{drp.gestor_consultor_drp}}</p>
+			</div>
+			<div class="flex-item">
+			<p><strong>Respaldo:</strong>&emsp;{{drp.bck_resp_drp}}</p>
+			<p><strong>Respaldo:</strong>&emsp;{{drp.bck_ejecutor_drp}}</p>
+			<p><strong>Respaldo:</strong>&emsp;{{drp.bck_enlace_drp}}</p>
+			</div>
+		</div>
+
+	</ul>
+	<!-- Seccion 2. Objetivo ---------------------->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 2. Objetivo </h4></strong></ul>
+	<p>Esta seccion declara el principal objetivo del Plan de Contingencias (DRP).</p>
+	<ul class="scr4">
+		{% if drp.introduccion %}
+			{{drp.introduccion}}
+		{% else %}
+			<p> En Definicion ... </p>		
+		{%endif%}
+	</ul>
+
+	<!-- Seccion 3. Alcance ----------------------->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 3. Alcance </h4></strong></ul>
+	<p>Esta Seccion declara los Procesos criticos que cubre o son alcanzados por este Plan de Contingencias (DRP)</p>
+
+	<ul class="scr4">
+	{%if drp.procesos_drp == None %}
+
+		<!--- Tabla de Procesos asociados al DRP -->
+		<div class="BarraScroll">
+			<table class="lta">
+				<thead class="encabezado_C">
+					<tr>
+						<th>PROCESO</th>
+						<th>GESTOR BCP</th>
+						<th>GESTOR RESPONSABLE PROCESO</th>
+						<th>GESTOR DE CONTINUIDAD RIESGO</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for prc in drp.procesos_drp.all %}
+						<tr>
+							<td><bb style="font-size: 10px;">{{prc.path}}</bb></td>
+							<td><aa style="font-size: 10px;">{{prc.gestor_A.user_gestor.last_name}}, {{prc.gestor_A.user_gestor.first_name}}</aa></td>
+							<td><aa style="font-size: 10px;">{{prc.gestor_R.user_gestor.last_name}}, {{prc.gestor_A.user_gestor.first_name}}</aa></td>
+							<td><aa style="font-size: 10px;">{{prc.gestor_C.user_gestor.last_name}}, {{prc.gestor_A.user_gestor.first_name}}</aa></td>
+						</tr>
+					{% endfor %}
+					
+				
+				</tbody>
+			</table>
+		</div>
+		<!--- Fin Tabla -->
+	{%else%}
+		<p> En Definicion ... </p>
+	{%endif%}
+	</ul>
+
+	
+	<!-- Seccion 4. Estrategia de Recuperacion ---->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 4. Estrategia de Recuperacion </h4></strong></ul>
+	<ul class="scr4">
+		{% if drp.desc_estrategia %}
+			<p>{{drp.desc_estrategia}}</p>
+			<br/>
+			<p>La Estrategia define un Site de Contingencias de tipo: {{drp.tipo_site}}</p>
+			<br/>
+			<p>Del mismo modo, en relacion a la activacion de los Componentes, la Estrategia 
+				define un modo : {{drp.disposicion_componentes.nombre}}, donde: </p>
+			<br/>
+			<p>1. {{drp.disposicion_componentes.resumen}}</p>
+			<p>2. {{drp.disposicion_componentes.descripcion}}</p>
+
+		{% else %}
+			<p> En Definicion ... </p>		
+		{%endif%}
+	</ul>
+
+
+	<!-- Seccion 5. Especificacion Tecnica Site  -->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 5. Especificacion Tecnica </h4></strong></ul>
+
+
+
+
+	<!-- Seccion 6. Servicios Criticos ------------>
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 6. Servicios Criticos </h4></strong></ul>
+
+
+	<!-- Seccion 7. Procedimiento de Recuperacion-->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Seccion 7. Procedimiento de Recuperacion </h4></strong></ul>
+
+
+	<!-- Anexo A. Nomina de Contactos ------------->
+	<br/><br/>
+	<ul class="encabezado_B"> <strong><h4>Anexo A. Nomina de Contactos</h4></strong></ul>
+
+
+
+
+
+
+
+
+        
+
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+{% endblock %}
+

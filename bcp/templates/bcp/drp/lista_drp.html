@@ -38,15 +38,27 @@
 				<th scope="row"><bb>{{drp.codigo}}<bb></th>
 				<th scope="row"><bb>{{drp.nombre}}<bb></th>
 				<th scope="row"><bb>{{drp.status_t}}<bb></th>
-				<th scope="row"><a href="{% url 'Indice-DRP' drp.pk %}">&#128213</a></th>
+				<th scope="row"><a href="{% url 'En-Construccion' %}">
+				<img class="link" src="/static/img/drp.webp" width="20" height="20"
+					data-message="DRP vigente...">
+				</a></th>
+
+				<!-- Opciones -->
 				<th scope="row">
+					<!-- Definicion/Actualizacion DRP -->
+					<a href="{% url 'Indice-DRP' drp.pk %}"
+					class="link " data-message="DRP en Desarrollo / Actualizacion ...">&#128213</a>
+
+					<!-- Borra DRP (Si no existen definiciones )-->
 					{% if not drp.status_t %}
-						<a href="{% url 'Borra-DRP' drp.pk %}"><rr>&#128465</rr></a>
+						<a href="{% url 'Borra-DRP' drp.pk %}"
+					class="link " data-message="Borra DRP ..."><rr>&#128465</rr></a>
 					{%else%}
 						<rr>..</rr>
 					{%endif%}
 					
 				</th>
+				<!-- Fin Opciones -->
 		    	</tr>
        		        {% if not forloop.last %}
         	        {%endif%}
@@ -78,6 +90,37 @@
 	<strong>&#9989 :<tm>Aprobado</tm></strong>
 	</ul>
 {% endblock %}
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+<!--- Despliega el nombre del programa -->
+<p style="font-size: 8px; color:green">lista_drp</p>
 
 
 {% endblock %}
