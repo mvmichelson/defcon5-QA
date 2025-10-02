@@ -63,17 +63,19 @@
 	<p>Esta Seccion declara los Procesos criticos que cubre o son alcanzados por este Plan de Contingencias (DRP)</p>
 
 	<ul class="scr4">
-	{%if drp.procesos_drp == None %}
+
+	{%if drp.procesos_drp.count > 0 %}
 
 		<!--- Tabla de Procesos asociados al DRP -->
 		<div class="BarraScroll">
+			<br/>
 			<table class="lta">
 				<thead class="encabezado_C">
 					<tr>
-						<th>PROCESO</th>
-						<th>GESTOR BCP</th>
-						<th>GESTOR RESPONSABLE PROCESO</th>
-						<th>GESTOR DE CONTINUIDAD RIESGO</th>
+						<th style="width: 40%;">PROCESO</th>
+						<th style="width: 20%;">GESTOR BCP</th>
+						<th style="width: 20%;">GESTOR RESPONSABLE PROCESO</th>
+						<th style="width: 20%;">GESTOR DE CONTINUIDAD RIESGO</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -81,8 +83,8 @@
 						<tr>
 							<td><bb style="font-size: 10px;">{{prc.path}}</bb></td>
 							<td><aa style="font-size: 10px;">{{prc.gestor_A.user_gestor.last_name}}, {{prc.gestor_A.user_gestor.first_name}}</aa></td>
-							<td><aa style="font-size: 10px;">{{prc.gestor_R.user_gestor.last_name}}, {{prc.gestor_A.user_gestor.first_name}}</aa></td>
-							<td><aa style="font-size: 10px;">{{prc.gestor_C.user_gestor.last_name}}, {{prc.gestor_A.user_gestor.first_name}}</aa></td>
+							<td><aa style="font-size: 10px;">{{prc.gestor_R.user_gestor.last_name}}, {{prc.gestor_R.user_gestor.first_name}}</aa></td>
+							<td><aa style="font-size: 10px;">{{prc.gestor_C.user_gestor.last_name}}, {{prc.gestor_C.user_gestor.first_name}}</aa></td>
 						</tr>
 					{% endfor %}
 					
@@ -104,7 +106,7 @@
 		{% if drp.desc_estrategia %}
 			<p>{{drp.desc_estrategia}}</p>
 			<br/>
-			<p>La Estrategia define un Site de Contingencias de tipo: {{drp.tipo_site}}</p>
+			<p>La Estrategia define un Site de Contingencias de tipo: {{drp.tipo_Site}}</p>
 			<br/>
 			<p>Del mismo modo, en relacion a la activacion de los Componentes, la Estrategia 
 				define un modo : {{drp.disposicion_componentes.nombre}}, donde: </p>

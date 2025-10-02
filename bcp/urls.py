@@ -216,9 +216,11 @@ urlpatterns += [
     #path('drp/<int:pk>/alcance/', views.Drp_Sec_3, name='Alcance-DRP'),
     path('drp/<int:pk>/asig_alcance/', views.asigna_procesos_drp, name='Alcance-DRP'),
     path('drp/<int:pk>/estrategia/', views.Drp_Sec_4, name='Estrategia-DRP'),
+
     path('drp/<int:pk>/listaCmp/', views.Lista_CMP, name='Lista-CMP'),
 
     path('drp/<int:pk>/<int:accion>/asigna_cmp/', views.Asigna_CMP, name='Asigna-CMP'),
+    
     path('drp/<int:pk>/listaServCrtc/', views.Lista_Serv_Crtc, name='Lista-SC'),
     path('drp/<int:pk>/<int:acc>/crea_p5_drp/', views.cr_drp_P5, name='crea-P5-DRP'),
     path('drp/<int:pk>/<int:acc>/', views.br_drp_P5, name='borra-P5-DRP'),
