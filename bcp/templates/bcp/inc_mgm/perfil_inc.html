@@ -305,7 +305,7 @@
 				<a href="{% url 'Detalle-Proceso-V2'  proc.pk %}" style="color:green">{{proc.path}}</a></td>
 			{%for ind in proc.indicador_subp.all %} <!-- Busca indicador RTO -->
 				{%if ind.indicador.nombre == 'RTO' %}
-					<td scope="row" style="width: 200px; padding: 1px  5px;">{{ind.nivel.definicion}}</td>
+					<td scope="row" style="width: 200px; padding: 1px  5px;">{{ind.nivel.nivel}}: {{ind.nivel.definicion}}</td>
 				{%endif%}
 			{%endfor%}
 

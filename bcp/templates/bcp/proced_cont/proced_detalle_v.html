@@ -12,15 +12,18 @@
     	<strong> PROCEDIMIENTO DE CONTINGENCIA / RECUPERACION DE CONTINUIDAD  (PC) VIGENTE</strong>
 	</ul>  
 	{% endblock %}
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
 
 <div class="flex-container">
 	<div class="flex-item" style="width: 90%;"> 
 		<!---- Identificacion Proceso Matriz ------------------------------->
 		<ul class='encabezado_SB'><h5><strong>PROCESO MATRIZ <strong></h5></ul>
 		<ul class="scr4" >
-		<p>&emsp;<strong>Codigo..........:</strong>&emsp;{{proceso.proceso}}&emsp;<strong>Nombre Proceso...:</strong>{{proceso.path}}</p>
+		<p><strong>Codigo..........:</strong>&emsp;<aa>{{proceso.proceso}}</aa></p>
+		<p><strong>Nombre Proceso...:</strong><ul><aa>{{proceso.path}}</aa></ul></p>
 
-		<p>&emsp;<strong>Descripcion.....:</strong>{{proceso.objetivo}}</p>
+		<p><strong>Descripcion.....:</strong></p>
+			<ul><aa>{{proceso.objetivo}}</aa></ul>
 		<br/>
 
 		</ul>
@@ -32,7 +35,6 @@
 	</div>
 
 </div>
-<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
 
 
 
@@ -43,19 +45,19 @@
 <div class="flex-container">
 <!----------------Sector 1 / Bloque A -->
 <div class="flex-item">
-	<ul class="scr4" style="background: rgb(240, 223, 148);">
-	<p><strong>1.1. Codigo del Procedimiento...: &emsp;</strong> {{proced.codigo}}</p>	
-	<p><strong>1.2. Nombre del Procedimiento...: &emsp;</strong> {{proced.nombre}}</p>
-	<p><strong>1.3. Tipo ........................................: &emsp;</strong> {{proced.tipo}}</p>
+	<ul class="scr4" style="background: rgb(239, 232, 201);">
+	<p><strong>1.1. Codigo del Procedimiento...: &emsp;</strong><sa> {{proced.codigo}}</sa></p>	
+	<p><strong>1.2. Nombre del Procedimiento...: &emsp;</strong><sa> {{proced.nombre}}</sa></p>
+	<p><strong>1.3. Version....................: &emsp;</strong><sa>{{proced.version}}</sa></p>
     </ul>
 </div><!---------------- Fin Sector 1 / Bloque A -->  
 
 <!----------------Sector 2 / Bloque A -->
 <div class="flex-item">
-	<ul class="scr4" style="background: rgb(240, 223, 148);">
-	<p><strong>1.4. Version....................................: &emsp;</strong> {{proced.version}}</p>
-	<p><strong>1.5. Fecha de Autorizacion ........: </strong> {{proced.fecha_c}}</p>
-	<p><strong>1.6. Autorizado por ........: </strong> {{proced.resp_proceso}}</p>
+	<ul class="scr4" style="background: rgb(239, 232, 201);">
+	
+	<p><strong>1.4. Fecha de Autorizacion ........: </strong><sa>{{proced.fecha_c}}</sa></p>
+	<p><strong>1.5. Autorizado por ........: </strong><sa> {{proced.resp_proceso}}</sa></p>
 
 	</ul>
 </div><!---------------- Fin Sector 2 / Bloque A -->  
@@ -63,30 +65,33 @@
 
 <br/>
 <ul class='encabezado_SB'><h5><strong>2. ESTRATEGIA <strong></h5></ul>
-<ul class="scr4" style="background: rgb(240, 223, 148);">
-<p><strong>2.1. Escenario a cubrir.....................: &emsp;</strong> {{proced.escenarios}}</p>	
-<p><strong>2.2. Estrategia del Procedimiento...: &emsp;</strong> {{proced.estrategia}}</p>	
+<ul class="scr4" style="background: rgb(239, 232, 201);">
+<p><strong>2.1. Escenario a cubrir.....................:</strong></p>
+<ul><sa>{{proced.escenarios}}</sa></ul>
+<br/>	
+<p><strong>2.2. Estrategia del Procedimiento...: &emsp;</strong></p> 
+<ul><sa>{{proced.estrategia}}</sa></ul>
 </ul>
 
 <br/>
 <ul class='encabezado_SB'><h5><strong>3. ROLES <strong></h5></ul>
-<ul class="scr4" style="background: rgb(240, 223, 148);">
-	<p><strong>3.1.1.  Responsable del Proceso .......: &emsp;</strong> {{proced.resp_proceso}}</p>
-	<p><strong>3.1.2.  Respaldo ...................................: &emsp;</strong> {{proced.bck_resp}}</p>
+<ul class="scr4" style="background: rgb(239, 232, 201);">
+	<p><strong>3.1.1.  Responsable del Proceso .......: &emsp;</strong><sa> {{proced.resp_proceso}}</sa></p>
+	<p><strong>3.1.2.  Respaldo ...................................: &emsp;</strong><sa>{{proced.bck_resp}}</sa></p>
 	<br/>
-	<p><strong>3.2.1.  Gestor Ejecutor .........................: &emsp;</strong> {{proced.gestor_ejecutor}}</p>
-	<p><strong>3.2.2.  Respaldo ....................................: &emsp;</strong> {{proced.bck_ejecutor}}</p>
+	<p><strong>3.2.1.  Gestor Ejecutor .........................: &emsp;</strong><sa>{{proced.gestor_ejecutor}}</sa></p>
+	<p><strong>3.2.2.  Respaldo ....................................: &emsp;</strong><sa>{{proced.bck_ejecutor}}</sa></p>
 	<br/>
-	<p><strong>3.3.1.  Enlace Comite de Crisis ...........: &emsp;</strong> {{proced.enlace_c_crisis}}</p>
-	<p><strong>3.3.2.  Respaldo ....................................: &emsp;</strong> {{proced.bck_enlace}}</p>	
+	<p><strong>3.3.1.  Enlace Comite de Crisis ...........: &emsp;</strong><sa>{{proced.enlace_c_crisis}}</sa></p>
+	<p><strong>3.3.2.  Respaldo ....................................: &emsp;</strong><sa>{{proced.bck_enlace}}</sa></p>	
 	<br/>
-	<p><strong>3.4.1.  Gestor Consultor .......................: &emsp;</strong> {{proced.gestor_consultor}}</p>
+	<p><strong>3.4.1.  Gestor Consultor .......................: &emsp;</strong><sa>{{proced.gestor_consultor}}</sa></p>
 
 </ul>
 
 	<br/>
 	<ul class='encabezado_SB'><h5><strong>4. SERVICIOS / RECURSOS REQUERIDOS <strong></h5></ul>
-		<ul class="BarraScroll" style="background: rgb(240, 223, 148);">
+		<ul class="BarraScroll" style="background: rgb(239, 232, 201);">
 		<table class="lta">
 		   <thead>
 		   <tr>
@@ -122,7 +127,7 @@
 
 	<br/>
 	<ul class='encabezado_SB'><h5><strong>5. INDICE DE CONTACTOS <strong></h5></ul>
-		<ul class="BarraScroll" style="background: rgb(240, 223, 148);">
+		<ul class="BarraScroll" style="background: rgb(239, 232, 201);">
 		<table class="lta">
 		   <thead>
 		   <tr>
