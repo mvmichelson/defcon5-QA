@@ -49,7 +49,7 @@
 
 <div class="flex-container" style="height: 40px; width: 100%;">
   <div class="flex-text" style="text-align: left; width: 50%;">
-    <a href="{% url 'Declara-Incidente' %}" style="font-size: 20px;"
+    <a href="{% url 'Declara-Incidente' %}" style="font-size: 30px;"
     class="link " data-message="***   D E C L A R A &nbsp;&nbsp;I N C I D E N T E   ***" >&nbsp;&#128222</a>
   </div>
 
@@ -97,23 +97,24 @@
               </a></li>
           </ul>
 
+
+          <div class="menu-section menu-title">Gestión Contingencia</div>
+          <ul class="menu-list inline">
+              <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link"><span class="icon">&#129519;</span> Administracion Incidentes</a></li>
+          </ul>
+
           <div class="menu-section menu-title">Mapeo</div>
           <ul class="menu-list inline">
-              <li><a href="{% url 'Lista-Procesos' %}" class="menu-link"><span class="icon">&#10146;</span> Definición Procesos</a></li>
-              <li><a href="{% url 'Lista-Evaluaciones' %}" class="menu-link"><span class="icon">&#10146;</span> Análisis Impacto</a></li>
-              <li><a href="{% url 'Lista-Recursos' %}" class="menu-link"><span class="icon">&#10146;</span> Servicios Críticos</a></li>
-              <li><a href="{% url 'Lista-Escenarios' %}" class="menu-link"><span class="icon">&#10146;</span> Escenarios Riesgo</a></li>
+              <li><a href="{% url 'Lista-Procesos' %}" class="menu-link"><span class="icon">&#10146;</span> Definición&nbsp;Procesos</a></li>
+              <li><a href="{% url 'Lista-Evaluaciones' %}" class="menu-link"><span class="icon">&#10146;</span> Análisis&nbsp;Impacto (RIA&nbsp;/&nbsp;BIA)</a></li>
+              <li><a href="{% url 'Lista-Recursos' %}" class="menu-link"><span class="icon">&#10146;</span> Servicios&nbsp;Criticos Escenarios&nbsp;Riesgo</a></li>
+              <!-- <li><a href="{% url 'Lista-Escenarios' %}" class="menu-link"><span class="icon">&#10146;</span> Escenarios Riesgo</a></li> -->
           </ul>
 
           <div class="menu-section menu-title" >Procedimientos Contingencias</div>
           <ul class="menu-list inline">
               <li><a href="{% url 'Lista-Proced' 0 %}" class="menu-link"><span class="icon">&#10146;</span> Procedimientos</a></li>
-              <li><a href="{% url 'Lista-DRP' %}" class="menu-link"><span class="icon">&#10146;</span> DRP</a></li>
-          </ul>
-
-          <div class="menu-section menu-title">Gestión Contingencia</div>
-          <ul class="menu-list inline">
-              <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link"><span class="icon">&#129519;</span> Adm. Incidentes</a></li>
+              <li><a href="{% url 'Lista-DRP' %}" class="menu-link"><span class="icon">&#10146;</span> Plan&nbsp;de&nbsp;Recuperacion&nbsp;del Procesamiento&nbsp;(DRP)</a></li>
           </ul>
 
           <div class="menu-section menu-title">Configuración</div>

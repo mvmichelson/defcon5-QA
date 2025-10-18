@@ -22,7 +22,12 @@
 
 	<ul class="Fondo_C">
 	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
-	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+	  	<p><strong>Objetivo......:</strong> 
+			<ul class="caja-texto scr4">
+			{{ proceso.objetivo }}
+			</ul>
+		</p>
+		<br/>
 	</ul>
 	{% endblock %}
 

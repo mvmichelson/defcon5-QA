@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 from .models import  Proceso, SubProceso, LogAut, Recursos, Gestor, Tipo_RR, Escenarios, Amenazas, Estrategias, Tipo_Impacto
 from .models import  Nivel_Impacto, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Grupos, Control_Cambios
-from .models import  Drp, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC, Area, Cod_Area, SubProceso_V
+from .models import  Drp, Drp_V, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC, Area, Cod_Area, SubProceso_V
 from .models import  LBC, Tipo_Site, Tipo_Disp, Componentes, Tipo_Componente, Impactos_Asig, Indicadores_Asig, Log_Revision
 from .models import  Procedimientos_V, Servicios_PC_V, Contactos_PC_V, Pasos_PC_V, Impactos_Asig_v, Indicadores_Asig_v
 
@@ -112,16 +112,15 @@ class AdminIncidentes(admin.ModelAdmin):
 class AdminProcedimientos(admin.ModelAdmin):
 
     list_display = ('codigo','pk_padre', 'fecha_c', 'fecha_ult_mod', 'nombre', 'tipo', 'estrategia', 'resp_proceso', 'bck_resp', 'gestor_ejecutor',
-                    'bck_ejecutor', 'enlace_c_crisis', 'bck_enlace', 'esta_activo', 'status',
-                      'archivo', 'esta_activo','esta_confirmado')
+                    'bck_ejecutor', 'enlace_c_crisis', 'bck_enlace', 'status')
 
 @admin.register(Procedimientos_V)
 class AdminProcedimientos_V(admin.ModelAdmin):
 
     list_display = ('codigo','pk_padre', 'fecha_c', 'fecha_ult_mod', 'nombre', 'tipo', 'version',
                     'estrategia', 'resp_proceso', 'bck_resp', 'gestor_ejecutor',
-                    'bck_ejecutor', 'enlace_c_crisis', 'bck_enlace', 'esta_activo',
-                      'archivo', 'esta_activo','esta_confirmado')
+                    'bck_ejecutor', 'enlace_c_crisis', 'bck_enlace', 'archivo', 
+                    'esta_activo','esta_confirmado')
 
 
 @admin.register(Tipo_Proc)
@@ -179,7 +178,13 @@ class AdminGrupos(admin.ModelAdmin):
 @admin.register(Drp)
 class AdminDrp(admin.ModelAdmin):
 
-    list_display = ('codigo', 'nombre', 'fecha_c', 'fecha_ult_mod')
+    list_display = ('codigo', 'nombre', 'fecha_c')
+
+@admin.register(Drp_V)
+class AdminDrp_V(admin.ModelAdmin):
+
+    list_display = ('codigo', 'nombre', 'fecha_c', 'fecha_auth', 'version')
+
 
 @admin.register(Tipo_Site)
 class AdminTipo_Site(admin.ModelAdmin):

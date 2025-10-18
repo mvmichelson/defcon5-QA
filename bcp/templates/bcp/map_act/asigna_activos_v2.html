@@ -10,7 +10,7 @@
 
 	{% block enc_activo %}
 	<ul class="encabezado_B">
-        <p><aa><strong>FORMULARIO DE ASIGNACION DE SERVICIOS CRITICOS:</strong></aa></p>
+        <p><aa><strong>FORMULARIO DE ASIGNACION DE SERVICIOS Y ESCENARIOS :</strong></aa></p>
 	</ul>
 	<ul class="encabezado_SB">
 	<p><aa>{{proceso.path}}</aa></p>
@@ -23,7 +23,12 @@
 
 	<ul class="scr4">
 	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
-	  <p><strong>Objetivo......:</strong> &emsp;{{ proceso.objetivo }}</p>
+	  	<p><strong>Objetivo......:</strong> 
+			<ul class="caja-texto scr4">
+			{{ proceso.objetivo }}
+			</ul>
+		</p>
+		<br/>
 	</ul>
 
 	<br/>
@@ -116,7 +121,7 @@
 			<br/>
 			<!-- Boton de salida -->
 			<button type="submit" class="button" 
-			>Guardar Selección</button>
+			>Siguiente ... </button>
 		</form>
 	</div>
 	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->

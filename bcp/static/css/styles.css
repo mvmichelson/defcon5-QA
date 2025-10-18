@@ -153,6 +153,17 @@ Opcion */
 /* ----- FORMATOS DE TEXTO ----- */
 /* ============================= */
 
+.caja-texto {
+
+  background: rgba(226, 209, 182, 0.9);
+  white-space: pre-line;
+  line-height: 1;
+  text-align: justify;
+  text-indent: 5px;
+  margin: 0;
+  
+}
+
 a {
 	margin-top:50px;
 	color:white;

@@ -48,16 +48,19 @@
 	
 		</p>
 		<p><strong>1.2.- Codigo........: &emsp;{{ proceso.proceso }}&emsp;<rr>*</rr></strong> </p>
-  		<p><strong>1.3.- Objetivo......: &emsp;</strong> {{ proceso.objetivo }}
-		<!---------  Comentario de Revision ----->
-		<span class="comment-icon link"  data-message="Comentar u hacer observacion sobre el Objetivo del Proceso ..."
-		data-id="{{ proceso.id }}"
-		data-sec="M" 
-		data-field="Revisar Objetivo del  Proceso " >
-		&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-		</span>
-		<!---------  Fin Comentario de Revision ----->
+  		<p><strong>1.3.- Objetivo......: &emsp;</strong> 
+			<ul class="scr4 caja-texto">
+			{{ proceso.objetivo }}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar u hacer observacion sobre el Objetivo del Proceso ..."
+			data-id="{{ proceso.id }}"
+			data-sec="M" 
+			data-field="Revisar Objetivo del  Proceso " >
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
 
+			</ul>
 		</p>
   		<p><strong>1.4.- Fecha Creacion: &emsp;{{ proceso.fecha_crea }}&emsp;<rr>*</rr></strong> </p> 
   		<br/>		

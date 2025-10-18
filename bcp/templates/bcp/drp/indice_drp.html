@@ -90,7 +90,8 @@
                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
                                 <a class="link blink" data-message="Definir Roles del DRP ..." 
                                 href="{% url 'Responsables-DRP' drp.pk %}"><aa>&#128209</aa></a>
-                                {% if drp.resp_drp  and gestor_ejecutor_drp and enlace_c_crisis_drp and gestor_consultor_drp %}
+                                
+                                {% if drp.resp_drp != None  %}
                                         &nbsp;<a class="link blink" data-message="Envia a Autorizacion ..."
                                         href="{% url 'Envia-Aut-DRP' drp.pk 2  %}"><aa>&#128229</aa></a>
                                 {%endif%}
@@ -201,7 +202,7 @@
 
                                                 <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                                 {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
-                                                        <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                        <a class="link blink" data-message="Autorizar Declaracion de Objetivo del  DRP ..."
                                                         href="{% url 'Autoriza-DRP' drp.pk 1  %}"><aa>&#128273</aa></a> 
                                                 {%else%}
                                                         <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
@@ -212,7 +213,7 @@
 
                                                 <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                                 {% if request.user.pk == drp.resp_drp.user_pk %}
-                                                        <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                        <a class="link blink" data-message="Autorizar Declaracion de Objetivo del  DRP ..."
                                                         href="{% url 'Autoriza-DRP-V' drp.pk 1  %}"><aa>&#128273</aa></a> 
                                                 {%else%}
                                                         <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
@@ -223,7 +224,7 @@
 
                                         <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                                 {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                                        <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                                        <a class="link blink" data-message="Revisar observaciones a declaracion de Objetivos del DRP"
                                                         href="{% url 'Revisa-Obj-DRP' drp.pk %}"><aa>&#128270</aa></a>
                                                 {% else  %}
                                                         <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
@@ -242,11 +243,6 @@
 
         
 <!--------------------------------------------------------------------------------------------------------------------------------->
-
-
-
-
-
 
 
                 <!-- 3.- Alcance del DRP -->
@@ -285,7 +281,6 @@
                         class="link " data-message="Muestra detalle del DRP ..."><bn>&#128065</bn></a>
 
 
-
                         {% if drp.status_2 == "R" %}
                         <!-- Verifica que la Estructura Organizacional del DRP este resuelta -->
 
@@ -300,7 +295,7 @@
 
                                         <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                        <a class="link blink" data-message="Definir Objetivo del DRP ..."
+                                        <a class="link blink" data-message="Definir Alcance del DRP ..."
                                                 href="{% url 'Alcance-DRP' drp.pk %}"><aa>&#128209</aa></a>
 
 
@@ -327,7 +322,7 @@
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.resp_drp.user_pk %}
                                                 <a class="link blink" data-message="Autorizar Roles DRP ..."
-                                                href="{% url 'Autoriza-DRP-V' drp.pk 3  %}"><aa>&#128273</aa></a> 
+                                                href="{% url 'Autoriza-DRP' drp.pk 3  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
                                         {% endif %}
@@ -352,9 +347,6 @@
                 <!-- Fin Opciones ------->
 
                 </tr><!--Fin linea -->
-
-
-
 
 
 

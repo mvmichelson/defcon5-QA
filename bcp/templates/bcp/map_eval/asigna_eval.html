@@ -24,7 +24,11 @@
 		
 		<h6><strong>1.1.&emsp;Identificacion del Proceso</strong></h6>
 	  	<p><strong>Nombre........:</strong> {{ proceso.nombre }}</p>
-	  	<p><strong>Objetivo......:</strong> {{ proceso.objetivo }}</p>
+	  	<p><strong>Objetivo......:</strong> 
+			<ul class="caja-texto scr4">
+			{{ proceso.objetivo }}
+			</ul>
+		</p>
 		<p><strong>Puntaje ....:</strong> {{total_pro}}</p>
 		<br/>
 	</ul>

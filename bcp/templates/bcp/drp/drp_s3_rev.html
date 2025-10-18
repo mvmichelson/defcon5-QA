@@ -15,81 +15,177 @@
 	</ul>
 	{% endblock %}
 	
-	<!==========================>
-	<!Despliega Observaciones>
-	<!==========================>
+
+<!----- Bloque A ---------------------------------->
+<div class="flex-container">
 	
-	<p><h5><strong>OBSERVACIONES</strong></h5>
-	<!================================================>
-		<ul class="scr4">
-	
-			{%block A%}
-			<h5><strong>Observaciones realizadas</strong></p>
-			{%if drp.log_auth_drp.all %}
-			<p>El siguiente cuadro muestra las observaciones realizadas por el Gestor Autorizador para ser revisadas e implementadas</p></h5>
-			<br/>
-			
-			<table class="lta">
-	
-				<thead>
-				  <tr>
-				<th scope="col">Fecha</th>
-				<th scope="col">Aprobador</th>
-				<th scope="col">Estado</th>
-				<th scope="col">Item</th>
-				<th scope="col">Observacion</th>
-				
-				  </tr> 
-				</thead>
-	
-				<body>
-		
-				   {%for log_auth in drp.log_auth_drp.all %}
+	<!------------- Seccion Datos del Proceso -------------------->
+	<div class="flex-item" style="width: 45%;">
+	<br/><br/><br/><br/>
+	<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
+		. Realice las modificaciones solicitadas y marquelo en el icono (&#10067). 
+		Si desea dejar un comentario, utilice el icono 
+		(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p>
+		<p>Al registrar las modificaciones seran enviadas al Gestor Autorizador para su revision.</p>  
+	</bn>
+
+	</div><!------------- Seccion Datos del Proceso -------------------->
+
+	<!------------- Seccion Block de Comentarios -------------------->
+	<div class="flex-item" style="width: 52%;"> 
+		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+			<strong>Block de Comentarios de Revision</strong>
+		</ul>
+		<ul class="BarraScroll" style="height: 300px; border-radius: 10px; border: 3px solid black; background: white;">
+			<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
 				<tr>
-						<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
-				<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
-				<th scope="row">
-					{% if log_auth.Aprobado %}
-						<bb>Aprobado</bb>
-					{%else%}
-						<bb>Observado</bb>
-					{%endif%}
-				</th>
-				<th scope="row"><bb>{{log_auth.item}}</bb></th>
-				  <th scope="row"><bb>{{log_auth.observacion}}</bb></th>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10px;">Fecha</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+					{%for com in comentarios  %}
+					<tr style="font-size: 9px;">
+						{%if com.gestor_aut != drp.gestor_consultor_drp %}
+						<!--- Si el usuario en sesion es el Gestor Consultor --->
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+								<p>{{com.campo}}</p>
+								(
+									{% if com.resuelto %}
+									<a href="{% url 'OK-Rev-OC' com.pk %} " 
+									class="link confirm-link" con-message="Confirma Desmarcar?"  
+									data-message="Realizado (Haga Click para desmarcar)">&#9989
+									{%else%}
+									<a href="{% url 'OK-Rev-OC' com.pk %}" class="link confirm-link" con-message="Confirma Marcar como Realizado?"  
+									data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
+									{%endif%}
+								)
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}
+							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+							</p></th>
 	
-			</tr>
-				{% if not forloop.last %}
+						{%endif%}
+	
+						<th scope="row" style="width: 500px";> {{com.comentario}}
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+	
+								<p>
+								<!---------  Comentario de Revision ----->
+								<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
+								data-id="{{ drp.id }}"
+								data-sec="D2"
+								data-field="Comentario a '{{com.campo}}'" 
+								>
+								<img src="/static/img/Comentario_1.png" width="15" height="15">
+								</span>
+								<!---------  Fin Comentario de Revision ----->
+								</p>
+							{%endif%}
+						</th>
+						<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
 				{%endif%}
-				  {%endfor%}
-				<tbody>		
+				
+					<tbody>
+							
 			</table>
-			{%else%}
-			   <p>Sin Observaciones</p></p></h5>
-			{%endif%}
-			{% endblock %}
-		</ul>	
+				
+			<!-- Fin Log Comentarios -->
+				
+		</ul>
+	
+	</div><!----------- Fin Seccion der - Block de Comentarios ----------->
 
 
+</div><!----- Bloque A ---------------------------------->
 
-
-	{% block asigna_proc %}
 	<h5><strong>ASIGNACION DE ALCANCE </strong></h5>
 	<!===================================================>
 	<ul class="scr3">
 	<P>Seleccione del cuadro de la izquierda aquellos Procesos que seran considerados dentro del alcance de operacion que cubrirá
 		este Plan de Recupercion del Procesamiento de Datos (DRP). Estos procesos corresponden a una seleccion de aquellos que
-		contemplan como estrategia de recuperacion la activacion de un Site de Contingencias.</p>
+		contemplan Escenarios de Riesgo cuya estrategia de recuperacion es  la activacion de un Site de Contingencias.</p>
 	
-    	<form action="" method="post">
-        	{% csrf_token %}
-       		{{form.media}}
-        	<p>{{form.procesos }}</p>
+
+
+	<form method="post" data-asignacion>
+		{% csrf_token %}
+
+		<div class="flex-container">
+			<!-- Procesos Disponibles -->
+			<div class="flex-item" style="width: 50%;">
+				<h3>Procesos Disponibles</h3>
+				<input type="text" class="filtro-disponibles" placeholder="Filtrar procesos..." style="background: #EFEFAA; width: 100%; padding: 5px; margin-bottom: 10px;">
+				<br/>
+				<table class="tabla-disponibles styled-table" style="width: 100%;">
+					<thead >
+						<tr style="background: rgb(123, 255, 0); color:black">
+							<th>Proceso Critico</th>
+							<th style="width: 70px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for proceso in procesos_disponibles %}
+						<tr data-id="{{ proceso.id }}">
+							<td><a  class="link" data-message="Ver detalles del Proceso ..."
+								href="{% url 'Detalle-Proceso-V2' proceso.pk %}" style="color:green">{{ proceso.path }}</a></td>
+							<td style="text-align: center;">
+								<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-weight: bold; font-size: 15px;">⏩</button>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+
+			<!-- Procesos Asignados -->
+			<div class="flex-item" style="width: 50%;">
+				<h3>Procesos Asignados al DRP</h3>
+				<input type="text" class="filtro-asignados" placeholder="Filtrar procesos asignados..." style="background: #EFEFAA; width: 100%; padding: 5px; margin-bottom: 10px;">
+				
+				<table class="tabla-asignados styled-table" style="width: 100%;">
+					<thead>
+						<tr style="background: #f0ad4e; color: black;" >
+							<th>Proceso Critico</th>
+							<th style="width: 70px;"></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for proceso in procesos_asignados %}
+						<tr data-id="{{ proceso.id }}">
+							<td><a  class="link" data-message="Ver detalles del Proceso ..."
+								href="{% url 'Detalle-Proceso-V2' proceso.pk %}" style="color:green">{{ proceso.path }}</a>
+							</td>
+							<td style="text-align: center;">
+								<button type="button" class="btn-mover button" data-destino="disponibles" style="background: red; color: white; font-weight: bold;">⏪</button>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Campo oculto que mantiene los IDs seleccionados para enviar -->
+		<input type="hidden" name="procesos_ids" class="input-seleccion" value="">
+
 		<br/>
-   		<br/>	
-        <p><input type="submit" value="Registrar y Salir" /></p>
-    	</form>
+		<button type="submit" class="button">Guardar selección</button>
+		<a href="{% url 'Indice-DRP' drp.pk %}" ><bb class="button">Cancelar</bb></a>
+	</form>
+
 	</ul>
-	{% endblock %}
+
 
 {% endblock %}

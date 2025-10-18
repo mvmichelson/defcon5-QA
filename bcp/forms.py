@@ -839,7 +839,7 @@ class Declara_Incidente_Form(forms.Form):
     area = forms.CharField(max_length= 25, label='Area:')
     #correo = forms.EmailField(required=True)
     descripcion = forms.CharField(max_length=500, label='Descripcion:',  help_text='Describir Incidente :', widget=forms.Textarea(attrs={'rows':8, 'cols':70}))
-    
+    test= forms.BooleanField()
     amenazas_i = forms.ModelMultipleChoiceField(queryset=Amenazas.objects.all().order_by('titulo'),
                                           label=_('Amenazas Ocurridas :'),
                                           required= True,

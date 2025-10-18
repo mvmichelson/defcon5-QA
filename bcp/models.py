@@ -159,26 +159,6 @@ class SubProceso_V(models.Model):
 
     ranking =  models.DecimalField(max_digits=5, decimal_places=2, default=000.00)
     
-    #Registra el estado de Autorizacion RACI
-    #PROC_STATUS = (
-    #    ('R', 'Vigenteado'),
-    #    ('r', 'x Vigentear R'),
-    #    ('A', 'x Aprobar A'),
-    #    ('C', 'En Dfncn C'),
-    #    ('x', 'En Revision C'), 
-    #)
-    #status = models.CharField(max_length=1, choices=PROC_STATUS, blank=True, default='C', help_text='Estado de la definicion del Proceso')
-
-    #Registra la Fase en el desarrollo del  bcp
-    #FASE_STATUS = (
-    #    ('M', 'Fase Procesos'),
-    #    ('V', 'Fase BIA'),
-    #    ('B', 'Fase Activos'),
-    #    ('E', 'Fase Escenarios'),
-    #)
-
-    #fase_status = models.CharField(max_length=1, choices=FASE_STATUS, blank=True, default='M', help_text='Fase del bcp')
-
     recursos=models.ManyToManyField('Recursos', blank=False)
 
     escenarios=models.ManyToManyField('Escenarios', blank=False)
@@ -305,7 +285,6 @@ class Recursos(models.Model):
         String que representa al objeto 
         """
         return  self.nombre+': '+self.descripcion
-
 
 
 class Tipo_RR(models.Model):
@@ -555,13 +534,14 @@ class Incidentes(models.Model):
     procesos_i = models.ManyToManyField('SubProceso_V')
     escenarios_i = models.ManyToManyField('Escenarios')
 
-    changed=models.BooleanField(default=False)
+    changed=models.BooleanField(default=False) #Indica si el incidente ha sido modificado
+    test=models.BooleanField(default=False)    #Indica si el incidente es una prueba
 
     
 
 class Procedimientos(models.Model):
     """
-    Registro de Procedimientos de Contingencia
+    Registro de Procedimientos de Contingencia en Desarrollo / Actualizacion 
     """
 
     codigo = models.CharField(max_length= 25, blank=False, default='0000')
@@ -601,19 +581,6 @@ class Procedimientos(models.Model):
     pasos = models.ManyToManyField('Pasos_PC')
 
 
-    #Marcadores para verificar completitud del ingreso de datos Servicios, Contactos y Pasos del Procedimiento
-    #sec_1_completa = models.BooleanField(default=False)
-    #sec_servicios  = models.IntegerField(default=0)
-    #sec_contactos  = models.IntegerField(default=0)
-    #sec_pasos      = models.IntegerField(default=0)
-
-
-    #Estados del Procedimiento y Archivo adjunto                                            
-    esta_activo=models.BooleanField(default=False)     # Activado por Comite de Crisis
-    esta_confirmado=models.BooleanField(default=False) # Confirmado por Gestor Ejecutor
-    archivo = models.FileField(upload_to="archivos/", null=True, blank=True)
-
-
     PROCED_STATUS = (
         ('R', 'Vigenteado'),
         ('r', 'X Vigentear R'),
@@ -633,7 +600,7 @@ class Procedimientos(models.Model):
 
 class Procedimientos_V(models.Model):
     """
-    Registro de Procedimientos de Contingencia Vigentes
+    Registro de Procedimientos de Contingencia Autorizados Vigentes
     """
 
     subproceso=models.ForeignKey('SubProceso_V', on_delete=models.SET_NULL, null=True)
@@ -670,12 +637,10 @@ class Procedimientos_V(models.Model):
     servicios_pc = models.ManyToManyField('Servicios_PC_V')
     contactos_pc = models.ManyToManyField('Contactos_PC_V')
 
-
     #Pasos del Procedimiento
     pasos = models.ManyToManyField('Pasos_PC_V')
 
-
-    #Estados del Procedimiento y Archivo adjunto                                            
+    #Estados del Procedimiento y Archivo adjunto durante Contingencia                                           
     esta_activo=models.BooleanField(default=False)     # Activado por Comite de Crisis
     esta_confirmado=models.BooleanField(default=False) # Confirmado por Gestor Ejecutor
     archivo = models.FileField(upload_to="archivos/", null=True, blank=True)
@@ -807,11 +772,10 @@ class Grupos(models.Model):
 
 class Drp(models.Model):
     """
-    Datos del DRP
+    Datos del DRP en Desarrollo / Actualizacion 
     """
 
     codigo  = models.CharField(max_length= 8, blank=False, default='0000')
-    version = models.CharField(max_length= 5, blank=False, default='0000')
     
     #Fechas
     fecha_c=models.DateField(auto_now_add=True)
@@ -843,9 +807,10 @@ class Drp(models.Model):
  
     #Estado del Procedimiento y Archivo adjunto                                            
     esta_activo=models.BooleanField(default=False)
+    modo_test=models.BooleanField(default=False)
     #archivo = models.FileField(upload_to="archivos/", null=True, blank=True)
 
-
+    
     PROCED_STATUS = (
         ('R', 'Vigenteado'),
         ('r', 'X Vigentear R'),
@@ -882,6 +847,72 @@ class Drp(models.Model):
     # Especificacion Tecnica (Componentes Sw/Hw del DRP)
 
     componentes=models.ManyToManyField('Componentes')
+
+    def get_absolute_url(self):
+        """
+        Devuelve el URL a una instancia particular 
+        """
+        return reverse('Indice-DRP', args=[str(self.id)])
+
+
+class Drp_V(models.Model):
+    """
+    Datos del DRP Aprobado Vigente 
+    """
+
+    codigo  = models.CharField(max_length= 8, blank=False, default='0000')
+    version = models.CharField(max_length= 5, blank=False, default='0000')
+    
+    #Fechas
+    fecha_c=models.DateField(auto_now_add=True)
+    fecha_auth = models.DateField(auto_now_add=True)
+
+    #Identificacion del DRP
+    nombre = models.CharField(max_length= 100, blank=False)
+    introduccion = models.CharField(max_length= 2000, blank=True)
+
+    #Responsables
+    resp_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='resp_drp_v', null=True, blank=True)
+    bck_resp_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='bck_resp_drp_v', null=True, blank=True)
+
+    gestor_ejecutor_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='gestor_ejecutor_drp_v', null=True)
+    bck_ejecutor_drp  = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='bck_ejecutor_drp_v', null=True)
+
+    enlace_c_crisis_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='enlace_c_crisis_drp_v',  null=True)
+    bck_enlace_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='bck_enlace_drp_v', null=True)
+
+    gestor_consultor_drp = models.ForeignKey('Gestor', on_delete=models.SET_NULL, related_name='gestor_consultor_drp_v', null=True)
+
+    #Servicios y Contactos necesarios                                       
+    servicios_drp = models.ManyToManyField('Servicios_PC')
+    contactos_drp = models.ManyToManyField('Contactos_PC')
+
+    #Pasos del DRP
+    pasos_drp = models.ManyToManyField('Pasos_PC')
+
+ 
+    #Estados del Procedimiento y Archivo adjunto durante Contingencia                                           
+    esta_activo=models.BooleanField(default=False)     # Activado por Comite de Crisis
+    esta_confirmado=models.BooleanField(default=False) # Confirmado por Gestor Ejecutor
+    archivo = models.FileField(upload_to="archivos/", null=True, blank=True)
+    
+    #Alcance
+
+    procesos_drp=models.ManyToManyField('SubProceso_V')
+
+    # Estrategia de Recuperacion
+
+    tipo_Site = models.ForeignKey('Tipo_Site', on_delete=models.SET_NULL, related_name='tipo_site_v', null=True)
+    desc_estrategia = models.CharField(max_length= 1000, blank=True)
+    disposicion_componentes=models.ForeignKey('Tipo_Disp', on_delete=models.SET_NULL, related_name='tipo_disp_v', null=True)
+
+    # Especificacion Tecnica (Componentes Sw/Hw del DRP)
+
+    componentes=models.ManyToManyField('Componentes')
+
+    # Log de Autorizaciones
+    log_auth_drp=models.ManyToManyField('LogAut')
+
 
     def get_absolute_url(self):
         """

@@ -123,9 +123,12 @@ urlpatterns += [
     #url(r'^map_esc/$', views.Map_escenariosListView.as_view(), name='Mapeo-Escenarios'),
     path('map_esc/', views.Lista_Escenarios, name='Lista-Escenarios'),
     path('map_esc/<int:pk>/asig_esc/', views.asigna_escenarios, name='Asigna-Escenarios'),
-    path('map_esc/<int:pk>/aut_asig_esc/', views.Aut_Asig_Esc, name='Aut-Asigna-Escenarios'),
+    #path('map_esc/<int:pk>/aut_asig_esc/', views.Aut_Asig_Esc, name='Aut-Asigna-Escenarios'),
+    path('map_esc/<int:pk>/aut_asig_scer/', views.auth_asig_SCER, name='Aut-Asigna-SCER'),
     #path('map_esc/<int:pk>/rev_asig_esc/', views.Revisa_Asig_Esc, name='Rev-Asigna-Escenarios'),
     path('map_esc/<int:pk>/rev_asig_esc/', views.rev_asigna_escenarios, name='Rev-Asigna-Escenarios'),
+
+
 
 ]
 
@@ -234,10 +237,13 @@ urlpatterns += [
     
     path('drp/<int:pk>/<int:sec>/envia_aut/', views.Env_Aut_DRP, name='Envia-Aut-DRP'),
     path('drp/<int:pk>/<int:sec>/aut_drp/', views.Aut_Drp, name='Autoriza-DRP'),
-    path('drp/<int:pk>/<int:sec>/aut_drp_v/', views.Aut_Drp_V, name='Autoriza-DRP-V'),
+    #path('drp/<int:pk>/<int:sec>/aut_drp_v/', views.Aut_Drp_V, name='Autoriza-DRP-V'),
+
+    # Revision de Comentarios,
     path('drp/<int:pk>/revisa_resp_drp/', views.Rev_S2_Drp, name='Revisa-Resp-DRP'),
     path('drp/<int:pk>/rev_obj_drp/', views.Rev_S1_Drp, name='Revisa-Obj-DRP'),
-    path('drp/<int:pk>/rev_alc_drp/', views.Rev_S3_Drp, name='Revisa-Alcance-DRP'),
+    #path('drp/<int:pk>/rev_alc_drp/', views.Rev_S3_Drp, name='Revisa-Alcance-DRP'),
+    path('drp/<int:pk>/rev_alc_drp/', views.rev_asigna_procesos_drp, name='Revisa-Alcance-DRP'),
     path('drp/<int:pk>/rev_est_drp/', views.Rev_S4_Drp, name='Revisa-Estrategia-DRP'),
     path('drp/<int:pk>/rev_cmp_drp/', views.Rev_S5_Drp, name='Revisa-Especif_Tec-DRP'),
     path('drp/<int:pk>/rev_sc_drp/', views.Rev_S6_Drp, name='Revisa-SC-DRP'),

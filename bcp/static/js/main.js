@@ -115,7 +115,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('currentField =', currentField);
             console.log('currentId =', currentId);
 
-
             commentBox.classList.remove("hidden");
             commentText.value = "";
             commentText.focus();
@@ -174,6 +173,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // Limpiar el área de texto y cerrar la caja
             commentText.value = '';
             commentBox.classList.add("hidden");
+
+            // 🚀 Forzar actualización de la página al finalizar el script
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         });
     });
 
