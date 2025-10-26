@@ -27,73 +27,81 @@
 		este Plan de Recupercion del Procesamiento de Datos (DRP). Estos procesos corresponden a una seleccion de aquellos que
 		contemplan Escenarios de Riesgo cuya estrategia de recuperacion es  la activacion de un Site de Contingencias.</p>
 	
+	<div data-asignacion
+     data-model="bcp.Drp"         
+     data-obj-id="{{ drp.id }}"   
+     data-field="procesos_drp">
+	 
+     <!-- data-model="bcp.Drp"       : formato app_label.ModelName; DEBE estar en ALLOWED_MODELS -->
+     <!-- data-obj-id="{{ drp.id }}  : id del objeto base -->
+     <!-- data-field="componentes"   : nombre exacto del campo M2M en el modelo -->
 
+		<form method="post" >
+			{% csrf_token %}
 
-	<form method="post" data-asignacion>
-		{% csrf_token %}
+			<div class="flex-container">
+				<!-- Procesos Disponibles -->
+				<div class="flex-item" style="width: 50%;">
+					<h3>Procesos Disponibles</h3>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar procesos..." style="background: #EFEFAA; width: 100%; padding: 5px; margin-bottom: 10px;">
+					<br/>
+					<table class="tabla-disponibles styled-table" style="width: 100%;">
+						<thead >
+							<tr style="background: rgb(123, 255, 0); color:black">
+								<th>Proceso Critico</th>
+								<th style="width: 70px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for proceso in procesos_disponibles %}
+							<tr data-id="{{ proceso.id }}">
+								<td><a  class="link" data-message="Ver detalles del Proceso ..."
+									href="{% url 'Detalle-Proceso-V2' proceso.pk %}" style="color:green">{{ proceso.path }}</a></td>
+								<td style="text-align: center;">
+									<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-weight: bold; font-size: 15px;">⏩</button>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 
-		<div class="flex-container">
-			<!-- Procesos Disponibles -->
-			<div class="flex-item" style="width: 50%;">
-				<h3>Procesos Disponibles</h3>
-				<input type="text" class="filtro-disponibles" placeholder="Filtrar procesos..." style="background: #EFEFAA; width: 100%; padding: 5px; margin-bottom: 10px;">
-				<br/>
-				<table class="tabla-disponibles styled-table" style="width: 100%;">
-					<thead >
-						<tr style="background: rgb(123, 255, 0); color:black">
-							<th>Proceso Critico</th>
-							<th style="width: 70px;"></th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for proceso in procesos_disponibles %}
-						<tr data-id="{{ proceso.id }}">
-							<td><a  class="link" data-message="Ver detalles del Proceso ..."
-								href="{% url 'Detalle-Proceso-V2' proceso.pk %}" style="color:green">{{ proceso.path }}</a></td>
-							<td style="text-align: center;">
-								<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-weight: bold; font-size: 15px;">⏩</button>
-							</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
+				<!-- Procesos Asignados -->
+				<div class="flex-item" style="width: 50%;">
+					<h3>Procesos Asignados al DRP</h3>
+					<input type="text" class="filtro-asignados" placeholder="Filtrar procesos asignados..." style="background: #EFEFAA; width: 100%; padding: 5px; margin-bottom: 10px;">
+					
+					<table class="tabla-asignados styled-table" style="width: 100%;">
+						<thead>
+							<tr style="background: #f0ad4e; color: black;" >
+								<th>Proceso Critico</th>
+								<th style="width: 70px;"></th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for proceso in procesos_asignados %}
+							<tr data-id="{{ proceso.id }}">
+								<td><a  class="link" data-message="Ver detalles del Proceso ..."
+									href="{% url 'Detalle-Proceso-V2' proceso.pk %}" style="color:green">{{ proceso.path }}</a>
+								</td>
+								<td style="text-align: center;">
+									<button type="button" class="btn-mover button" data-destino="disponibles" style="background: red; color: white; font-weight: bold;">⏪</button>
+								</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 			</div>
 
-			<!-- Procesos Asignados -->
-			<div class="flex-item" style="width: 50%;">
-				<h3>Procesos Asignados al DRP</h3>
-				<input type="text" class="filtro-asignados" placeholder="Filtrar procesos asignados..." style="background: #EFEFAA; width: 100%; padding: 5px; margin-bottom: 10px;">
-				
-				<table class="tabla-asignados styled-table" style="width: 100%;">
-					<thead>
-						<tr style="background: #f0ad4e; color: black;" >
-							<th>Proceso Critico</th>
-							<th style="width: 70px;"></th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for proceso in procesos_asignados %}
-						<tr data-id="{{ proceso.id }}">
-							<td><a  class="link" data-message="Ver detalles del Proceso ..."
-								href="{% url 'Detalle-Proceso-V2' proceso.pk %}" style="color:green">{{ proceso.path }}</a>
-							</td>
-							<td style="text-align: center;">
-								<button type="button" class="btn-mover button" data-destino="disponibles" style="background: red; color: white; font-weight: bold;">⏪</button>
-							</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		</div>
+			<!-- Campo oculto que mantiene los IDs seleccionados para enviar -->
+			<input type="hidden" name="procesos_ids" class="input-seleccion" value="">
 
-		<!-- Campo oculto que mantiene los IDs seleccionados para enviar -->
-		<input type="hidden" name="procesos_ids" class="input-seleccion" value="">
-
-		<br/>
-		<button type="submit" class="button">Guardar selección</button>
-		<a href="{% url 'Indice-DRP' drp.pk %}" ><bb class="button">Cancelar</bb></a>
-	</form>
+			<br/>
+			<button type="submit" class="button">Guardar selección</button>
+			<a href="{% url 'Indice-DRP' drp.pk %}" ><bb class="button">Cancelar</bb></a>
+		</form>
+	</div>
 
 	</ul>
 	{% endblock %}

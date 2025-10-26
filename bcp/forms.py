@@ -816,6 +816,7 @@ class Crea_CMP_Form(forms.Form, list):
     descripcion = forms.CharField(max_length=1000, widget=forms.Textarea(attrs={'rows':4, 'cols':25}))
     identificacion= forms.CharField(max_length=30, widget=forms.Textarea(attrs={'rows':1, 'cols':30}))
     fabricante=forms.CharField(max_length=30, widget=forms.Textarea(attrs={'rows':1, 'cols':30}))
+    codigo_inv=forms.CharField(max_length=25, widget=forms.Textarea(attrs={'rows':1, 'cols':25}))
 
 class Crea_LBC_Form(forms.Form, list):
     """

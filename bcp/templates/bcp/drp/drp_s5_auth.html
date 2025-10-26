@@ -4,172 +4,428 @@
 <!=======================================================================>
 
 {% extends "base_generic.html" %}
+<!--- Politicas para prevenir retorno al formulario una vez emviado -->
+{% block extra_js %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+<!--- Fin Politicas para prevenir retorno al formulario una vez emviado -->
+
 
 {% block content %}
 	
-	{% block encabezado_auth %}
-	 <ul class="encabezado_B">
-        <p><aa><strong>FORMULARIO DE AUTORIZACION  DE LA ESPECIFICACION TECNICA DEL DRP</aa></strong></p>
-	 </ul>
-	 <ul class="encabezado_SB">
-		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
-	 </ul>
-	{% endblock %}
-
-
-	<h5><strong>ESPECIFICACION TECNICA DEL  DRP</strong></h5>
-	<p style="font-size:12px" >Revisar los Componentes de Hardware y Software especificados para el DRP. Si existe alguna observacion, registrela 
-	en (&#128221) frente al item correspondiente.</p>
-		
-	<ul class="scr2">
-	<p>Revisar los Componentes asignados y no asignados. Hacer observacion ( 📝 ) en terminos de eliminar o incluir en la seleccion.</p>
-	<br/>
-	<h6><strong>2.1.&emsp;Componentes especificados para este DRP.</strong><h6>
-									
-			<table class="lta">
-			<thead class='encabezado_A'>
-			<tr>
-					<th scope="col">CODIGO</th>
-					<th scope="col">TIPO</th>
-					<th scope="col">NOMBRE</th>
-					<th scope="col">DESCRIPCION</th>
-					<th scope="col">IDENTIFICACION</th>
-					<th scope="col">FABRICANTE</th>
-					<th scope="col">OBS.</th>
-			</tr>
-			</thead>
-							
-			<tbody>
-			{%for cmp in compo_asig.all  %}
-				<tr>
-				 <th scope="row"><bb>{{cmp.codigo}}<bb></th>
-				 <th scope="row"><bb>{{cmp.tipo_act.tipo}}<bb></th>
-				 <th scope="row"><bb>{{cmp.nombre}}<bb></th>
-				 <th scope="row"><bb>{{cmp.descripcion}}<bb></th>
-				 <th scope="row"><bb>{{cmp.identificacion}}<bb></th>
-				 <th scope="row"><bb>{{cmp.fabricante}}<bb></th>
-  				 <th scope="row"><a href = "{% url 'obs-drp' 'Componente Especificado'  drp.pk  cmp.codigo %}"><bb><strong>&#128221</bb></strong></a><bb>
-				</th>
-				</tr>
-				{% if not forloop.last %}
-				{%endif%}
-			{%endfor%}
-			</tbody>
-			</table>
-								
-	<br/>
-							
-	<h6><strong>2.2.&emsp;Componentes disponibles en Base de Componentes NO seleccionados.</strong><h6>
-									
-			<table class="lta">
-			<thead class='encabezado_A'>
-			<tr>
-				<th scope="col">CODIGO</th>
-				<th scope="col">TIPO</th>
-				<th scope="col">NOMBRE</th>
-				<th scope="col">DESCRIPCION</th>
-				<th scope="col">IDENTIFICACION</th>
-				<th scope="col">FABRICANTE</th>
-				<th scope="col">OBS.</th>
-			</tr>
-			</thead>
-							
-			<tbody>
-			{%for cmpd  in compo_disp.all  %}
-				{% if  cmpd not in compo_asig.all %}
-				<tr>
-					<th scope="row"><bb>{{cmpd.codigo}}<bb></th>
-					<th scope="row"><bb>{{cmpd.tipo_act.tipo}}<bb></th>
-					<th scope="row"><bb>{{cmpd.nombre}}<bb></th>
-					<th scope="row"><bb>{{cmpd.descripcion}}<bb></th>
-					<th scope="row"><bb>{{cmpd.identificacion}}<bb></th>
-					<th scope="row"><bb>{{cmpd.fabricante}}<bb></th>
-					<th scope="row"><a href = "{% url 'obs-drp' 'Componente No especificado'  drp.pk  cmpd.codigo %}"><bb><strong>&#128221</bb></strong></a><bb>
-					</th>
-				</tr>
-				{% if not forloop.last %}
-				{%endif%}
-
-				{%endif%}
-							
-			{%endfor%}
-			</tbody>
-							
-			</table>
-								
+{% block encabezado_auth %}
+	<ul class="encabezado_B">
+	<p><aa><strong>FORMULARIO DE AUTORIZACION  DE LA ESPECIFICACION TECNICA DEL DRP</aa></strong></p>
 	</ul>
+	<ul class="encabezado_SB">
+	<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+	</ul>
+{% endblock %}
+
+ <!-------------------------------- Bloque A -------------------------------->
+<div class="flex-container">
+
+<!--------- Columna 1 --------------->
+  <div class="flex-item" style="width: 45%;"> 
+
+<p><bn>Revise los Componentes Asignados Y NO Asignados a este DRP. Del mismo modo, revise
+		las Lineas Base de Configuracion (LBC) definidos para cada Componente.</bn></p>
+<p><bn>Si existe alguna observacion, registrela 
+	en (<img src="/static/img/Comentario_1.png" width="15" height="15">) frente al item correspondiente.</p>
+	</bn></p>
+
+
+
+</div><!--------- Fin Columna 1 --------------->
+
+
+<!----- Seccion  Block de Comentarios (Autorizador) ---------->
+<div class="flex-text" style="width: 52%;">
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Block de Comentarios de Revision</strong>
+	</ul>
+
+	<ul class="BarraScroll" style="height: 310px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+		<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10;">Est.</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+
+					{% for com in comentarios %}
+						{%if com.gestor_aut != drp.gestor_consultor_drp %}
+							<tr style="font-size: 9px;">
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}
+								(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+								</p>
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}</p>
+							</th>
+	
+						{%endif%}
+
+							<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+							<th scope="row" style="width: 10; text-align: center;">
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+
+								{% if com.resuelto %}
+									&#9989
+								{%else%}
+									&#10067
+								{%endif%}
+							{%endif%}
+							<!-- Borra Comentario -->
+							</th>
+								
+							</tr>
+								{% if not forloop.last %}
+								{%endif%}
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+			
+			<!-- Fin Log Comentarios -->
+			
+	</ul>
+
+</div>  <!---- FIN Seccion  Block de Comentarios (Autorizador) --------->
+
+</div><!-------------------------------- Fin Bloque A -------------------------------->
+<!------------------------------------------------------------------------------------>
+<br/>
+<ul class="scr4" style="text-align: center;"><strong>COMPONENTES ASIGNADOS AL DRP</strong></ul>
+
+<!---- Lista de Componentes Asignados --------- -->
+	<ul class="BarraScroll" style="height: 350px;">	
+
+    <table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+      <thead>
+        <tr>
+          <th colspan="6" style="
+            background-color: rgb(135, 132, 132); color: white;
+              text-align: left;
+              padding: 20px 20px;
+              font-weight: bold;
+              font-size: 16px;
+          height: 20px;
+              position: relative;">
+              <a style="float: left;">COMPONENTES
+              </a>
+        </a>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody style="border-top: none;">
+
+        {% if componentes_asig %}
+          {% for cmp in componentes_asig.all %}
+            <!-- Encabezado de columnas -->
+            <thead class="encabezado_N">
+              <tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
+                <th scope="col" style="width: 90px; text-align: center;">Código</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Codigo de Inventario</th>
+                <th scope="col" style="width: 90px;">Obs.</th>
+              </tr>
+            </thead>
+
+            <!-- Fila del componente -->
+            <tr style="border-bottom: 1px solid #ccc;">
+              <td style="text-align: center; font-family: monospace;">{{ cmp.codigo }}</td>
+              <td>{{ cmp.tipo_act.tipo }}</td>
+              <td><strong>{{ cmp.nombre }}</strong></td>
+              <td>{{ cmp.descripcion }}</td>
+              <td>{{ cmp.codigo_inv }}</td>
+              <td>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar Especificacion del Componente..."
+					data-id="{{ drp.id }}" # Pk del DRP
+					data-sec="D5"           
+					data-field="Revisar el Componente Asignado : {{cmp.codigo}} / {{cmp.nombre}}"
+					> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+              </td>
+            </tr>
+
+            <!-- Subtabla de LBC -->
+            <tr>
+              <td colspan="6" style="padding: 10px 0 20px 40px;">
+                {% if cmp.lbc.exists %}
+            <p><strong>LINEA BASE DE CONFIGURACION :</strong></p>
+                  <table style="width: 95%; background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;">
+                    <thead style="background-color: #e3e9f7; color: #002b5c; background: black;">
+                      <tr style="background: black;">
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Método acceso</th>
+                        <th>Valor</th>
+                        <th>Obs.</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for lbc in cmp.lbc.all %}
+                        <tr>
+                          <td><strong>{{ lbc.nombre }}</strong></td>
+                          <td>{{ lbc.descripcion }}</td>
+                          <td>{{ lbc.metodo_acceso }}</td>
+                          <td>{{ lbc.valor }}</td>
+                          <td>
+							<!---------  Comentario de Revision ----->
+							<span class="comment-icon link"  data-message="Comentar Especificacion del Parametro ..."
+							data-id="{{ drp.id }}" # Pk del DRP
+							data-sec="D5"           
+							data-field="Revisar el Parametro {{lbc.nombre}} del Componente Asignado : {{cmp.codigo}} / {{cmp.nombre}}"
+							> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+							</span>
+							<!---------  Fin Comentario de Revision ----->
+
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+                    <span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+                    No hay Parametros de Configuracion definidos para la Linea Base de Configuracion (LBC) de este  Componente (Evaluar Riesgo).
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="6" style="padding: 10px;">No hay Componentes definidos</td></tr>
+        {% endif %}
+
+      </tbody>
+    </table>
+		<br/>
+		<br/>
+		
+	</ul>
+<!-- Fin Lista de Componentes ----------->
+<br/><br/>
+<ul class="scr4" style="text-align: center;"><strong>COMPONENTES DISPONIBLES EN BD NO ASIGNADOS</strong></ul>
+
+<!---- Lista de Componentes NO Asignados --------- -->
+	<ul class="BarraScroll" style="height: 350px;">	
+
+    <table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+      <thead>
+        <tr>
+          <th colspan="6" style="
+            background-color: green; color: white;
+              text-align: left;
+              padding: 20px 20px;
+              font-weight: bold;
+              font-size: 16px;
+          height: 20px;
+              position: relative;">
+              <a style="float: left;">COMPONENTES 
+              </a>
+        </a>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody style="border-top: none;">
+
+        {% if componentes_disp %}
+          {% for cmp in componentes_disp.all %}
+            <!-- Encabezado de columnas -->
+            <thead class="encabezado_N">
+              <tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
+                <th scope="col" style="width: 90px; text-align: center;">Código</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Codigo de Inventario</th>
+                <th scope="col" style="width: 90px;">Obs.</th>
+              </tr>
+            </thead>
+
+            <!-- Fila del componente -->
+            <tr style="border-bottom: 1px solid #ccc;">
+              <td style="text-align: center; font-family: monospace;">{{ cmp.codigo }}</td>
+              <td>{{ cmp.tipo_act.tipo }}</td>
+              <td><strong>{{ cmp.nombre }}</strong></td>
+              <td>{{ cmp.descripcion }}</td>
+              <td>{{ cmp.codigo_inv }}</td>
+              <td>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar Especificacion del Componente..."
+					data-id="{{ drp.id }}" # Pk del DRP
+					data-sec="D5"           
+					data-field="Revisar el Componente NO Asignado : {{cmp.codigo}} / {{cmp.nombre}}"
+					> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+              </td>
+            </tr>
+
+            <!-- Subtabla de LBC -->
+            <tr>
+              <td colspan="6" style="padding: 10px 0 20px 40px;">
+                {% if cmp.lbc.exists %}
+            <p><strong>LINEA BASE DE CONFIGURACION :</strong></p>
+                  <table style="width: 95%; background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;">
+                    <thead style="background-color: #e3e9f7; color: #002b5c; background: black;">
+                      <tr style="background: black;">
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Método acceso</th>
+                        <th>Valor</th>
+                        <th>Obs.</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for lbc in cmp.lbc.all %}
+                        <tr>
+                          <td><strong>{{ lbc.nombre }}</strong></td>
+                          <td>{{ lbc.descripcion }}</td>
+                          <td>{{ lbc.metodo_acceso }}</td>
+                          <td>{{ lbc.valor }}</td>
+                          <td>
+							<!---------  Comentario de Revision ----->
+							<span class="comment-icon link"  data-message="Comentar Especificacion del Parametro ..."
+							data-id="{{ drp.id }}" # Pk del DRP
+							data-sec="D5"           
+							data-field="Revisar el Parametro {{lbc.nombre}} del Componente NO Asignado : {{cmp.codigo}} / {{cmp.nombre}}"
+							> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+							</span>
+							<!---------  Fin Comentario de Revision ----->
+
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+                    <span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+                    No hay Parametros de Configuracion definidos para la Linea Base de Configuracion (LBC) de este  Componente (Evaluar Riesgo).
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="6" style="padding: 10px;">No hay Componentes definidos</td></tr>
+        {% endif %}
+
+      </tbody>
+    </table>
+		<br/>
+		<br/>
+		
+	</ul>
+<!-- Fin Lista de Componentes NO Asignados  ----------->
+
+<!---------------------------- Seccion CONCLUSION ---------------------------------->
+	
+	{%block Conclusion%}
 	
 	<p><h5><strong>CONCLUSION</strong></h5>
-		<ul class="scr4">
+	<ul class="scr4">
+
+	<br/>
 	
-		<h5><strong>Observaciones realizadas</strong></h5></p>
-		{%if drp.log_auth_drp.all %}
-		
-		<br/>
-		
-		<table class="lta">
-	
-			<thead class='encabezado_D'>
-			  <tr>
-			<th scope="col">Fecha</th>
-			<th scope="col">Item</th>
-			<th scope="col">Observacion</th>
-			<th scope="col">Gestor</th>
-			<th scope="col">X</th>
+		{% block C %}
+		<form action="" method="post">
+			{% csrf_token %}
+        		
+      <p><strong>Marque <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si los Componentes Asignados al DRP y su 
+			nivel de Especificacion de Linea Base de Configuracion son Autorizados.</strong></p>
+      <p><strong>Si en su opinion faltan Componentes que no estan en la BD o tiene una observacion general, 
+        comentelo aqui 
+      =>(
+      							<!---------  Comentario de Revision ----->
+							<span class="comment-icon link"  data-message="Comentar Especificacion del Parametro ..."
+							data-id="{{ drp.id }}" # Pk del DRP
+							data-sec="D5"           
+							data-field="Comentario General"
+							> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+							</span>
+							<!---------  Fin Comentario de Revision ----->
+  
+      ).</strong></p> 
+    <p><strong>En caso de Registrar sin autorizar,  el formulario
+		sera devuelto al Gestor de Continuidad para su revision y correccion en base a sus comentarios 
+		(<img src="/static/img/Comentario_1.png" width="15" height="15">). </strong></p>
 			
-			  </tr> 
-			</thead>
-			<tbody>
+  			<br/>
+        	<input type="submit" class="button" value="Registrar" />
+			<br/><br/>
+	    </form>
+		{%endblock%}
+	</ul>
+
+	{% endblock %}
+
+<!---------------------------- Fin Seccion CONCLUSION ---------------------------------->
+
+
+<!----- CSS para Scripts --------------->
+<!-------------------------------------->
+
+<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
 	
-		{%for log_auth in drp.log_auth_drp.all %}
-		
-			   <tr>
-				<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
-				<th scope="row"><bb>{{log_auth.item}}</bb></th>
-				  <th scope="row"><bb>{{log_auth.observacion}}</bb></th>
-				<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
-				{%if request.user.username == log_auth.gestor_aprobador.user_gestor.username %}
-					<th scope="row"> <a href = "{% url 'borra-obs-proceso'  log_auth.pk  %}"> <rr>&#128465</rr></a>
-				{%else%}
-					<th scope="row"> <aa>...</aa>
-				{%endif%}
-				</th>
-			</tr>
-		  
-			{% if not forloop.last %}
-			{%endif%}
+<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
 	
-		{%endfor%}
-	
-			</tbody>		
-		</table>
-	
-		<br/>
-		<p>Las observaciones seran remitidas al <strong>Gestor Consultor</strong>, quien procedera a implementarlas para volver a ser puestas a su
-			disposicion para su autorizacion u observacion.</p>
-	
-		{%else%}
-		   <p>Sin Observaciones</p></p></h5>
-		{%endif%}
-	
-		<br/>
-		
-			{% block C %}
-			<form action="" method="post">
-				{% csrf_token %}
-					
-				<p><strong>Indique <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si los Componentes Especificados 
-				para este DRP le parecen  correctos y desea autorizar.</strong></p>
-				
-				<p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p>
-				<br/>
-				<br/>
-				<input type="submit" value="Registrar" />
-			</form>
-			{%endblock%}
-		</ul>
-		
-{% endblock}
+
+<!--------------Fin CSS ------------------------>
+
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[drp_s5_auth]</aa>	
 	
 {%endblock%}
 

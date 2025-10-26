@@ -13,7 +13,7 @@
 // ====================
 // Aplicar con el CSS #comicBalloon 
 
-// Inhibir actualización de Scroll (para todos los .BarraScroll y la ventana principal)
+// Inhibir actualizacion de Scroll
 
 // Seleccion de Servicios
 
@@ -204,53 +204,31 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-
-// Inhibir actualización de Scroll (para todos los .BarraScroll y la ventana principal)
-// ====================================================================================
+// Inhibir actualizacion de Scroll (CSS BarraScroll)
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Activa Inhibidor de Barra de Scroll');
-
-    // 1️⃣ --- Para todos los contenedores con clase .BarraScroll ---
-    const barras = document.querySelectorAll('.BarraScroll');
-    barras.forEach((barra, i) => {
-        const key = `scrollPositionInner_${i}`; // clave única por box
-
-        // Restaurar posición
-        const pos = sessionStorage.getItem(key);
-        if (pos) {
-            console.log(`Restaura posición de .BarraScroll[${i}]`);
-            barra.scrollTop = pos;
-        }
-
-        // Guardar al hacer scroll
-        barra.addEventListener('scroll', () => {
-            sessionStorage.setItem(key, barra.scrollTop);
-        });
-
-        // Guardar antes de recargar
-        window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem(key, barra.scrollTop);
-        });
-    });
-
-    // 2️⃣ --- Para la barra principal del documento (window / body) ---
-    const mainKey = 'scrollPositionMain';
-    const posMain = sessionStorage.getItem(mainKey);
-    if (posMain) {
-        console.log('Restaura posición principal');
-        window.scrollTo(0, posMain);
+    var barraScroll = document.querySelector('.BarraScroll');
+    console.log('Activa Inhibidor de Barra de BarraScroll')
+    // Restaurar la posición del scroll desde sessionStorage al cargar la página
+    if (sessionStorage.getItem('scrollPosition')) {
+        console.log('Restaura');
+        barraScroll.scrollTop = sessionStorage.getItem('scrollPosition');
     }
-
-    window.addEventListener('scroll', () => {
-        sessionStorage.setItem(mainKey, window.scrollY);
+  
+    // Guardar la posición del scroll en sessionStorage cuando el usuario hace scroll
+    barraScroll.addEventListener('scroll', function() {
+        console.log('Guarda posicion mientras se hace scroll');
+        sessionStorage.setItem('scrollPosition', barraScroll.scrollTop);
     });
-
-    window.addEventListener('beforeunload', () => {
-        console.log('Guarda posición principal antes de recargar');
-        sessionStorage.setItem(mainKey, window.scrollY);
+  
+    // Interceptar el evento de carga de contenido
+    window.addEventListener('beforeunload', function() {
+        // Guardar la posición del scroll antes de que la página se recargue
+        console.log('Guarda la posición del scroll antes de que la página se recargue');
+  
+        sessionStorage.setItem('scrollPosition', barraScroll.scrollTop);
     });
-});
+  });
 
 
 // -----------------------------------------------------------------------------------------  

@@ -5,6 +5,14 @@
 <!========================================================>
 
 {% extends "base_generic.html" %}
+<!--- Politicas para prevenir retorno al formulario una vez emviado -->
+{% block extra_js %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+<!--- Fin Politicas para prevenir retorno al formulario una vez emviado -->
+
 {% block content %}
 
 	{% block enc_escenario %}

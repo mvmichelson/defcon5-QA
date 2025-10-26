@@ -35,6 +35,10 @@ urlpatterns = [
     path('carga_usuarios/', views.importa_usuarios, name='carga-usuarios'),
     path('importa_backup/', views.importa_backup, name='importa-backup'),
 
+    # Ruta para el endpoint AJAX genérico
+    path("ajax/toggle-generic/", views.ajax_toggle_generic, name="ajax_toggle_generic"),
+
+
 
     # Diagramas Metodologicos
     # -----------------------
@@ -222,7 +226,9 @@ urlpatterns += [
 
     path('drp/<int:pk>/listaCmp/', views.Lista_CMP, name='Lista-CMP'),
 
-    path('drp/<int:pk>/<int:accion>/asigna_cmp/', views.Asigna_CMP, name='Asigna-CMP'),
+    #path('drp/<int:pk>/<int:accion>/asigna_cmp/', views.Asigna_CMP, name='Asigna-CMP'),
+    path('drp/<int:pk>/asigna_cmp/', views.asigna_componentes, name='Asigna-CMP'),
+
     
     path('drp/<int:pk>/listaServCrtc/', views.Lista_Serv_Crtc, name='Lista-SC'),
     path('drp/<int:pk>/<int:acc>/crea_p5_drp/', views.cr_drp_P5, name='crea-P5-DRP'),
@@ -236,8 +242,8 @@ urlpatterns += [
     path('drp/<int:pk>/modifica_p6_drp/', views.md_drp_P6, name='modifica-P6-DRP'),
     
     path('drp/<int:pk>/<int:sec>/envia_aut/', views.Env_Aut_DRP, name='Envia-Aut-DRP'),
-    path('drp/<int:pk>/<int:sec>/aut_drp/', views.Aut_Drp, name='Autoriza-DRP'),
-    #path('drp/<int:pk>/<int:sec>/aut_drp_v/', views.Aut_Drp_V, name='Autoriza-DRP-V'),
+    path('drp/<int:pk>/<int:sec>/aut_drp/', views.Aut_Drp, name='Autoriza-DRP'),       # Autoriza Jefe
+    path('drp/<int:pk>/<int:sec>/aut_drp_v/', views.Aut_Drp_V, name='Autoriza-DRP-V'), # Autoriza Responsable DRP
 
     # Revision de Comentarios,
     path('drp/<int:pk>/revisa_resp_drp/', views.Rev_S2_Drp, name='Revisa-Resp-DRP'),
@@ -245,10 +251,10 @@ urlpatterns += [
     #path('drp/<int:pk>/rev_alc_drp/', views.Rev_S3_Drp, name='Revisa-Alcance-DRP'),
     path('drp/<int:pk>/rev_alc_drp/', views.rev_asigna_procesos_drp, name='Revisa-Alcance-DRP'),
     path('drp/<int:pk>/rev_est_drp/', views.Rev_S4_Drp, name='Revisa-Estrategia-DRP'),
-    path('drp/<int:pk>/rev_cmp_drp/', views.Rev_S5_Drp, name='Revisa-Especif_Tec-DRP'),
+    path('drp/<int:pk>/rev_cmp_drp/', views.rev_esp_tec_drp, name='Revisa-Especif_Tec-DRP'),
     path('drp/<int:pk>/rev_sc_drp/', views.Rev_S6_Drp, name='Revisa-SC-DRP'),
 
-    url(r'^drp/(?P<item>[\w-]+)/(?P<pk>\d+)/(?P<valor>[\w-]+)/$', views.aut_obs_drp, name='obs-drp'),
+    #url(r'^drp/(?P<item>[\w-]+)/(?P<pk>\d+)/(?P<valor>[\w-]+)/$', views.aut_obs_drp, name='obs-drp'),
 
 ]
 
@@ -257,11 +263,18 @@ urlpatterns += [
 
 urlpatterns += [
 
+    #path('drp/<int:pk>/<int:aut>/crea_cmp/', views.Crea_CMP, name='Crea-CMP'),
     path('drp/crea_cmp/', views.Crea_CMP, name='Crea-CMP'),
+    path('drp/<int:cmp_pk>/borra_cmp/', views.Borra_CMP, name='Borra-CMP'),
+
+    #path('drp/<int:pk_drp>/<int:aut>/lista_cmp_b/', views.Lista_CMP_Borrar, name='Lista-Borra-CMP'),
+    path('drp/<int:pk_drp>/<int:origen>/lista_cmp/', views.Lista_CMP, name='Lista-CMP'),
+
+
     path('drp/<int:pk>/crea_lbc/', views.Crea_LBC, name='Crea-LBC'),
     path('drp/<int:pk>/borra_lbc/', views.Borra_LBC, name='Borra-LBC'),
 
-    path('drp/<int:pk>/<int:pk_drp>/listaLBC/', views.Lista_LBC, name='Lista-LBC'),
+    path('drp/<path:url_retorno>/listaLBC/', views.Lista_LBC, name='Lista-LBC'),
 
 ]
 

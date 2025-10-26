@@ -1,0 +1,153 @@
+<!Programa HTML>
+<!Despliega el formulario para la asignacion de Componentes al DRP.>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% load static %} 
+
+{% block content %}
+
+<ul class="encabezado_B">
+	<p><aa><strong>FORMULARIO DE ASIGNACION DE COMPONENTES DEL DRP :</strong></aa></p>
+</ul>
+<ul class="encabezado_SB">
+<p><aa>{{drp.nombre}}</aa></p>
+</ul>
+
+	
+
+	<br/>
+	<h5><strong>ASIGNACION DE COMPONENTES</strong></h5>
+	<!===================================================>
+	<P>Seleccione del listado de la izquierda aquellos Componentes de Hardware o Software Base 
+	   asociados a la infraestructura del Site de Contingencias. 
+	<br/>
+
+	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
+	<!---------------------------------------------->
+
+	<div data-asignacion
+     data-model="bcp.Drp"         
+     data-obj-id="{{ drp.id }}"   
+     data-field="componentes" > 
+	 
+     <!-- data-model="bcp.Drp"       : formato app_label.ModelName; DEBE estar en ALLOWED_MODELS -->
+     <!-- data-obj-id="{{ drp.id }}  : id del objeto base -->
+     <!-- data-field="componentes"   : nombre exacto del campo M2M en el modelo -->
+
+
+		<form method="post">
+			{% csrf_token %}
+			
+			<!-- Filtros y tablas -->
+			<div style="display:flex; gap:20px;">
+
+				<!-- Servicios Disponibles -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Componentes Disponibles</strong></h5>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar ..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+						<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+							<thead style="background: greenyellow;">
+								<tr style=color:black;">
+									<th style="width:10%;">Codigo</th>
+									<th style="width:30%;">Nombre</th>
+									<th>Descripción</th>
+									<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;">***⏩***</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for cmp_d in componentes_disponibles %}
+								<tr data-id="{{ cmp_d.id }}">
+									<td>{{ cmp_d.codigo}}</td>
+									<td>{{ cmp_d.nombre }}</td>
+									<td>{{ cmp_d.descripcion}}</td>
+									<td>
+										<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
+									</td>
+								</tr>
+							{% empty %}
+								<tr><td colspan="4" style="text-align:center;">No hay recursos disponibles.</td></tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</ul>
+				</div>
+
+				<!-- Servicios Asignados -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Componentes Seleccionados</strong></h5>
+					<input type="text" class="filtro-asignados" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: lightblue;">
+							<tr style="color:black">
+								<th style="width:10%;">Tipo</th>
+								<th style="width:30%;">Serv./Rec.</th>
+								<th>Descripción</th>
+								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" >***⏪***</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for cmp_s in componentes_asignados %}
+							<tr data-id="{{ cmp_s.id }}">
+								<td>{{ cmp_s.codigo}}</td>
+								<td>{{ cmp_s.nombre }}</td>
+								<td>{{ cmp_s.descripcion}}</td>
+								<td>
+									<button type="button" class="btn-mover button"   data-destino="disponibles" style="background: red; color: white; font-size:12px;"><a class="link" data-message="Selecciona" >⏪</a></button>
+								</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</ul>
+				</div>
+
+			</div>
+
+			<!-- Campo hidden para IDs -->
+			<input type="hidden" name="componentes" class="input-seleccion" value="">
+
+			<!-- Creacion de Componente en la BD-->
+			 	<a href="{% url 'Lista-CMP' drp.pk origen  %}"
+				class="link " data-message="Crea Componente ..."><sa>&#10010 </sa></a>: Crea/Elimina Componentes disponibles en BD. 			<!-- Fin Creacion de Componente en la BD-->
+			<br/><br/>
+			<!-- Boton de salida -->
+			<button type="submit" class="button">Volver ... </button>
+		</form>
+	</div>
+	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
+
+
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+
+<br/>
+<aa style="font-size: 8px;">[asigna_cmp_v2]</aa>
+
+{% endblock %}

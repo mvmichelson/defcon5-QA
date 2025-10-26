@@ -7,6 +7,10 @@
 
 {%block content%}
 
+<head>
+    <meta http-equiv="refresh" content="30"> <!-- 🔄 Refrescar cada 30 segundos -->
+</head>
+
 {%block encabezado2%}
         <ul class="encabezado_B">
         <p><strong>P L A N&emsp;&emsp;D E&emsp;&emsp; R E C U P E R A C I O N&emsp;&emsp;D E L&emsp;&emsp;P R O C E S A M I E N T O&emsp;&emsp;D E&emsp;&emsp;D A T O S&emsp;&emsp;( D R P )</strong></p>
@@ -310,7 +314,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Alcance del  DRP ..."
                                                 href="{% url 'Autoriza-DRP' drp.pk 3  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
@@ -322,7 +326,7 @@
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.resp_drp.user_pk %}
                                                 <a class="link blink" data-message="Autorizar Roles DRP ..."
-                                                href="{% url 'Autoriza-DRP' drp.pk 3  %}"><aa>&#128273</aa></a> 
+                                                href="{% url 'Autoriza-DRP-V' drp.pk 3  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
                                         {% endif %}
@@ -332,7 +336,7 @@
 
                                 <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                                <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                                <a class="link blink" data-message="Revisar observaciones al Alcance del DRP"
                                                 href="{% url 'Revisa-Alcance-DRP' drp.pk %}"><aa>&#128270</aa></a>
                                         {% else  %}
                                                 <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
@@ -402,7 +406,7 @@
 
                                         <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                        <a class="link blink" data-message="Definir Objetivo del DRP ..."
+                                        <a class="link blink" data-message="Definir Estrategia del DRP ..."
                                                 href="{% url 'Estrategia-DRP' drp.pk %}"><aa>&#128209</aa></a>
 
                                                 {% if   drp.desc_estrategia != ''  %}
@@ -416,7 +420,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Estrategia del DRP ..."
                                                 href="{% url 'Autoriza-DRP' drp.pk 4  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
@@ -427,7 +431,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.resp_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Estrategia del DRP ..."
                                                 href="{% url 'Autoriza-DRP-V' drp.pk 4  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
@@ -438,7 +442,7 @@
 
                                 <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                                <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                                <a class="link blink" data-message="Revisar observaciones a Estrategia del DRP"
                                                 href="{% url 'Revisa-Estrategia-DRP' drp.pk %}"><aa>&#128270</aa></a>
                                         {% else  %}
                                                 <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
@@ -508,7 +512,7 @@
                                         <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
                                         <a class="link blink" data-message="Definir la Especificacion Tecnica del DRP ..."
-                                                href="{% url 'Lista-CMP' drp.pk %}"><aa>&#128209</aa></a>
+                                                href="{% url 'Asigna-CMP' drp.pk %}"><aa>&#128209</aa></a>
 
                                                 {% if  drp.componentes %}
                                                         &nbsp;<a class="link" data-message="Envia a Autorizar ..."
@@ -521,7 +525,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Especificacion Tecnica del DRP ..."
                                                 href="{% url 'Autoriza-DRP' drp.pk 5  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
@@ -532,7 +536,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.resp_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Especificacion Tecnica del DRP ..."
                                                 href="{% url 'Autoriza-DRP-V' drp.pk 5  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
@@ -543,7 +547,7 @@
 
                                 <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                                <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                                <a class="link blink" data-message="Revisar observaciones a Especificacion Tecnica ..."
                                                 href="{% url 'Revisa-Especif_Tec-DRP' drp.pk %}"><aa>&#128270</aa></a>
                                         {% else  %}
                                                 <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
@@ -625,7 +629,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Servicios Criticos del DRP ..."
                                                 href="{% url 'Autoriza-DRP' drp.pk 6  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
@@ -636,7 +640,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.resp_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Servicios Criticos del DRP ..."
                                                 href="{% url 'Autoriza-DRP-V' drp.pk 6  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
@@ -647,7 +651,7 @@
 
                                 <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                                <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                                <a class="link blink" data-message="Revisar observaciones a Servicios Criticos del  DRP ..."
                                                 href="{% url 'Revisa-SC-DRP' drp.pk %}"><aa>&#128270</aa></a>
                                         {% else  %}
                                                 <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
@@ -732,7 +736,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.gestor_ejecutor_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Procedimiento de Recuperacion ..."
                                                 href="{% url 'Autoriza-DRP' drp.pk 7  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Jefe de Op.- {{drp.gestor_ejecutor_drp}}">&#128274</a>
@@ -743,7 +747,7 @@
 
                                         <!--Verifica si el usuario de sesion es el Gestor Responsable -->
                                         {% if request.user.pk == drp.resp_drp.user_pk %}
-                                                <a class="link blink" data-message="Autorizar Roles DRP ..."
+                                                <a class="link blink" data-message="Autorizar Procedimiento de Recuperacion ..."
                                                 href="{% url 'Autoriza-DRP-V' drp.pk 7  %}"><aa>&#128273</aa></a> 
                                         {%else%}
                                                 <a class="link" data-message="En Autorizacion por Responsable DRP.- {{drp.resp_drp}}">&#128274</a>
@@ -754,7 +758,7 @@
 
                                 <!-- Verifica si el usuario sesion es el Gestor Consultor -->
                                         {% if request.user.pk == drp.gestor_consultor_drp.user_pk %}
-                                                <a class="link blink" data-message="Revisar observaciones a Roles DRP asignados"
+                                                <a class="link blink" data-message="Revisar observaciones al Procedimiento de Recuperacion ..."
                                                 href="{% url 'En-Construccion' %}"><aa>&#128270</aa></a>
                                         {% else  %}
                                                 <a class="link" data-message="En Revision por Gestor de Continuidad - {{drp.gestor_consultor_drp}}">&#128274</a>
@@ -818,31 +822,58 @@
 <br/>
 
 
-	<!----- CSS para Scripts ----------------------------------->
-	<!---------------------------------------------------------->
-		<!-- Caja de Comentario -->
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+        <!-- Caja de Comentario -->
 
-		<div id="comment-box" class="hidden" style="font-size: 13px;">
-			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
-			<h5><strong>Comentario de Revision:</strong></h5>
-			<textarea id="comment-text" rows="5" cols="30"></textarea>
-			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
-			<button id="close-comment">Cerrar</button>
-		</div>
-		
-		<!-- Globo de cómic -->
-		<div id="comicBalloon"></div>
+        <div id="comment-box" class="hidden" style="font-size: 13px;">
+                <p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+                <h5><strong>Comentario de Revision:</strong></h5>
+                <textarea id="comment-text" rows="5" cols="30"></textarea>
+                <button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+                <button id="close-comment">Cerrar</button>
+        </div>
+        
+        <!-- Globo de cómic -->
+        <div id="comicBalloon"></div>
 
-		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
-		<div id="confirmation-dialog" class="hidden">
-			<div class="dialog-content">
-				<p id="confirmation-message"></p>
-				<button id="confirm-yes">Sí</button>
-				<button id="confirm-no">No</button>
-			</div>
-		</div>
-		
+        <!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+        <div id="confirmation-dialog" class="hidden">
+                <div class="dialog-content">
+                        <p id="confirmation-message"></p>
+                        <button id="confirm-yes">Sí</button>
+                        <button id="confirm-no">No</button>
+                </div>
+        </div>
+        
 
-	<!--------- Fin CSS para Scripts ------------------------->
-
+<!--------- Fin CSS para Scripts ------------------------->
 {% endblock %}
+
+
+
+<!--- Script ad-hoc --------------------------->
+{% block extra_js %}
+<script>
+    // 🚫 Evita volver al formulario anterior desde cualquier navegador
+        console.log('Entra a inhibicion de vuelta atras...')
+    // 1️⃣ Detecta Back-Forward Cache y fuerza recarga
+    window.addEventListener("pageshow", function(event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+
+    // 2️⃣ Evita retroceso con flecha atrás
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", function() {
+        window.location.replace(window.location.href);
+    });
+
+    // 3️⃣ Extra: detecta back/forward tradicional y recarga
+    if (performance && performance.navigation && performance.navigation.type === 2) {
+        window.location.reload(true);
+    }
+</script>
+{% endblock %}
+

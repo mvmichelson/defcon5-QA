@@ -960,6 +960,8 @@ class Componentes(models.Model):
  
     identificacion=models.CharField(max_length=30,  blank=True) # Nro. del fabricante, nro. licencia, nro. de serie, etc.
     fabricante= models.CharField(max_length=30,  blank=True)
+    codigo_inv =models.CharField(max_length=20,  blank=True) # Codigo de Inventario asignado
+
 
     lbc=models.ManyToManyField('LBC')  # Linea Base de Configuracion
 

@@ -4,16 +4,26 @@
 <!========================================================>
 
 {% extends "base_generic.html" %}
+
+<!--- Politicas para prevenir retorno al formulario una vez emviado -->
+{% block extra_js %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+<!--- Fin Politicas para prevenir retorno al formulario una vez emviado -->
+
 {% block content %}
 
-	{% block enc_escenario %}
-	<ul class="encabezado_B">
-        <aa><strong>FORMULARIO DE REVISION DE ASIGNACION DE ROLES DEL DRP </strong></aa> 
-	</ul>
-	<ul class='encabezado_SB'>
-		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
-	</ul>
-	{% endblock %}
+
+{% block enc_escenario %}
+<ul class="encabezado_B">
+	<aa><strong>FORMULARIO DE REVISION DE ASIGNACION DE ROLES DEL DRP </strong></aa> 
+</ul>
+<ul class='encabezado_SB'>
+	<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+</ul>
+{% endblock %}
 
 
 <!==========================>
@@ -58,6 +68,7 @@
 						{%if com.gestor_aut != drp.gestor_consultor_drp %}
 						<!--- Si el usuario en sesion es el Gestor Consultor --->
 							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+								(<strong>{{com.fecha}}</strong>)
 								<p>{{com.campo}}</p>
 								(
 									{% if com.resuelto %}
@@ -72,7 +83,8 @@
 							</th>
 						{%else%}
 							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
-							<p>{{com.campo}}
+							(<strong>{{com.fecha}}</strong>)
+							<p>{{com.campo}}</p>
 							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
 							</p></th>
 	

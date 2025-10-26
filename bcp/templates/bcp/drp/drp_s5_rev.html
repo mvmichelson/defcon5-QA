@@ -5,6 +5,13 @@
 <!==============================================>
 
 {% extends "base_generic.html" %}
+<!--- Politicas para prevenir retorno al formulario una vez emviado -->
+{% block extra_js %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+<!--- Fin Politicas para prevenir retorno al formulario una vez emviado -->
 
 
 {% block content %}
@@ -19,128 +26,238 @@
 	 </ul>
 	{% endblock %}
 
-<!-- Observaciones -->
-    <!==========================>
-	<!Despliega Observaciones>
-	<!==========================>
+<!-------------------------------------- Bloque A ---------------------------------->
+<div class="flex-container">
 	
-	<p><h5><strong>OBSERVACIONES</strong></h5>
-	<!================================================>
-		<ul class="scr4">
-	
-			{%block A%}
-			<h5><strong>Observaciones realizadas</strong></p>
-			{%if drp.log_auth_drp.all %}
-			<p>El siguiente cuadro muestra las observaciones realizadas por el Gestor Autorizador para ser revisadas e implementadas</p></h5>
-			<br/>
-			
-			<table class="lta">
-	
-				<thead>
-				  <tr>
-				<th scope="col">Fecha</th>
-				<th scope="col">Aprobador</th>
-				<th scope="col">Estado</th>
-				<th scope="col">Item</th>
-				<th scope="col">Observacion</th>
-				
-				  </tr> 
-				</thead>
-	
-				<body>
-		
-				   {%for log_auth in drp.log_auth_drp.all %}
-				<tr>
-						<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
-				<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
-				<th scope="row">
-					{% if log_auth.Aprobado %}
-						<bb>Aprobado</bb>
-					{%else%}
-						<bb>Observado</bb>
-					{%endif%}
-				</th>
-				<th scope="row"><bb>{{log_auth.item}}</bb></th>
-				  <th scope="row"><bb>{{log_auth.observacion}}</bb></th>
-	
-			</tr>
-				{% if not forloop.last %}
-				{%endif%}
-				  {%endfor%}
-				<tbody>		
-			</table>
-			{%else%}
-			   <p>Sin Observaciones</p></p></h5>
-			{%endif%}
-			{% endblock %}
+	<!------------- Seccion Datos del Proceso -------------------->
+	<div class="flex-item" style="width: 45%;">
+	<br/><br/><br/><br/>
+	<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
+		. Realice las modificaciones solicitadas y marquelo en el icono (&#10067). 
+		Si desea dejar un comentario, utilice el icono 
+		(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p>
+		<p>Al registrar las modificaciones seran enviadas al Gestor Autorizador para su revision.</p>  
+	</bn>
+
+	</div><!------------- Seccion Datos del Proceso -------------------->
+
+	<!---------------------- Seccion Block de Comentarios -------------------->
+	<div class="flex-item" style="width: 52%;"> 
+		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+			<strong>Block de Comentarios de Revision</strong>
 		</ul>
-
-
-<!-- Especificacion-->
-
-	<ul class="scr3">	
-		<p>Especificar mediante la Asignacion desde la Base, todos los <strong>Componentes de Hardware, Software o MiddleWare</strong> que compondran la configuracion del Site
-			de Contingencia  asociado a este <strong>DRP</strong>. Para cada Componente, especificar en (&#9202) los valores de configuracion relevantes a considerar
-			para su adecuada operacion.</p>
-		<br/>
-		<table class="lta">
-		   <thead class="encabezado_N">
-		   <tr>
-			<th scope="col">Codigo</th>
-			<th scope="col">Tipo</th>
-			<th scope="col">Nombre</th>
-			<th scope="col">Nro.Identificacion</th>
-			<th scope="col">Descripcion</th>
-			
-			<th scope="col"><a href="{% url 'Asigna-CMP' drp.pk 'revisa' %}"><strong><am>&#10010</am></strong></a></th>
-			
-			
-		   </tr>
-		   </thead>
-
-		   <body>
-			{% if lista_cmp %}
-
-		    	{%for cmp in lista_cmp.all  %}
-		    	<tr>
-				<th scope="row"><bb>{{cmp.codigo}}<bb></th>
-				<th scope="row"><bb>{{cmp.tipo_act.tipo}}<bb></th>
-				<th scope="row"><bb>{{cmp.nombre}}<bb></th>
-				<th scope="row"><bb>{{cmp.identificacion}}<bb></th>
-				<th scope="row"><bb>{{cmp.descripcion}}<bb></th>
-				<th scope="row"><a href="{% url 'Lista-LBC' cmp.pk drp.pk %}">&#9202</a></th>
-
+		<ul class="BarraScroll" style="height: 300px; border-radius: 10px; border: 3px solid black; background: white;">
+			<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
 				</tr>
-       		        {% if not forloop.last %}
-        	        {%endif%}
-      		    {%endfor%}
-		   
-			{%else%}
-				  <p> No hay Componentes definidos</p>
-		  	{%endif%}
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+					{%for com in comentarios  %}
+					<tr style="font-size: 9px;">
+						{%if com.gestor_aut != drp.gestor_consultor_drp %}
+						<!--- Si el usuario en sesion es el Gestor Consultor --->
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+								(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}</p>
+								(
+									{% if com.resuelto %}
+									<a href="{% url 'OK-Rev-OC' com.pk %} " 
+									class="link confirm-link" con-message="Confirma Desmarcar?"  
+									data-message="Realizado (Haga Click para desmarcar)">&#9989
+									{%else%}
+									<a href="{% url 'OK-Rev-OC' com.pk %}" class="link confirm-link" con-message="Confirma Marcar como Realizado?"  
+									data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
+									{%endif%}
+								)
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+						(<strong>{{com.fecha}}</strong>)
+						<p>{{com.campo}}</p>
+							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+							</p></th>
+	
+						{%endif%}
+	
+						<th scope="row" style="width: 500px";> {{com.comentario}}
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+	
+								<p>
+								<!---------  Comentario de Revision ----->
+								<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
+								data-id="{{ drp.id }}"
+								data-sec="D5"
+								data-field="Comentario a '{{com.campo}}'" 
+								>
+								<img src="/static/img/Comentario_1.png" width="15" height="15">
+								</span>
+								<!---------  Fin Comentario de Revision ----->
+								</p>
+							{%endif%}
+						</th>
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+				
+			<!-- Fin Log Comentarios -->
+				
+		</ul>
+	
+	</div><!----------- Fin Seccion der - Block de Comentarios ----------->
 
-		   	<tbody>
+
+</div><!----- Bloque A ---------------------------------->
+
+	<br/>
+	<h5><strong>ASIGNACION DE COMPONENTES</strong></h5>
+	<!===================================================>
+	<P>Seleccione del listado de la izquierda aquellos Componentes de Hardware o Software Base 
+	   asociados a la infraestructura del Site de Contingencias. 
+	<br/>
+
+	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
+	<!---------------------------------------------->
+
+	<div data-asignacion
+     data-model="bcp.Drp"         
+     data-obj-id="{{ drp.id }}"   
+     data-field="componentes" > 
+	 
+     <!-- data-model="bcp.Drp"       : formato app_label.ModelName; DEBE estar en ALLOWED_MODELS -->
+     <!-- data-obj-id="{{ drp.id }}  : id del objeto base -->
+     <!-- data-field="componentes"   : nombre exacto del campo M2M en el modelo -->
+
+
+		<form method="post">
+			{% csrf_token %}
 			
-		</table>
-		<br/>
-		<br/>
+			<!-- Filtros y tablas -->
+			<div style="display:flex; gap:20px;">
+
+				<!-- Servicios Disponibles -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Componentes Disponibles</strong></h5>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar ..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+						<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+							<thead style="background: greenyellow;">
+								<tr style=color:black;">
+									<th style="width:10%;">Codigo</th>
+									<th style="width:30%;">Nombre</th>
+									<th>Descripción</th>
+									<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;">***⏩***</th>
+								</tr>
+							</thead>
+							<tbody>
+							{% for cmp_d in componentes_disponibles %}
+								<tr data-id="{{ cmp_d.id }}">
+									<td>{{ cmp_d.codigo}}</td>
+									<td>{{ cmp_d.nombre }}</td>
+									<td>{{ cmp_d.descripcion}}</td>
+									<td>
+										<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
+									</td>
+								</tr>
+							{% empty %}
+								<tr><td colspan="4" style="text-align:center;">No hay recursos disponibles.</td></tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</ul>
+				</div>
+
+				<!-- Servicios Asignados -->
+				<div style="flex:1;">
+					<h5><strong>⏼ Componentes Seleccionados</strong></h5>
+					<input type="text" class="filtro-asignados" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<br/><br/>
+					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
+					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+						<thead style="background: lightblue;">
+							<tr style="color:black">
+								<th style="width:10%;">Tipo</th>
+								<th style="width:30%;">Serv./Rec.</th>
+								<th>Descripción</th>
+								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" >***⏪***</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for cmp_s in componentes_asignados %}
+							<tr data-id="{{ cmp_s.id }}">
+								<td>{{ cmp_s.codigo}}</td>
+								<td>{{ cmp_s.nombre }}</td>
+								<td>{{ cmp_s.descripcion}}</td>
+								<td>
+									<button type="button" class="btn-mover button"   data-destino="disponibles" style="background: red; color: white; font-size:12px;"><a class="link" data-message="Selecciona" >⏪</a></button>
+								</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+				</ul>
+				</div>
+
+			</div>
+
+			<!-- Campo hidden para IDs -->
+			<input type="hidden" name="componentes" class="input-seleccion" value="">
+
+			<!-- Creacion de Componente en la BD-->
+			 	<a href="{% url 'Lista-CMP' drp.pk origen  %}"
+				class="link " data-message="Crea Componente ..."><sa>&#10010 </sa></a>: Crea/Elimina Componentes disponibles en BD. 			<!-- Fin Creacion de Componente en la BD-->
+			<br/><br/>
+			<!-- Boton de salida -->
+			<button type="submit" class="button">Volver ... </button>
+		</form>
+	</div>
+	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
+
+
+
+	<!----- CSS para Scripts --------------->
+	<!-------------------------------------->
+
+	<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
 		
-	</ul>
+	<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
 
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
 
+	<!--------------Fin CSS ------------------------>
 
-{%block pie%}
-	
-	
-	<ul class="encabezado_SB">
-	
-	<strong><p><am>&#10010</am>&nbsp;:<tm>Asignar/Desasignar Componente</tm></strong>&emsp;&emsp; 
-	<strong>&#9202 &nbsp;:<tm>Linea Base de Configuracion</tm></strong> 
-	
-	</ul>
-
-	<a href="{{ drp.get_absolute_url }}"><span style='font-size:30px;'>&#128281</span></a>
-{% endblock %}
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[drp_s5_rev]</aa>	
 
 
 {% endblock %}

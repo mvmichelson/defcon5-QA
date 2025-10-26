@@ -370,14 +370,28 @@ textarea{
 }
 
 .blink {
-    animation: blinker 1.0s linear infinite;
+    animation: blinker 3.5s ease-in-out infinite;
 }
 
 @keyframes blinker {
-    50% {
-        opacity: 0;
+    0%, 80% {
+        opacity: 1;   /* visible aprox. 2.8 s */
+    }
+    85% {
+        opacity: 0.2; /* primer fade-out */
+    }
+    90% {
+        opacity: 1;   /* primer fade-in */
+    }
+    95% {
+        opacity: 0.2; /* segundo fade-out */
+    }
+    100% {
+        opacity: 1;   /* vuelve a visible y reinicia el ciclo */
     }
 }
+
+
 
 /* ----- BOX DE ENTRADAS DE DATOS (Widgets)  ------ */
 

@@ -13,76 +13,194 @@
         <p><aa><strong>FORMULARIO DE ESPECIFICACION  DE COMPONENTES DE CONFIGURACION DEL DRP</aa></strong></p>
 	 </ul>
 	 <ul class="encabezado_SB">
-	 <p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
-	 {{Componentes.get_absolute_url}}
+	 <p>{{origen}}:{{drp.pk}}</p>
 	 </ul>
 	{% endblock %}
 
 
 
-	<ul class="scr3">	
-		<p>Especificar mediante la Asignacion desde la Base, todos los <strong>Componentes de Hardware, Software o MiddleWare</strong> que compondran la configuracion del Site
-			de Contingencia  asociado a este <strong>DRP</strong>. Para cada Componente, especificar en (&#9202) los valores de configuracion relevantes a considerar
-			para su adecuada operacion.</p>
-		<br/>
-		<table class="lta">
-		   <thead class="encabezado_N">
-		   <tr>
-			<th scope="col">Codigo</th>
-			<th scope="col">Tipo</th>
-			<th scope="col">Nombre</th>
-			<th scope="col">Nro.Identificacion</th>
-			<th scope="col">Descripcion</th>
+		<p> Administrar la Base de Datos de Componentes  (Agregar [<strong><am style="background: rgb(82, 82, 225);">&#10010</am></strong> ] o Eliminar [<strong><rr style="background: white;">&#128465</rr></strong>] ).</p>
+		<p> Para cada Componente, especificar la <strong>Linea Base de Configuracion (LBC)</strong> 
+			[<img src="/static/img/linea_base_configuracion.png" width="20" height="20"></img> ]: La LBC corresponde a aquellos parametros
+			del Componente que se consideren criticos y  que deben estar configurados (asignados) con determinados valores. 
 			
-			<th scope="col"><a href="{% url 'Asigna-CMP' drp.pk 'asigna'  %}"><strong><am>&#10010</am></strong></a></th>
-			
-			
-		   </tr>
-		   </thead>
+		</p>
 
-		   <body>
-			{% if lista_cmp %}
+<!---- Lista de Componentes --------- -->
 
-		    	{%for cmp in lista_cmp.all  %}
-		    	<tr>
-				<th scope="row"><bb>{{cmp.codigo}}<bb></th>
-				<th scope="row"><bb>{{cmp.tipo_act.tipo}}<bb></th>
-				<th scope="row"><bb>{{cmp.nombre}}<bb></th>
-				<th scope="row"><bb>{{cmp.identificacion}}<bb></th>
-				<th scope="row"><bb>{{cmp.descripcion}}<bb></th>
-				<th scope="row"><a href="{% url 'Lista-LBC' cmp.pk drp.pk %}">&#9202</a></th>
+	<ul class="BarraScroll" style="height: 350px;">	
 
-				</tr>
-       		        {% if not forloop.last %}
-        	        {%endif%}
-      		    {%endfor%}
-		   
-			{%else%}
-				  <p> No hay Componentes definidos</p>
-		  	{%endif%}
+    <table class="lta" style="width: 100%; border-collapse: collapse;">
 
-		   	<tbody>
-			
-		</table>
+      <!-- Encabezado superior -->
+      <thead>
+        <tr>
+          <th colspan="6" style="
+            background-color: #e00606; color: white;
+              text-align: left;
+              padding: 20px 20px;
+              font-weight: bold;
+              font-size: 16px;
+          height: 20px;
+              position: relative;">
+              <a style="float: left;">COMPONENTES
+              <a href="{% url 'Crea-CMP'  %}?next={{ request.get_full_path|urlencode  }}"
+          title="Agregar Componente"
+          style="float: right; color: #ffcc00; text-decoration: none; font-size: 20px; font-weight: bold;">
+          &#10010;
+              </a>
+        </a>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody style="border-top: none;">
+
+        {% if lista_cmp %}
+          {% for cmp in lista_cmp.all %}
+            <!-- Encabezado de columnas -->
+            <thead class="encabezado_N">
+              <tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
+                <th scope="col" style="width: 90px; text-align: center;">Código</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Codigo de Inventario</th>
+                <th scope="col" style="width: 90px;">Opciones</th>
+              </tr>
+            </thead>
+
+            <!-- Fila del componente -->
+            <tr style="border-bottom: 1px solid #ccc;">
+              <td style="text-align: center; font-family: monospace;">{{ cmp.codigo }}</td>
+              <td>{{ cmp.tipo_act.tipo }}</td>
+              <td><strong>{{ cmp.nombre }}</strong></td>
+              <td>{{ cmp.descripcion }}</td>
+              <td>{{ cmp.codigo_inv }}</td>
+              <td>
+                <!-- Crea un Parametro de Configuracion en la LBC -->
+                <a href="{% url 'Crea-LBC' cmp.pk %}?next={{ request.path|urlencode }}" 
+            class="link" data-message="Crea Parametro de Condiguracion en la LBC ... ">
+                    <img src="/static/img/linea_base_configuracion.png" width="15" height="15" alt="LBC">
+                </a>
+
+                <!-- Borra el Componente -->
+                <a href="{% url 'Borra-CMP' cmp.pk %}?next={{ request.path|urlencode }}"
+                  class="link confirm-link"
+                  con-message="* * *  Confirma Eliminación del Componente ? * * *"
+                  data-message="Elimina Componente"
+                  style="margin-left: 8px;">
+                  <strong><rr style="font-size: 15px;">&#128465;</rr></strong>
+                </a>
+              </td>
+            </tr>
+
+            <!-- Subtabla de LBC -->
+            <tr>
+              <td colspan="6" style="padding: 10px 0 20px 40px;">
+                {% if cmp.lbc.exists %}
+            <p><strong>LINEA BASE DE CONFIGURACION :</strong></p>
+                  <table style="width: 95%; background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;">
+                    <thead style="background-color: #e3e9f7; color: #002b5c; background: black;">
+                      <tr style="background: black;">
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Método acceso</th>
+                        <th>Valor</th>
+                        <th>-X-</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for lbc in cmp.lbc.all %}
+                        <tr>
+                          <td><strong>{{ lbc.nombre }}</strong></td>
+                          <td>{{ lbc.descripcion }}</td>
+                          <td>{{ lbc.metodo_acceso }}</td>
+                          <td>{{ lbc.valor }}</td>
+                          <td><!---- Borra Parametro de LBC-->
+                            <a href="{% url 'Borra-LBC' lbc.pk %}?next={{ request.path|urlencode }}"
+                            class="link confirm-link"
+                            con-message="* * *  Confirma Eliminación del Parametro de LBC ? * * *"
+                            data-message="Elimina Parametro"
+                            style="margin-left: 8px;">
+                            <strong><rr style="font-size: 10px;">&#128465;</rr></strong>
+                            </a>
+
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="blink" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+                    <span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+                    No hay Parametros de Configuracion definidos para este  Componente (Evaluar Riesgo).
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="6" style="padding: 10px;">No hay Componentes definidos</td></tr>
+        {% endif %}
+
+      </tbody>
+    </table>
 		<br/>
 		<br/>
 		
 	</ul>
+<!-- Fin Lista de Componentes ----------->
+
 
 
 
 {%block pie%}
 	
-	
-	<ul class="encabezado_SB">
-	
-	<strong><p><am>&#10010</am>&nbsp;:<tm>Asignar/Desasignar Componente</tm></strong>&emsp;&emsp; 
-	<strong>&#9202 &nbsp;:<tm>Linea Base de Configuracion</tm></strong> 
-	
+	<!---- Boton de Salida/Retorno ------------------------>
+	{% if origen == 1 %}
+		<a href ="{% url 'Asigna-CMP' drp.pk  %}" 
+		><aa class="button">Volver</aa></a>
+	{% elif origen == 2 %}
+  	<a href ="{% url 'Revisa-Especif_Tec-DRP' drp.pk  %}" 
+		><aa class="button">Volver</aa></a>
+    {%else%}
+  	<a href ="{% url 'Lista-DRP' %}" 
+		><aa class="button">Volver</aa></a>
+
+	{%endif%}
+
 	</ul>
 
-	<a href="{{ drp.get_absolute_url }}"><span style='font-size:30px;'>&#128281</span></a>
 {% endblock %}
 
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
 
 {% endblock %}

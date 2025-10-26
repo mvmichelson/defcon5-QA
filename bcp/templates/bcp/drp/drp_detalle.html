@@ -45,10 +45,11 @@
 		</div>
 
 	</ul>
+
+	
 	<!-- Seccion 2. Objetivo ---------------------->
 	<br/><br/>
 	<ul class="encabezado_B"> <strong><h4>Seccion 2. Objetivo </h4></strong></ul>
-	<p>Esta seccion declara el principal objetivo del Plan de Contingencias (DRP).</p>
 	<ul class="scr4">
 		{% if drp.introduccion %}
 			{{drp.introduccion}}
@@ -60,10 +61,15 @@
 	<!-- Seccion 3. Alcance ----------------------->
 	<br/><br/>
 	<ul class="encabezado_B"> <strong><h4>Seccion 3. Alcance </h4></strong></ul>
-	<p>Esta Seccion declara los Procesos criticos que cubre o son alcanzados por este Plan de Contingencias (DRP)</p>
-
+	<p><bn>Esta sección identifica los <strong>procesos de negocio</strong> y <strong>recursos o servicios</strong>
+		 criticos definidos en el mapeo del BCP, que serán cubiertos por el presente 
+		 <strong>Plan de Contingencia (DRP)</strong>. Estos procesos corresponden a aquellos 
+		 expuestos a escenarios de riesgo que podrían provocar la interrupción o pérdida total de
+		  la capacidad operativa del Site principal. </bn></p>
+	<br/>
+	<!---- Lista de Procesos --------->
+	<h4>Procesos</h4>
 	<ul class="scr4">
-
 	{%if drp.procesos_drp.count > 0 %}
 
 		<!--- Tabla de Procesos asociados al DRP -->
@@ -97,7 +103,40 @@
 		<p> En Definicion ... </p>
 	{%endif%}
 	</ul>
+ 	<!---- Fin Lista de Procesos -------->
+	<br/>
+	<!------ Resumen de Recursos/Servicios -->
+	<h4>Resumen de Recursos/Servicios criticos asociados a los Procesos</h4>
+		<!--- Lista de Recursos/Servicios -->
+		<div class="BarraScroll">
+			<br/>
+			<table class="lta">
+				<thead class="encabezado_C">
+					<tr>
+						<th style="width: 30%;">NOMBRE</th>
+						<th style="width: 50%;">DESCRIPCION</th>
+						<th style="width: 20%;">TIPO</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for srv in servicios_criticos %}
+						<tr>
+							<td><bb style="font-size: 10px;">{{srv.nombre}}</bb></td>
+							<td><aa style="font-size: 10px;">{{srv.descripcion}}</aa></td>
+							<td><aa style="font-size: 10px;">{{srv.tipo}}</aa></td>
+						</tr>
+					{% endfor %}
+					
+				
+				</tbody>
+			</table>
+		</div>
+		<!--- Fin Lista de Recursos/Servicios -->
 
+
+
+
+	<!------ Fin Resumen de Recursos/Servicios -->
 	
 	<!-- Seccion 4. Estrategia de Recuperacion ---->
 	<br/><br/>
@@ -123,6 +162,105 @@
 	<!-- Seccion 5. Especificacion Tecnica Site  -->
 	<br/><br/>
 	<ul class="encabezado_B"> <strong><h4>Seccion 5. Especificacion Tecnica </h4></strong></ul>
+	<bn>Esta sección detalla los componentes de la infraestructura tecnológica que conforman el 
+		<strong>Site de Contingencia</strong>. Para cada componente se describen los parámetros de configuración 
+		críticos que integran la <strong>Línea Base de Configuración (LBC)</strong>, los cuales garantizan la 
+		operación correcta y estable del Site, evitando fallas derivadas de una parametrización 
+		incorrecta. 
+	</bn>
+	<!---- Lista de Componentes Asignados --------- -->
+	<ul class="BarraScroll" style="height: 350px;">	
+
+    <table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+      <thead>
+        <tr>
+          <th colspan="6" style="
+            background-color: rgb(135, 132, 132); color: white;
+              text-align: left;
+              padding: 20px 20px;
+              font-weight: bold;
+              font-size: 16px;
+          height: 20px;
+              position: relative;">
+              <a style="float: left;">COMPONENTES
+              </a>
+        </a>
+          </th>
+        </tr>
+      </thead>
+
+      <tbody style="border-top: none;">
+
+        {% if componentes_asig %}
+          {% for cmp in componentes_asig.all %}
+            <!-- Encabezado de columnas -->
+            <thead class="encabezado_N">
+              <tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
+                <th scope="col" style="width: 90px; text-align: center;">Código</th>
+                <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Codigo de Inventario</th>
+              </tr>
+            </thead>
+
+            <!-- Fila del componente -->
+            <tr style="border-bottom: 1px solid #ccc;">
+              <td style="text-align: center; font-family: monospace;">{{ cmp.codigo }}</td>
+              <td>{{ cmp.tipo_act.tipo }}</td>
+              <td><strong>{{ cmp.nombre }}</strong></td>
+              <td>{{ cmp.descripcion }}</td>
+              <td>{{ cmp.codigo_inv }}</td>
+            </tr>
+
+            <!-- Subtabla de LBC -->
+            <tr>
+              <td colspan="6" style="padding: 10px 0 20px 40px;">
+                {% if cmp.lbc.exists %}
+            <p><strong>LINEA BASE DE CONFIGURACION :</strong></p>
+                  <table style="width: 95%; background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;">
+                    <thead style="background-color: #e3e9f7; color: #002b5c; background: black;">
+                      <tr style="background: black;">
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Método acceso</th>
+                        <th>Valor</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for lbc in cmp.lbc.all %}
+                        <tr>
+                          <td><strong>{{ lbc.nombre }}</strong></td>
+                          <td>{{ lbc.descripcion }}</td>
+                          <td>{{ lbc.metodo_acceso }}</td>
+                          <td>{{ lbc.valor }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="blink" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+                    <span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+                    No hay parametros de configuracion definidos para este  Componente (Evaluar Riesgo).
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+
+          {% endfor %}
+        {% else %}
+          <tr><td colspan="6" style="padding: 10px;">No hay Componentes definidos</td></tr>
+        {% endif %}
+
+      </tbody>
+    </table>
+		<br/>
+		<br/>
+		
+	</ul>
+<!-- Fin Lista de Componentes ----------->
 
 
 

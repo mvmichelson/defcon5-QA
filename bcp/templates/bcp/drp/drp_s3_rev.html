@@ -4,7 +4,17 @@
 <!==================================================================================>
 
 {% extends "base_generic.html" %}
+
+<!--- Politicas para prevenir retorno al formulario una vez emviado -->
+{% block extra_js %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+<!--- Fin Politicas para prevenir retorno al formulario una vez emviado -->
+
 {% block content %}
+
 
 	{% block enc_activo %}
 	<ul class="encabezado_B">
@@ -16,7 +26,7 @@
 	{% endblock %}
 	
 
-<!----- Bloque A ---------------------------------->
+<!-------------------------------------- Bloque A ---------------------------------->
 <div class="flex-container">
 	
 	<!------------- Seccion Datos del Proceso -------------------->
@@ -31,7 +41,7 @@
 
 	</div><!------------- Seccion Datos del Proceso -------------------->
 
-	<!------------- Seccion Block de Comentarios -------------------->
+	<!---------------------- Seccion Block de Comentarios -------------------->
 	<div class="flex-item" style="width: 52%;"> 
 		<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
 			<strong>Block de Comentarios de Revision</strong>
@@ -43,7 +53,6 @@
 				<tr>
 				<th scope="col" style="width: 20%;">Referencia.Dato</th>
 				<th scope="col" style="width: 500px">Comentario</th>
-				<th scope="col" style="width: 10px;">Fecha</th>
 				</tr>
 				</thead>
 				
@@ -54,6 +63,7 @@
 						{%if com.gestor_aut != drp.gestor_consultor_drp %}
 						<!--- Si el usuario en sesion es el Gestor Consultor --->
 							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+								(<strong>{{com.fecha}}</strong>)
 								<p>{{com.campo}}</p>
 								(
 									{% if com.resuelto %}
@@ -68,7 +78,8 @@
 							</th>
 						{%else%}
 							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
-							<p>{{com.campo}}
+						(<strong>{{com.fecha}}</strong>)
+						<p>{{com.campo}}</p>
 							(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
 							</p></th>
 	
@@ -81,7 +92,7 @@
 								<!---------  Comentario de Revision ----->
 								<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
 								data-id="{{ drp.id }}"
-								data-sec="D2"
+								data-sec="D3"
 								data-field="Comentario a '{{com.campo}}'" 
 								>
 								<img src="/static/img/Comentario_1.png" width="15" height="15">
@@ -90,7 +101,6 @@
 								</p>
 							{%endif%}
 						</th>
-						<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
 					{%endfor%}
 				
 				{%else%}
@@ -186,6 +196,38 @@
 	</form>
 
 	</ul>
+
+	<!----- CSS para Scripts --------------->
+	<!-------------------------------------->
+
+	<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+	<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------------Fin CSS ------------------------>
+
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[drp_s3_rev]</aa>	
 
 
 {% endblock %}

@@ -5,6 +5,15 @@
 
 {% extends "base_generic.html" %}
 
+<!--- Politicas para prevenir retorno al formulario una vez emviado -->
+{% block extra_js %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+<!--- Fin Politicas para prevenir retorno al formulario una vez emviado -->
+
+
 {% block content %}
 	
 	{% block encabezado_auth %}
@@ -15,82 +24,141 @@
 		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
 	 </ul>
 	{% endblock %}
+
+ <!-------------------------------- Bloque A -------------------------------->
+<div class="flex-container">
+
+  <!--------- Columna 1 --------------->
+  <div class="flex-item" style="width: 45%;"> 
+	<ul class="scr4" style="text-align: center;"><strong>ESTRATEGIA DRP</strong></ul>
+
+	<bn>Revise la Estrategia definida para este DRP. Si existe alguna observacion, registrela 
+	en (<img src="/static/img/Comentario_1.png" width="15" height="15">) frente al item correspondiente.</p>
+	</bn>
+
+		<ul class=" scr4 caja-texto">
+			{{drp.desc_estrategia}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar la Estrategia General declarada ..."
+			data-id="{{ drp.id }}" # Pk del DRP
+			data-sec="D4"           
+			data-field="Revisar la Estrategia General del DRP"
+			> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+		</ul>
+  </div><!--------- Columna 1 --------------->
+
+
+<!----- Seccion  Block de Comentarios (Autorizador) ---------->
+<div class="flex-text" style="width: 52%;">
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Block de Comentarios de Revision</strong>
+	</ul>
+
+	<ul class="BarraScroll" style="height: 310px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+		<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10;">Est.</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+
+					{% for com in comentarios %}
+						{%if com.gestor_aut != drp.gestor_consultor_drp %}
+							<tr style="font-size: 9px;">
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}
+								(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+								</p>
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}</p>
+							</th>
 	
-	
-	{%block Informacion_x_Revisar%}
-	<h5><strong>ESTRATEGIA  DRP</strong></h5>
-	<p style="font-size:12px" >Revisar la Estrategia de Recuperacion definida para el DRP. Si existe alguna observacion, registrela 
-							   en (&#128221) frente al item correspondiente.</p>
+						{%endif%}
+
+							<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+							<th scope="row" style="width: 10; text-align: center;">
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+
+								{% if com.resuelto %}
+									&#9989
+								{%else%}
+									&#10067
+								{%endif%}
+							{%endif%}
+							<!-- Borra Comentario -->
+							</th>
+								
+							</tr>
+								{% if not forloop.last %}
+								{%endif%}
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+			
+			<!-- Fin Log Comentarios -->
+			
+	</ul>
+
+</div>  <!---- FIN Seccion  Block de Comentarios (Autorizador) --------->
+
+</div><!-------------------------------- Fin Bloque A -------------------------------->
+<!------------------------------------------------------------------------------------>
+
+<!-------------------------- Bloque B Datos de Estrategia y registro de Comentarios -->
+<br/>
+	<ul class="scr4">
+		<br/>
 		
-	<ul class="scr2">
-		<br/>
-		<p><strong>Estrategia General :</strong></p>
-		{{drp.desc_estrategia}}
-		&emsp;<a href = "{% url 'obs-drp' 'Estrategia General' drp.pk  drp.desc_estrategia %}"><bb style="font-size:10px">&#128221</bb></a></p>
-		<br/>
 		<p><strong>Tipo de Site ............:</strong>&emsp;{{drp.tipo_Site}}
-		&emsp;<a href = "{% url 'obs-drp' 'Repaldo Resp' drp.pk  drp.bck_resp_drp %}"><bb style="font-size:10px">&#128221</bb></a></p>
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar el Tipo de Site declarado ..."
+			data-id="{{ drp.id }}" # Pk del DRP
+			data-sec="D4"           
+			data-field="Revisar el Tipo de Site declarado para el DRP"
+			> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+		</p>
 		<br/>
-		<p><strong>Modo de Interaccion ............:</strong>&emsp;{{drp.disposicion_componentes}}
-		&emsp;<a href = "{% url 'obs-drp' 'Repaldo Resp' drp.pk  drp.disposicion_componentes %}"><bb style="font-size:10px">&#128221</bb></a></p>
+		<p><strong>Modo de Activacion ............:</strong>&emsp;{{drp.disposicion_componentes}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar el Modo de Activacion declarado ..."
+			data-id="{{ drp.id }}" # Pk del DRP
+			data-sec="D4"           
+			data-field="Revisar el Modo de Activacion declarado para el DRP"
+			> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+		</p>
 
 	</ul>
-	{%endblock%}
- 
+<!--------------------- Fin  Bloque B Datos de Estrategia y registro de Comentarios -->
+
+<!---------------------------- Seccion CONCLUSION ---------------------------------->
+	
 	{%block Conclusion%}
 	
 	<p><h5><strong>CONCLUSION</strong></h5>
 	<ul class="scr4">
-
-	<h5><strong>Observaciones realizadas</strong></h5></p>
-	{%if drp.log_auth_drp.all %}
-	
-	<br/>
-	
-	<table class="lta">
-
-		<thead class='encabezado_D'>
-		  <tr>
-		<th scope="col">Fecha</th>
-		<th scope="col">Item</th>
-		<th scope="col">Observacion</th>
-		<th scope="col">Gestor</th>
-		<th scope="col">X</th>
-		
-		  </tr> 
-		</thead>
-		<tbody>
-
-	{%for log_auth in drp.log_auth_drp.all %}
-	
-	   	<tr>
-			<th scope="row"><bb>{{log_auth.fecha}}</bb></th>
-			<th scope="row"><bb>{{log_auth.item}}</bb></th>
-		  	<th scope="row"><bb>{{log_auth.observacion}}</bb></th>
-			<th scope="row"><bb>{{log_auth.gestor_aprobador}}</bb></th>
-			{%if request.user.username == log_auth.gestor_aprobador.user_gestor.username %}
-				<th scope="row"> <a href = "{% url 'borra-obs-proceso'  log_auth.pk  %}"> <rr>&#128465</rr></a>
-			{%else%}
-				<th scope="row"> <aa>...</aa>
-			{%endif%}
-			</th>
-		</tr>
-	  
-		{% if not forloop.last %}
-		{%endif%}
-
-	{%endfor%}
-
-		</tbody>		
-	</table>
-
-	<br/>
-	<p>Las observaciones seran remitidas al <strong>Gestor Consultor</strong>, quien procedera a implementarlas para volver a ser puestas a su
-		disposicion para su autorizacion u observacion.</p>
-
-	{%else%}
-	   <p>Sin Observaciones</p></p></h5>
-	{%endif%}
 
 	<br/>
 	
@@ -98,18 +166,54 @@
 		<form action="" method="post">
 			{% csrf_token %}
         		
-        	<p><strong>Indique <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si los roles asignados 
-			le parecen  correctos y desea autorizar.</strong></p>
+        <p><strong>Marque <aa>(&#10004)</aa>:&emsp;{{ form.aprobacion }}&emsp; si la Estrategia de Recuperacion del DRP
+			satisface los requerimientos de RTO asociados a los Procesos criticos alcanzados y es autorizada. En caso de Registrar sin autorizar,  el formulario
+		sera devuelto al Gestor de Continuidad para su revision y correccion en base a sus comentarios 
+		(<img src="/static/img/Comentario_1.png" width="15" height="15">). </strong></p>
 			
-			<p><strong>Comentario general:</strong>&emsp;{{ form.comentario }}</p>
-			<br/>
-			<br/>
-        	<input type="submit" value="Registrar" />
+  			<br/>
+        	<input type="submit" class="button" value="Registrar" />
+			<br/><br/>
 	    </form>
 		{%endblock%}
 	</ul>
 
 	{% endblock %}
+
+<!---------------------------- Fin Seccion CONCLUSION ---------------------------------->
+
+ 
+<!----- CSS para Scripts --------------->
+<!-------------------------------------->
+
+<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------------Fin CSS ------------------------>
+
+<!---- Datos del Template ------>
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[drp_s4_auth]</aa>	
 	
 
 {% endblock %}
