@@ -30,10 +30,10 @@
 		   {% if contactos %}
 		    {%for con in contactos.all  %}
 		    <tr>
-			<th scope="row"><bb>{{con.nombre}}<bb></th>
-			<th scope="row"><bb>{{con.correo}}<bb></th>
-			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
-			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			<th scope="row">{{con.nombre}}</th>
+			<th scope="row">{{con.correo}}</th>
+			<th scope="row">{{con.tel_lab}}</th>
+			<th scope="row">{{con.cel_lab}}</th>
 			
 		    </tr>
        		    {% if not forloop.last %}
@@ -53,10 +53,112 @@
 
     <form action="" method="post">
         {% csrf_token %}
-        <table>
-        {{ form }}
-        </table>
-        <input type="submit" value="Graba" />
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>6.1 Nombre</strong></h4>
+		<p>
+			Este Campo registra el nombre del contacto que podria ser requerido durante
+			la ejecucion del Procedimiento de Contingencia.  
+		</p>
+		<br/>
+		<p>
+			{{form.nombre}}
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>6.2 Correo electronico</strong></h4>
+		<p>
+			Este Campo registra el correo electronico principal declarado por el contacto 
+			para ser notificado durante la activacion y/o ejecucion del Procedimiento.
+		</p>
+		<p>
+			En el caso de los gestores internos del sistema defcon5, se considera el correo
+			declarado en su perfil de usuario.  
+		</p>
+
+		<br/>
+		<p>
+			{{form.correo}}
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>6.3 Telefono laboral.</strong></h4>
+		<p>
+			Este Campo registra el telefono fijo laboral declarado por el contacto en el 
+			caso de requerir ser ubicados durante la activacion y/o ejecucion del Procedimiento.   
+		</p>
+		<p>
+			En el  caso de los	gestores internos del sistema defcon5, se considera el 
+			declarado en su perfil 	de usuario.  
+		</p>
+
+		<br/>
+		<p>
+			{{form.tel_lab}}
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>6.4 Telefono Celular.</strong></h4>
+		<p>
+			Este Campo registra el telefono celular declarado por el contacto en el 
+			caso de requerir ser ubicados durante la activacion y/o ejecucion del Procedimiento.   
+		</p>
+		<p>
+			En el  caso de los	gestores internos del sistema defcon5, se considera el 
+			declarado en su perfil 	de usuario.  
+		</p>
+
+		<br/>
+		<p>
+			{{form.cel_lab}}
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+
+
+		<input type="submit" class="button"  value="Graba" />
     </form>
+
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[prcd_crea_serP5]</aa>
 
 {% endblock %}

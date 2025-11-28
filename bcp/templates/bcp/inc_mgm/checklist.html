@@ -1,0 +1,382 @@
+<! Programa HTML>
+<! Muestra Detalle del Procedimiento de Contingencia (PC)>
+<!Programado por Marco A. Villalobos M>
+<!============================================>
+
+{% extends "base_generic.html" %}
+{% block extra_head %}
+<meta http-equiv="refresh" content="120">
+{% endblock %}
+{% load static %}
+
+{% block content %}
+
+	{% block encabezado_auth %}
+	<ul class="encabezado_B">
+    	<strong> CHECKLIST PROCEDIMIENTO {{proced.nombre}}:[{{proced.escenarios.titulo}}]</strong>
+	</ul>  
+	{% endblock %}
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+
+<!----- Bloque A ------------------------------------------------------------------->
+<div class="flex-container">
+	
+	<!-------- Sector izq. --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<!---- Declaracion del Comite de Crisis -->
+	<ul class="encabezado_SB" style="width: 400px;"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
+	<ul class="BarraScroll" style="width: 400px; height: 250px;">
+	<table class="lta">
+		<thead>
+			<tr>
+			<th scope="col">Nombre</th>
+			<th scope="col">Correo</th>
+			<th scope="col">Telefono</th>
+
+			</tr> 
+		</thead>
+	
+		<tbody>
+		   {%for int in comite %}
+		<tr>
+			<th scope="row" ><bb style="font-size: 10px;">{{int.user_gestor.last_name}},{{int.user_gestor.first_name}}</bb></th>
+		  	<th scope="row"><bb style="font-size: 10px;">{{int.user_gestor.email}}</bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{int.fono_c}}</bb></th>
+
+		  
+		</tr>
+			{% if not forloop.last %}
+			{%endif%}
+		  {%endfor%}
+		</tbody>
+	
+		</table>
+	</ul>
+	<!---- Declaracion del Comite de Crisis -->
+
+
+	</div><!-------- Fin Sector Datos del Proceso --------------------------------------->
+
+
+	<!-------- Sector Block de Observaciones --------------------------------------->
+	<div class="flex-item" style="width: 50%;">
+
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Bitacora de Observaciones</strong>
+	</ul>
+
+	<ul class="BarraScroll" style="height: 250px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+		<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 100px;">Referencia</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+
+					{% for com in comentarios %}
+							<tr style="font-size: 9px;">
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}
+								(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+								</p>
+							</th>
+
+							<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+							<th scope="row" style="width: 10; text-align: center;">
+							
+							</tr>
+
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+			
+			<!-- Fin Log Comentarios -->
+			
+	</ul>
+
+</div><!-------- Fin Sector Block --------------------------------------->
+
+</div><!----- Fin Bloque A ------------------------------------------------------------------->
+
+	<ul class='encabezado_SB'></ul>
+
+
+
+
+
+<div class="flex-container">
+
+	<!-------- Sector Izq. Datos del Procedimiento -->
+	<div class="flex-item" style="width: 50%;">
+		
+		<!--------- Equipo de Continencia  -->
+		<ul class='encabezado_SB'><h5><strong>EQUIPO EJECUTOR<strong></h5></ul>
+		<ul class="scr4" style="background: rgb(239, 232, 201);">
+			<p><strong>Responsable del Proceso .: &emsp;</strong><sa> {{proced.resp_proceso}}</sa></p>
+			<p><strong>Respaldo .............................: &emsp;</strong><sa>{{proced.bck_resp}}</sa></p>
+			<br/>
+			<p><strong>Gestor Ejecutor ...................: &emsp;</strong><sa>{{proced.gestor_ejecutor}}</sa></p>
+			<p><strong>Respaldo ..............................: &emsp;</strong><sa>{{proced.bck_ejecutor}}</sa></p>
+			<br/>
+			<p><strong>Enlace Comite de Crisis .....: &emsp;</strong><sa>{{proced.enlace_c_crisis}}</sa></p>
+			<p><strong>Respaldo ..............................: &emsp;</strong><sa>{{proced.bck_enlace}}</sa></p>	
+
+		</ul>
+
+
+		<!--------- Servicios --------------->
+		<ul class='encabezado_SB'><h5><strong>SERVICIOS / RECURSOS REQUERIDOS <strong></h5></ul>
+			<ul class="BarraScroll" style="background: rgb(239, 232, 201);">
+			<table class="lta">
+			<thead>
+			<tr>
+				<th scope="col">Nombre</th>
+				<th scope="col">Objetivo</th>
+				<th scope="col">Contacto</th>
+				<th scope="col">Respaldo</th>
+							
+			</tr>
+			</thead>
+
+			<body>
+			{% if proced.servicios_pc %}
+				{%for ser in proced.servicios_pc.all  %}
+				<tr>
+				<th scope="row"><bb>{{ser.nombre}}<bb></th>
+				<th scope="row"><bb>{{ser.objetivo}}<bb></th>
+				<th scope="row"><bb>{{ser.contacto}}<bb></th>
+				<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
+				
+				
+				</tr>
+					{% if not forloop.last %}
+					{%endif%}
+					{%endfor%}
+			{%else%}
+				*** Sin servicios definidos ***
+			{%endif%}
+			<tbody>
+			</table>
+		
+		</ul>
+		<br/>
+		<!------- Contactos ------------------------------->
+		<ul class='encabezado_SB'><h5><strong>INDICE DE CONTACTOS <strong></h5></ul>
+		<ul class="BarraScroll" style="background: rgb(239, 232, 201);">
+		<table class="lta">
+			<thead>
+			<tr>
+			<th scope="col">NOMBRE</th>
+			<th scope="col">CORREO</th>
+			<th scope="col">TELEFONO </th>
+			<th scope="col">CELULAR</th>
+			
+			
+			</tr>
+			</thead>
+
+			<tbody>
+			{% if proced.contactos_pc %}
+			{%for con in proced.contactos_pc.all  %}
+			<tr>
+			<th scope="row"><bb style="font-size: 10px;">{{con.nombre}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{con.correo}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{con.tel_lab}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{con.cel_lab}}<bb></th>
+			</tr>
+				{% if not forloop.last %}
+				{%endif%}
+				{%endfor%}
+			{%else%}
+				*** Sin Contactos definidos ***.
+			{%endif%}
+			</tbody>
+		</table>
+
+		</ul>
+
+
+
+
+	</div><!-------- Fin Sector Izq. Datos del Procedimiento -->
+	
+
+	<!-------- Sector Der. CheckList -------------------------------->
+
+	<!-------------- Datos del Checklist-->	
+	<div class="flex-item" style="text-align: center; width: 600px;">
+	<ul class='encabezado_SB' style="width: 600px;"><h5><strong>CHECKLIST<strong></h5></ul>
+			<table class="lta" style="align-content: center; width: 600px;">
+			<thead>
+			<tr>
+				<th scope="col"></th>
+				<th scope="col">IDENTIFICACION</th>
+				<th scope="col">FECHA CREACION</th>
+				<th scope="col">ESTADO</th>
+			</tr>
+			</thead>
+
+			<tbody>
+			<tr><!------- fila 1 -------------->
+				<th scope="row"><bb style="font-size: 10px;"><aa>Checklist :</aa></th>
+				<th scope="row"><bb ><aa>{{check.nro_chk}}</aa><bb></th>
+				<th scope="row"><bb ><aa>{{check.fecha_creacion}}</aa></th>
+				<th scope="row"><bb >
+					{% if  check.completado == True %}
+						<aa>Completado</aa>
+					{%else%}
+						<rr class="blink">Pendiente</rr>
+					{%endif%}
+				</th>
+			</tr>
+			<tr><!------- fila 2 -------------->
+				<th scope="row"><bb style="font-size: 10px;"><aa>del Procedimiento :</aa></th>
+				<th scope="row"><bb style="font-size: 10px;"><aa>{{check.procedimiento.nombre}}</aa><bb></th>
+				<th scope="row"><bb style="font-size: 10px;"><aa>{{check.procedimiento.fecha_c}}</aa></th>
+				<th scope="row"><bb style="font-size: 10px;">
+					{% if  check.procedimiento.esta_activo == False %}
+						<aa>Inactivo</aa>
+					{%else%}
+						<rr class="blink">Activo</rr>
+					{%endif%}
+				</th>
+			</tr>
+
+			<tr><!------- fila 3 -------------->
+				<th scope="row"><bb style="font-size: 10px;"><aa>por el Incidente :</aa></th>
+				<th scope="row"><bb style="font-size: 10px;"><aa>{{check.incidente.codigo}}</aa></th>
+				<th scope="row"><bb style="font-size: 10px;"><aa>{{check.incidente.fecha_creacion}}</aa></th>
+				<th scope="row"><bb style="font-size: 10px;">
+					{% if  check.incidente.estado == False %}
+						<aa>Cerrado</aa>
+					{%else%}
+						<rr class="blink">Abierto</rr>
+					{%endif%}
+
+				
+				</th>
+			</tr>
+				
+		</tbody>
+		</table>
+		<br/>
+		<!--------- Despliegue de Items (Pasos de PC) -------------------->
+		<table class="lta" style="align-content: center; width: 600px;">
+			<thead>
+			<tr>
+			<th scope="col">PASO Nro.</th>
+			<th scope="col">DESCRIPCION</th>
+			<th scope="col">ESTADO</th>
+			<th scope="col">OBS.</th>
+			
+			
+			</tr>
+			</thead>
+
+			<tbody>
+			{% if items %}
+			{%for paso in items  %}
+			<tr>
+			<th scope="row"><bb style="font-size: 10px;">{{paso.paso.nro_paso}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{paso.paso.descripcion}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;"><!----- Swtch Activacion/Des.-->
+									<!----Switch Activa/Desactiva -->
+					<label class="switch">
+					<input type="checkbox"
+							class="toggle-switch"
+							data-app="bcp"
+							data-model="check_pasos"
+							data-id="{{paso.id}}"
+							data-field="terminado"
+							data-confirm-On="Confirma Ejecucion OK.?."
+							data-confirm-Off="Confirma Vuelta Atras?"
+							{% if paso.terminado %}checked{% endif %}>
+					<span class="slider"></span>
+					</label>
+					<!----Fin Switch Activa/Desactiva -->
+			</th>
+			<th scope="row"><bb style="font-size: 10px;">
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar Nombre del PC ..."
+					data-id="{{ proced.id }}"
+					data-sec="C" 
+					data-field="{{check.incidente.codigo}}:{{check.procedimiento.nombre}}:{{check.nro_chk}}:{{paso.paso.nro_paso}} > "
+					>
+					<aa style="font-size: 15px; text-align: center; ">&#128393</aa>
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+
+			</th>
+
+
+
+
+			</tr>
+				{% if not forloop.last %}
+				{%endif%}
+				{%endfor%}
+			{%else%}
+				*** Sin Contactos definidos ***.
+			{%endif%}
+			</tbody>
+		</table>
+
+
+
+
+
+
+	</div><!-------- Fin Sector Der. CheckList -------------------------------->
+
+</div>
+
+
+
+<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Anotacion en Bitacora:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+
+<br/>
+<aa style="font-size: 8px;">[checklist]</aa>
+
+
+
+
+
+{% endblock %}
+

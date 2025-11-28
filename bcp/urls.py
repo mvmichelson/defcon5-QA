@@ -38,7 +38,8 @@ urlpatterns = [
     # Ruta para el endpoint AJAX genérico
     path("ajax/toggle-generic/", views.ajax_toggle_generic, name="ajax_toggle_generic"),
 
-
+    # Endpoint para Activa/Desactiva un campo booleano de cualquier Modelo. 
+    path("toggle/<str:app_label>/<str:model_name>/<int:object_id>/", views.toggle_field, name="toggle_field"),
 
     # Diagramas Metodologicos
     # -----------------------
@@ -107,13 +108,22 @@ urlpatterns += [
 
 ]
 
+# Base de Datos de Servicios / Recursos criticos
+# -----------------------------------------------------
+urlpatterns += [
+    path('map_act/<int:pk_proc>/<int:origen>/', views.Lista_SRV, name='Lista-SRV'),   # Lista de Administracion de Servicios   
+    #path('map_act/crea_activo/', views.Crea_Activo, name='Crea-Activo'),
+    path('map_act/crea_srv/', views.Crea_SRV, name='Crea-SRV'),
+    path('map_act/<int:pk>/modi_srv/', views.Mod_SRV, name='Modi-SRV'),
+    path('map_act/<int:pk>/borra_srv/', views.Borra_SRV, name='Borra-SRV'),
+
+]
 
 # Asignacion de Activos a Procesos (Servicios Criticos)
 # -----------------------------------------------------
 urlpatterns += [
 
-    path('map_act/', views.Lista_Recursos, name='Lista-Recursos'),
-    path('map_act/crea_activo/', views.Crea_Activo, name='Crea-Activo'),
+    path('map_act/', views.Lista_Recursos, name='Lista-Recursos'),   # Lista  Mapeo
 
     path('map_act/<int:pk>/asig_serv/', views.asigna_servicio, name='Asigna-Servicio'),
     path('map_act/<int:pk>/aut_asig_act/', views.Aut_Asig_Act, name='Aut-Asigna-Activos'),
@@ -164,6 +174,12 @@ urlpatterns += [
     path('inc_mgm/<int:pk>/reporte_inc/', views.Perfil_Inc, name='Perfil-Incidente'),
     path('incidentes/', views.Declara_Inc, name='Declara-Incidente'),
     path('incidentes/<int:pk>/modi_inc/', views.Modifica_Inc, name='Modifica-Incidente'),
+    path('incidentes/<int:pk>/borra_inc/', views.Borra_Incidente, name='Borra-Incidente'),
+
+    path('inc_mgm/lista_prmto', views.Lista_ProcedimientosxGestor, name='Lista-Proced'),
+    path('inc_mgm/<int:pk>/lista_chk', views.Lista_CheckList, name='Lista-Checklist'),
+    path('inc_mgm/<int:pk>/check', views.Ejecucion_CheckList, name='Checklist'),
+    
 
 ]
 
@@ -173,16 +189,37 @@ urlpatterns += [
     path('proced_cont/<int:vigente>/lista_pcs/', views.Lista_Procedimientos, name='Lista-Proced'),
     path('proced_cont/<int:pk>/crea_proc_a/', views.cr_prcd_a, name='crea-prcd-a'),
     path('proced_cont/<int:pk>/crea_proc_b/', views.cr_prcd_b, name='crea-proced-B'),
-    path('proced_cont/<int:pk>/listas_c/', views.cr_prcd_list, name='lista-c'),
-    path('proced_cont/<int:pk>/<int:fase>/crea_p5/', views.cr_prcd_P5, name='crea-P5'),
-    path('proced_cont/<int:pk>/<int:fase>/borra_p5/', views.br_prcd_P5, name='borra-P5'),
-    path('proced_cont/<int:pk>/<int:fase>/crea_p6/', views.cr_prcd_P6, name='crea-P6'),
-    path('proced_cont/<int:pk>/<int:fase>/borra_p6/', views.br_prcd_P6, name='borra-P6'),
+    path('proced_cont/<int:pk>/crea_proc_c/', views.cr_prcd_list, name='crea-proced-C'),
+
+    
+
+    path('proced_cont/<int:pk>/crea_p5/', views.cr_prcd_P5, name='crea-P5'),
+    path('proced_cont/<int:pk>/borra_p5/', views.br_prcd_P5, name='borra-P5'),
+    # 
+    path('proced_cont/<int:pk>/crea_p6/', views.cr_prcd_P6, name='crea-P6'),
+    path('proced_cont/<int:pk>/borra_p6/', views.br_prcd_P6, name='borra-P6'),
+    
+    # Pasos
     path('proced_cont/<int:pk>/<int:fase>/crea_p7/', views.cr_prcd_P7, name='crea-P7'),
-    path('proced_cont/<int:pk>/<int:fase>/borrap7/', views.br_prcd_P7, name='borra-P7'),
+    path('proced_cont/<int:pk>/borrap7/', views.br_prcd_P7, name='borra-P7'),
+    
+    # Prueba
+    path('proced_cont/<int:pk>/crea_p8/', views.cr_prcd_P8, name='crea-P8'),
+    path('proced_cont/<int:pk>/borra_p8/', views.br_prcd_P8, name='borra-P8'),
+    path('proced_cont/<int:pk>/modi_p8/', views.md_prcd_P8, name='mod-P8'),
+
+    # Casos
+    path('proced_cont/<int:pk>/lta_casos/', views.lta_casos_P8_B, name='Lista-Casos-P8'),
+    path('proced_cont/<int:pk>/<int:origen>/crea_caso/', views.cr_caso_P8, name='Crea-Caso-P8'),
+    path('proced_cont/<int:pk>/borra_casos/', views.br_caso_P8, name='Borra-Caso-P8'),
+
+
     path('proced_cont/<int:pk>/env_aut_proced/', views.Env_Aut_Proced, name='env-aut-proced'),
     path('proced_cont/<int:pk>/aut_proced/', views.Aut_Proced_C, name='aut-proced'),
-    path('proced_cont/<int:pk>/rev_proced/', views.Revisa_Proced_B, name='rev-proced-b'),
+
+    path('proced_cont/<int:pk>/rev_proced_b/', views.Revisa_Proced_B, name='rev-proced-b'),
+    path('proced_cont/<int:pk>/rev_proced_c/', views.rev_prcd_list, name='rev-proced-c'),
+
     path('proced_cont/<int:pk>/det_proced/', views.detalle_procedimiento, name='det-proced'),
     path('proced_cont/<int:pk>/det_proced_v/', views.detalle_procedimiento_v, name='det-proced-v'),
     path('proced_cont/<int:pk>/<int:pk_padre>/lis_proced/', views.Lista_PC_Px, name='lis-pc-px'),
@@ -192,8 +229,6 @@ urlpatterns += [
     path('proced_cont/<int:pk>/borra_pc/', views.borra_procedimiento, name='borra-prcd'),
 
 
-    url(r'^proced_cont/(?P<item>[\w-]+)/(?P<pk>\d+)/(?P<valor>[\w-]+)/$', views.aut_obs_proced, name='obs-proced'),
-
     # Actualiza PC
     path('proced_cont/<int:pk>/actualiza_pc/', views.ActualizaPC, name='actualiza-pc'),
 
@@ -201,6 +236,8 @@ urlpatterns += [
     path("procedimientos/toggle/", views.toggle_procedimiento, name="toggle_procedimiento"),  # Obtener estados
     path("procedimientos/toggle/<int:procedimiento_id>/", views.toggle_procedimiento, name="toggle_procedimiento"),  # Cambiar estado
     #path("procedimientos/toggle/<int:procedimiento_id>/", views.toggle_procedimiento, name="toggle_procedimiento"),
+    
+
 ]
 
 
@@ -263,15 +300,17 @@ urlpatterns += [
 
 urlpatterns += [
 
-    #path('drp/<int:pk>/<int:aut>/crea_cmp/', views.Crea_CMP, name='Crea-CMP'),
+    # Componentes
     path('drp/crea_cmp/', views.Crea_CMP, name='Crea-CMP'),
+    path('drp/<int:pk>/mod_cmp/', views.Modifica_CMP, name='Modifica-CMP'),
     path('drp/<int:cmp_pk>/borra_cmp/', views.Borra_CMP, name='Borra-CMP'),
 
     #path('drp/<int:pk_drp>/<int:aut>/lista_cmp_b/', views.Lista_CMP_Borrar, name='Lista-Borra-CMP'),
     path('drp/<int:pk_drp>/<int:origen>/lista_cmp/', views.Lista_CMP, name='Lista-CMP'),
 
-
+    # LBC
     path('drp/<int:pk>/crea_lbc/', views.Crea_LBC, name='Crea-LBC'),
+    path('drp/<int:pk>/<int:pk_cmp>/mod_lbc/', views.Modifica_LBC, name='Modifica-LBC'),
     path('drp/<int:pk>/borra_lbc/', views.Borra_LBC, name='Borra-LBC'),
 
     path('drp/<path:url_retorno>/listaLBC/', views.Lista_LBC, name='Lista-LBC'),

@@ -5,17 +5,16 @@
 
 
 {%extends "base_generic.html"%}
-
-<head>
-    <meta http-equiv="refresh" content="30"> <!-- 🔄 Refrescar cada 30 segundos -->
-</head>
+{% block extra_head %}
+<meta http-equiv="refresh" content="300">
+{% endblock %}
 
 defcon={{defcon_est}}
 
 {% block content %}
 
 <ul class="encabezado_SB">
-<strong><aa>M A P E O</aa></strong>	
+<aa><h4><strong>MAPA DE PROCESOS</strong></h4></aa>	
 </ul>
 
 	<!------ Menu Encabezado ---------------------------------->
@@ -245,7 +244,7 @@ defcon={{defcon_est}}
 
 			{%else%}<!---- Si es Proceso (No Evaluable) --------->
 
-						&emsp;<strong>{{ proceso.nombre }}</strong><aa></aa>
+						&emsp;<aa><strong>{{ proceso.nombre |upper}}</strong></aa>
 					
 			{%endif%}
 

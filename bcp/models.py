@@ -12,7 +12,10 @@ from django.utils import timezone
 # ENTIDADES o MODELOS
 #====================================
 
-   
+# ===========================================================
+# PROCESO
+# ===========================================================
+  
 class Proceso(models.Model):
     """
     Entidad: Proceso
@@ -285,6 +288,10 @@ class Recursos(models.Model):
         String que representa al objeto 
         """
         return  self.nombre+': '+self.descripcion
+    
+    class Meta:
+        ordering = ["tipo", "nombre"]
+
 
 
 class Tipo_RR(models.Model):
@@ -292,12 +299,16 @@ class Tipo_RR(models.Model):
     Entidad:    Tipos de Recursos
     """
 
-    nombre= models.CharField(max_length=25, blank=True)
+    nombre= models.CharField(max_length=50, blank=True)
     descripcion=models.TextField(max_length=200, blank=True, help_text='Describa el Recurso')
 
+    class Meta:
+            ordering = ["nombre"]
 
     def __str__(self):
         return self.nombre+' / '+self.descripcion
+    
+        
 
 
 
@@ -504,13 +515,9 @@ class Parametros_G(models.Model):
     valor_2 = models.IntegerField(null=True)
     #valor_3 = models.DecimalField(max_digits=7, decimal_places=4, default=000.00)
 
-
-    def defcon_est(self):
-
-        parametro_g = get_object_or_404(Parametros_G , pk=1)
-        self.defcon_est = parametro_g.valor_2 
-
-        return self.defcon_est 
+# ===========================================================
+#  REGISTRO DE INCIDENTES 
+# ===========================================================
 
 class Incidentes(models.Model):
     """
@@ -519,6 +526,7 @@ class Incidentes(models.Model):
 
     codigo = models.CharField(max_length= 100, blank=True)
     fecha=models.DateField(auto_now_add=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     # Identificacion de quien registra el incidente
     nombre_r  = models.CharField(max_length= 25, blank=True)
@@ -534,10 +542,14 @@ class Incidentes(models.Model):
     procesos_i = models.ManyToManyField('SubProceso_V')
     escenarios_i = models.ManyToManyField('Escenarios')
 
+    estado =models.BooleanField(default=True)  #Indica si el incidente esta abierto (True) o Cerrado
     changed=models.BooleanField(default=False) #Indica si el incidente ha sido modificado
     test=models.BooleanField(default=False)    #Indica si el incidente es una prueba
 
     
+# ===========================================================
+# PROCEDIMIENTOS DE CONTINGENCIA EN DESARROLLO / ACTUALIZACION
+# ===========================================================
 
 class Procedimientos(models.Model):
     """
@@ -597,6 +609,12 @@ class Procedimientos(models.Model):
     #Log de Autorizaciones
     log_auth=models.ManyToManyField('LogAut')
     es_borrable=models.BooleanField(default=True) # Indica que el Procedimiento es Borrable
+    corr_prbas=models.IntegerField(default=1)     # Correlativo de Pruebas de Procedimiento
+
+
+# ===========================================================
+# PROCEDIMIENTOS DE CONTINGENCIA VIGENTES
+# ===========================================================
 
 class Procedimientos_V(models.Model):
     """
@@ -645,8 +663,11 @@ class Procedimientos_V(models.Model):
     esta_confirmado=models.BooleanField(default=False) # Confirmado por Gestor Ejecutor
     archivo = models.FileField(upload_to="archivos/", null=True, blank=True)
 
+
     #Log de Autorizaciones
     log_auth=models.ManyToManyField('LogAut')
+
+    correlativo_chk = models.IntegerField(default=0) # Correlativo de Checklist
 
 
 class Servicios_PC(models.Model):
@@ -717,9 +738,195 @@ class Pasos_PC_V(models.Model):
     ejecutor = models.ForeignKey('Gestor', on_delete=models.SET_NULL, null=True)
     tiempo_esp = models.IntegerField(default=0)
 
-
     class Meta:
         ordering = ["nro_paso"]    
+
+
+# ===========================================================
+#  REGISTRO DE EJECUCION DE PROCEDIMIENTO DE CONTINGENCIA
+# ===========================================================
+
+
+class CheckList(models.Model):
+    """
+    Checklist de ejecucion de Procedimiento de Contingencia
+    """
+    nro_chk = models.CharField(max_length= 4, blank=False, default='0000')
+    incidente=models.ForeignKey(Incidentes, on_delete=models.SET_NULL, null=True)
+    procedimiento = models.ForeignKey(Procedimientos_V, on_delete=models.SET_NULL, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    # NOTA: Para fecha de actualizacion : fecha_modificacion = models.DateTimeField(auto_now=True)
+    completado=models.BooleanField(default=False)  # Indica que el Checklist se ha completado
+
+    class Meta:
+        ordering = ["fecha_creacion"]    
+    
+    
+class Check_Pasos(models.Model):
+
+    checklist=models.ForeignKey(CheckList, on_delete=models.SET_NULL, null=True)
+
+    paso=models.ForeignKey(Pasos_PC_V, on_delete=models.SET_NULL, null=True)
+    comentario = models.CharField(max_length= 400, blank=True)
+    terminado=models.BooleanField(default=False)  # Indica que el Item (paso) fue ejecutado
+    fecha_ter=models.DateTimeField(default=timezone.now)
+
+
+
+# ===========================================================
+# 1. PRUEBA DE CONTINGENCIA (PLANIFICACIÓN)
+# ===========================================================
+class PruebaContingencia(models.Model):
+    """
+    Representa la planificación de una prueba de contingencia
+    asociada a un Procedimiento de Contingencia.
+    El Proceso y Escenario se derivan del Procedimiento.
+    """
+    procedimiento = models.ForeignKey(
+        Procedimientos, on_delete=models.CASCADE, related_name='pruebas', null=True
+    )
+    codigo = models.CharField(max_length=255)  #Nombre Procedimiento + codigo asignado x Sist.
+    objetivo = models.TextField()
+    alcance = models.TextField(blank=True, null=True)
+    criterios_exito = models.TextField(blank=True, null=True)
+    fecha_programada = models.DateTimeField(default=timezone.now)
+    responsable = models.ForeignKey('Gestor', on_delete=models.SET_NULL, null=True)
+    estado = models.CharField(
+        max_length=20,
+        choices=[
+            ('Pendiente', 'Pendiente'),
+            ('En ejecución', 'En ejecución'),
+            ('Completada', 'Completada'),
+        ],
+        default='Pendiente',
+    )
+    corr_casos=models.IntegerField(default=0)
+
+
+    class Meta:
+        verbose_name = "Prueba de Contingencia"
+        verbose_name_plural = "Pruebas de Contingencia"
+        ordering = ['fecha_programada']
+
+    #def __str__(self):
+    #    return f"{self.codigo} ({self.fecha_programada})"
+
+    # --- Propiedades derivadas ---
+    @property
+    def proceso(self):
+        """Acceso directo al Proceso asociado al Procedimiento."""
+        return self.procedimiento.proceso
+
+    @property
+    def escenario(self):
+        """Acceso directo al Escenario de Riesgo asociado al Procedimiento."""
+        return self.procedimiento.escenario
+
+
+# ===========================================================
+# 2. CASO DE PRUEBA
+# ===========================================================
+class CasoPrueba(models.Model):
+    """
+    Define los casos o escenarios específicos dentro de una prueba de contingencia.
+    Ejemplo: Caso 1 = ingresar compra por $1000; Caso 2 = ingresar compra por $5000.
+    """
+    prueba = models.ForeignKey(
+        PruebaContingencia, on_delete=models.CASCADE, related_name='casos'
+    )
+    #numero = models.PositiveIntegerField()
+    codigo = models.CharField(max_length=4, default='0000')
+    descripcion = models.TextField()
+    resultado_esperado = models.TextField()
+    precondiciones = models.TextField(blank=True, null=True)
+    prioridad = models.CharField(
+        max_length=10,
+        choices=[('Alta', 'Alta'), ('Media', 'Media'), ('Baja', 'Baja')],
+        default='Media'
+    )
+
+    class Meta:
+        verbose_name = "Caso de Prueba"
+        verbose_name_plural = "Casos de Prueba"
+        ordering = ['prueba', 'codigo']
+        unique_together = ('prueba', 'codigo')
+
+    #def __str__(self):
+    #    return f"Caso {self.codigo} - {self.prueba.nombre}"
+
+
+# ===========================================================
+# 3. EJECUCIÓN DE PRUEBA
+# ===========================================================
+class EjecucionPrueba(models.Model):
+    """
+    Representa una ejecución real de una prueba de contingencia planificada.
+    Puede haber múltiples ejecuciones por cada prueba.
+    """
+    prueba = models.ForeignKey(
+        PruebaContingencia, on_delete=models.CASCADE, related_name='ejecuciones'
+    )
+    fecha_real = models.DateTimeField()
+    descripcion_ejecucion = models.TextField()
+    resultados_obtenidos = models.TextField(blank=True, null=True)
+    incidentes = models.TextField(blank=True, null=True)
+    evaluacion_final = models.CharField(
+        max_length=20,
+        choices=[
+            ('Exitosa', 'Exitosa'),
+            ('Parcial', 'Parcial'),
+            ('Fallida', 'Fallida'),
+        ],
+        blank=True,
+        null=True
+    )
+    lecciones_aprendidas = models.TextField(blank=True, null=True)
+    evidencia_general = models.FileField(upload_to='evidencias_pruebas/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Ejecución de Prueba"
+        verbose_name_plural = "Ejecuciones de Pruebas"
+        ordering = ['-fecha_real']
+
+    def __str__(self):
+        return f"Ejecución #{self.id} - {self.prueba.nombre}"
+
+
+# ===========================================================
+# 4. EJECUCIÓN DE CASO DE PRUEBA
+# ===========================================================
+class EjecucionCasoPrueba(models.Model):
+    """
+    Registra los resultados individuales de cada caso dentro de una ejecución de prueba.
+    Permite trazabilidad detallada y almacenamiento de evidencias.
+    """
+    ejecucion = models.ForeignKey(
+        EjecucionPrueba, on_delete=models.CASCADE, related_name='casos_ejecutados'
+    )
+    caso = models.ForeignKey(
+        CasoPrueba, on_delete=models.CASCADE, related_name='ejecuciones'
+    )
+    resultado = models.CharField(
+        max_length=20,
+        choices=[
+            ('Exitosa', 'Exitosa'),
+            ('Fallida', 'Fallida'),
+            ('Parcial', 'Parcial'),
+        ],
+        blank=True,
+        null=True
+    )
+    observaciones = models.TextField(blank=True, null=True)
+    evidencia = models.FileField(upload_to='evidencias_casos/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Ejecución de Caso de Prueba"
+        verbose_name_plural = "Ejecuciones de Casos de Prueba"
+        unique_together = ('ejecucion', 'caso')
+
+    def __str__(self):
+        return f"{self.caso} / Ejecución {self.ejecucion.id}"
+
     
 class Tipo_Proc(models.Model):
     """
@@ -768,6 +975,11 @@ class Grupos(models.Model):
 
     def __str__(self):
         return self.grupo.name+ ' / '+ self.descripcion
+
+
+# ===========================================================
+# DRP
+# ===========================================================
 
 
 class Drp(models.Model):
@@ -1007,6 +1219,7 @@ class Log_Revision(models.Model):
 
     proceso= models.ForeignKey(Proceso, on_delete=models.CASCADE, null=True)
     procedimiento= models.ForeignKey(Procedimientos, on_delete=models.CASCADE, null=True)
+    procedimiento_v= models.ForeignKey(Procedimientos_V, on_delete=models.CASCADE, null=True)
     drp= models.ForeignKey(Drp, on_delete=models.CASCADE, null=True)
 
     gestor_aut = models.ForeignKey(Gestor, on_delete=models.CASCADE, null=True)

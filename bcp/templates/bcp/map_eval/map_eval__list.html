@@ -6,13 +6,15 @@
 
 
 {% extends "base_generic.html" %}
-<head>
-    <meta http-equiv="refresh" content="30"> <!-- 🔄 Refrescar cada 30 segundos -->
-</head>
+{% block extra_head %}
+<meta http-equiv="refresh" content="300">
+{% endblock %}
 
 
 {% block content %}
-<ul class="encabezado_SB"><strong><aa>M A P E O</aa></strong></ul>
+<ul class="encabezado_SB">
+<aa><h4><strong>MAPA DE PROCESOS</strong></h4></aa>	
+</ul>
 	
 
 	{% block encabezado2 %}
@@ -228,7 +230,7 @@
             {%else%}<! Si no es Subproceso>
 
 			    {% if proceso.nro_hijos > 0 %} <! Si el Proceso no tiene Subprocesos definidos no se despliega>
-                               <aa><strong>{{ proceso.nombre }}</strong></aa>
+                               <aa><strong>{{ proceso.nombre |upper}}</strong></aa>
 			    {%endif%}
 
             {%endif%}

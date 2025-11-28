@@ -6,11 +6,19 @@
 {% extends "base_generic.html" %}
 {% load static %}
 
+<!----- Actualiza la pagina cada 30 minutos ------------------------------>
+{% block extra_head %}<meta http-equiv="refresh" content="30">{% endblock %}
+
 {% block content %}
+
+<!--------- Inhibe actualizacion del scroll principal -->
+<meta name="inhibir-scroll-principal" content="true">
+
 
 	{% block enc_activo %}
 	<ul class="encabezado_B">
-        <rr><p class="blink"><strong>REPORTE DE PERFIL DE INCIDENTE&emsp;{{incidente.codigo}}</strong></p></rr>
+		<p><img src="/static/img/dashboard.png" class="icon" width="70" height="50"></p>
+        <rr class="blink"><strong>PANEL DE CONTROL DE INCIDENTE :&nbsp;{{incidente.codigo}}</strong></rr>
 	</ul>
 	{% endblock %}
 
@@ -21,10 +29,10 @@
 	<!------------ Seccion 1 Reporte ---------->
 	<div class="flex-item" style="width: 100%; height: 300px;">
 		<ul class="encabezado_SB"><h5><strong>REPORTE</strong></h5></ul>
-		<ul class="scr2" style="width: 100%; height: 300px;">
+		<ul class="BarraScroll" style="width: 100%; height: 300px;">
 			<br/>
 				<p><strong>Codigo...............:<strong>&emsp;{{incidente.codigo}}</p>
-				<p><strong>Fecha................:<strong>&emsp;{{incidente.fecha}}</p>
+				<p><strong>Fecha................:<strong>&emsp;{{incidente.fecha_creacion}}</p>
 				<p><strong>Reportado por...:<strong>&emsp;{{incidente.nombre_r}}</p>
 				<p><strong>Area/Gerencia...:<strong>&emsp;{{incidente.area_r}}</p>
 				<br/>
@@ -67,7 +75,7 @@
 	<!------------ Seccion 2 Lista del Comite de Crisis ---------->
 	<div class="flex-item" >
 	<ul class="encabezado_SB" style="width: 400px;"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
-	<ul class="scr2" style="width: 400px; height: 300px;">
+	<ul class="BarraScroll" style="width: 400px; height: 300px;">
 	<table class="lta">
 		<thead>
 			<tr>
@@ -108,7 +116,7 @@
 <br/>
 <ul class="encabezado_SB"><h5><strong>ALCANCE DEL INCIDENTE</strong></h5></ul>
 <br/>
-<ul class="scr4">
+<ul class="scr3">
 
 
 <!-- /******************************* Bloque A *************************************/ -->
@@ -279,12 +287,12 @@
 <br/>
 <ul class="encabezado_SB"><h5><strong>MATRIZ DE CONTINGENCIAS</strong></h5></ul>
 
-<ul class="scr2" style="height: 390px;">
+<ul class="BarraScroll" style="height: 350px;">
 <table class="lta">
 	<thead>
 		<tr> <!--- Encabezado ------>
-			<th scope="col" style="background: green; width: 300px; font-size: 20px;">PROCESO</th>
-			<th scope="col" style="background: green; width: 200px; font-size: 20px; text-align: center;">RTO</th>
+			<th scope="col" style="background: green; width: 300px; height: 30px; padding: 3px; font-size: 20px;">PROCESO</th>
+			<th scope="col" style="background: green; width: 200px; height: 30px; padding: 3px; font-size: 20px; text-align: center;">RTO</th>
 
 			<th scope="col" style="background: black;"></th>
 
@@ -325,14 +333,21 @@
 							
 								<a href="{% url 'det-proced-v' prc.pk %}" 
 								class="link" 
-								data-message="Procedimiento de Contingencia (PC) .: {{ prc.nombre }}">
-								<p style="font-size: 25px;">&#128215</p>
+								data-message="Ver Procedimiento: {{ prc.nombre }}">
+								{% if prc.esta_confirmado == False%}
+									<p style="font-size: 25px;">&#128215</p>
+								{%else%}
+									<p class="blink link"  
+									data-message="Ver Procedimiento: {{ prc.nombre }} - Confirmado!!"
+									style="font-size: 25px;">&#128217</p>
+								{%endif%}
 								</a>
 
 								<!--- Activa / Desactiva Procedimiento -->
 								<label class="switch">
 									<input type="checkbox" id="toggle-activo-{{ prc.id }}" 
 										data-id="{{ prc.id }}"
+										data-incidente="{{ incidente.id }}"
 										{% if prc.esta_activo %}checked{% endif %}>  
 									<span class="slider link" 
 										data-message="Activa/Desactiva el PC .: {{ prc.nombre }}">
@@ -354,7 +369,32 @@
 	</tbody>		
 </table>
 </ul>
-<br/><br/><br/>
+<br/>
+
+<div class="flex-container" style="width: 100%;">
+	<div class="flex-item" style="text-align: right; width:50%;">
+		<!----Switch Activa/Desactiva -->
+		<label class="switch switch-large">
+		<input type="checkbox"
+				class="toggle-switch"
+				data-app="bcp"
+				data-model="incidentes"
+				data-id="{{incidente.id}}"
+				data-field="estado"
+				data-confirm-On="Confirma Activacion del Incidente?."
+				data-confirm-Off="Confirma Desactivacion del Incidente?"
+				{% if incidente.estado %}checked{% endif %}>
+		<span class="slider"></span>
+		</label>
+		<!----Fin Switch Activa/Desactiva -->
+
+	</div>
+	<div class="flex-item" style="text-align: left; width: 50%;">
+		<bn style="font-size: 1.8rem;">: Activa/Desactiva el Incidente</bn> 
+	</div>
+</div>
+
+<br/><br/>
 
 
 

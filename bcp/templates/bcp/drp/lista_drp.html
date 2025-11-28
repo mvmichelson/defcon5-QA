@@ -72,30 +72,16 @@
 			
 		</table>
 
-		<!-- Creacion de Componente en la BD-->
-		<a href="{% url 'Lista-CMP' 0  0  %}"
-		class="link " data-message="Administra la BD de Componentes ..."><sa><strong>&#10010 </sa></strong></a>: Base de Componentes. 			<!-- Fin Creacion de Componente en la BD-->
-	<br/><br/>
-
 		    
 	</ul>
 
 
+	<!-- Creacion de Componente en la BD-->
+	<a href="{% url 'Lista-CMP' 0  0  %}"
+	class="link " data-message="Administra la BD de Componentes ...">
+	<img src="/static/img/linea_base_configuracion.png" width="15" height="15" alt="LBC"></a>: Base de Componentes. 			<!-- Fin Creacion de Componente en la BD-->
+	<br/><br/>
 
-{%block pie%}
-	<br/>
-	<ul class="encabezado_SB">
-	
-	<strong><p><am>&#10010</am>:<tm>Crear DRP&emsp;</tm></strong> 
-	<strong>&#128065 :<tm>Consultar &emsp;</tm></strong>
-	<strong><rr>&#128465</rr> :<tm>Borrar &emsp;</tm></strong>
-	<strong>&#128270 :<tm>Revisar Obs. &emsp;</tm></strong> 
-	<strong>&#128273 :<tm>Autorizar &emsp;</tm></strong>
-	<strong>&#128274 :<tm>En autorizacion &emsp;</tm></strong>
-	
-	<strong>&#9989 :<tm>Aprobado</tm></strong>
-	</ul>
-{% endblock %}
 
 
 	<!----- CSS para Scripts ----------------------------------->

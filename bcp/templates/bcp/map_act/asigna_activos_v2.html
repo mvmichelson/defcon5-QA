@@ -13,25 +13,39 @@
         <p><aa><strong>FORMULARIO DE ASIGNACION DE SERVICIOS Y ESCENARIOS :</strong></aa></p>
 	</ul>
 	<ul class="encabezado_SB">
-	<p><aa>{{proceso.path}}</aa></p>
+	<p><aa>Ruta: {{proceso.path}}</aa></p>
 	</ul>
 	{% endblock %}
 
 	
+
+<!--------------------------Bloque Datos Proceso -------------------------->
+<div class="flex-container" style="width: 100%;">
+
+	<div class="flex-item" style="width: 50%;">
+	<!----------- Columna izq. ----------------->
+		<br/>
+
 	<h5><strong>DATOS DEL PROCESO</strong></h5>
-	<!=======================================>
+	<!----------------------------------------->
 
 	<ul class="scr4">
 	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
 	  	<p><strong>Objetivo......:</strong> 
-			<ul class="caja-texto scr4">
+			<ul class="caja-texto">
 			{{ proceso.objetivo }}
 			</ul>
 		</p>
-		<br/>
 	</ul>
+	</div><!------- Fin Columna iz.------------>
+	
+	<!--------- Columna der. ------------------->
+	<div class="flex-item" style="width: 40%; padding: 1px; align-content: center;">
+		<img src="/static/img/servicios_ti.png" width="300" height="300">
+	</div> <!-------- Fin Columna der. ---------------->
 
-	<br/>
+</div> <!----------------------Fin Bloque Datos Proceso -------------------------->
+
 	<h5><strong>ASIGNACION DE SERVICIOS CRITICOS</strong></h5>
 	<!===================================================>
 	<P>Seleccione del listado de la izquierda aquellos Servicios o Recursos que son indispensables para la 
@@ -41,7 +55,15 @@
 
 	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
 	<!---------------------------------------------->
-	<div data-asignacion>
+	<div data-asignacion
+     data-model="bcp.SubProceso"         
+     data-obj-id="{{ subproceso.id }}"   
+     data-field="recursos" >
+	 <!-- marcadores para se se grabe en la BD en cada seleccion -------> 
+	 <!-- data-model="bcp.Drp"       : formato app_label.ModelName; DEBE estar en ALLOWED_MODELS -->
+     <!-- data-obj-id="{{ drp.id }}  : id del objeto base -->
+     <!-- data-field="componentes"   : nombre exacto del campo M2M en el modelo -->
+
 
 		<form method="post">
 			{% csrf_token %}
@@ -51,27 +73,27 @@
 
 				<!-- Servicios Disponibles -->
 				<div style="flex:1;">
-					<h5><strong>⏼ Servicios/Recursos Disponibles</strong></h5>
-					<input type="text" class="filtro-disponibles" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa;">
+					<h4><strong>⏼ Servicios/Recursos Disponibles</strong></h4>
+					<input type="text" class="filtro-disponibles" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa; ">
 					<br/><br/>
-					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
-						<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+					<ul class="BarraScroll" style="height:250px; background:#efefaa;">
+						<table class="lta tabla-disponibles styled-table" style="width:100%; margin-top:10px; ">
 							<thead style="background: greenyellow;">
-								<tr style=color:black;">
+								<tr style="color:black; background: rgb(204, 236, 157);">
 									<th style="width:10%;">Tipo</th>
-									<th style="width:30%;">Nombre</th>
+									<th style="width:30%;">Serv./ Rec.</th>
 									<th>Descripción</th>
-									<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;">***⏩***</th>
+									<th style="width:12%;" class="link" data-message="Selecciona"  style="text-align: center;"> </th>
 								</tr>
 							</thead>
 							<tbody>
 							{% for recurso in recursos_disponibles %}
 								<tr data-id="{{ recurso.id }}">
 									<td>{{ recurso.tipo.nombre }}</td>
-									<td>{{ recurso.nombre }}</td>
+									<td><strong>{{ recurso.nombre }}</strong></td>
 									<td>{{ recurso.descripcion }}</td>
 									<td>
-										<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
+										<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;"><a class="link" data-message="Selecciona" style="color: black;">⮚</a></button>
 									</td>
 								</tr>
 							{% empty %}
@@ -84,17 +106,17 @@
 
 				<!-- Servicios Asignados -->
 				<div style="flex:1;">
-					<h5><strong>⏼ Servicios/Recursos Seleccionados</strong></h5>
+					<h4><strong>⏼ Servicios/Recursos Seleccionados</strong></h4>
 					<input type="text" class="filtro-asignados" placeholder="Filtrar servicios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
-					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
-					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+					<ul class="BarraScroll" style="height:250px; background:#efefaa;">
+					<table class="lta tabla-asignados styled-table" style="width:100%; margin-top:10px;">
 						<thead style="background: lightblue;">
 							<tr style="color:black">
 								<th style="width:10%;">Tipo</th>
-								<th style="width:30%;">Serv./Rec.</th>
+								<th style="width:30%;">Serv./ Rec.</th>
 								<th>Descripción</th>
-								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" >***⏪***</th>
+								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" ></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -104,7 +126,7 @@
 								<td><strong>{{ recurso.nombre }}</strong></td>
 								<td>{{ recurso.descripcion }}</td>
 								<td>
-									<button type="button" class="btn-mover button"   data-destino="disponibles" style="background: red; color: white; font-size:12px;"><a class="link" data-message="Selecciona" >⏪</a></button>
+									<button type="button" class="btn-mover button"   data-destino="disponibles" style="background: red; color: white; font-size:12px;"><a class="link" data-message="Descarta" >⮘</a></button>
 								</td>
 							</tr>
 						{% endfor %}
@@ -118,8 +140,19 @@
 			<!-- Campo hidden para IDs -->
 			<input type="hidden" name="recursos" class="input-seleccion" value="">
 
+			<!-- Creacion de Servicio/Recurso en la BD-->
+			 	<a href="{% url 'Lista-SRV' proceso.pk origen  %}"
+				class="link " data-message="Crea/ Borra/ Modifica Servicios/Recursos ...">
+				<img src="/static/img/servicios_ti.png" width="40" height="40">
+				</a><bn>:Administra la BD de Servicios/Recursos criticos de Procesos del BCP</bn>	
+			<!-- Fin Creacion de Componente en la BD-->
+			<br/><br/>
+
+
 			<br/>
 			<!-- Boton de salida -->
+			<a href="{% url 'Lista-Recursos' %}"><bb class="button">... Volver</bb></a>
+
 			<button type="submit" class="button" 
 			>Siguiente ... </button>
 		</form>

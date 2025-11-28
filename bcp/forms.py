@@ -44,8 +44,22 @@ from .models import Tipo_Site, Tipo_Disp, Componentes, Tipo_Componente
 class CreaProcesoForm(forms.Form):
 
       
-    nombre = forms.CharField(max_length= 50, widget=forms.Textarea(attrs={'rows':1,'cols':50}))
-    objetivo = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'rows':5,'cols':100}))
+    #nombre = forms.CharField(max_length= 50, widget=forms.Textarea(attrs={'rows':1,'cols':1}))
+    #nombre = forms.CharField(max_length= 50)
+    nombre = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                # El campo ahora tendrá 3 líneas de alto
+                'rows': 1,
+                # Y aproximadamente 40 caracteres de ancho
+                'cols': 20,
+                # Puedes añadir más atributos HTML aquí
+                'class': 'mi-clase-personalizada'
+            }
+        )
+    )
+
+    objetivo = forms.CharField(max_length=500, widget=forms.Textarea(attrs={'rows':4,'cols':100}))
     
     #Registra el Tipo 
     es_subproceso=forms.BooleanField(label='Indicar si es un Proceso Final (sometido a Evaluacion) ', required=False)
@@ -234,8 +248,7 @@ class CreaActivoForm(forms.Form):
     """
     nombre = forms.CharField(max_length= 50, label='Nombre de Activo:', widget=forms.Textarea(attrs={'rows':1, 'cols':50}))
     descripcion = forms.CharField(max_length=500, label='Descripcion:',  help_text='Describir objetivo del Proceso.', widget=forms.Textarea(attrs={'rows':8, 'cols':70}))
-
-    clase = forms.ModelChoiceField(queryset=Tipo_RR.objects.all(), label='Clase de Activo', empty_label='Ingrese una clase de Activo', help_text='',  required=False)
+    tipo = forms.ModelChoiceField(queryset=Tipo_RR.objects.all(), label='Clase de Activo', empty_label='Ingrese una clase de Activo', help_text='',  required=False)
     
     #class MyModelChoiceField(ModelChoiceField):
     #    def label_from_instance(self, obj):
@@ -541,9 +554,12 @@ class CreaProc_P6_Form(forms.Form):
 class CreaProc_P7_Form(forms.Form):
     "Pasos del Procedimiento de Contingencia"
 
-    nro_paso = forms.IntegerField(max_value=999, required=True, 
-                                  widget=forms.NumberInput(attrs={'style': 'width: 60px;'}) )
-    descripcion = forms.CharField(max_length=480, widget=forms.Textarea(attrs={'rows':4, 'cols':120}))
+    nro_paso = forms.IntegerField(required=True, widget=forms.NumberInput(attrs={'style': 'width: 60px;'}))
+    descripcion = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':120,
+                                                        'placeholder':'Describe el paso a realizar... '},
+                                                        ),
+                                  )
     
     ejecutor = forms.ModelChoiceField(queryset=Gestor.objects.all(), empty_label=None, help_text='', required=True)
 
@@ -566,8 +582,82 @@ class CreaProc_P7_Form(forms.Form):
         super(CreaProc_P7_Form, self).__init__(initial)
         self.fields['ejecutor'].queryset = Gestor.objects.filter(user_pk__in = ejecutores)
 
+class CreaProc_P8_Form(forms.Form):
+    "Pruebas del Procedimiento"
+
+    codigo   = forms.CharField(max_length=30, required=False, widget=forms.Textarea(attrs={'rows':1, 'cols':30}))
+    objetivo = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':180,
+                                                        'placeholder':'ej. Validar transaccion de compra en POS'},
+                                                        ))
+    alcance  = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':1200,
+                                                        'placeholder':'ej. La prueba contempla el proceso de autorización y validación de '
+                                                        'compras en terminales POS, desde la lectura de la tarjeta hasta la confirmación '
+                                                        'de la transacción en el sistema central. No incluye la conciliación contable '
+                                                        'posterior ni la reversa de transacciones, que serán probadas en una fase independiente.'},
+                                                        ))
+    
+    criterios_exito = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':1200,
+                                                        'placeholder':'ej. La prueba se considerará exitosa si al menos el 95% de las '
+                                                        'transacciones son autorizadas correctamente, los tiempos de respuesta del POS'
+                                                        ' no superan los 5 segundos y no se presentan rechazos por pérdida de '
+                                                        'conectividad. Además, las terminales deben registrar las operaciones de forma '
+                                                        'local para su sincronización posterior sin pérdida de información.'},
+                                                        ))
+    
+    responsable = forms.ModelChoiceField(queryset=Gestor.objects.all(), empty_label=None, help_text='', required=True)
+
+    
+    # Filtra los gestores R y A para pertenecer al grupo Autorizadores
+    def __init__(self,initial):
+
+        # Seleccion por grupos
+        responsables = []
+
+        gestores=Gestor.objects.all()
+        for ges in gestores:
+            grp=ges.user_gestor.groups
+            for g in grp.all():
+                if g.name == 'Consultores':
+                    responsables.append(ges.user_pk)
 
 
+        super(CreaProc_P8_Form, self).__init__(initial)
+        self.fields['responsable'].queryset = Gestor.objects.filter(user_pk__in = responsables)
+
+class Caso_P8_Form(forms.Form):
+    """
+    Creacion/Modificacion de Caso de Prueba
+    """
+    
+    PRIORIDAD_CHOICES = [
+        ('Alta', 'Alta'),
+        ('Media', 'Media'),
+        ('Baja', 'Baja'),
+    ]
+
+
+    descripcion = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':180,
+                                                        'placeholder':'ej.descripcion'},
+                                                        ))
+    
+    resultado_esperado = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':180,
+                                                        'placeholder':'ej. resultado esperado'},
+                                                        ))
+
+    precondiciones = forms.CharField(max_length=480,
+                                  widget=forms.Textarea(attrs={'rows':4, 'cols':180,
+                                                        'placeholder':'ej. (precondiciones) '},
+                                                        ))
+
+    prioridad = forms.ChoiceField(
+        choices=PRIORIDAD_CHOICES,
+        initial='Media'
+    )
 
 
 class Revisa_Proced_B_Form(forms.Form):
@@ -840,44 +930,45 @@ class Declara_Incidente_Form(forms.Form):
     area = forms.CharField(max_length= 25, label='Area:')
     #correo = forms.EmailField(required=True)
     descripcion = forms.CharField(max_length=500, label='Descripcion:',  help_text='Describir Incidente :', widget=forms.Textarea(attrs={'rows':8, 'cols':70}))
-    test= forms.BooleanField()
-    amenazas_i = forms.ModelMultipleChoiceField(queryset=Amenazas.objects.all().order_by('titulo'),
-                                          label=_('Amenazas Ocurridas :'),
-                                          required= True,
-                                          widget=FilteredSelectMultiple(
-                                                    _('Amenazas'),
-                                                    False,
-                                                 ))
+    test= forms.BooleanField(required=False)
+    #amenazas_i = forms.ModelMultipleChoiceField(queryset=Amenazas.objects.all().order_by('titulo'),
+    #                                      label=_('Amenazas Ocurridas :'),
+    #                                      required= True,
+    #                                      widget=FilteredSelectMultiple(
+    #                                                _('Amenazas'),
+    #                                                False,
+    #                                            ))
 
-    class Media:
-        css = {
-            'all':['admin/css/widgets.css',
-                   'css/uid-manage-form.css'],
-        }
+    #class Media:
+    #    css = {
+    #       'all':['admin/css/widgets.css',
+    #               'css/uid-manage-form.css'],
+    #   }
         # Adding this javascript is crucial
-        js = ['/admin/jsi18n/']
+    #    js = ['/admin/jsi18n/']
 
 
 class Modifica_Incidente_Form(forms.Form):
     """
     Modificacion de Amenazas en Declaracion de un Incidente
     """
-    
-    amenazas_i = forms.ModelMultipleChoiceField(queryset=Amenazas.objects.all().order_by('titulo'),
-                                          label=_('Amenazas Ocurridas :'),
-                                          required= False,
-                                          widget=FilteredSelectMultiple(
-                                                    _('Amenazas'),
-                                                    False,
-                                                 ))
+    pass
 
-    class Media:
-        css = {
-            'all':['admin/css/widgets.css',
-                   'css/uid-manage-form.css'],
-        }
+    #amenazas_i = forms.ModelMultipleChoiceField(queryset=Amenazas.objects.all().order_by('titulo'),
+    #                                      label=_('Amenazas Ocurridas :'),
+    #                                      required= True,
+    #                                      widget=FilteredSelectMultiple(
+    #                                                _('Amenazas'),
+    #                                                False,
+    #                                            ))
+
+    #class Media:
+    #    css = {
+    #       'all':['admin/css/widgets.css',
+    #               'css/uid-manage-form.css'],
+    #   }
         # Adding this javascript is crucial
-        js = ['/admin/jsi18n/']
+    #    js = ['/admin/jsi18n/']
 
 #************************************************************************************************************************************************************
 #************************************************** 5. Mantencion de Maestros **********************************************************************************

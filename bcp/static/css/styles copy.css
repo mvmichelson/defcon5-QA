@@ -241,6 +241,153 @@ tm {
 }
 
 
+/* Estilos para el Encabezado de la Página */
+.page-header {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-header h1 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+}
+
+.path-display {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Contenedor Principal del Formulario */
+.form-container {
+    max-width: 600px; /* Limita el ancho para mejor legibilidad */
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra suave para un look flotante/profesional */
+}
+
+/* Secciones del Formulario */
+.form-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+}
+
+.section-title {
+    font-size: 18px;
+    color: #007bff; /* Color primario para títulos de sección */
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #ddd;
+    padding-bottom: 5px;
+}
+
+/* Estilo para cada Campo del Formulario (Etiqueta arriba del input) */
+.form-field {
+    margin-bottom: 15px;
+}
+
+.form-field label {
+    display: block; /* La etiqueta ocupa todo el ancho */
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #444;
+}
+
+.form-field input[type="text"],
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box; /* Asegura que el padding no aumente el ancho total */
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-field input[type="text"]:focus,
+.form-field textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+/* Estilo para el campo de checkbox */
+.checkbox-field label {
+    font-weight: normal; /* No tan grueso como las etiquetas de texto */
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.checkbox-field input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.2); /* Aumenta ligeramente el tamaño para mejor clic/touch */
+}
+
+/* Acciones y Botones */
+.form-actions {
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    text-align: right; /* Alinea los botones a la derecha */
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none; /* Para el botón 'Volver' */
+    margin-left: 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn i {
+    margin-right: 8px;
+}
+
+.btn-primary {
+    background-color: #28a745; /* Verde para la acción principal (Registrar) */
+    color: white;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background-color: #218838;
+}
+
+.btn-secondary {
+    background-color: #6c757d; /* Gris para la acción secundaria (Volver) */
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos de errores */
+.form-errors {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    border-radius: 4px;
+}
+
 /* ----- MARCOS CON SCROLL ------ */
 
 .BarraScroll {

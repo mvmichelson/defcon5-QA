@@ -11,30 +11,49 @@
         <p><aa><strong>FORMULARIO DE ASIGNACION DE ESCENARIOS DE RIESGO:</strong></aa></p>
 	</ul>
 	<ul class="encabezado_SB">
-	<p><aa>{{proceso.path}}</aa></p>
+	<p><aa>Ruta: {{proceso.path}}</aa></p>
 	</ul>
 	{% endblock %}
 
 	
-	{% block d_asigna_recu %}
+
+
+<!--------------------------Bloque Datos Proceso -------------------------->
+<div class="flex-container" style="width: 100%;">
+
+	<div class="flex-item" style="width: 70%;">
+	<!----------- Columna izq. ----------------->
+		<br/>
+
 	<h5><strong>DATOS DEL PROCESO</strong></h5>
-	<!=======================================>
+	<!----------------------------------------->
 
 	<ul class="scr4">
 	  <p><strong>Nombre........:</strong> &emsp;{{ proceso.nombre }}</p>
 	  	<p><strong>Objetivo......:</strong> 
-			<ul class="caja-texto scr4">
+			<ul class="caja-texto">
 			{{ proceso.objetivo }}
 			</ul>
 		</p>
-	  <br/>
-	  {% block Activos %}
-	  <h5><strong>Servicios Criticos asociados al Proceso</strong>&emsp;({{proceso.path}})</h5> 
+		<br/>
+	</ul>
+	</div><!------- Fin Columna iz.------------>
+	
+	<!--------- Columna der. ------------------->
+	<div class="flex-item" style="width: 35%; padding: 1px; align-content: center;">
+		<img src="/static/img/Escenarios.png" width="260" height="260">
+	</div> <!-------- Fin Columna der. ---------------->
+
+</div> <!----------------------Fin Bloque Datos Proceso -------------------------->
+
+	  <h5><strong>Servicios Criticos asociados al Proceso</strong></h5> 
 	  <!========================================================================================>
+
+	<ul class="BarraScroll" style="height: 160px;">
 	    
 	   {% if proceso.subproceso.recursos.all %}
 		  <table class="lta">
-			 <thead class="encabezado_A">
+			 <thead>
 			 <tr>
 			  <th scope="col">Activo/Recurso</th>
 			  <th scope="col">Descripcion</th>
@@ -47,8 +66,8 @@
 			 {%for act in proceso.subproceso.recursos.all  %}
 			 <tr>
 			  <th scope="row"><aa>{{act.nombre}}</aa></th>
-			  <th scope="row"><aa>{{act.descripcion}}</aa></th>
-			  <th scope="row"><aa>{{act.tipo}}</aa></th>
+			  <th scope="row">{{act.descripcion}}</th>
+			  <th scope="row">{{act.tipo}}</th>
 			  
 			 </tr>
 					{% if not forloop.last %}
@@ -62,22 +81,24 @@
 	  {%endif%}
   
 	  <br/>
-	{%endblock%}
 	</ul>
-	{% endblock %}
-
-	{% block asigna_proc %}
-
+	<br/><br/>
 	<P>Seleccione  del  cuadro  de  la izquierda aquellos Escenarios de Riesgo  que podrian provocar una disrupcion en la 
 	operacion del Proceso &emsp;-&emsp;<strong>{{proceso.nombre}}</strong>&emsp;- en analisis</p>
-
 
 
 	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
 	<!---------------------------------------------->
 
-	<div data-asignacion>
-		<form method="post">
+	<div data-asignacion
+     data-model="bcp.SubProceso"         
+     data-obj-id="{{ subproceso.id }}"   
+     data-field="escenarios" > 
+	 <!-- data-model="bcp.Drp"       : formato app_label.ModelName; DEBE estar en ALLOWED_MODELS -->
+     <!-- data-obj-id="{{ drp.id }}  : id del objeto base -->
+     <!-- data-field="componentes"   : nombre exacto del campo M2M en el modelo -->
+
+	 <form method="post">
 			{% csrf_token %}
 			
 			<!-- Filtros y tablas -->
@@ -85,22 +106,22 @@
 
 				<!-- Escenarios Disponibles -->
 				<div style="flex:1;">
-					<h5><strong>⏼ Escenarios de Riesgo Disponibles</strong></h5>
+					<h4><strong>⏼ Escenarios de Riesgo Disponibles</strong></h4>
 					<input type="text" class="filtro-disponibles" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
 					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
-					<table class="tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
+					<table class="lta tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
 						<thead style="background: greenyellow;">
 							<tr style="color:black">
 								<th style="width:30%;">Escenario:</th>
 								<th>Descripción</th>
-								<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;">***⏩***</th>
+								<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;"></th>
 							</tr>
 						</thead>
 						<tbody>
 						{% for escenario in escenarios_disponibles %}
 							<tr data-id="{{ escenario.id }}">
-								<td>{{ escenario.titulo }}</td>
+								<td><strong>{{ escenario.titulo }}</strong></td>
 								<td>{{ escenario.descripcion }}</td>
 								<td>
 									<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
@@ -116,22 +137,22 @@
 
 				<!-- Escenarios Asignados -->
 				<div style="flex:1;">
-					<h5><strong>⏼ Escenarios de Riesgo Seleccionados</strong></h5>
+					<h4><strong>⏼ Escenarios de Riesgo Seleccionados</strong></h4>
 					<input type="text" class="filtro-asignados" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
 					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
-					<table class="tabla-asignados styled-table" style="width:100%; margin-top:10px;">
+					<table class="lta tabla-asignados styled-table" style="width:100%; margin-top:10px;">
 						<thead style="background: lightblue;">
 							<tr style="color:black">
 								<th style="width:30%;">Escenario:</th>
 								<th>Descripción</th>
-								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" >***⏪***</th>
+								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" ></th>
 							</tr>
 						</thead>
 						<tbody>
 						{% for escenario in escenarios_asignados %}
 							<tr data-id="{{ escenario.id }}">
-								<td>{{ escenario.titulo }}</td>
+								<td><strong>{{ escenario.titulo }}</strong></td>
 								<td>{{ escenario.descripcion }}</td>
 								<td>
 									<button type="button" class="btn-mover button " data-destino="disponibles" style="background: red; color: white; font-size:12px;">⏪</button>
@@ -151,7 +172,10 @@
 			<input type="hidden" name="escenarios" class="input-seleccion" value="">
 
 			<br/>
+			<!--- Botones de Salida -------->
+			<a href="{% url 'Asigna-Servicio' proceso.pk  %}"><bb class="button">... Volver</bb></a>
 			<button type="submit" class="button">Guardar Selección</button>
+
 		</form>
 	</div>
 	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
@@ -183,6 +207,5 @@
 <br/>
 <aa style="font-size: 8px;">[asigna_escenarios_v2]</aa>
 
-{% endblock %}
 
 {% endblock %}

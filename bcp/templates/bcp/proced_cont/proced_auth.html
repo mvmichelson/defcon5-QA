@@ -16,82 +16,75 @@
 	</ul>
 	{% endblock %}
 
-    <!---------------------------------- Bloque A ------------------------------------------>
-	<div class="flex-container">
+<!---------------------------------- Bloque A ------------------------------------------>
+<div class="flex-container">
+
+<!--------- Seccion Datos --------------------->
+<div class="flex-item" style="width: 50%;">
+
+<bn>Revise los datos de Especificacion propuestos para el Procedimiento de Contingencia -<strong>{{proced.nombre}}</strong>- 
+	y en caso de alguna observacion o comentario registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
+	adjunto. 
+</bn>
+<br/><br/><br/>
+
+	<ul class='encabezado_SB'>
+	<h5><strong>1. Procedimiento de Contingencia (PC)</strong></h5>
+	</ul>
+	<ul class="scr4">
+	<p><strong>1.0. Codigo interno ...: &emsp;</strong> {{proced.codigo}}</p>	
+	<p><strong>1.1. Codigo asignado ..: &emsp;</strong> {{proced.nombre}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  
+			data-message=" <p> Comentar ...</p>
+			<p>ñlfsdñkfñaslkdñdlk</> "
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Codigo asignado en 1. Procedimiento de Contingencia :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+	<p><strong>1.2. Fecha de creacion........................: &emsp;</strong> {{proced.fecha_c}}</p>
+
+	<p><strong>1.3. Fecha de ultima modificacion......: </strong> {{proced.fecha_ult_mod}}</p>
+
+	</ul>
+
+	<br/>
+	<ul class='encabezado_SB'>
+	<h5><strong>2. Escenario de Riesgo </strong></h5>
+	</ul>
+	<!------------ Mensaje ---------------------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<p>
+		En esta sección se selecciona un determinado <strong>Escenario de Riesgo</strong>
+		 asociado al <strong>Proceso relacionado</strong>
+		que sera cubierto por este Procedimiento de Contingencia.    
+	</p>
+	<p>
+		   
+	</p>
+
+	</div>
+	<!------------ Fin Mensaje ---------------------------------------------->
+
+	<ul class="scr4">
+	<p>{{proced.escenarios}}
+		<!---------  Comentario de Revision ----->
+		<span class="comment-icon link"  data-message="Comentar el (los) Escerarios a cubrir por el PC ..."
+		data-id="{{ proced.id }}"
+		data-sec="P" 
+		data-field="Revisar Escenario(s) declarados en 2. Escenarios de Riesgo :"
+		>
+		&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+		</span>
+		<!---------  Fin Comentario de Revision ----->
+	</p>
+	</ul>
+<br/>
 	
-	<!--------- Seccion Datos --------------------->
-	<div class="flex-item" style="width: 50%;">
-
-	<ul class='encabezado_SB'>
-	<h5><strong>Procedimiento de Recuperacion (PC)</strong></h5>
-	</ul>
-	<bn>Revise los datos de definicion propuestos para el Procedimiento de Contingencia. 
-		En caso de alguna observacion, registrela en <img src="/static/img/Comentario_1.png" width="15" height="15">. 
-	</bn>
-	<br/>
-	<br/>
-
-	<ul class="scr4">
-	<p><strong>2.0. Codigo ...: &emsp;</strong> {{proced.codigo}}</p>	
-	<p><strong>2.1. Nombre ..: &emsp;</strong> {{proced.nombre}}
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar Nombre del PC ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar el Nombre del  :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
-
-	<!--  (Se elimina el campo tipo)  <p><strong>2.2. Tipo ........: &emsp;</strong> {{proced.tipo}}-->
-			<!---------  Comentario de Revision 
-			<span class="comment-icon link"  data-message="Comentar el Tipo de PC ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar el Tipo de PC :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			 Fin Comentario de Revision ----->
-	<p><strong>2.2. Fecha de creacion........................: &emsp;</strong> {{proced.fecha_c}}</p>
-
-	<p><strong>2.3. Fecha de ultima modificacion......: </strong> {{proced.fecha_ult_mod}}</p>
-
-	</ul>
-
-	<br/>
-	<ul class='encabezado_SB'>
-	<h5><strong>Estrategia</strong></h5>
-	</ul>
-		<bn>Revise el Escenario de Riesgo asignado y la Estrategia propuesta para el Procedimiento de Contingencia. 
-		En caso de alguna observacion, registrela en <img src="/static/img/Comentario_1.png" width="15" height="15">. 
-	</bn>
-	<br/>
-	<br/>
-
-	<ul class="scr4">
-	<p><strong>3.1. Escenario(s) a cubrir................: &emsp;</strong> {{proced.escenarios}}
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar el (los) Escerarios a cubrir por el PC ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar Escenario(s) declarados :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
-	<p><strong>3.2. Estrategia del Procedimiento...: &emsp;</strong> {{proced.estrategia}}
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar la Estrategia sugerida para el PC ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar Estrategia sugerida :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
-	</ul>
 
 	</div><!--------- Fin Seccion Datos --------------------->
 
@@ -154,55 +147,124 @@
 	</div><!---------------------------------- Fin Bloque A ------------------------------------------>	
 	
 	<br/>
-	<bn>Revise los datos de Especificacion propuestos para el Procedimiento de Contingencia -<strong>{{proced.nombre}}</strong>- 
-		y en caso de alguna observacion o comentario registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
-		adjunto. 
-	</bn>
+	
 
 	{% block A3 %}
 	<br/><br/>
 	<ul class='encabezado_SB'>
-	<h5><strong>Especificacion de Roles</strong></h5> </ul>
+	<h5><strong>3. Estrategia de Continuidad </strong></h5>
+	</ul>
+
+	<!------------ Mensaje ---------------------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<p>
+		Esta sección detalla la estrategia especifica a aplicar para restaurar la 
+		continuidad operativa que implementara el Procedimiento de Contingencia.   
+	</p>
+	<p>
+		Debe corresponder a una especificacion de la Estrategia General definida para 
+		cada Escenario de Riesgo.    
+	</p>
+
+	</div>
+	<!------------ Fin Mensaje ---------------------------------------------->
+
+
 
 	<ul class="scr4">
-
-	<p><strong>4.1.1.  Responsable del Proceso ................: &emsp;</strong> {{proced.resp_proceso}}
+	<p>{{proced.estrategia}}
 			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar Asignacion de Responsable o su Respaldo  ..."
+			<span class="comment-icon link"  data-message="Comentar la Estrategia sugerida para el PC ..."
 			data-id="{{ proced.id }}"
 			data-sec="P" 
-			data-field="Revisar Responsable Asignado y Respaldo :"
+			data-field="Revisar Estrategia sugerida en 3. Estrategia de Seguridad :"
 			>
 			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 			</span>
 			<!---------  Fin Comentario de Revision ----->
-	<p><strong>4.1.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_resp}}</p>
+	</p>
+	</ul>
+<br/>	
+	<ul class='encabezado_SB'>
+	<h5><strong>4. Especificacion de Roles</strong></h5> </ul>
+<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+<p>
+	Esta sección especifica la asignacion de gestores a los siguientes roles del 
+	Procedimiento :  
+</p>
+<br/>
+<p>
+	<strong>Responsable</strong>: Es el responsable de nivel táctico superior 
+	inmediato  (Gerente, Subgerente, Jefe de Area) del Proceso critico asociado 
+	al Procedimiento. Es quien, durante el ciclo de aprobacion autoriza el 
+	Procedimiento.   
+</p>
+<p>
+	<strong>Ejecutor</strong>: Corresponde al responsable de nivel operativo
+	encargado de la operacion del Proceso y responsable de ejecutar el 
+	Procedimiento de Contingencia durante un incidente asi como de su mantencion (actualizacion).  
+</p>
+	<strong>Enlace Comite de Crisis</strong>: Es el integrante del Comite de Crisis
+	designado como enlace de comunicacion con esta instancia. Su rol es actuar como
+	facilitador del area o unidad responsable del Proceso frente al Comite.   
+</p>
+<br/>
+</p>
+	Los gestores asignados a los roles <strong>Responsable</strong> y <strong>Ejecutor</strong>
+	deben pertenecer a los grupos <strong>"Autorizadores"</strong> y/o <strong>"Ejecutores"</strong>.
+	El gestor asignado al rol <strong>"Enlace Comite de Crisis"</strong> debe pertencer al grupo <strong>"
+		Comite de Crisis"</strong>. El Sistema disponibiliza automaticamente estas definiciones
+		el el box de seleccion de cada rol.    
+</p>
+
+</p>
+	Opcionalmente a cada gestor asignado se le puede definir un <strong>Respaldo</strong> a quien acudir
+	en caso de ausencia o dificultad de contacto del titular.    
+</p>
+
+</div>
+<!------------ Fin Mensaje ---------------------------------------------->
+
+
+	<ul class="scr4">
+
+	<p><strong>4.1.  Responsable del Proceso ................: &emsp;</strong> {{proced.resp_proceso}}
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Asignacion de Responsable o su Respaldo  ..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Responsable Asignado y Respaldo en 4. Especificacion de Roles :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+	<p><strong>4.1.  Respaldo ...............................: &emsp;</strong> {{proced.bck_resp}}</p>
 	<br/>
-	<p><strong>4.2.1.  Gestor Ejecutor ........................: &emsp;</strong> {{proced.gestor_ejecutor}}
+	<p><strong>4.2.  Gestor Ejecutor ........................: &emsp;</strong> {{proced.gestor_ejecutor}}
 			<!---------  Comentario de Revision ----->
 			<span class="comment-icon link"  data-message="Comentar Asignacion de Ejecutor del PC o su Respaldo  ..."
 			data-id="{{ proced.id }}"
 			data-sec="P" 
-			data-field="Revisar Ejecutor PC y Respaldo :"
+			data-field="Revisar Ejecutor PC y Respaldo en  4. Especificacion de Roles :"
 			>
 			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 			</span>
 			<!---------  Fin Comentario de Revision ----->
-	<p><strong>4.2.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_ejecutor}}</p>
+	<p><strong>4.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_ejecutor}}</p>
 	<br/>
-	<p><strong>4.3.1.  Enlace Comite de Crisis ................: &emsp;</strong> {{proced.enlace_c_crisis}}
+	<p><strong>4.3.  Enlace Comite de Crisis ................: &emsp;</strong> {{proced.enlace_c_crisis}}
 			<!---------  Comentario de Revision ----->
 			<span class="comment-icon link"  data-message="Comentar Asignacion de Responsable o su Respaldo  ..."
 			data-id="{{ proced.id }}"
 			data-sec="P" 
-			data-field="Revisar Responsable Asignado y Respaldo :"
+			data-field="Revisar Responsable Asignado y Respaldo en 4. Especificacion de Roles :"
 			>
 			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 			</span>
 			<!---------  Fin Comentario de Revision ----->
-	<p><strong>4.3.2.  Respaldo ...............................: &emsp;</strong> {{proced.bck_enlace}}</p>
+	<p><strong>4.3.  Respaldo ...............................: &emsp;</strong> {{proced.bck_enlace}}</p>
 	<br/>
-	<p><strong>4.4.1.  Gestor Consultor .......................: &emsp;</strong> {{proced.gestor_consultor}}</p>
+	<p><strong>4.4.  Gestor Consultor .......................: &emsp;</strong> {{proced.gestor_consultor}}</p>
 
 	</ul>
 	{% endblock %}
@@ -210,20 +272,32 @@
 	
 	{% block B %}
 	<br/>
-	<ul class='encabezado_SB'>
-	<h5><strong>Servicios Requeridos</strong>
+	<!---------------------------- SERVICIOS  ------------------------------------------------>
 
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar Servicios Criticos requeridos por el PC ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar Servicios Criticos :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
-		
-	</h5></ul>
+	<ul class='encabezado_SB'>
+	<h5><strong>5. Servicios Requeridos</strong></h5></ul>
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<p>
+			Esta sección describe todos aquellos servicios o recursos críticos que debe disponer el Procedimiento durante 
+			la ocurrencia del incidente para su ejecución existosa.  
+		</p>
+		<p>
+			Estos servicio o recursos pueden ir desde herramientas de Sw. (Planillas pre-diseñadas, Bases de Datos stand alone, 
+			paginas web), listados impresos de estados de cuentas, hasta empresas de transporte de pasajeros, mensajeria (curiers)
+			 o instalaciones fisicas alternativas. Se debe considerar la eventualidad de que, durante un incidente, el 
+			 servicio/recurso podria no estar disponible dentro de los margenes de tiempo adecuados, por lo que es recomendable 
+			 definir mas de una alternativa. 
+		</p>
+		<p>
+			El uso y aplicacion de estos servicios/recursos deben quedar claramente descritos dentro de los pasos definidos en la 
+			seccion 7 (Procedimiento de Contingencia) y los datos de contacto para requerirlos en la seccion 6 (Indice de Contactos). 
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+
 	<ul class="scr4">
 		<table class="lta">
 		   <thead style="background: greenyellow; color:black">
@@ -232,6 +306,7 @@
 			<th scope="col">DESCRIPCION/OBJETIVO</th>
 			<th scope="col">CONTACTO</th>
 			<th scope="col">RESPALDO CONTACTO</th>
+			<th></th>
 						
 		   </tr>
 		   </thead>
@@ -240,11 +315,21 @@
 		   {% if servicios %}
 		    {%for ser in servicios.all  %}
 		    <tr>
-			<th scope="row"><bb>{{ser.nombre}}<bb></th>
-			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
-			<th scope="row"><bb>{{ser.contacto}}<bb></th>
-			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
-			
+			<th scope="row">{{ser.nombre}}</th>
+			<th scope="row">{{ser.objetivo}}</th>
+			<th scope="row">{{ser.contacto}}</th>
+			<th scope="row">{{ser.contacto_bck}}</th>
+			<th><!-- Comentario de Revision ---------->
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Servicio Critico: {{ser.nombre}} en 5. Servicios Requeridos :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+			</th>
 			
 		    </tr>
        		    {% if not forloop.last %}
@@ -263,19 +348,32 @@
 
 	{% block C %}
 	<br/>
+	<!---------------------------- CONTACTOS ------------------------------------------------>
 	<ul class='encabezado_SB'>
-	<h5><strong>Indice de Contactos</strong>
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar los Contactos declarados para el PC  ..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar Contactos declarados : "
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
+	<h5><strong>6. Indice de Contactos</strong>
 		
 	</h5></ul>
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<p>
+			En esta sección se registra según se considere relevante, aquellos datos de referencia de todos aquellas personas
+			que potencialmente deban ser ubicadas o contactadas durante la ocurrencia de un incidente.  
+		</p>
+		<p>
+			El Sistema asigna inicialmente por defecto los datos de referencia de los involucrados directos con la ejecucion de este Procedimiento,
+			(Responsable, Ejecutor, contacto con el Comite de Crisis) sin embargo existen varios factores y eventos durante la 
+			definicion de este Procedimiento que podrian alterar esta  definicion inicial por lo que se recomienda verificar antes 
+			de aprobar esta especificacion dentro de la aprobacion del Procedimiento. 
+		</p>
+		<p>
+			Dentro de esta definicion, se deben considerar los contactos con los Servicios Criticos identificados en la seccion 
+			anterior (seccion 5)
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+
 	<ul class="scr4">
 		<table class="lta">
 		   <thead>
@@ -284,6 +382,7 @@
 			<th scope="col">CORREO ELECTRONICO</th>
 			<th scope="col">TELEFONO OFICINA</th>
 			<th scope="col">TELEFONO CELULAR</th>
+			<th></th>
 			
 			
 		   </tr>
@@ -293,10 +392,21 @@
 		   {% if contactos %}
 		    {%for con in contactos.all  %}
 		    <tr>
-			<th scope="row"><bb>{{con.nombre}}<bb></th>
-			<th scope="row"><bb>{{con.correo}}<bb></th>
-			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
-			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
+			<th scope="row">{{con.nombre}}</th>
+			<th scope="row">{{con.correo}}</th>
+			<th scope="row">{{con.tel_lab}}</th>
+			<th scope="row">{{con.cel_lab}}</th>
+			<th><!-- Comentario de Revision ---------->
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar..."
+			data-id="{{ proced.id }}"
+			data-sec="P" 
+			data-field="Revisar Contacto: {{con.nombre}} en 6. Indice de Contactos :"
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+			</th>
 			
 			
 		    </tr>
@@ -316,8 +426,29 @@
 
 	{% block D %}
 	<br/>
+	<!---------------------------- PROCEDIMIENTO (PASOS) ------------------------------------------------>
+
 	<ul class='encabezado_SB'>
-	<h5><strong>Procedimiento de Contingencia (PC)</strong></h5></ul>
+	<h5><strong>7. Procedimiento de Contingencia (PC)</strong></h5></ul>
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<p>
+			Esta sección define los pasos que se deben seguir para poner en operaciones este <strong>Procedimiento de Contingencia
+			</strong> y su aplicacion, en el  contexto del <strong>Proceso critico</strong>  asociado   ({{proceso.path}}) y un determinado 
+			<strong>Escenario de Riesgo</strong> al que éste proceso esta expuesto  ({{proced.escenarios.titulo}})
+			 .  
+		</p>
+		<p>
+			Cada paso tiene asociado un tiempo de ejecucion expresado en minutos (T.E.), cuya suma agregada hasta la puesta en 
+			operaciones del Procedimiento no puede ser mayor al <strong>RTO</strong> definido para el 
+			Proceso asociado (en este caso: {{rto}}). 
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+
+
 
 	<ul class="scr4">
 		<table class="lta">
@@ -328,6 +459,7 @@
 			<th scope="col" style="width: 250px;">EJECUTOR RESP.</th>
 			<th scope="col" style="width: 10px; font-size: 9px;" 
 			class="link" data-message="Tiempo Esperado Ejec. ...">T.E.(min)</th>
+			<th></th>
 			
 			
 		   </tr>
@@ -337,44 +469,22 @@
 		   {% if pasos %}
 		    {%for pas in pasos.all  %}
 		    <tr>
-			<th scope="row"><bb>{{pas.nro_paso}}<bb></th>
-			<th scope="row"><bb>{{pas.descripcion}}<bb>
+			<th scope="row">{{pas.nro_paso}}</th>
+			<th scope="row">{{pas.descripcion}}</th>
+			<th scope="row">{{pas.ejecutor}}</th>
+			<th scope="row" style="text-align: center;">{{pas.tiempo_esp}}</th>
+			<th>
 					<!---------  Comentario de Revision ----->
-					<span class="comment-icon link"  data-message="Comentar descripcion del paso {{pas.nro_paso}} del PC ..."
+					<span class="comment-icon link"  data-message="Comentar..."
 					data-id="{{ proced.id }}"
 					data-sec="P" 
-					data-field="Revisar Descripcion del paso {{pas.nro_paso}} del PC : "
+					data-field="Revisar Paso : {{pas.nro_paso}} en 7. Procedimiento de Contingencia"
 					>
-					&emsp;<img src="/static/img/Comentario_1.png" width="10" height="10">
-					</span>
-					<!---------  Fin Comentario de Revision ----->
-				
-			</th>
-			<th scope="row"><bb>{{pas.ejecutor}}<bb>
-					<!---------  Comentario de Revision ----->
-					<span class="comment-icon link"  data-message="Comentar Ejecutor asignado al paso {{pas.nro_paso}} del PC ..."
-					data-id="{{ proced.id }}"
-					data-sec="P" 
-					data-field="Revisar Ejecutor asignado al paso {{pas.nro_paso}} del PC : "
-					>
-					&emsp;<img src="/static/img/Comentario_1.png" width="10" height="10">
+					&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 					</span>
 					<!---------  Fin Comentario de Revision ----->
 
 			</th>
-			<th scope="row" style="text-align: center;"><bb>{{pas.tiempo_esp}}<bb>
-					<!---------  Comentario de Revision ----->
-					<span class="comment-icon link"  data-message="Comentar descripcion del paso {{pas.nro_paso}} del PC ..."
-					data-id="{{ proced.id }}"
-					data-sec="P" 
-					data-field="Revisar Tiempo Esperado asignado al paso {{pas.nro_paso}} del PC: "
-					>
-					&emsp;<img src="/static/img/Comentario_1.png" width="10" height="10">
-					</span>
-					<!---------  Fin Comentario de Revision ----->
-
-			</th>
-			
 			
 		    </tr>
        		    {% if not forloop.last %}
@@ -388,6 +498,162 @@
 	
 	</ul>
 
+<!---------------------------- PRUEBAS  ------------------------------------------------>
+<br/>
+<ul class='encabezado_SB'>
+<h5><strong>8. Pruebas de Procedimiento de Contingencia (PC)</strong></h5></ul>
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<p>
+			Esta Sección permite definir uno o varios  <strong>modelos de prueba </strong>, que servirá como referencia cada vez 
+			que se evalúe este Procedimiento  dentro de los <strong>ejercicios periodicos de continuidad operativa (Pruebas de BCP/DRP)</strong>.
+			Aquí se establece la información general del plan, como su objetivo, alcance y criterios de éxito.
+		</p>
+		<p>
+			Junto con ello, se definen los <strong>casos de prueba</strong>, que representan las acciones o verificaciones
+			específicas que se realizarán al aplicar este plan de prueba.  
+			De esta forma, el modelo combina la planificación general con los escenarios detallados que deberán ejecutarse
+			y documentarse en cada ejercicio.
+		</p>
+		<p>
+			Cada vez que se realice un <strong>ejercicio de continuidad operativa (BCP/DRP)</strong> esta prueba será 
+			aplicada y se generará una <strong>ejecución</strong> donde se registrarán los
+			resultados, evidencias y observaciones obtenidas.  
+			Esto permite evaluar la efectividad del procedimiento y mejorar la capacidad de respuesta ante incidentes.
+		</p>
+
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+
+<ul class="BarraScroll" style="height: 350px;">	
+    <table class="lta" style="width: 100%; border-collapse: collapse;">
+	{% if lista_prbas %}
+		{% for prba in lista_prbas %}
+
+	<!-- Encabezado de columnas -->
+	<thead class="encabezado_N">
+		<tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
+		<th scope="col">CODIGO</th>
+		<th scope="col">OBJETIVO</th>
+		<th scope="col">ALCANCE</th>
+		<th scope="col">CRITERIOS EXITO</th>
+		<th scope="col">REVISOR</th>
+		<th scope="col">ESTADO</th>
+		<th scope="col"></th>
+		</tr>
+	</thead>
+	<tbody>
+
+            <!-- Fila del componente -->
+            <tr style="border-bottom: 1px solid #ccc;">
+              <td scope="row">{{ prba.test.codigo }}</td>
+              <td scope="row">{{ prba.test.objetivo }}</td>
+              <td scope="row">{{ prba.test.alcance }}</td>
+              <td scope="row">{{ prba.test.criterios_exito }}</td>
+              <td scope="row">{{ prba.test.responsable }}</td>
+			  <td scope="row">{{ prba.test.estado }}</td>
+              <td>
+					<!---------  Comentario de Revision ----->
+					<span class="comment-icon link"  data-message="Comentar..."
+					data-id="{{ proced.id }}" # Pk del DRP
+					data-sec="P"           
+					data-field="Revisar Prueba : {{prba.test.codigo}} en 8. Pruebas de Procedimiento..."
+					> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+					</span>
+					<!---------  Fin Comentario de Revision ----->
+              </td>
+            </tr>
+
+			
+            <!-- Subtabla de Casos -->
+            <tr>
+              <td colspan="6" style="padding: 10px 0 20px 40px;">
+            {% if prba.casos.exists %}
+            <p><strong>CASOS DE PRUEBA :</strong></p>
+                  <table style="width: 95%; background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;">
+                    <thead style="background-color: #e3e9f7; color: #002b5c; background: black;">
+                      <tr style="background: black;">
+                        <th>CODIGO</th>
+						<th>PRECONDICIONES</th>
+                        <th>DESCRIPCION</th>
+                        <th>RESULTADO ESPERADO</th>
+                        <th>PRIORIDAD</th>
+						<th></th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for caso in prba.casos %}
+                        <tr>
+                          <td><strong>{{ caso.codigo }}</strong></td>
+                          <td>{{ caso.precondiciones }}</td>
+                          <td>{{ caso.descripcion }}</td>
+                          <td>{{ caso.resultado_esperado}}</td>
+						  <td>{{ caso.prioridad}}</td>
+                          <td>
+							<!---------  Comentario de Revision ----->
+							<span class="comment-icon link"  data-message="Comentar..."
+							data-id="{{ proced.id }}" # Pk del DRP
+							data-sec="P"           
+							data-field="Revisar Caso : {{caso.codigo}} de la Prueba : {{prba.test.codigo}} en 8. Pruebas de Procedimiento..."
+							> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+							</span>
+							<!---------  Fin Comentario de Revision ----->
+
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <div class="" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+                    <span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+                    No se han definido Casos para esta Prueba (Imposibilidad de ejecutar prueba).
+							<!---------  Comentario de Revision ----->
+							<span class="comment-icon link"  data-message="Comentar..."
+							data-id="{{ proced.id }}" # Pk del DRP
+							data-sec="P"           
+							data-field="Revisar ausencia Casos en Prueba : {{prba.test.codigo}}"
+							> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+							</span>
+							<!---------  Fin Comentario de Revision ----->
+
+                  </div>
+                {% endif %}
+              </td>
+            </tr>
+
+          {% endfor %}
+        {% else %}
+          	<tr>
+			<div class="" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+				<span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+				No se han definido Pruebas para este Procedimiento.
+				<!---------  Comentario de Revision ----->
+				<span class="comment-icon link"  data-message="Comentar Especificacion del Parametro ..."
+				data-id="{{ proced.id }}" # Pk del DRP
+				data-sec="P"           
+				data-field="Revisar ausencia Pruebas para el Procedimiento : {{proced.Nombre}}"
+				> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+				</span>
+				<!---------  Fin Comentario de Revision ----->
+
+            </div>
+			</tr>
+        {% endif %}
+
+	</tbody>
+    </table>
+		<br/>
+		<br/>
+		
+	</ul>
+<!-- Fin Lista de Componentes NO Asignados  ----------->
+
+ 
+	<!---------------------------- CONCLUSION ------------------------------------------------>
 	{%block Conclusion%}
 		<br/>
 		<p><h5><strong>CONCLUSION</strong>

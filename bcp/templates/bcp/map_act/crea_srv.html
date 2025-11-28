@@ -1,0 +1,37 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para crear un Componente >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <bb><strong>FORMULARIO DE CREACION DE SERVICIO/RECURSO CRITICO</strong></bb>
+	</ul>
+	{% endblock %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    <p><strong>Tipo:</strong></p>
+    <bn>Elija de la Lista, el tipo de Servicio o Recurso  a registrar</bn> 
+    <p>{{ form.tipo}}</p>
+    <br/>
+    <p><strong>Nombre:</strong></p>
+    <bn>Indique el nombre del Servicio/Recurso.
+        (p.e. Swif, Dicom, Portal CMF, etc.)</bn></p>
+    <p>{{ form.nombre }}</p>
+    <br/>
+
+    <p><strong>Descripción: </strong></p>
+    <bn>Haga una breve descripcion del objetivo y/o proposito del Componente 
+        (p.e. Sistema Transferencias de Dinero)</bn></p>
+    <p>{{ form.descripcion }}</p>
+    <br/>
+
+    <input type="hidden" name="next" value="{{ next }}">
+    <input type="submit" value="Graba">
+</form>
+
+{% endblock %}

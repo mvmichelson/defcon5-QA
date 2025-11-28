@@ -8,6 +8,8 @@ from .models import  Nivel_Impacto, Indicadores_BIA, Tipo_Indicador, Parametros_
 from .models import  Drp, Drp_V, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC, Area, Cod_Area, SubProceso_V
 from .models import  LBC, Tipo_Site, Tipo_Disp, Componentes, Tipo_Componente, Impactos_Asig, Indicadores_Asig, Log_Revision
 from .models import  Procedimientos_V, Servicios_PC_V, Contactos_PC_V, Pasos_PC_V, Impactos_Asig_v, Indicadores_Asig_v
+from .models import  CheckList, Check_Pasos, PruebaContingencia, CasoPrueba, EjecucionPrueba, EjecucionCasoPrueba
+
 
 @admin.register(Proceso)
 class AdminProceso(admin.ModelAdmin):
@@ -106,7 +108,7 @@ class AdminParametros_G(admin.ModelAdmin):
 @admin.register(Incidentes)
 class AdminIncidentes(admin.ModelAdmin):
 
-    list_display = ('fecha', 'codigo', 'nombre_r', 'descripcion')
+    list_display = ('fecha', 'codigo', 'nombre_r', 'descripcion', 'estado')
 
 @admin.register(Procedimientos)
 class AdminProcedimientos(admin.ModelAdmin):
@@ -230,8 +232,26 @@ class AdminIndicadores_Asig(admin.ModelAdmin):
 
 @admin.register(Log_Revision)
 class AdminLog_Revision(admin.ModelAdmin):
-    list_display = ('fecha', 'proceso', 'gestor_aut', 'seccion', 'campo', 'comentario', 'resuelto')
+    list_display = ('fecha', 'hora', 'proceso', 'gestor_aut', 'seccion', 'campo', 'comentario', 'resuelto')
 
+@admin.register(CheckList)
+class AdminCheckList(admin.ModelAdmin):
+    list_display = ['nro_chk', 'fecha_creacion']
 
+#@admin.register(Pasos_Check)
+#class AdminPasos_Check(admin.ModelAdmin):
+#    list_display = ('comentario', 'terminado')
+
+@admin.register(Check_Pasos)
+class AdminCheck_Pasos(admin.ModelAdmin):
+    list_display = ('id','comentario', 'terminado', 'fecha_ter')
+
+@admin.register(PruebaContingencia)
+class AdminPruebaContingencia(admin.ModelAdmin):
+    list_display = ('codigo','objetivo', 'alcance', 'criterios_exito', 'fecha_programada', 'estado')
+
+@admin.register(CasoPrueba)
+class AdminCasoPrueba(admin.ModelAdmin):
+    list_display = ('codigo','descripcion', 'resultado_esperado', 'precondiciones', 'prioridad')
 
 

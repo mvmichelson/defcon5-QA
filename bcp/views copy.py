@@ -82,6 +82,8 @@
 # 6.14.3   Revision de Alcance  del DRP
 # 6.14.5 Revision Especificacion Tecnica Site de Contingencias 
 
+# 6.15  Detalle del DRP en Desarrollo/Actualizacion
+
 
 # 6. Maestros
 # Administracion de Riesgo/Impacto 
@@ -113,6 +115,7 @@ from .models import Proceso, SubProceso, LogAut, Recursos, Tipo_RR, Gestor, Esce
 from .models import Drp, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC 
 from .models import Componentes, Tipo_Componente, LBC, Tipo_Disp, Tipo_Site, Impactos_Asig, Contactos_PC_V, Pasos_PC_V
 from .models import Indicadores_Asig, Log_Revision, SubProceso_V, Control_Cambios, Procedimientos_V, Servicios_PC_V, Impactos_Asig_v, Indicadores_Asig_v
+from .models import CheckList, Check_Pasos, PruebaContingencia, CasoPrueba, EjecucionPrueba, EjecucionCasoPrueba
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User, PermissionsMixin
@@ -130,6 +133,9 @@ from django.contrib.auth.decorators import permission_required
 
 #from django.contrib.sites.models import Site
 from django.core.mail import send_mail
+
+from .utils import substring
+
 
 
 #Variables Globales
@@ -436,7 +442,6 @@ def crea_proceso(request, pk):
     #proc_hijo=Proceso.object.create()
 
     # Determinacion de Codigo a asignar.
-
     cod = proc_padre.proceso
     codigo = cod.strip()+"." 
     hijos_i = proc_padre.nro_hijos+1
@@ -591,53 +596,156 @@ def borra_proceso(request, pk):
 #**************************
 #2.4 Crea Activo o Recurso*
 #**************************
+def Lista_SRV(request, pk_proc, origen):
+
+    """Lista los Servicios o Recursos definidos en la Base de Servicios
     
+        pk_proc: 
+            Si <> 0 Trae el pk del Proceso 
+            0 si viene de la Lista de Asignacion de Activos
+        origen: 
+            0: si viene de la Lista 
+            1: si viene de Asignar el Servicios/Recurso
+            2: si viene de Corregir el Servicios/Recurso
+    """
+
+    print('----- Lista SRV----')
+
+    if pk_proc != 0:
+        proceso=get_object_or_404(Proceso, pk=pk_proc)
+    else:
+        srv=0
+
+    lista_srv=Recursos.objects.all() 
+
+    #url_comp=Componentes.get_absolute_url
+    print('url ant=', url_ant)
+
+    return render(request, 'bcp/map_act/lista_srv.html', context={'lista_srv':lista_srv,
+                                                              'proceso':proceso,
+                                                              'origen':origen
+                                                              })
+
 from .forms import CreaActivoForm
 #@permission_required('Catalogo.can_mark_returned')
-def Crea_Activo(request):
+#def Crea_Activo(request):
+def Crea_SRV(request):
     """
-    Crea en Activo o Recurso
+    Crea un Servicio / Recurso en la Base de Datos.
     """
+    print("=== Entra a Crea_SRV ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+    print('--- CREA CMP ----')
 
-    model=Recursos
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
 
-   
-    #Asigna el formulario creado en Forrms
-    form=CreaActivoForm()
-
-    
-    # If this is a POST request then process the Form data
     if request.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
         form = CreaActivoForm(request.POST)
 
-        # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
 
-            #Crea el Registro del Proceso
-            activo=Recursos()
+            # Genera el código solo al grabar
+            cod = get_object_or_404(Parametros_G, nombre='CORRELATIVO SERVICIOS/REC')
+            codigo = f"SRV-{cod.valor_2}"
+            cod.valor_2 += 1
+            cod.save()
 
-            activo.nombre = form.cleaned_data['nombre']
-            activo.descripcion = form.cleaned_data['descripcion']
-            activo.tipo = form.cleaned_data['clase']
-            
-            activo.save()
-               
-           
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('Lista-Recursos') )
+            # Crea en BD
+            srv = Recursos(
+                cod_rec=codigo,
+                nombre=form.cleaned_data['nombre'],
+                descripcion=form.cleaned_data['descripcion'],
+                tipo=form.cleaned_data['tipo'],
+            )
+            srv.save()
+
+            print('>>> Componente creado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
         else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
 
-    # If this is a GET (or any other method) create the default form.
     else:
+        form = CreaActivoForm()
 
-        
-        return render(request, 'bcp/map_act/crea_activo.html', {'form': form})
+    return render(request, 'bcp/map_act/crea_srv.html', {
+        'form': form,
+        'next': next_url
+    })
 
+
+from .forms import CreaActivoForm
+#@permission_required('Catalogo.can_mark_returned')
+#def Crea_Activo(request):
+def Mod_SRV(request, pk):
+    """
+    Modifica un Servicio / Recurso en la Base de Datos.
+    pk: pk del Servicio
+    """
+    print("=== Entra a Mod_SRV ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+    print('--- CREA CMP ----')
+
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+
+    srv=get_object_or_404(Recursos, pk=pk)
+    if request.method == 'POST':
+        form = CreaActivoForm(request.POST)
+
+        if form.is_valid():
+
+            # Modifica en BD
+            srv.nombre=form.cleaned_data['nombre']
+            srv.descripcion=form.cleaned_data['descripcion']
+            srv.tipo=form.cleaned_data['tipo']
+            srv.save()
+
+            print('>>> Componente modificado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
+        else:
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
+
+    else:
+        form = CreaActivoForm(initial={'nombre':srv.nombre,
+                                       'descripcion':srv.descripcion,
+                                       'tipo':srv.tipo
+                                       })
+
+    return render(request, 'bcp/map_act/mod_srv.html', {
+        'form': form,
+        'next': next_url
+    })
+
+def Borra_SRV(request, pk):
+    """
+    Borra el Servicio / Recurso de la Base """
+     
+    # Borra el Componente 
+    srv=get_object_or_404(Recursos, pk=pk)
+    srv.delete()
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
 
 
 #************************************************** Fin Creacion/Borrado de Entidades *****************************************************    
@@ -1107,7 +1215,7 @@ def Aut_Asig_BIA(request, pk):
                                                                     'proceso':proceso,
                                                                     'comentarios':comentarios_v})
     
-
+# OBSOLETO (BORRAR) 
 def aut_obs_proceso(request, item, pk, valor):
     """
     Registra observaciones por item a la
@@ -1200,7 +1308,7 @@ def borra_obs_proceso(request, pk):
 
 
 #*********************************************************
-#3.4 Autorizacion de Asignacion de Activos a Proceso*
+#3.4 Autorizacion de Asignacion de Activos a Proceso     *
 #*********************************************************
 from .forms import Autoriza_Act_x_Proc_Form
 import datetime
@@ -1394,24 +1502,35 @@ def Aut_Asig_Act(request, pk):
                                                                   'comentarios':comentarios_a})
 
 
-#***********************************************************
-#3.5 Autorizacion RACI de Asignacion de Escenario a Proceso*
-#***********************************************************
+#********************************************************
+#3.5 Autorizacion de Asignacion de Escenario a Proceso  *
+#********************************************************
 from .forms import Autoriza_Asig_Escenarios_Form
 import datetime
 
-def Aut_Asig_Esc(request, pk):
+#def Aut_Asig_Esc(request, pk):
+def auth_asig_SCER(request, pk): 
+    """
+    Autorizacion de los Servicios Criticos y Escenarios de Riesgo asignados
+    """
 
-    print('----Entra a View  Autorizacion Asignacion Escenario (Aut_Asig_Esc) ----')
+    print('----Entra a View  Autorizacion Asignacion Servicios y Escenario (Aut_Asig_Esc) ----')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[300] ))
-    
-    model = Proceso
+
+    # Datos de Servicios asociados al Proceso
     proc = get_object_or_404(Proceso, pk = pk)
+    subproceso=proc.subproceso
+    activos=proc.subproceso.recursos
+    activos_disp=Recursos.objects.all().order_by('tipo')
+
+    # Datos de Escenarios asociados al Proceso
+    #model = Proceso
     escenarios=proc.subproceso.escenarios
     esc_disp=Escenarios.objects.all()
     
+
     #Asigna al usuario de sesion como Autorizador
     print('asigna usuario sesion')
     usr =  request.user
@@ -1422,11 +1541,11 @@ def Aut_Asig_Esc(request, pk):
     form = Autoriza_Asig_Escenarios_Form()
     #aut=LogAut()
 
-    # Selecciona Comentarios sobre Escenarios
+    # Selecciona los comentarios sobre Servicios y Escenarios
     comentarios_proceso=Log_Revision.objects.filter(proceso=proc)
     comentarios_e=[]
     for com in comentarios_proceso:
-        if com.seccion == "E":
+        if com.seccion == "E" or com.seccion == "B" :
             comentarios_e.append(com)
 
     #Asigna al usuario de sesion como Autorizador
@@ -1435,8 +1554,7 @@ def Aut_Asig_Esc(request, pk):
     #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
     #print('usuario de sesion',aut.gestor_aprobador)
 
-
-    
+   
     #aut.cod_proceso=proc.proceso 
 
     if request.method=='POST':
@@ -1456,7 +1574,8 @@ def Aut_Asig_Esc(request, pk):
                 
                 if aprobado:
                     print('aprobo A->r')
-                    proc.subproceso.status='r'  # Por vigentear
+                    proc.subproceso.status='r'  # Cambia Status a "Por Vigentear"
+
                     # Crea Log de aprobacion de Autorizador
                     log=Log_Revision()
                     log.fecha = datetime.date.today()
@@ -1475,7 +1594,9 @@ def Aut_Asig_Esc(request, pk):
                     #accion='dar visto bueno o requerir cambios para el '
                     
                 else:
-                    proc.subproceso.status='x'
+                    # Cambia Status a "Revisar"
+                    proc.subproceso.status='x' 
+
                     # Crea Log de Rechazo de Autorizador
                     log=Log_Revision()
                     log.fecha = datetime.date.today()
@@ -1498,6 +1619,7 @@ def Aut_Asig_Esc(request, pk):
                     if aprobado:
                         print('aprobo r->R')
                         proc.subproceso.status='R'
+                        proc.subproceso.fase_status='E'
                         proc.subproceso.actualiza=False
 
                         # Crea Log de aprobacion de Autorizador
@@ -1507,7 +1629,7 @@ def Aut_Asig_Esc(request, pk):
                         log.gestor_aut=usr_aut
                         log.seccion="E"
                         log.campo="Autorizado por:"+aut
-                        log.comentario="Asignacion de Escenarios de Riesgo Aprobado por Gestor Responsable."
+                        log.comentario="Asignacion de Servicios Criticos y Escenarios de Riesgo Aprobado por Gestor Responsable."
                         log.resuelto=True
                         log.save()
 
@@ -1929,6 +2051,7 @@ def Aut_Asig_Esc(request, pk):
                     else:
                     # Si no esta aprobado
                         proc.subproceso.status='x'
+
                         # Crea Log de Rechazo de Autorizador
                         log=Log_Revision()
                         log.fecha = datetime.date.today()
@@ -1936,10 +2059,9 @@ def Aut_Asig_Esc(request, pk):
                         log.gestor_aut=usr_aut
                         log.seccion="E"
                         log.campo="Observada por:"+aut
-                        log.comentario="Asignacion de Escenarios de Riesgo observada por Gestor Responsable. Se envia a Gestor Consultor para Revision."
+                        log.comentario="Asignacion de Servicios Criticos y Escenarios de Riesgo observada por Gestor Responsable. Se envia a Gestor Consultor para Revision."
                         log.resuelto=True
                         log.save()
-
 
                 
             #Notificar a Gestor I por email
@@ -1967,7 +2089,8 @@ def Aut_Asig_Esc(request, pk):
             
              
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('Lista-Escenarios') )
+            #return HttpResponseRedirect(reverse('Lista-Escenarios') )
+            return HttpResponseRedirect(reverse('Lista-Recursos') )
 
         else:
             print(form.errors)
@@ -1981,11 +2104,16 @@ def Aut_Asig_Esc(request, pk):
                                         }
                              )
                                         
-        return render(request, 'bcp/map_esc/asig_esc_auth.html', {'form': form, 'proc':proc,
+        return render(request, 'bcp/map_esc/aut_asig_SCER.html', {'form': form, 'proc':proc,
                                                                   'escenarios':escenarios,
                                                                   'comentarios':comentarios_e,
-                                                                  'esc_disp':esc_disp})
+                                                                  'esc_disp':esc_disp,
+                                                                  'activos':activos,
+                                                                  'activos_disp':activos_disp})
 
+
+    activos=proc.subproceso.recursos
+    activos_disp=Recursos.objects.all().order_by('tipo')
 
 
 
@@ -2014,7 +2142,14 @@ def Revisa_Proceso(request, pk):
             comentarios_m.append(com)
 
     
-    
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+    print('usuario aprobador = usuario sesion =', usr_aut)
+
+
     if request.method=='POST':
 
         form = RevisaProcesoForm(request.POST)
@@ -2103,6 +2238,20 @@ def Revisa_Proceso(request, pk):
             proc_rev.subproceso.save()
             proc_rev.save()
             
+            # Crea log de revision
+
+                    
+            log=Log_Revision()
+            log.fecha = datetime.date.today()
+            log.proceso= proc_rev
+            log.gestor_aut=usr_aut
+            log.seccion="M"
+            log.campo="Modificada por:"+aut
+            log.comentario="Se implementaron las Observaciones. Se devuelve a Gestor Autorizador."
+            log.resuelto=True
+            log.save()
+
+
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('Lista-Procesos') )
 
@@ -2231,10 +2380,15 @@ def Revisa_AsigActxProceso(request, pk):
 
 
 def rev_asigna_servicio(request, pk):
-    """ ----------------------------------------------------------------
-    Revisa e implementa los Comentarios realizados por los Supervisores 
+    """ ----------------------------------------------------------------------------------
+    Presenta los Comentarios realizados por los Supervisores durante la Autorizacion
+    y permite la modificacion de las asignaciones de Servicios criticos para su correccion.
+
+    Esta version utiliza el script Java de asignacion basado en el traspaso 
+    entre un box de Disponibles a otro de Asignados (y viceversa).
+
     pk: Pk del Proceso.
-    --------------------------------------------------------------------
+    ---------------------------------------------------------------------------------------
     """
 
     # Verifica si el usuario en sesion esta habilitado
@@ -2267,7 +2421,8 @@ def rev_asigna_servicio(request, pk):
         subproceso.save()  # Guardar los cambios
 
         #return HttpResponseRedirect(reverse('Lista-Servicios', args=[pk]))
-        return HttpResponseRedirect(reverse('Lista-Recursos'))
+        #return HttpResponseRedirect(reverse('Lista-Recursos'))
+        return HttpResponseRedirect(reverse('Rev-Asigna-Escenarios', args=[pk]))
 
 
     # Cargar recursos disponibles y asignados
@@ -2398,7 +2553,12 @@ def Revisa_Asig_Esc(request, pk):
     
 def rev_asigna_escenarios(request, pk):
     """ ----------------------------------------------------------------
-    Revisa e implementa los Comentarios realizados por los Supervisores 
+    Presenta los Comentarios realizados por los Supervisores durante la 
+    Autorizacion y permite la reasignacion de Escenarios.
+
+    Esta version utiliza el script Java de asignacion basado en el traspaso 
+    entre un box de Disponibles a otro de Asignados (y viceversa).
+
     pk: Pk del Proceso.
     --------------------------------------------------------------------
     """
@@ -2443,7 +2603,7 @@ def rev_asigna_escenarios(request, pk):
         subproceso.save()
 
         #return HttpResponseRedirect(reverse('Asigna-Escenarios', args=[pk]))
-        return HttpResponseRedirect(reverse('Lista-Escenarios') )
+        return HttpResponseRedirect(reverse('Lista-Recursos') )
 
 
     escenarios_disponibles = Escenarios.objects.exclude(id__in=subproceso.escenarios.values_list('id', flat=True))
@@ -2670,21 +2830,21 @@ def Crea_Rev_OC(request):
     """ Crea un Comentario de Revision durante la Revision
     de cada Proceso o PC segun su etapa. """
 
-    print('---- Crea Observacion  ------')
-    print('metodo=', request.method)
+    print('>>>>> Crea Observacion  ------')
+    print('----- metodo=', request.method)
 
     #Asigna al usuario de sesion como Autorizador
-    print('asigna usuario sesion')
+    print('----- asigna usuario sesion')
     pk_usr_sesion= request.user.pk
     usuario_sesion=Gestor.objects.get(user_pk=pk_usr_sesion)
-    print('usuario de sesion',usuario_sesion)
+    print('----- usuario de sesion',usuario_sesion)
 
     fecha_hoy=datetime.date.today()
 
     if request.method == "POST":
         # rescata datos del json
         data = json.loads(request.body)
-        print('data=', data)
+        print('----- data=', data)
         obj_id = data.get("obj_id") # id del SubProceso asociado
         campo = data.get("field")
         seccion = data.get("seccion")
@@ -2705,8 +2865,10 @@ def Crea_Rev_OC(request):
                     return JsonResponse({"success": True})
             except Proceso.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+            
 
         elif seccion[0] == "D":
+
         # El Comentario proviene de la Fase de definicion del DRP
             try:
                     drp = Drp.objects.get(id=obj_id)
@@ -2721,6 +2883,27 @@ def Crea_Rev_OC(request):
                     return JsonResponse({"success": True})
             except Proceso.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+
+        elif seccion == "C":
+                
+                print('----- Entra a Seccion C Bitacora de Ejecucion')
+
+                try:
+                        procedimiento = Procedimientos_V.objects.get(id=obj_id)
+                        print('----- procedimiento =', procedimiento)
+                        log_revision = Log_Revision(fecha=fecha_hoy,
+                                                    procedimiento_v=procedimiento,
+                                                    gestor_aut=usuario_sesion,
+                                                    seccion=seccion, 
+                                                    campo=campo,
+                                                    comentario=comentario)
+                        log_revision.save()
+                        return JsonResponse({"success": True})
+                except Proceso.DoesNotExist:
+                    return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+
+#------------------------------------------------
+
 
         else:
         # El Comentario proviene de la Fase de Mapeo de Procesos
@@ -2847,6 +3030,8 @@ def Asigna_Escenarios(request, pk):
 #********************************
 from .forms import Act_x_Proc_Form
 
+# CODIGO OBSOLETO - BORRAR
+
 #@permission_required('Catalogo.can_mark_returned')
 def Asigna_Activos(request, pk):
 
@@ -2906,6 +3091,11 @@ from .models import Proceso, SubProceso, Recursos
 from .forms import ServicioForm
 
 def asigna_servicio(request, pk):
+    """
+    Asigna Servicios Criticos al Proceso
+    Utiliza Box de Seleccion con JavaScript
+    """
+
     proceso = get_object_or_404(Proceso, pk=pk)
     subproceso = proceso.subproceso
 
@@ -2918,29 +3108,41 @@ def asigna_servicio(request, pk):
         #else:
             #subproceso.recursos.clear()
 
-        subproceso.status = 'C'
-        subproceso.fase_status = 'B'
-        subproceso.save()
+        # Cambia Status
+        #subproceso.status = 'C'
+        #subproceso.fase_status = 'B'
+        #subproceso.save()
 
-        return redirect(reverse('Lista-Recursos'))
+        #return redirect(reverse('Lista-Recursos'))
+        return HttpResponseRedirect(reverse('Asigna-Escenarios', args=[pk])) 
+
 
     recursos_asignados = subproceso.recursos.all()
     recursos_disponibles = Recursos.objects.exclude(id__in=recursos_asignados.values_list('id', flat=True))
+
+    origen=1
 
     return render(request, 'bcp/map_act/asigna_activos_v2.html', {
         'proceso': proceso,
         'subproceso': subproceso,
         'recursos_disponibles': recursos_disponibles,
         'recursos_asignados': recursos_asignados,
+        'origen':origen,
     })
 
 from .forms import EscenarioForm
 
 def asigna_escenarios(request, pk):
+    """
+    Asigna los Escenarios de Riesgo asociados al Proceso 
+    Utiliza Box Script. 
+    """
     proceso = get_object_or_404(Proceso, pk=pk)
     subproceso = proceso.subproceso
 
     if request.method == "POST":
+
+        # Rescata los Datos seleccionados desde el Script
         escenarios_ids = request.POST.get("escenarios", "").split(",")
         escenarios_ids = [int(e) for e in escenarios_ids if e.isdigit()]
 
@@ -2949,13 +3151,14 @@ def asigna_escenarios(request, pk):
         #else:
             #subproceso.escenarios.clear()
 
+
         #Cambia el estado para inicio de las autorizaciones
         subproceso.status='C'
-        subproceso.fase_status='E'
+        subproceso.fase_status='B'
         subproceso.save()
 
         #return HttpResponseRedirect(reverse('Asigna-Escenarios', args=[pk]))
-        return HttpResponseRedirect(reverse('Lista-Escenarios') )
+        return HttpResponseRedirect(reverse('Lista-Recursos') )
 
 
     escenarios_disponibles = Escenarios.objects.exclude(id__in=subproceso.escenarios.values_list('id', flat=True))
@@ -3450,8 +3653,6 @@ def cr_prcd_b(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
-
-
         
     print('nombre proceso=', proceso.nombre)
     print('nombre procedimiento=', proced.nombre)
@@ -3476,7 +3677,6 @@ def cr_prcd_b(request, pk):
 
             #Crea el Registro del Proceso
 
-                        
             proced.nombre = form.cleaned_data['nombre']
             #proced.tipo = form.cleaned_data['tipo'] 
             
@@ -3593,7 +3793,7 @@ def cr_prcd_b(request, pk):
         # redirect to a new URL:
         
         #return HttpResponseRedirect(reverse('Lista-Proced'))
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+        return HttpResponseRedirect(reverse('crea-proced-C', args=[str(proced.id)]))
         #return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
         #                                                          'contactos':contactos, 'pasos':pasos})
         
@@ -3635,14 +3835,13 @@ def cr_prcd_b(request, pk):
 from .forms import CreaProc_P5_Form
 
 #@permission_required('Catalogo.can_mark_returned')
-def cr_prcd_P5(request, pk, fase):
+def cr_prcd_P5(request, pk):
     """
     Ingresa Servicios Criticos para el PC
     pk: pk del Procedimiento
     fase: 0: Creacion 1:Revision 
     """
     print('-- CREA Servicios en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     #fase_i=int(fase)
 
@@ -3684,10 +3883,15 @@ def cr_prcd_P5(request, pk, fase):
                      
             # Redirecciona a la lista 
             #return HttpResponseRedirect(url_ant)
-            if fase == 0:
-                return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-            else:
-                return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+            #if fase == 0:
+            #    return HttpResponseRedirect(reverse('rev-proced-c', args=[str(proced.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+            
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+
         
         else:
             print(form.errors)
@@ -3700,11 +3904,12 @@ def cr_prcd_P5(request, pk, fase):
         url_ant=request.META['HTTP_REFERER']
         print(url_ant)
         form = CreaProc_P5_Form()
-        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':proced.servicios_pc})    
+        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form,
+                                                                        'servicios':proced.servicios_pc})    
 
 
 #@permission_required('Catalogo.can_mark_returned')
-def br_prcd_P5(request, pk, fase):
+def br_prcd_P5(request, pk):
     """
     Borra Servicios Criticos para el PC
     pk: pk del Procedimiento
@@ -3712,7 +3917,6 @@ def br_prcd_P5(request, pk, fase):
 
     """
     print('-- BORRA Servicios en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     servicio_pc = get_object_or_404(Servicios_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = servicio_pc.pk_padre)
@@ -3726,16 +3930,21 @@ def br_prcd_P5(request, pk, fase):
     #Borra Servicio                
     servicio_pc.delete()
     
-    if fase == 0:
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-    else:
-        return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+    #if fase == 0:
+    #    return HttpResponseRedirect(reverse('rev-proced-c', args=[str(proced.id)]))
+    #else:
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
 
 
 from .forms import CreaProc_P6_Form
 
-#@permission_required('Catalogo.can_mark_returned')
-def cr_prcd_P6(request, pk, fase):
+
+
+def cr_prcd_P6(request, pk):
     """
     Ingresa Contactos Criticos para el PC
     pk: pk del Procedimiento
@@ -3744,7 +3953,6 @@ def cr_prcd_P6(request, pk, fase):
     """
 
     print('-- CREA Contacto en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     proced = get_object_or_404(Procedimientos, pk = pk)
     
@@ -3778,11 +3986,15 @@ def cr_prcd_P6(request, pk, fase):
             proced.save()
 
             
-            if fase == 0:
-                return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-            else:
-                return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+            #if fase == 0:
+            #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
             
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+
             #proced.servicios_pc.save()
         
         else:
@@ -3800,15 +4012,15 @@ def cr_prcd_P6(request, pk, fase):
         return render(request, 'bcp/proced_cont/prcd_crea_conP6.html', {'form': form, 'contactos':proced.contactos_pc})
     
 
+
 #@permission_required('Catalogo.can_mark_returned')
-def br_prcd_P6(request, pk, fase):
+def br_prcd_P6(request, pk):
     """
     Borra Servicios Criticos para el PC
     pk: pk del Procedimiento
     fase: 0: Creacion 1:Revision
     """
     print('-- BORRA  Contacto en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     contacto_pc = get_object_or_404(Contactos_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = contacto_pc.pk_padre)
@@ -3821,11 +4033,19 @@ def br_prcd_P6(request, pk, fase):
    
     contacto_pc.delete()
 
-    if fase == 0:
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-    else:
-        return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+   
+    #if fase == 0:
+    #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #else:
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
     
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
+
 from .forms import CreaProc_P7_Form
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -3891,7 +4111,7 @@ def cr_prcd_P7(request, pk, fase):
             
             # redirect to a new URL:
             if fase == 0:
-                return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+                return HttpResponseRedirect(reverse('crea-P7', args=[str(proced.id), 0]))
             else:
                 return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
 
@@ -3916,7 +4136,7 @@ def cr_prcd_P7(request, pk, fase):
     
 
 #@permission_required('Catalogo.can_mark_returned')
-def br_prcd_P7(request, pk, fase):
+def br_prcd_P7(request, pk):
     """
     Borra Pasos del PC
     """
@@ -3925,22 +4145,325 @@ def br_prcd_P7(request, pk, fase):
     paso_pc = get_object_or_404(Pasos_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = paso_pc.pk_padre)
 
-    #Actualiza cantidad de registros    
-    #num = proced.sec_pasos
-    #num = num-1
-    #proced.sec_pasos = num
-    #proced.save()
-   
+ 
     paso_pc.delete()
 
-    if fase == 0:
-        print('vuelva a lista-c')
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #if fase == 0:
+    #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #else:
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
+from .forms import CreaProc_P8_Form
+#@permission_required('Catalogo.can_mark_returned')
+def cr_prcd_P8(request, pk):
+    """
+    Ingresa Pruebas al Procedimiento Parte A (datos generales)
+    pk: pk del Procedimiento
+    fase: 0: Creacion 1:Revision
+    """
+    global url_ant
+
+    print('>>>>>> Crea Prueba ')
+    proced = get_object_or_404(Procedimientos, pk = pk)
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+
+   
+   
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = CreaProc_P8_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+
+            # Determina Codigo de la Prueba (Idem al nombre del Procedimiento + correlativo)
+
+            # Rescata correlativo de Incidente. 
+            n=proced.corr_prbas
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            if n<9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro='0' 
+                nro=nro+str(n)
+            elif n > 99 and n <= 999:
+                nro=str(n)
+            else:
+                proced.corr_prbas=1
+
+            proced.corr_prbas=n+1
+            proced.save()
+
+            #Crea el Registro del Proceso
+            test = PruebaContingencia()
+            print('----- nro=', nro)
+            test.codigo=nro
+            test.procedimiento=proced
+            test.objetivo = form.cleaned_data['objetivo']
+            test.alcance  = form.cleaned_data['alcance']
+            test.criterios_exito = form.cleaned_data['criterios_exito']
+            test.responsable = form.cleaned_data['responsable']
+
+            test.save()
+
+            
+            # redirect to a new URL:
+            #if fase == 0:
+                # Dirige a la lista de casos.
+            #    return HttpResponseRedirect(reverse('Lista-Casos-P8', args=[str(test.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+
+
+            
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            
+
+    # If this is a GET (or any other method) create the default form.
     else:
-        print('vuelve a rev-proced-v')
-        return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+        form = CreaProc_P8_Form(initial={'responsable':proced.gestor_ejecutor})
+
+        #url_ant=request.META['HTTP_REFERER']
+        return render(request, 'bcp/proced_cont/prcd_crea_prbaP8.html', {'form': form, 'pasos':proced.pasos,
+                                                                        'proc':proced,
+                                                                        'proceso':proceso
+                                                                        })
 
 
+
+def br_prcd_P8(request, pk):
+    """
+    Borra la Prueba de Procedimiento C.
+    """
+    print('>>>>> Borra Prueba')
+    print('pk=', pk)
+    test=get_object_or_404(PruebaContingencia, pk=pk)
+    test.delete()
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
+    #if fase == 0:
+    #    print('vuelva a lista-c')
+    #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #else:
+    #    print('vuelve a rev-proced-v')
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+    # Dirige la Salida 
+
+
+
+from .forms import CreaProc_P8_Form
+#@permission_required('Catalogo.can_mark_returned')
+def md_prcd_P8(request, pk):
+    """
+    Modifica la Prueba asociada al  Procedimiento -  Parte A (datos generales)
+    pk: pk de la prueba
+    """
+    global url_ant
+
+    print('>>>>>> Crea Prueba ')
+    test = get_object_or_404(PruebaContingencia, pk = pk)
+    proced=test.procedimiento
+
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+
+   
+   
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = CreaProc_P8_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+
+            #Modifica el Registro de la prueba
+            test.objetivo = form.cleaned_data['objetivo']
+            test.alcance  = form.cleaned_data['alcance']
+            test.criterios_exito = form.cleaned_data['criterios_exito']
+            test.responsable = form.cleaned_data['responsable']
+
+            test.save()
+
+            
+            # redirect to a new URL:
+            #if fase == 0:
+            #    # Dirige a la lista de casos.
+            #    return HttpResponseRedirect(reverse('Lista-Casos-P8', args=[str(test.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+        
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            
+    
+    # If this is a GET (or any other method) create the default form.
+    else:
+
+        form = CreaProc_P8_Form(initial={'objetivo':test.objetivo,
+                                         'alcance':test.alcance,
+                                         'criterios_exito':test.criterios_exito,
+                                         'responsable':test.responsable})
+
+        #url_ant=request.META['HTTP_REFERER']
+        return render(request, 'bcp/proced_cont/prcd_crea_prbaP8.html', {'form': form, 'pasos':proced.pasos,
+                                                                        'proc':proced,
+                                                                        'proceso':proceso
+                                                                        })
+
+
+def lta_casos_P8_B(request, pk):
+    """
+    Lista los Casos de Prueba durante ingreso/modificacion de Prueba
+    pk: pk de la Prueba
+    """
+    
+    prueba=get_object_or_404(PruebaContingencia, pk=pk)
+    proced=prueba.procedimiento
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+    lista_casos=CasoPrueba.objects.filter(prueba=prueba)
+
+
+    return render(request, 'bcp/proced_cont/lta_casos_P8.html', {'lista_casos':lista_casos,
+                                                                 'prueba':prueba,
+                                                                 'proceso':proceso,
+                                                                 'proced':proced
+                                                                        })
+
+from .forms import Caso_P8_Form
+#@permission_required('Catalogo.can_mark_returned')
+def cr_caso_P8(request, pk, origen):
+    """
+    Crea Caso de Prueba asociado a una Prueba de Procedimiento
+    pk: pk del la Prueba
+    origen: Origen de la llamada
+            0: Desde la Creacion del Procedimiento
+            1: Desde la Revision del Procedimiento
+    """
+    global url_ant
+
+    prueba = get_object_or_404(PruebaContingencia, pk = pk)
+    proced=prueba.procedimiento
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+    lista_casos=CasoPrueba.objects.filter(prueba=prueba)
+   
+   
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = Caso_P8_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+
+            # Determina Codigo de la Prueba (Idem al nombre del Procedimiento + correlativo)
+
+            # Rescata correlativo de Incidente. 
+            n=prueba.corr_casos
+            n=n+1
+            prueba.corr_casos=n
+            prueba.save()
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            if n <= 9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro='0' 
+                nro=nro+str(n)
+            elif n > 99 and n <= 999:
+                nro=str(n)
+            else:
+                prueba.corr_casos=1
+                nro='001'
+
+            #Crea el Registro del Proceso
+            caso = CasoPrueba()
+            
+            caso.codigo=nro
+            caso.prueba=prueba
+            caso.descripcion = form.cleaned_data['descripcion']
+            caso.resultado_esperado = form.cleaned_data['resultado_esperado']
+            caso.precondiciones = form.cleaned_data['precondiciones']
+            caso.prioridad = form.cleaned_data['prioridad']
+
+            caso.save()
+
+            
+            # redirect to a new URL:
+            #if fase == 0:
+            #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+                  
+            return HttpResponseRedirect(reverse('Crea-Caso-P8', args=[str(prueba.id), origen ]))
+            
+            # Dirige la Salida 
+            #next_url = request.GET.get('next', '/')
+            #return redirect(next_url)
+
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+
+        form = Caso_P8_Form()
+
+        #url_ant=request.META['HTTP_REFERER']
+        return render(request, 'bcp/proced_cont/crea_caso_P8.html', {'form': form,
+                                                                     'origen':origen,
+                                                                     'prueba':prueba,
+                                                                        'proc':proced,
+                                                                        'proceso':proceso,
+                                                                        'lista_casos':lista_casos
+                                                                        })
+
+def br_caso_P8(request, pk):
+    """
+    Borra un Caso de Prueba"""
+
+    caso = get_object_or_404(CasoPrueba, pk=pk)
+    prueba=caso.prueba
+    caso.delete()
+ 
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+    #return HttpResponseRedirect(reverse('Crea-Caso-P8', args=[str(prueba.id), fase]))
 
 #*************************************************************
 # 2.2.4  Borra el Procedimiento de Contingencia              *
@@ -3984,6 +4507,13 @@ def Env_Aut_Proced(request, pk):
     # redirect to a new URL:
     return HttpResponseRedirect(reverse('Lista-Proced', args=[1]) )
 
+
+
+
+
+
+
+
     
 from .forms import Autoriza_Proced_C_Form
 import datetime
@@ -3993,7 +4523,7 @@ def Aut_Proced_C(request, pk):
     Autorizacion del Procedimiento
     Crea o Actualiza el Procedimiento Vigente 
     """
-    print('-------- Entra Autoriza Procedimiento ---------')
+    print('>>>>> Entra Autoriza Procedimiento >>>>>>')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
@@ -4005,6 +4535,17 @@ def Aut_Proced_C(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
+
+    # Selecciona las Pruebas y Casos por cada una
+    tests = PruebaContingencia.objects.filter(procedimiento=proced)
+    lista_prbas=[]
+    for prba in tests:
+        casos=CasoPrueba.objects.filter(prueba=prba)
+
+        lista_prbas.append({'test':prba,
+                 'casos':casos})
+        
+    print('---- Lista de Pruebas :', lista_prbas)
 
     # Selecciona observaciones del PC ("P")
     comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
@@ -4576,78 +5117,10 @@ def Aut_Proced_C(request, pk):
                                                                     'proced':proced,
                                                                     'servicios':servicios,
                                                                     'contactos':contactos,
+                                                                    'lista_prbas':lista_prbas,
                                                                     'comentarios':comentarios_pc,
                                                                     'pasos':pasos})
 
-
-
-from .forms import Autoriza_obs_Proced_C_Form
-def aut_obs_proced(request, item, pk, valor):
-    """
-    Registra observaciones por item a la
-    Autorizacion de Procedimientos
-    """
-
-    global  url_ant_obs_aut
-
-    print('item pk :', pk)
-    print('item nro:', item)
-    print('item nro 2:', valor)
-    
-    proced = get_object_or_404(Procedimientos, pk = pk)
-        
-    #aut=LogAut()
-    #Asigna al usuario de sesion como Autorizador
-    #print('asigna usuario sesion')
-    pk_usr_sesion= request.user.pk
-    #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    #print('usuario de sesion',aut.gestor_aprobador)
-
-     
-    #aut.cod_proceso=proced.codigo
-    #aut.item=item
-    
-
-    if request.method=='POST':
-
-        form = Autoriza_obs_Proced_C_Form(request.POST)
-        
-        print('FORMATO VALID0?',form.is_valid())
-        
-        if form.is_valid():
-            
-            #Registra autorizacion en log
-                                
-            #aut.fecha=datetime.date.today()
-            #aut.p_status=proced.status+'P'
-            #aut.observacion=form.cleaned_data['comentario']
-            #aut.Aprobado=form.cleaned_data['aprobacion']
-            
-            #notifica=form.cleaned_data['notifica']
-            #aprobado=form.cleaned_data['aprobacion']
-            
-            #---
-                            
-           
-            #Graba en Base de Datos                
-            #aut.save()
-            #proced.log_auth.add(aut)      
-            proced.save()
-            
-                
-            # redirect to a new URL:
-            return HttpResponseRedirect(url_ant_obs_aut)
-        
-        else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
-        
-    else:
-    
-        url_ant_obs_aut =request.META['HTTP_REFERER']
-        form= Autoriza_obs_Proced_C_Form()
-        
-        return render(request, 'bcp/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
 
 
 
@@ -4672,6 +5145,9 @@ def Revisa_Proced_B(request, pk):
     contactos = proced.contactos_pc
     pasos = proced.pasos
 
+    # rescata las Pruebas asociadas al procedimiento
+    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+
     comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
 
     print('nombre proceso=', proceso.nombre)
@@ -4679,16 +5155,14 @@ def Revisa_Proced_B(request, pk):
 
     print('Revisa parte B')
     
-    #Asigna el formulario creado en Forrms
-    form=Revisa_Proced_B_Form()
-    
+
     
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
         #form = Revisa_Proced_B_Form(request.POST)
-        form = CreaProc_B_Form(request.POST)
+        #form = CreaProc_B_Form(request.POST)
         form = CreaProc_B_Form(request.POST  or None, param=escenarios.all()) # Envia Escenarios del Proceso
 
         
@@ -4699,10 +5173,9 @@ def Revisa_Proced_B(request, pk):
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
 
             #Actualiza el Registro del Proceso
-
                         
             proced.nombre = form.cleaned_data['nombre']
-            proced.tipo = form.cleaned_data['tipo']
+            #proced.tipo = form.cleaned_data['tipo']
             
             proced.escenarios = form.cleaned_data['escenarios']
 
@@ -4720,7 +5193,7 @@ def Revisa_Proced_B(request, pk):
             
             # Cambia Status a "a" (Por Autorizar)
             
-            proced.status = 'a'
+            #proced.status = 'a'
             
 
             #if notifica: (manda correo de notificacion)
@@ -4734,8 +5207,8 @@ def Revisa_Proced_B(request, pk):
             
             # redirect to a new URL:
         
-            return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
-
+            #return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
+            return HttpResponseRedirect(reverse('rev-proced-c', args=[str(proced.id)]))
             
         else:
             
@@ -4745,7 +5218,8 @@ def Revisa_Proced_B(request, pk):
     # If this is a GET (or any other method) create the default form.
     else:
         print('nombre procedimiento=', proced.nombre)
-        form = CreaProc_B_Form(initial= {
+        form = CreaProc_B_Form(request.POST  or None, param=escenarios.all(),
+                               initial= {
                                 'nombre':proced.nombre,
                                 'tipo':proced.tipo,
                                 'escenarios':proced.escenarios,
@@ -4767,18 +5241,21 @@ def Revisa_Proced_B(request, pk):
                                                                      'servicios':servicios,
                                                                      'contactos':contactos,
                                                                      'pasos':pasos,
-                                                                     'comentarios':comentarios_pc})
+                                                                     'pruebas':pruebas,
+                                                                     'comentarios':comentarios_pc
+                                                                     })
 
 
 
 
     
 #*******************************************************************************
-#1.10 Lista de Servicios, Contactos y Pasos en Creacion de Procedimiento(PC)   *
+#1.10 Lista de Servicios, Contactos, Pasos y Pruebas en Creacion de Procedimiento(PC)   *
 #*******************************************************************************
 def cr_prcd_list(request, pk):
     """
-    Generic class-based view listing books on loan to current user.
+    Lista de Servicios, Contactos, Pasos y Pruebas en Creacion de Procedimiento(PC)
+    pk: pk del procedimiento
     """
     print('lista Servicios/Contactos/Pasos')
     proced = get_object_or_404(Procedimientos, pk = pk)
@@ -4787,11 +5264,71 @@ def cr_prcd_list(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
-    
-    
-    return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
-                                                                  'contactos':contactos, 'pasos':pasos})
 
+    # rescata las Pruebas asociadas al procedimiento
+    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+
+    # rescata el valor del rto para controlar el tiempo total de los pasos del PC
+    indicadores=proceso.subproceso.indicador_subp
+    for ind in indicadores.all():
+        print('ind nombre', ind.indicador.nombre)
+        print('ind nivel ', ind.nivel.valor)
+
+        if ind.indicador.nombre=="RTO":
+            rto=ind.nivel.definicion
+    print('rto',rto)
+
+    
+    return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced,
+                                                                  'proceso':proceso,
+                                                                  'escenarios':escenarios,
+                                                                  'servicios':servicios,
+                                                                  'contactos':contactos,
+                                                                  'pasos':pasos,
+                                                                  'pruebas':pruebas,
+                                                                  'rto':rto})
+
+def rev_prcd_list(request, pk):
+    """
+    Lista de Servicios, Contactos, Pasos y Pruebas en Revision de la Creacion de 
+    Procedimiento(PC)
+    pk: pk del procedimiento
+    origen: 0: Desde Creacion del Procedimiento
+            1: Desde Revision del PC. 
+    """
+    print('lista Servicios/Contactos/Pasos')
+    proced = get_object_or_404(Procedimientos, pk = pk)
+    proceso = get_object_or_404(Proceso, pk=proced.pk_padre)
+    escenarios = proceso.subproceso.escenarios
+    servicios = proced.servicios_pc
+    contactos = proced.contactos_pc
+    pasos = proced.pasos
+
+    # rescata las Pruebas asociadas al procedimiento
+    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+
+    comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
+
+    # rescata el valor del rto para controlar el tiempo total de los pasos del PC
+    indicadores=proceso.subproceso.indicador_subp
+    for ind in indicadores.all():
+        print('ind nombre', ind.indicador.nombre)
+        print('ind nivel ', ind.nivel.valor)
+
+        if ind.indicador.nombre=="RTO":
+            rto=ind.nivel.definicion
+    print('rto',rto)
+
+    
+    return render(request, 'bcp/proced_cont/proced_rev_C.html', {'proced':proced,
+                                                                  'proceso':proceso,
+                                                                  'escenarios':escenarios,
+                                                                  'servicios':servicios,
+                                                                  'contactos':contactos,
+                                                                  'pasos':pasos,
+                                                                  'pruebas':pruebas,
+                                                                  'comentarios':comentarios_pc,
+                                                                  'rto':rto})
 
 #******************************************************
 # 1.10 Muestra datos (detalle) del Procedimiento(PC)  *
@@ -4910,7 +5447,7 @@ def Crea_Drp(request):
     
     # Determinacion de Codigo a asignar.
 
-    cod = get_object_or_404(Parametros_G, pk = 8)
+    cod = get_object_or_404(Parametros_G, nombre='CORRELATIVO_DRP')
     codigo = 'DRP-'+str(cod.valor_2) 
     cod.valor_2=cod.valor_2+1
     cod.save()
@@ -5252,7 +5789,7 @@ def Drp_Sec_2(request, pk):
 # 6.7 Definicion Alcance del   DRP   *
 #*************************************
 from .forms import Drp_Sec_3_Form
-
+# Codigo obsoleto (Borrar)
 def Drp_Sec_3(request, pk):
     """
     Define al Alcance del DRP. Este se define por la seleccion de Procesos con 
@@ -5303,12 +5840,11 @@ def Drp_Sec_3(request, pk):
 # 6.7.v2 Definicion del Alcance del DRP (version 2) *
 #****************************************************
 
-# views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Drp, SubProceso_V
 
 def asigna_procesos_drp(request, pk):
-    """ Asigna al DRP los Procesos que seran cubiertos. 
+    """ Asigna al DRP los Procesos que seran cubiertos por el DRP (Alcance) 
         Filtra por aquellos que tienen activa_drp=True en su Estrategia Asociada. 
         """
     
@@ -5394,69 +5930,81 @@ def Drp_Sec_4(request, pk):
 # 6.9 Especificacion Tecnica  del DRP *
 #**************************************
     
+def asigna_componentes(request, pk):
+    """
+    Asigna al DRP los Componentes de Hw y Sw. Base del Site. 
+    Utiliza Box Script.
+    pk: pk del DRP 
+    """
+    drp = get_object_or_404(Drp, pk=pk)
+    #subproceso = proceso.subproceso
+
+    if request.method == "POST":
+        print('>>> Entra a POST')
+        # Rescata los Datos seleccionados desde el Script
+        componentes_ids = request.POST.get("componentes", "").split(",")
+        componentes_ids = [int(e) for e in componentes_ids if e.isdigit()]
+
+        #for comp in componentes_ids:
+        #    print('>>>> componentes seleccionados a grabar:', comp.nombre)
+
+        if componentes_ids:
+            drp.componentes.set(Componentes.objects.filter(id__in=componentes_ids))
+        #else:
+            #subproceso.escenarios.clear()
+
+
+        return redirect(drp.get_absolute_url())
+
+
+    componentes_disponibles = Componentes.objects.exclude(id__in=drp.componentes.values_list('id', flat=True))
+    componentes_asignados = drp.componentes.all()
+    # url_retorno = request.build_absolute_uri()
+    origen=1 # Indica que le origen es la asignacion de Componentes (No la Revision x Comentarios)
+
+    return render(request, 'bcp/drp/asigna_cmp_v2.html', {
+        #'form': EscenarioForm(),
+        'drp': drp,
+        'componentes_disponibles': componentes_disponibles,
+        'componentes_asignados': componentes_asignados,
+        #'url_retorno':url_retorno
+        'origen':origen,
+        'drp':drp
+    })
+
 #**********************************
 # 6.9.1 Lista Componentes del DRP *
 #**********************************
 
-def Lista_CMP(request, pk):
-    """Lista los Componentes de Hw y Sw del DRPs"""
+def Lista_CMP(request, pk_drp, origen):
+    """Lista los Componentes de Hw y Sw del DRPs
+    
+        pk_drp: 
+            Si <> 0 Trae el pk del Drp 
+            0 si viene de la Configuracion
+        origen: 
+            0: si viene de la configuracion 
+            1: si viene de Asignar el Componente
+            2: si viene de Corregir las observaciones
+    """
 
     print('----- Lista CMP----')
-    drp=get_object_or_404(Drp, pk=pk)
-    lista_cmp=drp.componentes 
 
-    url_comp=Componentes.get_absolute_url
+    if pk_drp != 0:
+        drp=get_object_or_404(Drp, pk=pk_drp)
+    else:
+        drp=0
+
+    lista_cmp=Componentes.objects.all() 
+
+    #url_comp=Componentes.get_absolute_url
     print('url ant=', url_ant)
 
-    return render(request, 'bcp/drp/lista_cmp.html', context={'lista_cmp':lista_cmp, 'url_comp':url_comp, 'drp':drp})
+    return render(request, 'bcp/drp/lista_cmp.html', context={'lista_cmp':lista_cmp,
+                                                              'drp':drp,
+                                                              'origen':origen
+                                                              })
 
-
-#*************************************
-# 6.9.2 Asigna Componentes a un  DRP *
-#*************************************
-from .forms import Drp_Sec_5_Form
-
-def Asigna_CMP(request, pk, accion):
-    """Asigna/desasigna Componentes de la BD a un  DRP """
-
-    global Asigna_CMP_ult_url
-
-    print('----- Asigna/Desasigna Componentes ----')
-    drp=get_object_or_404(Drp, pk=pk)
-    
-    form=Drp_Sec_5_Form()
-
-    if request.method == 'POST':
-
-        form = Drp_Sec_5_Form(request.POST)
-
-        if form.is_valid():
-
-            # Crea en BD 
-            p1=form.cleaned_data['componentes']
-            drp.componentes.set(p1)
-            drp.status_t='C'
-            if accion =='revisa':
-                drp.status_5='a'
-            
-            drp.save()
-
-            #return HttpResponseRedirect(reverse('Lista-DRP')) reverse('Lista-CMP', args=[str(self.id)])
-            #return HttpResponseRedirect(reverse('Lista-CMP', args=[str(drp.id)]))
-            return HttpResponseRedirect(Asigna_CMP_ult_url)
-
-        else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
-
-    else:
-
-        Asigna_CMP_ult_url= request.META['HTTP_REFERER']
-        p2=drp.componentes.all()
-        form = Drp_Sec_5_Form(initial={'componentes':set(p2)})
-
-        return render(request, 'bcp/drp/asigna_cmp.html', {'drp':drp, 'form':form})
-      
 #************************************
 # 6.9.3.1 Crea Componentes en la BD *
 #************************************
@@ -5464,53 +6012,138 @@ from .forms import Crea_CMP_Form
 
 def Crea_CMP(request):
     """
-    Crea un Componente de Infraestructura
-    de Hw o Sw en la Base de Datos """
+    Crea un Componente de Infraestructura de Hw o Sw en la Base de Datos.
+    """
+    print("=== Entra a Crea_CMP ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+    print('--- CREA CMP ----')
 
-    print('----- Crea CMP----')
-
-    # Determinacion de Codigo a asignar.
-
-    cod = get_object_or_404(Parametros_G, pk = 10)
-    codigo = 'CMP-'+str(cod.valor_2) 
-    cod.valor_2=cod.valor_2+1
-    cod.save()
-
-        
-    form=Drp_Sec_5_Form()
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
 
     if request.method == 'POST':
-
         form = Crea_CMP_Form(request.POST)
 
         if form.is_valid():
 
-            # Crea en BD 
-            componentes=Componentes()
-            componentes.codigo=codigo
-            componentes.tipo_act=form.cleaned_data['tipo_act']
-            componentes.nombre=form.cleaned_data['nombre']
-            componentes.descripcion=form.cleaned_data['descripcion']
-            componentes.identificacion=form.cleaned_data['identificacion']
-            componentes.fabricante=form.cleaned_data['fabricante']
-            componentes.save()
-           
+            # Genera el código solo al grabar
+            cod = get_object_or_404(Parametros_G, nombre='CORRELATIVO COMPONENTES')
+            codigo = f"CMP-{cod.valor_2}"
+            cod.valor_2 += 1
+            cod.save()
 
-            return HttpResponseRedirect(reverse('Lista-DRP'))
+            # Crea en BD
+            cmp = Componentes(
+                codigo=codigo,
+                tipo_act=form.cleaned_data['tipo_act'],
+                nombre=form.cleaned_data['nombre'],
+                descripcion=form.cleaned_data['descripcion'],
+                identificacion=form.cleaned_data['identificacion'],
+                fabricante=form.cleaned_data['fabricante'],
+                codigo_inv=form.cleaned_data['codigo_inv']
+
+            )
+            cmp.save()
+
+            print('>>> Componente creado, redirigiendo a:', next_url)
+            return redirect(next_url)
 
         else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
 
     else:
-
-        
         form = Crea_CMP_Form()
-        return render(request, 'bcp/drp/crea_cmp.html', {'form':form})    
+
+    return render(request, 'bcp/drp/crea_cmp.html', {
+        'form': form,
+        'next': next_url
+    })
+
+#************************************
+# 6.9.3.1 Crea Componentes en la BD *
+#************************************
+from .forms import Crea_CMP_Form
+
+def Modifica_CMP(request, pk):
+    """
+    Modifica Componente de Infraestructura de Hw o Sw en la Base de Datos.
+    pk: pk del Componente
+    """
+    print("=== Entra a Modifica_CMP ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+
+    comp=get_object_or_404(Componentes, pk=pk)
+
+    if request.method == 'POST':
+        form = Crea_CMP_Form(request.POST)
+
+        if form.is_valid():
+
+            # Modifica en BD
+            comp.tipo_act=form.cleaned_data['tipo_act']
+            comp.nombre=form.cleaned_data['nombre']
+            comp.descripcion=form.cleaned_data['descripcion']
+            comp.identificacion=form.cleaned_data['identificacion']
+            comp.fabricante=form.cleaned_data['fabricante']
+            comp.codigo_inv=form.cleaned_data['codigo_inv']
+
+            comp.save()
+
+            print('>>> Componente creado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
+        else:
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
+
+    else:
+        form = Crea_CMP_Form(initial={'tipo_act':comp.tipo_act,
+                                      'nombre':comp.nombre,
+                                      'descripcion':comp.descripcion,
+                                      'identificacion':comp.identificacion,
+                                      'fabricante':comp.fabricante,
+                                      'codigo_inv':comp.codigo_inv})
+
+    return render(request, 'bcp/drp/crea_cmp.html', {
+        'form': form,
+        'next': next_url
+    })
+
 
 #*************************************
 # 6.9.3.2 Borra Componentes de la BD *
 #*************************************
+
+def Borra_CMP(request, cmp_pk):
+     
+    # Borra el Componente 
+    comp=get_object_or_404(Componentes, pk=cmp_pk)
+    comp.delete()
+
+    # Borra la LBC (incluir)
+ 
+    # Dirige la Salida 
+    #return HttpResponseRedirect(url_retorno)
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
 
 
 
@@ -5519,8 +6152,10 @@ def Crea_CMP(request):
 #****************************
 
 #def Lista_LBC(request, pk, ulr_comp):
-def Lista_LBC(request, pk, pk_drp):
-    """Lista la Linea Base de Configuracion de un Componente"""
+def Lista_LBC(request, url_retorno):
+    """Lista la Linea Base de Configuracion de un Componente
+    pk      : Pk del Componente
+    pk_drp  : pk del DRP """
 
     print('----- Lista LBC----')
     comp=get_object_or_404(Componentes, pk=pk)
@@ -5530,7 +6165,10 @@ def Lista_LBC(request, pk, pk_drp):
     print('Lista_lbc=', lista_lbc)
 
 
-    return render(request, 'bcp/drp/lista_lbc.html', context={'comp':comp, 'lista_lbc':lista_lbc, 'drp':drp})
+    return render(request, 'bcp/drp/lista_lbc.html', context={'comp':comp,
+                                                              'lista_lbc':lista_lbc,
+                                                              'drp':drp,
+                                                              'url_retorno':url_retorno})
 
 
 #***************************
@@ -5539,29 +6177,33 @@ def Lista_LBC(request, pk, pk_drp):
 from .forms import Crea_LBC_Form
 
 def Crea_LBC(request, pk):
-    """Crea una Linea Base de Configuracion para un
-    Componente de Infraestructura de Hw o Sw para el
-    DRP"""
+    """Crea una Parametro de Linea Base de Configuracion para un
+    Componente de Infraestructura de Hw o Sw.
+    pk        :pk del Componente
+    """
+    print("=== Entra a Crea PARAMETRO de LBC ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+    print('--- CREA CMP ----')
 
-    print('----- Crea LBC----')
-
-    global Crea_LBC_url_ant
-
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+      
     cmp = get_object_or_404(Componentes, pk=pk)
-    
-    # Determinacion de Codigo a asignar.
-    cod = get_object_or_404(Parametros_G, pk = 11)
-    codigo = cmp.codigo+'-'+str(cod.valor_2) 
-    cod.valor_2=cod.valor_2+1
-    cod.save()
-        
-    form=Crea_LBC_Form()
-
+     
     if request.method == 'POST':
 
         form = Crea_LBC_Form(request.POST)
 
         if form.is_valid():
+
+            # Determinacion de Codigo a asignar.
+            cod = get_object_or_404(Parametros_G, nombre = 'CORRELATIVO LBC')
+            codigo = cmp.codigo+'-'+str(cod.valor_2) 
+            cod.valor_2=cod.valor_2+1
+            cod.save()
 
             # Crea en BD 
             #cmp.lbc=LBC()
@@ -5576,14 +6218,17 @@ def Crea_LBC(request, pk):
 
             print('p=',p)
 
+            # Actualiza el Componente
             cmp.lbc.add(p)
-
             cmp.save()
            
-
-            return HttpResponseRedirect(Crea_LBC_url_ant)
+            # Retorna a la Lista de Componentes
+            #return HttpResponseRedirect(Crea_LBC_url_ant)
             #return HttpResponseRedirect(reverse(cmp.get_absolute_url))
-            #return HttpResponseRedirect(reverse('Lista-DRP'))
+            #return HttpResponseRedirect(reverse('Lista-CMP', args=[pk, 1]))
+            print('>>> Paramero creado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
 
         else:
             print(form.errors)
@@ -5597,18 +6242,75 @@ def Crea_LBC(request, pk):
         return render(request, 'bcp/drp/crea_lbc.html', {'form':form, 'cmp':cmp})  
 
 
+def Modifica_LBC(request, pk, pk_cmp):
+    """
+    Modifica un Parametro de LBC del Componente de Infraestructura de Hw o Sw en la Base de Datos.
+    pk          : pk del Parametro del LBC
+    pk_cmp      : pk del Componente asociado.
+    """
+    print("=== Entra a Modifica_LBC ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+
+    lbc=get_object_or_404(LBC, pk=pk)
+    cmp=get_object_or_404(Componentes, pk=pk_cmp)
+
+    if request.method == 'POST':
+        form = Crea_LBC_Form(request.POST)
+
+        if form.is_valid():
+
+            # Modifica en BD
+            lbc.nombre=form.cleaned_data['nombre']
+            lbc.descripcion=form.cleaned_data['descripcion']
+            lbc.metodo_acceso=form.cleaned_data['metodo_acceso']
+            lbc.valor=form.cleaned_data['valor']
+
+            lbc.save()
+
+            print('>>> Parametro de LBC modificado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
+        else:
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
+
+    else:
+        form = Crea_LBC_Form(initial={'nombre':lbc.nombre,
+                                      'descripcion':lbc.descripcion,
+                                      'metodo_acceso':lbc.metodo_acceso,
+                                      'valor':lbc.valor})
+
+    return render(request, 'bcp/drp/crea_lbc.html', {'form': form, 'cmp':cmp, 'next': next_url })
+
 #***************************
 # 6.9.3.5 Borra la LBC     *
 #***************************
 def Borra_LBC(request, pk):
     """ 
-    Borra un registro de Linea Base de Configuracion asociado a un Componente"""
+    Borra un registro de Linea Base de Configuracion asociado a un Componente
+    
+    pk: Pk del Parametro de Configuracion """
 
     url_ant=request.META['HTTP_REFERER']
     lbc=get_object_or_404(LBC, pk=pk)
     lbc.delete()
 
-    return HttpResponseRedirect(url_ant)
+    # Dirige la Salida 
+    #return HttpResponseRedirect(url_retorno)
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+    #return HttpResponseRedirect(url_ant)
 
 
 #*******************************
@@ -6036,7 +6738,9 @@ from .forms import CreaProc_P7_Form
 # 6.13  Autorizaciones  del DRP                          *
 #*********************************************************
 
+from django.views.decorators.cache import never_cache
 
+@never_cache
 def Env_Aut_DRP(request, pk, sec):
     """
     Envia la Seccion 'sec' del DRP  a Autorizacion 
@@ -6081,13 +6785,26 @@ import datetime
 # *******  Autorizaciones del DRP ****************
 # ************************************************
 
-
+# inhibe el boton de vuelta atras desde el indice 
+from django.views.decorators.cache import never_cache, cache_control
+@never_cache
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def Aut_Drp(request, pk, sec):
     """
     Autorizacion/Observacion  del Jefe de Operacion a la seccion (sec) del DRP 
     """
     print('------- Autoriza Seccion: ', sec )
     print('Pk=', pk )
+
+    # Evita reingreso al formulario desde sesión
+    #if request.session.get('form_enviado'):
+    #    print('---> El formulario YA fue enviado' )
+    #    del request.session['form_enviado']
+    #    #return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
+    #    return HttpResponseRedirect(reverse('error-sesion-mgm', args=[4000] ))
+    #else:
+    #    print('---> El Formulario NO ha sido enviado')
+
 
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
@@ -6101,6 +6818,7 @@ def Aut_Drp(request, pk, sec):
     if sec == 3:
         procesos_asig = drp.procesos_drp
         procesos_disp = SubProceso.objects.all()
+
         for p in procesos_asig.all():
             print(p.path)
 
@@ -6142,7 +6860,7 @@ def Aut_Drp(request, pk, sec):
 
                             
             if aprobado:
-                # Aprobado
+                # Si es Aprobado cambia a status "r"
 
                 if sec == 1:
                     drp.status_1='r'
@@ -6203,48 +6921,40 @@ def Aut_Drp(request, pk, sec):
                 #accion='dar visto bueno o requerir cambios para el '
                     
             else:
-                #Rechazado
+                #Si es Rechazado cambia a status "x"
                 #=========
 
 
                 if sec == 1:
                     drp.status_1='x'
-                    comentario="Especificacion de Objetivo DRP  observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D1"
 
                 if sec == 2:
                     drp.status_2='x'
-                    comentario="Asignacion de Roles observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D2"
 
                 if sec == 3:
                     drp.status_3='x'
-                    comentario="Especificacion de Alcance observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D3"
                     
                 if sec == 4:
                     drp.status_4='x'
-                    comentario="Estrategia de Recuperacion observada por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D4"
                     
                 if sec == 5:
                     drp.status_5='x'
-                    comentario="Especificacion Tecnica observada por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D5"
                     
                 if sec == 6:
                     drp.status_6='x'
-                    comentario="Especificacion de Servicios Criticos observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D6"
                     
                 if sec == 7:
                     drp.status_7='x'
-                    comentario="Especificacion de Procedimiento observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D7"
                     
                 if sec == 8:
                     drp.status_A='x'
-                    comentario="Especificacion de Contactos observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D7"
 
                 # Crea Log de aprobacion de Autorizador
@@ -6254,7 +6964,7 @@ def Aut_Drp(request, pk, sec):
                 log.gestor_aut=usr_aut
                 log.seccion=seccion
                 log.campo="Observado por:"+aut
-                log.comentario=comentario
+                log.comentario="Favor considerar observaciones adjuntas (abajo)"
                 log.resuelto=True
                    
                 #email = proc_rev.subproceso.gestor_C.user_gestor.email
@@ -6264,7 +6974,10 @@ def Aut_Drp(request, pk, sec):
             #Graba en Base de Datos
             log.save()                
             drp.save()
-            
+
+            # Marca la sesión para prevenir reingreso
+            #request.session['form_enviado'] = True
+
                 
             # Vuelve al Indice del DRP
             return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
@@ -6283,7 +6996,7 @@ def Aut_Drp(request, pk, sec):
 
         if sec == 1:    # 2. Objetivo 
 
-            # Selecciona Comentarios sobre Escenarios
+            # Selecciona Comentarios sobre Objetivo
             comentarios_drp=Log_Revision.objects.filter(drp=drp)
             comentarios=[]
             for com in comentarios_drp:
@@ -6291,14 +7004,13 @@ def Aut_Drp(request, pk, sec):
                     comentarios.append(com)
 
 
-            return render(request, 'bcp/drp/drp_s1_auth.html', {'form':
-                                                                form,
+            return render(request, 'bcp/drp/drp_s1_auth.html', {'form': form,
                                                                 'drp':drp,
                                                                 'comentarios':comentarios})
         
         if sec == 2:    # 1. Organizacion
 
-            # Selecciona Comentarios sobre Escenarios
+            # Selecciona Comentarios sobre Organizacion
             comentarios_drp=Log_Revision.objects.filter(drp=drp)
             comentarios=[]
             for com in comentarios_drp:
@@ -6309,17 +7021,59 @@ def Aut_Drp(request, pk, sec):
                                                                 'drp':drp,
                                                                 'comentarios':comentarios})
         
-        if sec == 3:    # 3. Alcance                           
-            return render(request, 'bcp/drp/drp_s3_auth.html',
-                        {'form': form, 'drp':drp, 'procesos_disp':procesos_disp, 'procesos_asig':procesos_asig})
+        if sec == 3:    # 3. Alcance 
+
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D3":
+                    comentarios.append(com)
+
+            # Determina los Procesos Asignados y Disponibles
+            procesos_disp = SubProceso_V.objects.filter(
+            escenarios__estrategias__activa_drp=True
+            ).exclude(id__in=drp.procesos_drp.all()).distinct()
+
+            procesos_asig = drp.procesos_drp.all()
+
+
+            return render(request, 'bcp/drp/drp_s3_auth.html', {'form': form,
+                                                                'drp':drp,
+                                                                'procesos_disp':procesos_disp,
+                                                                'procesos_asig':procesos_asig,
+                                                                'comentarios':comentarios})
         
-        if sec == 4:    # 4. Estrategia de Recuperacion                         
-            return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form, 'drp':drp})
+        if sec == 4:    # 4. Estrategia de Recuperacion 
+
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D4":
+                    comentarios.append(com)
+
+
+            return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form,'drp':drp,
+                                                                'comentarios':comentarios})
         
-        if sec == 5:    # 5. Especificacion Tecnica del Site de Contingencias                           
+        if sec == 5:    # 5. Especificacion Tecnica del Site de Contingencias 
+
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D5":
+                    comentarios.append(com)
+
+            # Determina los Componentes Disponibles y Asignados
+            componentes_disp = Componentes.objects.all( ).exclude(id__in=drp.componentes.all()).distinct()
+            componentes_asig = drp.componentes.all()
+
             return render(request, 'bcp/drp/drp_s5_auth.html',  {'form': form, 'drp':drp,
-                                                                 'compo_asig':compo_asig,
-                                                                 'compo_disp':compo_disp})
+                                                                 'componentes_asig':componentes_asig,
+                                                                 'componentes_disp':componentes_disp,
+                                                                 'comentarios':comentarios})
         
         if sec == 6:   # 6. Servicios Criticos                         
             return render(request, 'bcp/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
@@ -6339,12 +7093,25 @@ def Aut_Drp(request, pk, sec):
 
 # -------------------------------------------------------------------------
 
+from django.views.decorators.cache import never_cache
+
+@never_cache
 def Aut_Drp_V(request, pk, sec):
     """
     Autorizacion/Observacion  del Responsable DRP a la seccion (sec) del DRP 
     """
     print('------- Autoriza Seccion: ', sec )
     print('Pk=', pk )
+
+    # Evita reingreso al formulario desde sesión
+    if request.session.get('form_enviado'):
+        print('---> El formulario YA fue enviado' )
+        del request.session['form_enviado']
+        #return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[4000] ))
+    else:
+        print('---> El Formulario NO ha sido enviado')
+
 
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
@@ -6397,7 +7164,10 @@ def Aut_Drp_V(request, pk, sec):
             aprobado=form.cleaned_data['aprobacion']
             # notifica=form.cleaned_data['notifica']
 
-                            
+            # Marca la sesión para prevenir reingreso
+            request.session['form_enviado'] = True
+
+
             if aprobado:
                 # Aprobado
 
@@ -6466,38 +7236,36 @@ def Aut_Drp_V(request, pk, sec):
 
                 if sec == 1:
                     drp.status_1='x'
-                    comentario="Definicion de Objetivo observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D1"
 
                 if sec == 2:
                     drp.status_2='x'
-                    comentario="Asignacion de Roles observado por Jefe de Operaciones del DRP. Devuelto a Gestor de Continuidad para su Revision"
                     seccion="D2"
 
                 if sec == 3:
                     drp.status_3='x'
-                    s='Seccio 3. Alcance'
-                    print('status=',drp.status_3)
+                    seccion="D3"
+
                 if sec == 4:
                     drp.status_4='x'
-                    s='Seccio 4. Estrategia'
-                    print('status=',drp.status_4)
+                    seccion="D4"
+
                 if sec == 5:
                     drp.status_5='x'
-                    s='Seccio 5. Esp.Tecnica'
-                    print('status=',drp.status_5)
+                    seccion="D5"
+
                 if sec == 6:
                     drp.status_6='x'
-                    s='Seccio 6. Serv.Criticos'
-                    print('status=',drp.status_6)
+                    seccion="D6"
+
                 if sec == 7:
                     drp.status_7='x'
-                    s='Seccio 7. Procedimiento'
-                    print('status=',drp.status_7)
+                    seccion="D7"
+
                 if sec == 8:
                     drp.status_A='x'
-                    s='Anexo A. Contactos'
-                    print('status=',drp.status_A)
+                    seccion="DA"
+
 
                 # Crea Log de aprobacion de Autorizador
                 log=Log_Revision()
@@ -6506,7 +7274,7 @@ def Aut_Drp_V(request, pk, sec):
                 log.gestor_aut=usr_aut
                 log.seccion=seccion
                 log.campo="Observado por:"+aut
-                log.comentario=comentario
+                log.comentario="Observado por Gestor Responsable del DRP"
                 log.resuelto=True
                    
                 #email = proc_rev.subproceso.gestor_C.user_gestor.email
@@ -6548,7 +7316,7 @@ def Aut_Drp_V(request, pk, sec):
         
         if sec == 2:    # 1. Organizacion
 
-            # Selecciona Comentarios sobre Escenarios
+            # Selecciona Comentarios sobre Organizacion
             comentarios_drp=Log_Revision.objects.filter(drp=drp)
             comentarios=[]
             for com in comentarios_drp:
@@ -6559,18 +7327,57 @@ def Aut_Drp_V(request, pk, sec):
                                                                 'drp':drp,
                                                                 'comentarios':comentarios})
         
-        if sec == 3:    # 3. Alcance                           
-            return render(request, 'bcp/drp/drp_s3_auth.html',
+        if sec == 3:    # 3. Alcance 
+
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D3":
+                    comentarios.append(com)
+
+            # Determina los Procesos Asignados y Disponibles
+            procesos_disp = SubProceso_V.objects.filter(
+            escenarios__estrategias__activa_drp=True
+            ).exclude(id__in=drp.procesos_drp.all()).distinct()
+
+            procesos_asig = drp.procesos_drp.all()
                           
-                        {'form': form, 'drp':drp, 'procesos_disp':procesos_disp, 'procesos_asig':procesos_asig})
+            return render(request, 'bcp/drp/drp_s3_auth.html', {'form': form,
+                                                                'drp':drp,
+                                                                'procesos_disp':procesos_disp,
+                                                                'procesos_asig':procesos_asig,
+                                                                'comentarios':comentarios})
         
-        if sec == 4:    # 4. Estrategia de Recuperacion                         
-            return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form, 'drp':drp})
+        if sec == 4:    # 4. Estrategia de Recuperacion
+
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D4":
+                    comentarios.append(com)
+
+            return render(request, 'bcp/drp/drp_s4_auth.html', {'form': form, 'drp':drp,
+                                                                'comentarios':comentarios})
         
-        if sec == 5:    # 5. Especificacion Tecnica del Site de Contingencias                           
+        if sec == 5:    # 5. Especificacion Tecnica del Site de Contingencias 
+
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D5":
+                    comentarios.append(com)
+
+            # Determina los Componentes Disponibles y Asignados
+            componentes_disp = Componentes.objects.all( ).exclude(id__in=drp.componentes.all()).distinct()
+            componentes_asig = drp.componentes.all()
+                          
             return render(request, 'bcp/drp/drp_s5_auth.html',  {'form': form, 'drp':drp,
-                                                                 'compo_asig':compo_asig,
-                                                                 'compo_disp':compo_disp})
+                                                                 'componentes_asig':componentes_asig,
+                                                                 'componentes_disp':componentes_disp,
+                                                                 'comentarios':comentarios})
         
         if sec == 6:   # 6. Servicios Criticos                         
             return render(request, 'bcp/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
@@ -6590,10 +7397,7 @@ def Aut_Drp_V(request, pk, sec):
 
 # -------------------------------------------------------------------------
 
-
-
-
-
+# ************************* Codigo obsoleto **********************************
 from .forms import Autoriza_obs_Proced_C_Form
 def aut_obs_proced(request, item, pk, valor):
     """
@@ -6663,76 +7467,6 @@ def aut_obs_proced(request, item, pk, valor):
         return render(request, 'bcp/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
 
 
-from .forms import Autoriza_obs_Proced_C_Form
-def aut_obs_drp(request, item, pk, valor):
-    """
-    Registra observaciones por item a la
-    Autorizacion de DRP
-    """
-
-    global  url_ant_obs_aut
-
-    print('--- Registra Observaciones x Item a autorizaciones DRP---')
-    print('item pk :', pk)
-    print('item nro:', item)
-    print('item nro 2:', valor)
-    
-    drp = get_object_or_404(Drp, pk = pk)
-        
-    aut=LogAut()
-
-    #Asigna al usuario de sesion como Autorizador
-    print('asigna usuario sesion')
-    pk_usr_sesion= request.user.pk
-    aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    print('usuario de sesion',aut.gestor_aprobador)
-
-     
-    aut.cod_proceso=drp.codigo
-    aut.item=item+':'+valor
-    
-
-    if request.method=='POST':
-
-        form = Autoriza_obs_Proced_C_Form(request.POST)
-        
-        print('FORMATO VALID0?',form.is_valid())
-        
-        if form.is_valid():
-            
-            #Registra autorizacion en log
-                                
-            aut.fecha=datetime.date.today()
-            # aut.p_status=drp.status+'D'
-            aut.observacion=form.cleaned_data['comentario']
-            #aut.Aprobado=form.cleaned_data['aprobacion']
-            
-            #notifica=form.cleaned_data['notifica']
-            #aprobado=form.cleaned_data['aprobacion']
-            
-            #---
-                            
-           
-            #Graba en Base de Datos                
-            aut.save()
-            drp.log_auth_drp.add(aut)      
-            drp.save()
-            
-                
-            # redirect to a new URL:
-            return HttpResponseRedirect(url_ant_obs_aut)
-        
-        else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
-        
-    else:
-    
-        url_ant_obs_aut =request.META['HTTP_REFERER']
-        form= Autoriza_obs_Proced_C_Form()
-        
-        return render(request, 'bcp/drp/drp_obs_auth.html', {'form': form, 'drp':drp, 'item':item, 'valor':valor})
-
 
 #*********************************************************
 # 6.14  Revision de Observaciones  del DRP               *
@@ -6742,6 +7476,8 @@ def aut_obs_drp(request, item, pk, valor):
 # 6.14.1   Revision de Responsables del DRP              *
 #*********************************************************
 
+from django.views.decorators.cache import never_cache
+@never_cache # inhibe el boton de vuelta atras desde el indice 
 def Rev_S2_Drp(request, pk):
     """
     Revisa la denegacion de autorizacion  para cada  la seccion 2 : Responsbles DRP 
@@ -6754,6 +7490,12 @@ def Rev_S2_Drp(request, pk):
     #model = Proceso
     drp = get_object_or_404(Drp, pk = pk)
     print('asigna drp', drp)
+
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
 
     # Selecciona Comentarios 
     comentarios_drp=Log_Revision.objects.filter(drp=drp)
@@ -6965,6 +7707,20 @@ def Rev_S2_Drp(request, pk):
 
             #Graba en Base de Datos                
             drp.save()
+
+            # Crea Log de Revision
+            log=Log_Revision()
+            log.fecha = datetime.date.today()
+            log.drp= drp
+            log.gestor_aut=usr_aut
+            log.seccion="D3"
+            log.campo="Revisado por:"+aut
+            log.comentario="Se revisaron los comentarios e implementan las modificaciones."
+            log.resuelto=True
+
+            # Graba en Base de Datos                
+            log.save()
+
                 
             # Vuelve al Indice del DRP
             return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
@@ -6995,6 +7751,8 @@ def Rev_S2_Drp(request, pk):
 # 6.14.2   Revision de Objetivo  del DRP              *
 #******************************************************
 
+from django.views.decorators.cache import never_cache
+@never_cache # inhibe el boton de vuelta atras desde el indice 
 def Rev_S1_Drp(request, pk):
     """
     Revisa la denegacion de autorizacion  para cada  la seccion 2 : Objetivo del  DRP 
@@ -7014,6 +7772,13 @@ def Rev_S1_Drp(request, pk):
         if com.seccion == "D1": # Comentarios sobre las declaracion de Objetivo del DRP
             comentarios.append(com)
 
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+
+
     if request.method=='POST':
 
         form=Drp_Sec_1_Form(request.POST)
@@ -7028,8 +7793,20 @@ def Rev_S1_Drp(request, pk):
             
             drp.status_1 ='a'
 
-            #Graba en Base de Datos                
+            # Crea Log de Revision
+            log=Log_Revision()
+            log.fecha = datetime.date.today()
+            log.drp= drp
+            log.gestor_aut=usr_aut
+            log.seccion="D3"
+            log.campo="Revisado por:"+aut
+            log.comentario="Se revisaron los comentarios e implementan las modificaciones."
+            log.resuelto=True
+
+            # Graba en Base de Datos                
             drp.save()
+            log.save()
+                
                 
             # Vuelve al Indice del DRP
             return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
@@ -7055,10 +7832,12 @@ def Rev_S1_Drp(request, pk):
 # 6.14.3   Revision de Alcance  del DRP              *
 #*****************************************************
 
-def Rev_S3_Drp(request, pk):
+#******************************* Codigo obsoleto ****************************************** 
+def Rev_S3_Drp(request, pk): 
     """
     Revisa las observaciones realizadas 
     para  la seccion 3 : Alcance del  DRP 
+    (Version descontinuada. Ver : rev_asigna_procesos_drp)
     """
 
     # Verifica si el usuario en sesion esta habilitado
@@ -7075,6 +7854,7 @@ def Rev_S3_Drp(request, pk):
         if com.seccion == "D3": # Comentarios 
             comentarios.append(com)
 
+
     if request.method=='POST':
 
         form=Drp_Sec_3_Form(request.POST)
@@ -7089,6 +7869,7 @@ def Rev_S3_Drp(request, pk):
             drp.procesos_drp.set(p1)
             
             drp.status_3 ='a'
+
 
             #Graba en Base de Datos                
             drp.save()
@@ -7113,16 +7894,103 @@ def Rev_S3_Drp(request, pk):
                                                            'drp':drp,
                                                            'comentarios':comentarios})
 
+from django.views.decorators.cache import never_cache
+@never_cache # inhibe el boton de vuelta atras desde el indice 
+def rev_asigna_procesos_drp(request, pk):
+    """ Modifica la Asignacion de los Procesos que seran cubiertos por el DRP (Alcance) en 
+        base a los comentarios de revision.
+
+        Esta version utiliza Javascript para el manejo de Box de Asignacion/Desasignacion.
+
+        Filtra por aquellos que tienen activa_drp=True en su Estrategia Asociada.
+        
+        """
+    
+    drp = get_object_or_404(Drp, pk=pk)
+
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+
+
+    if request.method == "POST":
+        ids = request.POST.get("procesos_ids", "")
+        drp.procesos_drp.clear()
+        if ids.strip():
+            procesos_seleccionados = SubProceso_V.objects.filter(id__in=ids.split(","))
+            drp.procesos_drp.set(procesos_seleccionados)
+
+        drp.status_3="a"
+
+        # Crea Log de Revision
+        log=Log_Revision()
+        log.fecha = datetime.date.today()
+        log.drp= drp
+        log.gestor_aut=usr_aut
+        log.seccion="D3"
+        log.campo="Revisado por:"+aut
+        log.comentario="Formulario revisado conforme a los comentarios del autorizador."
+        log.resuelto=True
+
+        # Graba en Base de Datos                
+        drp.save()
+        log.save()
+
+
+        return redirect(drp.get_absolute_url())
+
+
+
+    # Selecciona Comentarios 
+    comentarios_drp=Log_Revision.objects.filter(drp=drp)
+    comentarios=[]
+    for com in comentarios_drp:
+        if com.seccion == "D3": # Comentarios sobre Asignacion de Procesos p/Alcance
+            comentarios.append(com)
+
+
+    procesos_disponibles = SubProceso_V.objects.filter(
+        escenarios__estrategias__activa_drp=True
+    ).exclude(id__in=drp.procesos_drp.all()).distinct()
+
+    procesos_asignados = drp.procesos_drp.all()
+
+    return render(request, "bcp/drp/drp_s3_rev.html", {
+        "drp": drp,
+        "comentarios":comentarios,
+        "procesos_disponibles": procesos_disponibles,
+        "procesos_asignados": procesos_asignados,
+    })
+
+
 
 #*****************************************************
-# 6.14.4   Revision de Alcance  del DRP              *
+# 6.14.4   Revision de Estrategia de Recuperacin     *
 #*****************************************************
+
+# inhibe el boton de vuelta atras desde el indice 
+from django.views.decorators.cache import never_cache, cache_control
+@never_cache
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 
 def Rev_S4_Drp(request, pk):
     """
     Revisa las observaciones realizadas 
     para  la seccion 4 : Estrategia de Recuperacion 
     """
+    print('--- Revision de Estrategia de Recuperacion ')
+
+    # Evita reingreso al formulario desde sesión
+    if request.session.get('form_enviado'):
+        print('---> El formulario YA fue enviado' )
+        del request.session['form_enviado']
+        #return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[4000] ))
+    else:
+        print('---> El Formulario NO ha sido enviado')
+
 
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Consultores']):
@@ -7137,6 +8005,13 @@ def Rev_S4_Drp(request, pk):
     for com in comentarios_drp:
         if com.seccion == "D4": # Comentarios 
             comentarios.append(com)
+
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+
 
     if request.method=='POST':
 
@@ -7154,9 +8029,23 @@ def Rev_S4_Drp(request, pk):
             
             drp.status_4 ='a'
 
-            #Graba en Base de Datos                
+            # Crea Log de Revision
+            log=Log_Revision()
+            log.fecha = datetime.date.today()
+            log.drp= drp
+            log.gestor_aut=usr_aut
+            log.seccion="D4"
+            log.campo="Revisado por:"+aut
+            log.comentario="Formulario revisado conforme a los comentarios del autorizador."
+            log.resuelto=True
+
+            # Graba en Base de Datos                
             drp.save()
+            log.save()
                 
+            # Marca la sesión para prevenir reingreso
+            request.session['form_enviado'] = True
+
             # Vuelve al Indice del DRP
             return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
 
@@ -7166,9 +8055,9 @@ def Rev_S4_Drp(request, pk):
         
     else:
     
-        Drp_Sec_3_url_ant = request.META['HTTP_REFERER']
-        print('Drp_Sec_3_url_ant  =', Drp_Sec_3_url_ant)
-        p2=drp.procesos_drp.all()
+        #Drp_Sec_3_url_ant = request.META['HTTP_REFERER']
+        #print('Drp_Sec_3_url_ant  =', Drp_Sec_3_url_ant)
+        #p2=drp.procesos_drp.all()
 
         form = Drp_Sec_4_Form(initial={'tipo_site':drp.tipo_Site,
                                        'desc_estrategia': drp.desc_estrategia,
@@ -7184,7 +8073,8 @@ def Rev_S4_Drp(request, pk):
 #***************************************************************
 # 6.14.5 Revision Especificacion Tecnica Site de Contingencias *
 #***************************************************************
-
+from django.views.decorators.cache import never_cache
+@never_cache # inhibe el boton de vuelta atras desde el indice 
 def Rev_S5_Drp(request, pk):
     """
     Revisa las observaciones realizadas 
@@ -7234,11 +8124,80 @@ def Rev_S5_Drp(request, pk):
         return render(request, 'bcp/drp/drp_s5_rev.html', {'form': form, 'drp':drp,
                                                            'lista_cmp':lista_cmp})
 
+@never_cache # inhibe el boton de vuelta atras desde el indice 
+def rev_esp_tec_drp(request, pk):
+    """ Modifica la Especificacion Tecnica (Asignacion de Componentes) del DRP en 
+        base a los comentarios de revision.
+
+        Esta version utiliza Javascript para el manejo de Box de Asignacion/Desasignacion.
+     
+       
+        """
+    
+    drp = get_object_or_404(Drp, pk=pk)
+
+    #Asigna al usuario de sesion como Autorizador
+    print('asigna usuario sesion')
+    usr =  request.user
+    usr_aut=Gestor.objects.get(user_pk=usr.pk)
+    aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
+
+    # POST
+    if request.method == "POST":
+        ids = request.POST.get("procesos_ids", "")
+        #drp.componentes.clear()
+        if ids.strip():
+            componentes_seleccionados = Componentes.objects.filter(id__in=ids.split(","))
+            drp.componentes.set(componentes_seleccionados)
+
+        drp.status_5="a"
+
+        # Crea Log de Revision
+        log=Log_Revision()
+        log.fecha = datetime.date.today()
+        log.drp= drp
+        log.gestor_aut=usr_aut
+        log.seccion="D5"
+        log.campo="Revisado por:"+aut
+        log.comentario="Formulario revisado conforme a los comentarios del autorizador."
+        log.resuelto=True
+
+        # Graba en Base de Datos                
+        drp.save()
+        log.save()
+
+
+        return redirect(drp.get_absolute_url())
+
+    # GET
+
+    # Selecciona Comentarios 
+    comentarios_drp=Log_Revision.objects.filter(drp=drp)
+    comentarios=[]
+    for com in comentarios_drp:
+        if com.seccion == "D5": # Comentarios sobre Asignacion de Procesos p/Alcance
+            comentarios.append(com)
+
+
+    componentes_disponibles = Componentes.objects.all().exclude(id__in=drp.componentes.all()).distinct()
+
+    componentes_asignados = drp.componentes.all()
+
+    origen=2
+
+    return render(request, "bcp/drp/drp_s5_rev.html", {
+        "drp": drp,
+        "comentarios":comentarios,
+        "componentes_disponibles": componentes_disponibles,
+        "componentes_asignados": componentes_asignados,
+        "origen":origen
+    })
 
 #***************************************************************
 # 6.14.6  Revision Especificacion de Servicios Criticos del DRP*
 #***************************************************************
-
+from django.views.decorators.cache import never_cache
+@never_cache # inhibe el boton de vuelta atras desde el indice 
 def Rev_S6_Drp(request, pk):
     """
     Revisa las observaciones realizadas 
@@ -7255,6 +8214,34 @@ def Rev_S6_Drp(request, pk):
 
     return render(request, 'bcp/drp/drp_s6_rev.html', {'drp':drp,'lista_sc':lista_sc})
 
+
+#****************************************************
+# 6.15  Detalle del DRP en Desarrollo/Actualizacion *
+#****************************************************
+
+def detalle_drp(request, pk):
+
+    drp = get_object_or_404(Drp, pk = pk)
+
+    # Seleccion de Recursos/Servicios criticos asociados a los Procesos alcanzados
+    servicios_criticos = set() # set evita automaticamente el duplicado
+    for pr in drp.procesos_drp.all():
+        for sc in pr.recursos.all():
+            servicios_criticos.add(sc)
+
+    # servicios_criticos = {sc for pr in drp.procesos_drp for sc in pr.recursos}  /Alternativa mas "pythonizada"
+
+    
+    print('>>> Servicios Criticos:', servicios_criticos)
+
+    # Selecciona los Coponentes asignados al DRP
+    componentes_asig=drp.componentes
+
+
+    return render(request, 'bcp/drp/drp_detalle.html', {'drp':drp,
+                                                        'componentes_asig':componentes_asig,
+                                                        'servicios_criticos':servicios_criticos})
+                  
 #*********************************************** Fin DRP ************************************************************************************
 
 
@@ -7292,26 +8279,43 @@ def Declara_Inc(request):
             
             incidente.save()
             
+
+            # Define codigo del incidente
+            #==============================
+
             # Rescata correlativo de Incidente. 
             parametro = get_object_or_404(Parametros_G, nombre = 'FOLIO INCIDENTES')
 
-            # Define codigo del incidente
-            f_i = incidente.fecha.strftime('%d-%m-%Y')
-            #descripcion = form.cleaned_data['descripcion']
-            folio=parametro.valor_2
-            incidente.codigo = f_i+'/ '+str(folio)
-            parametro.valor_2=folio+1
+            f_i = incidente.fecha.strftime('%Y%m')
+            n=parametro.valor_2
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            if n<9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro='0' 
+                nro=nro+str(n)
+            elif n > 99 and n <= 999:
+                nro=str(n)
+            else:
+                parametro.valor_2=1
+
+            incidente.codigo = f_i+'/'+nro  # codigo = YYYYMM/999 (largo= 10)
+            parametro.valor_2=n+1
+            parametro.save()
             
             # Graba intancias en Registro (Base de Incidentes)
             incidente.nombre_r = form.cleaned_data['nombre']
             incidente.area_r = form.cleaned_data['area']
             incidente.descripcion = form.cleaned_data['descripcion']
+            incidente.test= form.cleaned_data['test']
             #incidente.correo = form.cleaned_data['correo']
 
             amenazas_declaradas = form.cleaned_data['amenazas_i']
             incidente.amenazas_i.set(amenazas_declaradas)
 
-
+                
             # Selecciona los Procesos asociados al incidente en base a las amenazas declaradas
             # =================================================================================
 
@@ -7370,7 +8374,26 @@ def Declara_Inc(request):
     else:
 
         form = Declara_Incidente_Form()
+
+
         return render(request, 'bcp/inc_mgm/crea_inc.html',{'form':form })
+
+
+def Borra_Incidente(request, pk):
+    """
+    Borra el Incidente"""
+
+    print('>>>>> Borra el Incidente')
+
+    incidente=get_object_or_404(Incidentes, pk=pk)
+    incidente.delete()
+
+    print('----- Borra el Incidente y retorna')
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+ 
+
 
 
 #************************************
@@ -7380,13 +8403,83 @@ def Lista_Incidentes(request):
     """
     Generic class-based view listing books on loan to current user.
     """
+    print('>>>>> Lista Incidentes')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Gestion de Crisis']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[400] ))
 
     incidentes=Incidentes.objects.all()
-    
-    return render(request, 'bcp/inc_mgm/incidentes__list.html', {'incidentes':incidentes})
+
+    lista_incidentes=[]
+    for inc in incidentes:
+        print('-- Incidente :',inc.codigo)
+
+
+        # Determina si algun Procedimiento del incidente asociado se encuentra Activado.
+        # ------------------------------------------------------------------------------
+        proced_act=False
+        procesos=inc.procesos_i
+        amenazas=inc.amenazas_i
+      
+        for amn in amenazas.all():
+        # Para cada amenaza del Incidente
+            print('----  Amenaza :', amn.titulo)
+            escenarios_amn=amn.landscape
+
+            for esc_amn in escenarios_amn.all():
+            # Para cada escenario de la Amenaza del Incidente
+                print('---- Escenario x Amenaza:', esc_amn.titulo)
+
+                escenario_amenaza=esc_amn.titulo #(1)
+                                                
+                for prc in procesos.all():
+                # Para cada Proceso asociado al  Incidente
+                    escenarios_proceso=prc.escenarios
+                    procedimientos_proceso=prc.procedimientos_contingencia_v
+                
+                    print('------ Proceso Asociado al Incidente :', prc.nombre)
+
+                    for esc_prc in escenarios_proceso.all():
+                    # Para cada Escenario asociado al Proceso en Incidente 
+                        print('---- Escenario del Proceso', esc_prc.titulo)
+                        
+                        escenario_prc=esc_prc.titulo #(2)
+
+                        if escenario_prc == escenario_amenaza:
+                            print('> ESCENARIO AMENAZA = ESCENARIO PROCESO')
+
+                            for prcd in procedimientos_proceso.all():
+                            # Para cada Procedimiento de cada Proceso del Incidente
+                                print('---------- Procedimientos Asociado al Proceso', prcd.nombre)
+                                
+                                escenario_procedimiento=prcd.escenarios.titulo #(3)
+
+                                if escenario_prc  == escenario_procedimiento:
+                                    print('> ESCENARIO PROCESO = ESCENARIO PROCEDIMIENTO')
+
+                                    # Condiciones para Borrado
+                                    # ------------------------
+
+                                    if prcd.esta_activo:
+                                        print('---------- Procedimiento Activo !!. Canbia a True')
+                                        proced_act=True
+                                    else:
+                                        print('---------- Procedimiento NO Activo !!. Se mantiene False ')
+                        
+                                else:
+                                    print('> ESCENARIO PROCESO DISTINTO A ESCENARIO PROCEDIMIENTO')
+
+                        else:
+                            print('> ESCENARIO AMENAZA DISTINTO A ESCENARIO PROCESO')
+
+   
+        inc_2={'inc':inc, 'activo':proced_act}
+        print('---- incidente', inc.codigo, 'inc_2=', inc_2)
+        lista_incidentes.append(inc_2)
+        
+
+
+    return render(request, 'bcp/inc_mgm/incidentes__list.html', {'lista_incidentes':lista_incidentes})
 
 #****************************
 #6.2.1  Modifica Incidente  *
@@ -7720,51 +8813,120 @@ def contar_procesos_por_servicio(incidente):
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Procedimientos  # Asegúrate de importar el modelo correcto
 import json
 
 @csrf_exempt
 def toggle_procedimiento(request, procedimiento_id=None):
+    """
+    Switch de Activacion/Desactivacion del Procedimiento desde DashBoard del 
+    Comite de Crisis
+    """
+    print('>>>>> Entra a Switch ')
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            print("---- Datos recibidos en POST:", data)
             procedimiento = Procedimientos_V.objects.get(id=procedimiento_id)
             nuevo_estado = data.get("esta_activo", False)
+            incidente_id = data.get("incidente_id")
+
+            print(f"---- nuevo estado: {nuevo_estado}")
+            print(f"---- Procedimiento: {procedimiento.nombre}")
+            print(f"---- Incidente recibido: {incidente_id}")
+
             procedimiento.esta_activo = nuevo_estado
             procedimiento.save()
 
+            if nuevo_estado:
+                print('----  Estado es Activado')
+                print('----  Crea CheckList de Ejecucion')
+
+                # ✅ Validamos que incidente_id sea válido antes de usarlo
+                if not incidente_id:
+                    print("⚠️  No se recibió incidente_id válido, se omite creación de checklist")
+                else:
+                    try:
+                        # 🧩 Bloque de diagnóstico insertado aquí
+                        print("CheckList importado desde:", CheckList.__module__)
+                        print("CheckList clase real:", CheckList)
+
+                        print("---- Intentando obtener incidente con ID:", incidente_id)
+                        incidente = Incidentes.objects.get(pk=int(incidente_id))
+                        print("---- Incidente encontrado:", incidente.codigo)
+
+                        # Crea Checklist
+                        #-------------------
+
+                        # Determina el nro. del Checklist
+                        n=procedimiento.correlativo_chk
+                        if n<9:
+                            nro='0000' 
+                            nro=nro+str(n)
+                        elif n > 9 and n <= 99:
+                            nro='000' 
+                            nro=nro+str(n)
+                        elif n > 99 and n <= 999:
+                            nro='00'
+                            nro=nro+str(n)
+                        elif n > 999 and n <= 9999:
+                            nro='0'
+                            nro=nro+str(n)
+                        elif n > 9999:
+                            nro=str(n)
+
+                        procedimiento.correlativo_chk=n+1
+
+                        print("---- Creando instancia de CheckList vacía...")
+                        chk = CheckList()
+                        chk.nro_chk=nro
+                        chk.procedimiento = procedimiento
+                        chk.incidente = incidente
+                        chk.save()
+                        print(f"---- CheckList asociado al incidente: {incidente.codigo}")
+
+                        # Crear items del checklist
+                        for item in procedimiento.pasos.all():
+                            chk_p = Check_Pasos(checklist=chk, paso=item)
+                            chk_p.save()
+
+                    except (Incidentes.DoesNotExist, ValueError) as e:
+                        print(f"⚠️  Error al obtener incidente ({incidente_id}): {e}")
+
+                    except Exception as e:
+                        import traceback
+                        print("❌ Error al crear Checklist:", e)
+                        traceback.print_exc()
+
+                if incidente.test:
+                    print('---- Crea Checklist de Prueba')
+
+            else:
+                print('>>>>> Estado Desactivado')
+                procedimiento.esta_confirmado = False
+                procedimiento.save()
+
             # --------------------------------------------
-            # 🚀 Aquí se dispara el envío de correo
+            # 🚀 Envío de correo (simulado)
             # --------------------------------------------
             try:
-                accion = "Activado"  if nuevo_estado  else "Desactivado"
-                if nuevo_estado:
-                    accion="Activado PC: "+procedimiento.nombre
-                else:
-                    accion="Desactivado PC: "+procedimiento.nombre
-
-                # Ojo: debes definir de dónde obtienes email y cc_email
-                # puede ser del procedimiento mismo o del usuario logeado
-                email = "destinatario@dominio.com"   # <- reemplazar
-                cc_email = "cc@dominio.com"          # <- reemplazar
-                nombre = procedimiento.nombre
-                #proceso = procedimiento.proceso.nombre if procedimiento.proceso else "N/A"
-
-                #Manda_Correo(email, cc_email, nombre, proceso, accion)
-                print('Se envia correo de', accion)
-
-
+                accion = "Activado PC: " + procedimiento.nombre if nuevo_estado else "Desactivado PC: " + procedimiento.nombre
+                print('Se envía correo de', accion)
             except Exception as e:
                 print(f"⚠️ Error enviando correo: {e}")
 
             return JsonResponse({"success": True, "nuevo_estado": procedimiento.esta_activo})
 
-       
-
-        except Procedimientos.DoesNotExist:
+        except Procedimientos_V.DoesNotExist:
+            print("❌ Procedimiento no encontrado")
             return JsonResponse({"success": False, "error": "Procedimiento no encontrado"}, status=404)
+
         except json.JSONDecodeError:
+            print("❌ Error en JSON recibido")
             return JsonResponse({"success": False, "error": "Error en JSON"}, status=400)
+
+        except Exception as e:
+            print(f"❌ Error general en toggle_procedimiento: {e}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
 
     elif request.method == "GET":
         procedimientos = Procedimientos_V.objects.values("id", "esta_activo")
@@ -7772,6 +8934,93 @@ def toggle_procedimiento(request, procedimiento_id=None):
         return JsonResponse(list(procedimientos), safe=False)
 
     return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.apps import apps
+import json
+
+@csrf_exempt
+def toggle_field(request, app_label, model_name, object_id):
+    """
+    Endpoint genérico para cambiar el valor de cualquier campo booleano
+    en cualquier modelo Django.
+    """
+    print('>>>>> Toggle de Switch general desde:', model_name)
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        field = data.get("field")
+        value = data.get("value")
+
+        if field is None:
+            return JsonResponse({"success": False, "error": "Falta 'field' en el JSON"}, status=400)
+
+        # Obtener el modelo dinámicamente
+        Model = apps.get_model(app_label, model_name)
+        print('>>>>> Modelo=', Model)
+        if not Model:
+            print('>>>>> Modelo no encontrado')
+            return JsonResponse({"success": False, "error": f"Modelo {app_label}.{model_name} no encontrado"}, status=404)
+
+        # Obtener la instancia
+        instance = Model.objects.get(id=object_id)
+
+        # Validar que el campo exista y sea booleano
+        field_obj = Model._meta.get_field(field)
+        if field_obj.get_internal_type() != "BooleanField":
+            return JsonResponse({"success": False, "error": f"El campo '{field}' no es booleano"}, status=400)
+
+        # Actualizar y guardar
+        setattr(instance, field, bool(value))
+        instance.save()
+
+        # Funciones segun Modelo
+        #========================
+        # Esta seccion se usa para incorporar funcionalidades dentro del toggle
+        # segun Modelo de origen.
+
+        if model_name == "check_pasos":
+            print('---- Entra a funciones s/ Modelo:', Model)
+        
+            # Determina si todos los Items(pasos) han sido completados
+            completado=True
+            checkl=instance.checklist # Identifica el CheckList asociado al paso
+            items_check=Check_Pasos.objects.filter(checklist=checkl) # Selecciona los items asociado al CheckList
+            for chk in items_check:
+                if not chk.terminado:
+                    completado=False
+            if completado:
+                checkl.completado=True
+            else:
+                checkl.completado=False
+
+            checkl.save()
+                
+
+
+
+
+        print(f"✔️ {Model.__name__}({object_id}) → {field} = {value}")
+
+        return JsonResponse({
+            "success": True,
+            "model": f"{app_label}.{model_name}",
+            "id": object_id,
+            "field": field,
+            "nuevo_estado": bool(value)
+        })
+
+    except Model.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Objeto no encontrado"}, status=404)
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
 
 
 #***************************************************
@@ -7827,7 +9076,188 @@ def ActivaDesactivaPc(request, pk ):
     url_ant=request.META['HTTP_REFERER']
     return HttpResponseRedirect(url_ant)
 
-   
+# ********************************************
+# Lista de Procesos de Contingencia x Gestor *
+# ********************************************
+def Lista_ProcedimientosxGestor(request):
+    """
+    Lista los Procedimientos asociados al Gestor en Sesion
+    """
+
+    print('>>>>> Lista de Procesos x Gestor en sesion')
+
+    # Verifica si el usuario en sesion esta habilitado
+    if not es_del_grupo([request.user, 'Autorizadores', 'Ejecutores']):
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[302] ))
+
+    # Identifica a username del Gestor en Sesion
+    usr=request.user
+    username=usr.username
+    print('username=', username)
+    
+    # Selecciona los Procedimientos de BCP asociados al Gestor en sesion
+    # ===================================================================
+    procedimientos=Procedimientos_V.objects.all()
+    Lista_Procedimientos=[]
+    for prc in procedimientos.all():
+
+        # Identifica usernames
+        # -------------------- 
+        user_resp=prc.resp_proceso.user_gestor.username
+        if prc.bck_resp:
+            user_bck_r =prc.bck_resp.user_gestor.username
+        else:
+            user_bck_r="no definido"
+
+        user_ejecutor =prc.gestor_ejecutor.user_gestor.username
+        if prc.gestor_ejecutor:
+            user_bck_e =prc.gestor_ejecutor.user_gestor.username
+        else:
+            user_bck_e="no definido"
+
+        print('responsable:', user_resp, 'respaldo:', user_bck_r)
+        print('ejecutor :', user_ejecutor, 'respaldo', user_bck_e)
+
+
+        # Determina el rol del usuario en sesion
+        # -------------------------------------- 
+
+        if username == user_resp:
+            rol='Responsable'
+          
+        elif username == user_bck_r:
+            rol='Respaldo Responsable'
+
+        elif username == user_ejecutor:
+            rol='Ejecutor'
+
+        elif username == user_bck_e:
+            rol='Respaldo Ejecutor'
+        else:
+            rol='no identificado'
+
+        # Determina el RTO asociado al Procedimiento
+        # ------------------------------------------
+        if rol != 'no identificado':
+            proceso=get_object_or_404(Proceso, pk=prc.pk_padre) # Identifica el Proceso padre
+
+            indicadores=proceso.subproceso_v.indicador_subp # Rescata tabla de indicadores
+
+            for ind in indicadores.all():
+                indicador_asig=ind.indicador.nombre
+                indicador_nivel=ind.nivel.nivel
+                if indicador_asig == "RTO":
+                    rto=indicador_nivel+':'+ind.nivel.definicion
+                elif indicador_asig=="RPO":
+                    rpo=indicador_nivel+':'+ind.nivel.definicion
+
+            print('---- RTO:', rto)
+            print('---- RPO:', rpo)
+
+            # Carga flags de estados
+            #-----------------------
+            activado  =prc.esta_activo
+            confirmado=prc.esta_confirmado
+
+            # Arma lista de Diccionario
+            proced={'pc':prc,
+                    'rol':rol,
+                    'rto':rto,
+                    'rpo':rpo,
+                    'tipo':'BCP',
+                    'activado':activado,
+                    'confirmado':confirmado}
+
+            Lista_Procedimientos.append(proced)
+
+     # Selecciona los Procedimientos de DRP asociados al Gestor en sesion (Completar)
+           
+
+
+    return render(request,'bcp/inc_mgm/proced_list.html',
+                  context={'lista_procedimientos':Lista_Procedimientos}) 
+
+
+
+# Lista CheckList por Procediiento e Incidente *
+#***********************************************
+
+def Lista_CheckList(request, pk):
+    """
+    pk: Pk del Procedimiento
+    """
+
+    print('>>>>> Entra a Listado Checklist')
+    proc=get_object_or_404(Procedimientos_V, pk=pk)
+    proceso=get_object_or_404(Proceso, pk=proc.pk_padre) # Identifica el Proceso padre
+    lista_chk=CheckList.objects.filter(procedimiento=proc)
+
+    # Determina el RTO asociado al Procedimiento
+    # ------------------------------------------
+    indicadores=proceso.subproceso_v.indicador_subp # Rescata tabla de indicadores
+
+    for ind in indicadores.all():
+        indicador_asig=ind.indicador.nombre
+        indicador_nivel=ind.nivel.nivel
+        if indicador_asig == "RTO":
+            rto=indicador_nivel+':'+ind.nivel.definicion
+        elif indicador_asig=="RPO":
+            rpo=indicador_nivel+':'+ind.nivel.definicion
+
+    print('---- RTO:', rto)
+    print('---- RPO:', rpo)
+
+
+    return render(request,'bcp/inc_mgm/checklist_list.html',
+                  context={'lista_chk':lista_chk,
+                           'proc':proc,
+                           'rto':rto,
+                           'rpo':rpo}) 
+
+def Ejecucion_CheckList(request, pk):
+    """
+    Registra en un  checklist la ejecucion de los pasos del Procedimiento.
+    pk: Pk del Checklist
+    """
+
+    print('>>>>> Ejecucion Checklist')
+
+    check=get_object_or_404(CheckList,pk=pk)
+    proced=check.procedimiento
+    items=Check_Pasos.objects.filter(checklist=check)
+
+    # Identifica al Comite de Crisis.
+    comite=[]
+    gestores=Gestor.objects.all()
+    for integrante in gestores:
+        for grp in integrante.user_gestor.groups.all():
+            if grp.name=='Gestion de Crisis':
+                comite.append(integrante)
+    print('---- integrantes del comite =', comite)
+
+    # Rescata los Comentarios 
+    comentarios_proceso=Log_Revision.objects.filter(procedimiento_v=proced)
+    comentarios_m=[]
+    for com in comentarios_proceso:
+        cod=com.campo
+        codigo_inc=substring(cod,0,10)
+        print('---- codigo incidente=', codigo_inc)
+
+        if com.seccion == "C":
+            #Selecciona los asociados al Incidente 
+            comentarios_m.append(com)
+
+
+
+
+    return render(request,'bcp/inc_mgm/checklist.html',
+                    context={'check':check,
+                             'proced':proced,
+                             'comite':comite,
+                             'comentarios':comentarios_m,
+                            'items':items}) 
+
+
 #*********************************************** Fin Administracion del Incidente *********************************************************
    
 #*********************************************************************************************************************************************
@@ -8319,6 +9749,9 @@ def Err_Sesion_Mgm(request, ce):
 
     elif ce== '301':
             mensaje='301: Usuario debe pertenecer al grupo de Consultores o  Autorizadores'
+
+    elif ce== '302':
+            mensaje='301: Usuario debe pertenecer al grupo de Autorizadores o Ejecutores'
             
     elif ce == '400':
          mensaje='400: Usuario debe pertenecer al grupo de Gestion de Crisis'
@@ -8333,6 +9766,8 @@ def Err_Sesion_Mgm(request, ce):
         mensaje='3000: La Poderacion no puede superar el 100 %'
     elif ce == '3001':
         mensaje='3001 : Puntaje no puede ser 0'
+    elif ce == '4000':
+        mensaje='El Formulario ya fue enviado y ha sido bloquedo para edicion '
         
     else:
         mensaje='Error de Sesion no identificado.'
@@ -8621,20 +10056,23 @@ def respaldo_json_zip(request):
 
 # ==================================================================
 
+from django.db import transaction
+
 import os
+import io
 import json
 import zipfile
 import tempfile
+import datetime
+from collections import defaultdict
+
 from django.shortcuts import render
-from django.contrib.auth.models import User, Group
 from django.apps import apps
-from django.db import transaction
 from django.db import connection
 from django.db.models import AutoField
-
-
-
-
+from django.core import serializers
+from django.core.exceptions import FieldDoesNotExist
+from django.contrib.auth.models import User, Group
 
 def recuperar_json_zip(request):
     """
@@ -8643,10 +10081,9 @@ def recuperar_json_zip(request):
       3) reintentos para relaciones pendientes.
     - Log detallado y resumen de pendientes.
     """
-
     # --- FK_MAP: adapta/añade según tu modelo (usa los nombres tal como aparecen en apps.get_model("bcp", name)) ---
     FK_MAP = {
-        # Usuarios y Grupos
+        # Usuarios y Grupos (ejemplo: campo en modelo bcp que referencia a User/Group)
         "Grupos.grupo": Group,
         "Gestor.user_gestor": User,
         "Gestor.area": "Area",
@@ -8730,8 +10167,11 @@ def recuperar_json_zip(request):
         "Proceso.subproceso_v": "SubProceso_V",
     }
 
-    # Orden sugerido para borrado y lectura (no condiciona la resolución final gracias a la 3ª pasada)
+    # Orden sugerido para borrado y lectura
     ORDEN_MODELOS = [
+        # agregar Django Group y User al inicio para sobrescribirlos primero
+        "Group", "User",
+        # luego los modelos de la app bcp (como en tu original)
         "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador",
         "Tipo_Impacto", "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P",
         "Tipo_Proc", "Tipo_Site", "Tipo_Disp", "Tipo_Componente",
@@ -8784,9 +10224,15 @@ def recuperar_json_zip(request):
                     data_map[model_name] = []
 
             # --- BORRAR datos existentes (en ORDEN_MODELOS) ---
+            # Borrar Django Group/User si existen y luego modelos bcp en el orden indicado.
             for model_name in ORDEN_MODELOS:
                 try:
-                    model = apps.get_model("bcp", model_name)
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
                 except LookupError:
                     log.append(f"[WARN] Modelo {model_name} no existe en la app.")
                     continue
@@ -8796,23 +10242,34 @@ def recuperar_json_zip(request):
                 except Exception as e:
                     log.append(f"[ERROR] {model_name}: error al eliminar: {e}")
 
+            # ----------------------------------------------------------------------------
             # --- PRIMERA PASADA: crear placeholders (preservando PKs), sin FKs ni M2M ---
+            # ----------------------------------------------------------------------------
+
             created_counts = defaultdict(int)
             create_errors = defaultdict(int)
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
                 if not data:
                     continue
+
+                # resolver clase de modelo
                 try:
-                    model = apps.get_model("bcp", model_name)
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
                 except LookupError:
+                    log.append(f"[WARN] Modelo {model_name} no existe en bcp; se omite creación.")
                     continue
 
                 for record in data:
                     pk = record.get("pk")
                     fields = record.get("fields", {})
                     try:
-                        # crear instancia con PK original
+                        # crear instancia con PK original (sin relaciones)
                         obj = model(pk=pk)
                         # asignar SOLO campos no-relacionales y no-M2M
                         for field, value in fields.items():
@@ -8820,38 +10277,51 @@ def recuperar_json_zip(request):
                                 continue
                             try:
                                 fmeta = model._meta.get_field(field)
-                                # si es relación (FK / OneToOne) o M2M -> saltar en primera pasada
                                 if getattr(fmeta, 'many_to_many', False) or getattr(fmeta, 'is_relation', False):
                                     continue
-                                # intento asignar directo (puede fallar para campos especiales)
                                 setattr(obj, field, value)
                             except FieldDoesNotExist:
-                                # Si el campo no existe, intentar asignarlo _por si_ el JSON tiene extras
                                 try:
                                     setattr(obj, field, value)
                                 except Exception:
                                     pass
                             except Exception:
-                                # si falla la asignación, ignoramos y continuamos; se registrará si es crítico
                                 pass
+
                         # guardar preservando pk
                         try:
                             obj.save(force_insert=True)
                         except Exception:
-                            # fallback (si force_insert falla por algún motivo)
                             obj.save()
+
+                        # --- Forzar fechas originales (evita que auto_now/auto_now_add las reemplace) ---
+                        date_fields = [
+                            f.name for f in model._meta.get_fields()
+                            if f.get_internal_type() in ("DateTimeField", "DateField")
+                        ]
+                        update_data = {f: fields[f] for f in date_fields if f in fields}
+                        if update_data:
+                            model.objects.filter(pk=obj.pk).update(**update_data)
+
                         id_map[f"{model_name}.{pk}"] = obj
                         created_counts[model_name] += 1
                     except Exception as e:
                         create_errors[model_name] += 1
                         log.append(f"[ERROR] {model_name}: no pudo crear pk={pk} :: {e}")
 
+
+            # Fin Primera pasada -------------------
+
             # registrar creación por modelo
             for model_name in ORDEN_MODELOS:
                 if created_counts.get(model_name, 0) or create_errors.get(model_name, 0):
                     log.append(f"[CREATED] {model_name}: placeholders creados {created_counts.get(model_name,0)}, errores {create_errors.get(model_name,0)}")
 
+
+            # -------------------------------------------------------------------
             # --- SEGUNDA PASADA: intentar asignar FKs y M2M (primer intento) ---
+            # -------------------------------------------------------------------
+
             fk_unresolved = []   # lista de tuples para reintentos: (model_name, pk, field, target_model_name_or_type, target_pk)
             m2m_unresolved = []  # tuples: (model_name, pk, field, missing_ids, present_ids)
             fk_errors_count = defaultdict(int)
@@ -8860,10 +10330,15 @@ def recuperar_json_zip(request):
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
                 if not data:
-                    # aún queremos registrar OK con 0 importados si archivo vacío?
                     continue
+
                 try:
-                    model = apps.get_model("bcp", model_name)
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
                 except LookupError:
                     continue
 
@@ -8881,18 +10356,20 @@ def recuperar_json_zip(request):
                         if value is None:
                             continue
                         key = f"{model_name}.{field}"
-                        # ignorar si no es relación conocida o si valor vacío
+                        # intentar obtener metadatos del campo
                         try:
                             fmeta = model._meta.get_field(field)
                         except FieldDoesNotExist:
                             fmeta = None
 
-                        # si no es campo relacional o es M2M, saltear (M2M se maneja luego)
+                        # si es M2M, la manejamos más abajo
                         if fmeta and getattr(fmeta, 'many_to_many', False):
                             continue
+                        # si no es campo relacional y no está en FK_MAP, saltar
                         if fmeta and not getattr(fmeta, 'is_relation', False) and key not in FK_MAP:
                             continue
 
+                        # decidir target (FK_MAP tiene prioridad)
                         if key in FK_MAP:
                             target = FK_MAP[key]
                         else:
@@ -8912,7 +10389,7 @@ def recuperar_json_zip(request):
                             elif target == Group:
                                 resolved = Group.objects.filter(pk=value).first()
                             else:
-                                # target is model name string
+                                # target may be a string with model name defined in FK_MAP or a model class
                                 target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
                                 if target_name:
                                     resolved = id_map.get(f"{target_name}.{value}") or apps.get_model("bcp", target_name).objects.filter(pk=value).first()
@@ -8925,7 +10402,6 @@ def recuperar_json_zip(request):
                             # marcar para reintento
                             fk_unresolved.append((model_name, pk, field, target, value))
                             fk_errors_count[model_name] += 1
-                            # log estilo compacto (no inundar demasiado)
                             log.append(f"[FK-MISS] {model_name}.{field}: {safe_str(obj)} esperaba {getattr(target, '__name__', target)}({value}) → no encontrado")
                         else:
                             # asignar y guardar inmediatamente
@@ -8973,7 +10449,6 @@ def recuperar_json_zip(request):
             max_attempts = 6
             attempt = 0
             resolved_any = True
-            # transformar listas en sets/dicts para manipular
             fk_pending = fk_unresolved[:]
             m2m_pending = m2m_unresolved[:]
 
@@ -9007,7 +10482,6 @@ def recuperar_json_zip(request):
                         setattr(obj, field, resolved)
                         obj.save()
                         resolved_any = True
-                        # log de re-asignacion exitosa (compacto)
                         log.append(f"[FK-RETRY-OK] {model_name}.{field}: {safe_str(obj)} <- {getattr(resolved,'pk', '?')}")
                     except Exception as e:
                         new_fk_pending.append((model_name, pk, field, target, value))
@@ -9062,19 +10536,17 @@ def recuperar_json_zip(request):
                 m2m_pending = new_m2m_pending
 
             # --- RESÚMENES FINALES por modelo (OK / pendientes) ---
-            # contar importados por modelo (cantidad de registros en JSON)
             for model_name in ORDEN_MODELOS:
                 total = len(data_map.get(model_name, []))
                 fk_errs = sum(1 for t in fk_pending if t[0] == model_name)
                 m2m_errs = sum(len(t[3]) for t in m2m_pending if t[0] == model_name)
-                # Si ya hubo creaciones registradas, mostrar OK; si no, omitir
                 if total > 0:
                     if fk_errs == 0 and m2m_errs == 0:
                         log.append(f"[OK] {model_name}: importados {total} (FK errores=0, M2M errores=0)")
                     else:
                         log.append(f"[OK] {model_name}: importados {total} (FK errores={fk_errs}, M2M errores={m2m_errs})")
 
-            # Detalle final de pendientes (por registro) para que puedas identificarlos
+            # Detalle final de pendientes (por registro)
             if fk_pending:
                 for model_name, pk, field, target, value in fk_pending:
                     log.append(f"[PENDIENTE-FK] {model_name}.{field}: pk={pk} esperaba {getattr(target,'__name__',target)}({value})")
@@ -9084,14 +10556,48 @@ def recuperar_json_zip(request):
 
         # fin temporarydir
 
+        # --- AJUSTE FINAL DE FECHAS (para preservar valores originales) ---
+        for model_name, records in data_map.items():
+            if not records:
+                continue
+            try:
+                if model_name == "User":
+                    model = User
+                elif model_name == "Group":
+                    model = Group
+                else:
+                    model = apps.get_model("bcp", model_name)
+            except LookupError:
+                continue
+
+            date_fields = [
+                f.name for f in model._meta.get_fields()
+                if f.get_internal_type() in ("DateTimeField", "DateField")
+            ]
+            if not date_fields:
+                continue
+
+            for record in records:
+                pk = record.get("pk")
+                fields = record.get("fields", {})
+                update_data = {f: fields[f] for f in date_fields if f in fields}
+                if update_data:
+                    try:
+                        model.objects.filter(pk=pk).update(**update_data)
+                    except Exception as e:
+                        log.append(f"[DATE-ERROR] {model_name}: pk={pk} no pudo actualizar fechas :: {e}")
 
         # --- Ajustar secuencias de todas las tablas restauradas ---
         if connection.vendor == "postgresql":
-            
             with connection.cursor() as cursor:
                 for model_name in ORDEN_MODELOS:
                     try:
-                        model = apps.get_model("bcp", model_name)
+                        if model_name == "User":
+                            model = User
+                        elif model_name == "Group":
+                            model = Group
+                        else:
+                            model = apps.get_model("bcp", model_name)
                     except LookupError:
                         continue
 
@@ -9104,6 +10610,7 @@ def recuperar_json_zip(request):
                     seq_name = f"{table}_{pk_name}_seq"
 
                     try:
+                        # setval: ajustar la secuencia al MAX(pk) + 1
                         cursor.execute(
                             f"SELECT setval('{seq_name}', COALESCE((SELECT MAX({pk_name}) FROM {table}), 0) + 1, false);"
                         )
@@ -9111,13 +10618,12 @@ def recuperar_json_zip(request):
                     except Exception as e:
                         log.append(f"[SEQ-ERROR] {model_name}: no se pudo ajustar secuencia {seq_name} :: {e}")
 
-
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
-    
 
     # GET -> formulario
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
 
+# ===============================================================================================
 
 
 import io
@@ -9430,6 +10936,130 @@ def reparar_integridad(request):
     # Al final mostrar resultados
     return render(request, "bcp/conf/auditoria_reparacion_result.html", {"results": results})
 
+# *********************************************
+# Vista para Grabar en cada Seleccion de Item *
+#**********************************************
+# views.py
+import json
+import logging
+from django.http import JsonResponse
+from django.apps import apps
+from django.db import transaction
+from django.views.decorators.http import require_POST
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
+logger = logging.getLogger(__name__)
+
+# WHITELIST: mantener control sobre qué modelos pueden usar este endpoint.
+# Formato: "app_label.ModelName"
+ALLOWED_MODELS = {
+    "bcp.Drp",
+    "bcp.Proceso",
+    "bcp.SubProceso",
+    # Añade aquí solo los modelos que explícitamente quieras exponer.
+}
+
+@login_required
+@require_POST
+def ajax_toggle_generic(request):
+    """
+    Endpoint AJAX para añadir/remover elementos de una relación ManyToMany
+    de forma inmediata al clic del usuario.
+    Usado en los Box de Seleccion de Items
+
+    Se espera recibir en el body un JSON con las claves:
+      - model   : "app_label.ModelName"   (debe estar en ALLOWED_MODELS)
+      - obj_id  : id del objeto base (ej: drp.id)
+      - field   : nombre del campo ManyToMany en el objeto base (ej: "componentes")
+      - item_id : id del elemento relacionado (ej: componente.id)
+      - action  : "add" o "remove"
+
+    Responde JSON con status "ok" o "error" y mensaje explicativo.
+    """
+    # 1) Validación método (decoradores arriba ya manejan POST y login)
+    # 2) Parseo JSON
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "JSON inválido"}, status=400)
+
+    # 3) Validación de parámetros requeridos
+    required = ("model", "obj_id", "field", "item_id", "action")
+    for k in required:
+        if k not in payload:
+            return JsonResponse({"status": "error", "message": f"Falta parámetro '{k}'"}, status=400)
+
+    model_path = payload["model"]
+    obj_id = payload["obj_id"]
+    field_name = payload["field"]
+    item_id = payload["item_id"]
+    action = payload["action"]
+
+    # 4) Seguridad: verificar whitelist
+    if model_path not in ALLOWED_MODELS:
+        logger.warning("Intento de acceso a modelo no permitido: %s por usuario %s", model_path, request.user)
+        return JsonResponse({"status": "error", "message": "Modelo no autorizado"}, status=403)
+
+    # 5) Cargar modelo de forma dinámica
+    try:
+        app_label, model_name = model_path.split(".")
+        Model = apps.get_model(app_label, model_name)
+        if Model is None:
+            raise LookupError("Modelo no encontrado")
+    except Exception as e:
+        logger.exception("Error cargando modelo %s: %s", model_path, e)
+        return JsonResponse({"status": "error", "message": "Modelo inválido"}, status=400)
+
+    # 6) Obtener objeto base
+    obj = Model.objects.filter(pk=obj_id).first()
+    if not obj:
+        return JsonResponse({"status": "error", "message": f"Objeto {obj_id} no encontrado"}, status=404)
+
+    # 7) Verificar que el campo exista en el objeto
+    if not hasattr(obj, field_name):
+        return JsonResponse({"status": "error", "message": f"Campo '{field_name}' inexistente en modelo."}, status=400)
+
+    rel = getattr(obj, field_name)
+
+    # 8) Verificar que el atributo sea manejable como relación M2M (tiene add/remove)
+    if not (hasattr(rel, "add") and hasattr(rel, "remove")):
+        return JsonResponse({"status": "error", "message": f"Campo '{field_name}' no es ManyToMany."}, status=400)
+
+    # 9) Obtener modelo relacionado y elemento
+    RelatedModel = rel.model
+    item = RelatedModel.objects.filter(pk=item_id).first()
+    if not item:
+        return JsonResponse({"status": "error", "message": f"Elemento {item_id} no encontrado"}, status=404)
+
+    # 10) Ejecutar acción dentro de transacción para consistencia
+    try:
+        with transaction.atomic():
+            if action == "add":
+                rel.add(item)       # añade relación M2M
+                msg = f"Elemento {item_id} agregado a {model_path}.{field_name}"
+            elif action == "remove":
+                rel.remove(item)    # remueve relación M2M
+                msg = f"Elemento {item_id} removido de {model_path}.{field_name}"
+            else:
+                return JsonResponse({"status": "error", "message": "Acción inválida"}, status=400)
+
+            # Opcional: logger info (útil para auditoría)
+            logger.info("User %s: %s %s.%s <- %s", request.user, action, model_path, field_name, item_id)
+
+    except Exception as exc:
+        logger.exception("Error aplicando cambio en %s.%s: %s", model_path, field_name, exc)
+        return JsonResponse({"status": "error", "message": "Error interno al guardar"}, status=500)
+
+    # 11) Responder OK con datos útiles para el frontend
+    return JsonResponse({
+        "status": "ok",
+        "message": msg,
+        "model": model_path,
+        "field": field_name,
+        "action": action,
+        "obj_id": obj_id,
+        "item_id": item_id
+    })
 
 

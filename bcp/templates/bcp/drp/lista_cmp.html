@@ -8,23 +8,40 @@
 
 {% block content %}
 
-{% block encabezado_auth %}
 	 <ul class="encabezado_B">
-        <p><aa><strong>FORMULARIO DE ESPECIFICACION  DE COMPONENTES DE CONFIGURACION DEL DRP</aa></strong></p>
+        <p><aa><strong><h3>Administración de la Base de Componentes</h3></aa></strong></p>
 	 </ul>
-	 <ul class="encabezado_SB">
-	 <p>{{origen}}:{{drp.pk}}</p>
-	 </ul>
-	{% endblock %}
 
 
+<section>
+  
 
-		<p> Administrar la Base de Datos de Componentes  (Agregar [<strong><am style="background: rgb(82, 82, 225);">&#10010</am></strong> ] o Eliminar [<strong><rr style="background: white;">&#128465</rr></strong>] ).</p>
-		<p> Para cada Componente, especificar la <strong>Linea Base de Configuracion (LBC)</strong> 
-			[<img src="/static/img/linea_base_configuracion.png" width="20" height="20"></img> ]: La LBC corresponde a aquellos parametros
-			del Componente que se consideren criticos y  que deben estar configurados (asignados) con determinados valores. 
-			
-		</p>
+  <p>
+    Esta sección tiene por objetivo mantener la integridad, trazabilidad y control de la 
+    <strong>Base de Datos de Componentes</strong> de la infraestructura tecnológica, permitiendo 
+    <strong>agregar (✚)</strong>, <strong>modificar (🖉)</strong> o <strong>eliminar (🗑)</strong> 
+    los componentes que conforman el <em>Site</em> de Contingencia.
+  </p>
+
+  <p>
+    Para cada componente registrado se deberá establecer su 
+    <strong>Línea Base de Configuración (LBC)</strong>, entendida como el conjunto de parámetros técnicos 
+    y valores operacionales críticos que aseguran su correcto funcionamiento.
+  </p>
+
+  <p>
+    La <strong>LBC</strong> constituye un punto de referencia controlado que posibilita verificar la 
+    conformidad de las configuraciones, identificar desviaciones y garantizar la estabilidad, 
+    disponibilidad y recuperabilidad de los servicios asociados.
+  </p>
+
+  <p>
+    Toda modificación a la <strong>LBC</strong> deberá gestionarse conforme al 
+    <em>proceso formal de Control de Cambios</em>, asegurando la consistencia entre los entornos 
+    de producción y contingencia.
+  </p>
+</section>
+
 
 <!---- Lista de Componentes --------- -->
 
@@ -45,9 +62,9 @@
               position: relative;">
               <a style="float: left;">COMPONENTES
               <a href="{% url 'Crea-CMP'  %}?next={{ request.get_full_path|urlencode  }}"
-          title="Agregar Componente"
-          style="float: right; color: #ffcc00; text-decoration: none; font-size: 20px; font-weight: bold;">
-          &#10010;
+              title="Agregar Componente"
+              style="float: right; color: #ffcc00; text-decoration: none; font-size: 20px; font-weight: bold;">
+              &#10010;
               </a>
         </a>
           </th>
@@ -66,7 +83,7 @@
                 <th scope="col">Nombre</th>
                 <th scope="col">Descripción</th>
                 <th scope="col">Codigo de Inventario</th>
-                <th scope="col" style="width: 90px;">Opciones</th>
+                <th scope="col" style="width: 125px;">Opciones</th>
               </tr>
             </thead>
 
@@ -78,10 +95,13 @@
               <td>{{ cmp.descripcion }}</td>
               <td>{{ cmp.codigo_inv }}</td>
               <td>
-                <!-- Crea un Parametro de Configuracion en la LBC -->
-                <a href="{% url 'Crea-LBC' cmp.pk %}?next={{ request.path|urlencode }}" 
-            class="link" data-message="Crea Parametro de Condiguracion en la LBC ... ">
-                    <img src="/static/img/linea_base_configuracion.png" width="15" height="15" alt="LBC">
+
+                <!-- Modifica el Componente -->
+                <a href="{% url 'Modifica-CMP' cmp.pk %}?next={{ request.path|urlencode }}"
+                  class="link"
+                  data-message="Modifica el Componente"
+                  style="margin-left: 8px;">
+                  <strong><aa style="font-size: 15px;">&#128393;</aa></strong>
                 </a>
 
                 <!-- Borra el Componente -->
@@ -92,6 +112,13 @@
                   style="margin-left: 8px;">
                   <strong><rr style="font-size: 15px;">&#128465;</rr></strong>
                 </a>
+
+                <!-- Crea un Parametro de Configuracion en la LBC -->
+                <a href="{% url 'Crea-LBC' cmp.pk %}?next={{ request.path|urlencode }}" 
+                class="link" data-message="Crea Parametro de Condiguracion en la LBC ... ">
+                <img src="/static/img/linea_base_configuracion.png" width="20" height="20" alt="LBC">
+                </a>
+
               </td>
             </tr>
 
@@ -99,7 +126,7 @@
             <tr>
               <td colspan="6" style="padding: 10px 0 20px 40px;">
                 {% if cmp.lbc.exists %}
-            <p><strong>LINEA BASE DE CONFIGURACION :</strong></p>
+            <p><strong>LINEA BASE DE CONFIGURACION {{cmp.nombre}} :</strong></p>
                   <table style="width: 95%; background-color: #f7f7f7; border: 1px solid #ddd; border-radius: 6px;">
                     <thead style="background-color: #e3e9f7; color: #002b5c; background: black;">
                       <tr style="background: black;">
@@ -107,7 +134,7 @@
                         <th>Descripción</th>
                         <th>Método acceso</th>
                         <th>Valor</th>
-                        <th>-X-</th>
+                        <th style="width: 100px;">Opciones</th>
 
                       </tr>
                     </thead>
@@ -118,7 +145,16 @@
                           <td>{{ lbc.descripcion }}</td>
                           <td>{{ lbc.metodo_acceso }}</td>
                           <td>{{ lbc.valor }}</td>
-                          <td><!---- Borra Parametro de LBC-->
+                          <td>
+                            <!-- Modifica el Parametro de LBC -->
+                            <a href="{% url 'Modifica-LBC' lbc.pk cmp.pk %}?next={{ request.path|urlencode }}"
+                              class="link"
+                              data-message="Modifica el Componente"
+                              style="margin-left: 8px;">
+                              <strong><aa style="font-size: 15px;">&#128393;</aa></strong>
+                            </a>
+
+                            <!---- Borra Parametro de LBC-->
                             <a href="{% url 'Borra-LBC' lbc.pk %}?next={{ request.path|urlencode }}"
                             class="link confirm-link"
                             con-message="* * *  Confirma Eliminación del Parametro de LBC ? * * *"

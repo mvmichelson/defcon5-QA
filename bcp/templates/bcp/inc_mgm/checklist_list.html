@@ -1,0 +1,145 @@
+<!Programa HTML>
+<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+{%extends "base_generic.html"%}
+{% load static %}
+
+{% block extra_head %}
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+
+
+
+{% block content %}
+<!----------------- ENCABEZADOS ------------------>
+<ul class="encabezado_B">
+	<p><strong>LISTA DE CHECKLIST DEL PROCEDIMIENTO DE CONTINGENCIA</strong></p>
+</ul>
+
+	<table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+		<!-- Encabezado de columnas -->
+		<thead class="encabezado_N" style="background: rgb(65, 1, 1);">
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+				<th scope="col">PROCEDIMIENTO</th>
+				<th scope="col">ESCENARIO RIESGO</th>
+				<th scope="col">ESTRATEGIA</th>
+				<th scope="col">RTO</th>
+				<th scope="col">RPO</th>
+			</tr>
+		</thead>
+
+      <tbody style="border-top: none;">
+
+            <tr style="border-bottom: 1px solid #ccc;">
+				<td>{{proc.nombre }}</td>
+				<td>{{proc.escenarios}}</td>
+				<td>{{proc.estrategia}}</td>
+				<td>{{rto}}</td>
+				<td>{{rpo}}</td>
+            </tr>
+
+      </tbody>
+    </table>
+
+
+<!----------------- FIN  ENCABEZADOS ------------------>
+	
+<!---- Lista de Checklist  --------- -->
+<br/>
+	<ul class="BarraScroll" style="height: 250px;">	
+
+    <table class="" style="width: 100%; border-collapse: collapse;
+	padding: 0px;
+    border-collapse: collapse;
+    border: 2px solid rgb(0, 0, 102);
+    letter-spacing: 2px;
+    font-family: sans-serif;
+    font-size: 1.1rem;">
+
+      <!-- Encabezado superior -->
+		<!-- Encabezado de columnas -->
+		<thead class="encabezado_N" style="color:white ">
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+				<th scope="col">Inc-Codigo</th>
+				<th scope="col">Inc-Fecha</th>
+				<th scope="col">Inc-Descrip</th>
+				<th scope="col">Inc-Estado</th>
+				<th scope="col">Nro.Chk.</th>
+				<th scope="col">Check-Fech.</th>
+				<th scope="col">Checklist.</th>
+				<th scope="col">Test</th>
+
+			</tr>
+		</thead>
+
+      <tbody style="border-top: none;">
+
+        {% if lista_chk %}
+          {% for chk in lista_chk %}
+            <tr style="border-bottom: 1px solid #ccc;">
+				<td>{{chk.incidente.codigo}}</td>
+				<td>{{chk.incidente.fecha}}</td>
+				<td>{{chk.incidente.descripcion}}</td>
+				<td>{% if chk.incidente.estado == True %} 
+					<rr class="blink">Abierto</rr> 
+				{%else%}
+					<aa>Cerrado</aa>
+				{%endif%}
+			</td>
+				<td style="text-align: center;"><strong>{{chk.nro_chk}}</strong></td><!-- Incorporar Campo Codigo del Check (evaluar) -->
+				<td>{{chk.fecha_creacion}}</td>
+				<td><!------------ Checklist de Ejecucion ----------------->
+					<a class="link blink" data-message="Revisar Evaluacion y Autorizar u Observar ..." 
+					href="{% url 'Checklist' chk.pk  %}">
+					<img src="/static/img/Evaluacion.jpg" width="25" height="25"></img>
+					</a>
+				</td>
+
+           </tr>
+          {%endfor%}
+        {%else%}
+            Usted no tiene asignados Procedimientos de Contngencia ....
+        {%endif%}
+
+      </tbody>
+    </table>
+		<br/>
+		<br/>
+		
+	</ul>
+<!-- Fin Lista de Servicios / Recursos ----------->
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+
+<br/>
+<aa style="font-size: 8px;">[proced_list]</aa>
+
+
+{%endblock%}
+

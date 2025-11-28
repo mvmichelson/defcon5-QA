@@ -1,0 +1,117 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de una Prueba de Procedimiento>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+<!--------- Encabezado -------------------------------------------->
+<ul class="encabezado_A">
+	<aa><strong>FORMULARIO DE CREACION DE PRUEBA DE PROCEDIMIENTO DE RECUPERACION </strong></aa>
+	</ul>
+<ul class="encabezado_A">
+	<aa><strong>Proceso: [</strong> {{proceso.path}} <strong>] &nbsp;&nbsp; \ &nbsp;&nbsp; Procedimiento: [</strong> {{proc.nombre}} <strong>]</strong></aa>
+</ul>
+
+<!--------- Fin Encabezado -------------------------------------------->
+
+	{% block D %}
+
+	<form action="" method="post">
+	{% csrf_token %}
+
+	<!-------------- Ingreso de Datos ---------------------------------->
+
+	<!-------- Objetivo de la Prueba -------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>8.1 Objetivo</strong></h5>
+	<p>
+		Indique el objetivo de la Prueba:
+	</p>
+	{{form.objetivo}}
+	</div>
+	
+	<!-------- Alcance de la Prueba -------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>8.2 Alcance</strong></h5>
+	<p> Describe los límites de esta prueba, indicando qué partes del procedimiento serán 
+		evaluadas, qué áreas o sistemas participarán y hasta qué punto se ejecutarán las 
+		actividades.</p>
+    <p>Especifica si la prueba abarcará solo una parte del proceso o su flujo completo, 
+		según los objetivos definidos. </p>
+
+	{{form.alcance}}
+	</div>
+
+	<!-------- Criterios de Exito  -------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>8.3 Criterios de Éxito</strong></h5>
+	<p>Define las condiciones que deben cumplirse para considerar que la prueba fue 
+		satisfactoria.</p>
+	<p>Indica los resultados mínimos aceptables o los indicadores que demostrarán que 
+		el procedimiento funcionó según lo planificado.</p>
+	<p>Estos criterios permiten evaluar objetivamente si el procedimiento cumple su propósito
+		 en un contexto de contingencia.</p>
+	{{form.criterios_exito}}
+	</div>
+
+	<!-------- Responsable  -------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>8.4 Auditor de Resultados</strong></h5>
+	<p>Corresponde al <strong>Consultor o Gestor de Continuidad</strong> encargado de 
+		supervisar, validar y documentar los resultados de la prueba de contingencia. 
+		Este rol verifica que la ejecución realizada por los Ejecutores cumpla con los 
+		objetivos, alcance y criterios definidos en el plan.</p>
+	<p>Además, consolida las evidencias y emite observaciones o recomendaciones para 
+		mejorar la efectividad del procedimiento.</p>
+	<p>El Responsable no participa directamente en la ejecución, manteniendo independencia 
+		para evaluar el desempeño y la conformidad del ejercicio.</p>
+	{{form.responsable}}
+	</div> 
+
+	<br/>
+	<br/>
+
+
+	<!-------- Botones de Salida ------------------------------------>
+	<a href="{%  url 'crea-proced-C' proc.pk %}"><bn class="button">Volver... </bn></a>	
+	<input type="submit" class="button" value="Grabar ... " />
+
+	</form>
+	
+
+	{% endblock %}
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[prcd_crea_prbaP8]</aa>
+
+{% endblock %}

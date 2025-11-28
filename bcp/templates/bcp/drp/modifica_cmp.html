@@ -1,0 +1,59 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para el Reporte de un Incidente >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+	{% block enc_activo %}
+	<ul class="encabezado_A">
+        <bb><strong>FORMULARIO DE MODIFICACION DE COMPONENTE</strong></bb>
+	</ul>
+	{% endblock %}
+
+<form action="" method="post">
+    {% csrf_token %}
+    <p><strong>Tipo:</strong></p>
+    <bn>Elija de la Lista, el tipo de Componente a registrar (p.e. Sistema Operativo)</bn> 
+    <p>{{ form.tipo_act }}</p>
+    <br/>
+    <p><strong>Nombre y versión:</strong></p>
+    <bn>Indique el nombre del Componente (no generico) y su version.
+        (p.e. Oracle Solaris version 11.4 SRU 67.)</bn></p>
+    <bn>En caso de un Servidor, identificarlo por alguna de las siguientes alternativas: 
+        su (1) Nombre de Host (hostname),  
+        (2) Direccion IP, (3) Direccion MAC o (4) Identificador de Hw (UUID). </bn></p>
+
+    <p>{{ form.nombre }}</p>
+    <br/>
+
+    <p><strong>Descripción: </strong></p>
+    <bn>Haga una breve descripcion del objetivo y/o proposito del Componente 
+        (p.e. Sistema Operativo del Servidor de Base de Datos)</bn></p>
+    <p>{{ form.descripcion }}</p>
+    <br/>
+
+    <p><strong>Fabricante:</strong></p>
+    <bn>Indique el Fabricante del Componente y/o el Proveedor (vendedor).</bn></p>
+    <p>{{ form.fabricante }}</p>
+
+
+    <p><strong>Nro. Serie/Licencia:</strong></p>
+    <bn>Indique el Numero de Serie o Codigo de Licencia del Componente.</bn></p>
+    <p> {{ form.identificacion }}</p>
+
+
+
+    <p><strong>Codigo de Inventario:</strong></p>
+    <bn>Indique el codigo de inventario (interno) asignado al Componente.</bn></p>
+    <p> {{ form.codigo_inv }}</p>
+
+
+
+
+    <input type="hidden" name="next" value="{{ next }}">
+    <input type="submit" value="Graba">
+</form>
+
+{% endblock %}

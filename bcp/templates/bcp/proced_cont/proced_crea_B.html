@@ -8,8 +8,8 @@
 
 	{% block encabezado_detalle %}
 	<ul class="encabezado_A">
-        <aa><strong>FORMULARIO DE ESPECIFICACION DE PROCEDIMIENTO DE CONTINGENCIA</strong></aa>
-        </ul>
+        <h4><aa><strong>FORMULARIO DE ESPECIFICACION DE PROCEDIMIENTO DE CONTINGENCIA</strong></aa></h4>
+    </ul>
 	{% endblock %}
 
 	
@@ -27,7 +27,7 @@
 				<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
 				<br/>
 
-				<h5><strong>Indicadores de Recuperacion<strong></h5>
+				<h5><strong>Indicadores de Recuperacion</strong></h5>
 
 					<table class="lta">
 						<thead class="encabezado_C" style="background: blue; color: white;">
@@ -56,7 +56,7 @@
 					</table>
 				<br/>
 
-				<h5><strong>Servicios Criticos<strong></h5>
+				<h5><strong>Servicios Criticos</strong></h5>
 
 					<table class="lta">
 						<thead class="encabezado_C" style="background: rgb(255, 230, 0); color: white;">
@@ -138,58 +138,114 @@
 	<br/>
 	<h5><strong>1. Ingrese datos de Identificacion del PC</strong></h5>
 	<ul class="scr4">
-	<p> Nombre..: {{ form.nombre }}</p>
+	<p> Codigo del Procedimento..: {{ form.nombre }}</p>
 	<p> <!-- 1.2 Tipo..: {{form.tipo}}</p> -->
 	</ul>
 
 	<br/>
-	<h5><strong>2. Asigne el Escenario de Riesgo asociado al Proceso - {{proceso.nombre}} - que cubrira este PC</strong></h5>
+	<ul class="scr4" style="background-color: white; line-break: normal;">
+
+	<!------------ Mensaje ---------------------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h4><strong>2. Escenario de Riesgo</strong></h4>
+	<p>
+		En esta sección se selecciona un determinado <strong>Escenario de Riesgo</strong>
+		 asociado al <strong>Proceso relacionado</strong>
+		que sera cubierto por este Procedimiento de Contingencia.    
+	</p>
+	<p>
+		   
+	</p>
+
+	</div>
+	<!------------ Fin Mensaje ---------------------------------------------->
 	<p>{{form.escenarios}}</p>
-
-	<br/>
-	<h5><strong>3. Describa la Estrategia especifica utilizada por este PC</strong></h5>
-	<p>{{form.estrategia}}</p>
-
-	<br/>
-	<h5><strong>4. Asigne los Roles a  los Gestores asociados a la aprobacion y ejecucion del PC</strong></h5>
-	<ul class="scr4">
-	<p>4.1 Responsable: Corresponde al responsable funcional del Proceso Original contingenciado y quien aprueba el PC.
-	<div class="flex-container">
-	<div class="flex-item>" style="width: 50%; text-align: center;">
-	{{form.resp_proceso}}
-	</div>
-	<div class="flex-item" style="width: 60%; text-align: left;">
-	Respaldo:&emsp;{{form.bck_resp}}
-	</div> 
-	</div>
-	<br/>
-
-	<p>4.2 Ejecutor: Corresponde al Responsable de Ejecutar y mantener actualizado  el PC </p>
-	<div class="flex-container">
-	<div class="flex-item>" style="width: 50%; text-align: center;">
-	{{form.gestor_ejecutor}}
-	</div>
-	<div class="flex-item" style="width: 60%; text-align: left;">
-	Respaldo:&emsp;{{form.bck_ejecutor}}
-	</div> 
-	</div>
-	<br/>
-		
-	<p>4.3 Enlace Comite Crisis: Es el integrante del Comite de Crisis a quien se debe informar la activacion del PC</p>
-	<div class="flex-container">
-	<div class="flex-item>" style="width: 50%; text-align: center;">
-	{{form.enlace_c_crisis}}
-	</div>
-	<div class="flex-item" style="width: 60%; text-align: left">
-	Respaldo:&emsp;{{form.bck_enlace}}
-	</div> 
-	</div>
-	<br>
-
-	<p>4.4 Gestor Consultor: Coordina y gestiona el diseño, Implementacion y mantencion del PC&emsp;</p>
-	<p>{{proced.gestor_consultor}} </p>
 	</ul>
 
+	<br/>
+	<ul class="scr4" style="background-color: white; line-break: normal;">
+
+	<!------------ Mensaje ---------------------------------------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h4><strong>3. Estrategia de Recuperacion</strong></h4>
+	<p>
+		Esta sección detalla la estrategia especifica a aplicar para restaurar la 
+		continuidad operativa que implementara el Procedimiento de Contingencia.   
+	</p>
+	<p>
+		Debe corresponder a una especificacion de la Estrategia General definida para 
+		cada Escenario de Riesgo.    
+	</p>
+
+	</div>
+	<!------------ Fin Mensaje ---------------------------------------------->
+
+	<p>{{form.estrategia}}</p>
+
+	</ul>
+
+<br/>
+<ul class="scr4" style="background-color: white; line-break: normal;">
+
+<!------------ Mensaje ---------------------------------------------->
+<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+<h4><strong>4. Roles</strong></h4>
+<p>
+	Esta sección especifica la asignacion de gestores a los siguientes roles del 
+	Procedimiento de Contingencia:  
+</p>
+<br/>
+<p>
+	<strong>Responsable</strong>: Es el responsable de nivel táctico superior 
+	inmediato  (Gerente, Subgerente, Jefe de Area) del Proceso critico asociado 
+	al Procedimiento. Es quien, durante el ciclo de aprobacion autoriza el 
+	Procedimiento.   
+</p>
+<p>
+	<strong>Ejecutor</strong>......: Corresponde al responsable de nivel operativo
+	encargado de la operacion del Proceso y responsable de ejecutar el 
+	Procedimiento de Contingencia durante un incidente asi como de su mantencion (actualizacion).  
+</p>
+	<strong>Enlace Comite de Crisis</strong>: Es el integrante del Comite de Crisis
+	designado como enlace de comunicacion con esta instancia. Su rol es actuar como
+	facilitador del area o unidad responsable del Proceso frente al Comite.   
+</p>
+<br/>
+</p>
+	Los gestores asignados a los roles <strong>Responsable</strong> y <strong>Ejecutor</strong>
+	deben pertenecer a los grupos <strong>"Autorizadores"</strong> y/o <strong>"Ejecutores"</strong>.
+	El gestor asignado al rol <strong>"Enlace Comite de Crisis"</strong> debe pertencer al grupo <strong>"
+		Comite de Crisis"</strong>. El Sistema disponibiliza automaticamente estas definiciones
+		el el box de seleccion de cada rol.    
+</p>
+
+</p>
+	Opcionalmente a cada gestor asignado se le puede definir un <strong>Respaldo</strong> a quien acudir
+	en caso de ausencia o dificultad de contacto del titular.    
+</p>
+
+</div>
+<!------------ Fin Mensaje ---------------------------------------------->
+
+
+	<ul class="scr4">
+		<div class="flex-container">
+			<div class="flex-item>" style="width: 50%; text-align: left;">
+				<p><bn>Responsable: {{form.resp_proceso}}</bn></p>
+				<p><bn>Ejecutor........: {{form.gestor_ejecutor}}</bn></p>
+				<p><bn>Enlace...........: {{form.enlace_c_crisis}}</bn></p>
+			</div>
+			<div class="flex-item" style="width: 60%; text-align: left;">
+				<p><bn>Respaldo: {{form.bck_resp}}</bn></p>
+				<p><bn>Respaldo: {{form.bck_ejecutor}}</bn></p>
+				<p><bn>Respaldo:&emsp;{{form.bck_enlace}}</bn></p>
+			</div> 
+		</div>
+	<br/>
+	</ul>
+	</ul>
+
+	<!---- Botones de Salida ----------->
 	<br/>
 		<a href="{% url 'Lista-Proced' 1 %}"><bb class="button">... Volver</bb></a>
         <input type="submit" class="button" value="Siguiente ..." />

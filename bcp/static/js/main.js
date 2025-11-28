@@ -208,48 +208,40 @@ document.addEventListener("DOMContentLoaded", function () {
 // Inhibir actualización de Scroll (para todos los .BarraScroll y la ventana principal)
 // ====================================================================================
 
+// Inhibidor de Scroll (para .BarraScroll y opcionalmente la ventana principal)
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Activa Inhibidor de Barra de Scroll');
+    console.log('Activa Inhibidor de Scroll');
 
     // 1️⃣ --- Para todos los contenedores con clase .BarraScroll ---
     const barras = document.querySelectorAll('.BarraScroll');
     barras.forEach((barra, i) => {
-        const key = `scrollPositionInner_${i}`; // clave única por box
-
-        // Restaurar posición
+        const key = `scrollPositionInner_${i}`;
         const pos = sessionStorage.getItem(key);
-        if (pos) {
-            console.log(`Restaura posición de .BarraScroll[${i}]`);
-            barra.scrollTop = pos;
-        }
+        if (pos) barra.scrollTop = pos;
 
-        // Guardar al hacer scroll
-        barra.addEventListener('scroll', () => {
-            sessionStorage.setItem(key, barra.scrollTop);
+        barra.addEventListener('scroll', () => sessionStorage.setItem(key, barra.scrollTop));
+        window.addEventListener('beforeunload', () => sessionStorage.setItem(key, barra.scrollTop));
+    });
+
+    // 2️⃣ --- Solo si el template tiene la marca meta ---
+    const activarPrincipal = document.querySelector('meta[name="inhibir-scroll-principal"]');
+    if (activarPrincipal) {
+        console.log('Inhibidor principal ACTIVADO');
+
+        const mainKey = 'scrollPositionMain';
+        const posMain = sessionStorage.getItem(mainKey);
+        if (posMain) window.scrollTo(0, posMain);
+
+        window.addEventListener('scroll', () => {
+            sessionStorage.setItem(mainKey, window.scrollY);
         });
 
-        // Guardar antes de recargar
         window.addEventListener('beforeunload', () => {
-            sessionStorage.setItem(key, barra.scrollTop);
+            sessionStorage.setItem(mainKey, window.scrollY);
         });
-    });
-
-    // 2️⃣ --- Para la barra principal del documento (window / body) ---
-    const mainKey = 'scrollPositionMain';
-    const posMain = sessionStorage.getItem(mainKey);
-    if (posMain) {
-        console.log('Restaura posición principal');
-        window.scrollTo(0, posMain);
+    } else {
+        console.log('Inhibidor principal DESACTIVADO');
     }
-
-    window.addEventListener('scroll', () => {
-        sessionStorage.setItem(mainKey, window.scrollY);
-    });
-
-    window.addEventListener('beforeunload', () => {
-        console.log('Guarda posición principal antes de recargar');
-        sessionStorage.setItem(mainKey, window.scrollY);
-    });
 });
 
 
@@ -482,44 +474,77 @@ document.addEventListener("DOMContentLoaded", function () {
         toggle.addEventListener("change", function () {
             let procedimientoId = this.dataset.id;
             let isChecked = this.checked;
+            let incidenteId = this.dataset.incidente;   // 👈 NUEVO: lee el id del incidente
 
             console.log("Intentando cambiar estado...");
             console.log(`Switch cambiado: ${procedimientoId}, Estado: ${isChecked}`);
+            console.log("incidente_id leído del dataset:", incidenteId); // 👈 NUEVO: muestra incidente_id en consola
 
             if (!procedimientoId) {
                 console.error("Error: No se encontró el ID del procedimiento en el dataset.");
                 return;
             }
 
-            console.log(`Enviando petición a: /bcp/procedimientos/toggle/${procedimientoId}/`); 
-            
-            fetch(`/bcp/procedimientos/toggle/${procedimientoId}/`, {  
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken")
-                },
-                body: JSON.stringify({ esta_activo: isChecked })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+            // 🚨 === CAMBIO AÑADIDO AQUÍ ===
+            // Confirmación con SweetAlert2
+            let mensajeConfirmacion = isChecked ? "Confirma Orden de Activación?. Se notificará a los ejecutores y se asignará un Checklist de Ejecucion" : "Confirma Orden de Desactivación?";
+            Swal.fire({
+                title: mensajeConfirmacion,
+                text: "¿Deseas continuar con esta acción?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí, confirmar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    console.log("Cambio cancelado por el usuario.");
+                    toggle.checked = !isChecked; // revierte el estado visual del switch
+                    return;
                 }
-                return response.json();
-            })
-            .then(data => {
-                console.log("Respuesta recibida:", data);
-                if (data.success) {  
-                    console.log("Estado cambiado correctamente:", data.nuevo_estado);
-                } else {
-                    alert("Error al actualizar el estado.");
+
+                console.log(`Enviando petición a: /bcp/procedimientos/toggle/${procedimientoId}/`); 
+                
+                fetch(`/bcp/procedimientos/toggle/${procedimientoId}/`, {  
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ 
+                        esta_activo: isChecked,
+                        incidente_id: incidenteId    // 👈 NUEVO: envía el id del incidente al backend
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Respuesta recibida:", data);
+                    if (data.success) {  
+                        console.log("Estado cambiado correctamente:", data.nuevo_estado);
+                        Swal.fire({
+                            icon: "success",
+                            title: "Actualización exitosa",
+                            text: isChecked ? "Procedimiento activado. Se enviará" : "Procedimiento desactivado.",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire("Error", "Error al actualizar el estado.", "error");
+                        toggle.checked = !isChecked;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error en la petición:", error);
+                    Swal.fire("Error", "No se pudo conectar al servidor.", "error");
                     toggle.checked = !isChecked;
-                }
-            })
-            .catch(error => {
-                console.error("Error en la petición:", error);
-                toggle.checked = !isChecked;
+                });
             });
+            // 🚨 === FIN DEL CAMBIO ===
         });
     });
 
@@ -538,5 +563,92 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 // ==========================================================================================
+
+
+
+// Activa/Desactiva cualquier booleano de cualquier Modelo
+// =====================================================================================
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("main.js en Activa/Desactiva GENERICO cargado correctamente");
+
+    document.querySelectorAll(".toggle-switch").forEach(function (toggle) {
+        toggle.addEventListener("change", function () {
+            let app = this.dataset.app;
+            let model = this.dataset.model;
+            let id = this.dataset.id;
+            let field = this.dataset.field;
+            let value = this.checked;
+
+            // === ✅ CAMBIO CLAVE ===
+            // Usa mensajes personalizados si existen, o los genéricos si no.
+            let mensajeConfirmacion = value
+                ? (this.dataset.confirmOn || "Confirma Activación")
+                : (this.dataset.confirmOff || "Confirma Desactivación");
+            // === FIN CAMBIO ===
+
+            Swal.fire({
+                title: mensajeConfirmacion,
+                text: "¿Deseas continuar con esta acción?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sí, confirmar",
+                cancelButtonText: "Cancelar",
+                reverseButtons: true
+            }).then((result) => {
+                if (!result.isConfirmed) {
+                    console.log("Cambio cancelado por el usuario.");
+                    toggle.checked = !value;
+                    return;
+                }
+
+                fetch(`/bcp/toggle/${app}/${model}/${id}/`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken")
+                    },
+                    body: JSON.stringify({ field: field, value: value })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        Swal.fire("Error", "Error al actualizar el estado: " + data.error, "error");
+                        toggle.checked = !value;
+                    } else {
+                        console.log(`Campo ${data.field} de ${data.model}(${data.id}) → ${data.nuevo_estado}`);
+                        Swal.fire({
+                            icon: "success",
+                            title: "Actualización exitosa",
+                            text: value ? "Activado correctamente." : "Desactivado correctamente.",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    Swal.fire("Error", "No se pudo conectar al servidor.", "error");
+                    toggle.checked = !value;
+                });
+            });
+        });
+    });
+
+    // Obtiene token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            document.cookie.split(';').forEach(cookie => {
+                let trimmed = cookie.trim();
+                if (trimmed.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(trimmed.substring(name.length + 1));
+                }
+            });
+        }
+        return cookieValue;
+    }
+});
+// =====================================================================================
 
 

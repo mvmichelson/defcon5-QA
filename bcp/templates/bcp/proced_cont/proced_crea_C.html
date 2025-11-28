@@ -6,31 +6,61 @@
 {% extends "base_generic.html" %}
 {% block content %}
 
-	{% block encabezado_detalle %}
-	<ul class="encabezado_A">
-        <aa><strong>FORMULARIO DE CREACION DE PROCEDIMIENTO DE RECUPERACION </strong></aa>
-        </ul>
-	<ul class="encabezado_A">
-	  <aa>{{proceso.path}}</aa>
+<!--------- Inhibe actualizacion del scroll principal -->
+<meta name="inhibir-scroll-principal" content="true">
+
+{% block encabezado_detalle %}
+<ul class="encabezado_A">
+	<aa><strong>FORMULARIO DE CREACION DE PROCEDIMIENTO DE RECUPERACION </strong></aa>
 	</ul>
-	{% endblock %}
+<ul class="encabezado_A">
+	<aa><strong>Proceso:{{proceso.path}}</strong></aa>
+</ul>
+{% endblock %}
 
 	
 	{% block B %}<!--------- SERVICIOS --------------------------------------------->
-	<h5><strong>5. Servicios Requeridos</strong></h5>
-	Indique todos los servicios/recursos que necesita el Procedimiento para su ejecucion
-	<br/>
-	<ul class="scr4" style="align-content: center;">
+	
+	<ul class="scr4" style="background-color: white; line-break: normal;">
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>5. Servicios Requeridos</strong></h4>
+		<p>
+			Esta sección describe todos aquellos servicios o recursos críticos que debe disponer el Procedimiento durante 
+			la ocurrencia del incidente para su ejecución existosa.  
+		</p>
+		<p>
+			Estos servicio o recursos pueden ir desde herramientas de Sw. (Planillas pre-diseñadas, Bases de Datos stand alone, 
+			paginas web), listados impresos de estados de cuentas, hasta empresas de transporte de pasajeros, mensajeria (curiers)
+			 o instalaciones fisicas alternativas. Se debe considerar la eventualidad de que, durante un incidente, el 
+			 servicio/recurso podria no estar disponible dentro de los margenes de tiempo adecuados, por lo que es recomendable 
+			 definir mas de una alternativa. 
+		</p>
+		<p>
+			El uso y aplicacion de estos servicios/recursos deben quedar claramente descritos dentro de los pasos definidos en la 
+			seccion 7 (Procedimiento de Contingencia) y los datos de contacto para requerirlos en la seccion 6 (Indice de Contactos). 
+		</p>
+		<p>
+			Para registrar un <strong>Servicio/Recurso crítico requerido</strong> haga click en ( <strong><am style="color: rgb(220, 189, 51); font-size: 15px;">&#10010</am>
+				</strong>).
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+	
 	{% if servicios %}
 		<table class="lta">
 		   <thead style="background: greenyellow; color:black">
 		   <tr>
+			<th scope="col">
+				<a href="{% url 'crea-P5' proced.pk %}?next={{ request.get_full_path|urlencode  }}"
+				class="link"  data-message="Registra un Servicio ...">
+				<strong><am style="color: yellow; font-size: 15px;">&#10010</am></strong></a>
+			</th>
+
 			<th scope="col">NOMBRE SERVICIO</th>
 			<th scope="col">DESCRIPCION/OBJETIVO</th>
 			<th scope="col">CONTACTO</th>
 			<th scope="col">RESPALDO CONTACTO</th>
-			<th scope="col"><a href="{% url 'crea-P5' proced.pk 0  %}"
-				class="link"  data-message="Registra un Servicio ..."><strong><am style="color:green">&#10010</am></strong></a></th>
 			
 		   </tr>
 		   </thead>
@@ -39,17 +69,18 @@
 		   
 		    {%for ser in servicios.all  %}
 		    <tr>
-			<th scope="row"><bb>{{ser.nombre}}<bb></th>
-			<th scope="row"><bb>{{ser.objetivo}}<bb></th>
-			<th scope="row"><bb>{{ser.contacto}}<bb></th>
-			<th scope="row"><bb>{{ser.contacto_bck}}<bb></th>
-			<th scope="row"><bb><a href="{% url 'borra-P5' ser.pk  0 %}"
+			<th scope="row"><bb>
+				<a href="{% url 'borra-P5' ser.pk %}?next={{ request.get_full_path|urlencode  }}"
 				class="link confirm-link" con-message="* * *  Confirma Eliminacion del Servicio? * * *"  data-message="Elimina Servicio ...">
-				<rr>&#128465</rr> </th>
-			
+				<rr>&#128465</rr> 
+			</th>
+			<th scope="row">{{ser.nombre}}</th>
+			<th scope="row">{{ser.objetivo}}</th>
+			<th scope="row">{{ser.contacto}}</th>
+			<th scope="row">{{ser.contacto_bck}}</th>
 		    </tr>
-       		    {% if not forloop.last %}
-        	    {%endif%}
+			{% if not forloop.last %}
+			{%endif%}
       		{%endfor%}
 		   <tbody>
 		</table>
@@ -65,22 +96,46 @@
 
 	{% block C %}<!--------- CONTACTOS  --------------------------------------------->
 	<br/>
-	<h5><strong>6. Indice de Contactos</strong></h5>
-	Registre  todos los datos de contacto involucrados en el Procedimiento. 
-	Considere los Contactos de los Servicios señalados en la seccion 5.
-	<br/>
+	<ul class="scr4" style="background-color: white; line-break: normal;">
 
-	<ul class="scr4">
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>6. Indice de Contactos</strong></h4>
+		<p>
+			En esta sección se registra según se considere relevante, aquellos datos de referencia de todos aquellas personas
+			que potencialmente deban ser ubicadas o contactadas durante la ocurrencia de un incidente.  
+		</p>
+		<p>
+			El Sistema asigna inicialmente por defecto los datos de referencia de los involucrados directos con la ejecucion de este Procedimiento,
+			(Responsable, Ejecutor, contacto con el Comite de Crisis) sin embargo existen varios factores y eventos durante la 
+			definicion de este Procedimiento que podrian alterar esta  definicion inicial por lo que se recomienda verificar antes 
+			de aprobar esta especificacion dentro de la aprobacion del Procedimiento. 
+		</p>
+		<p>
+			Dentro de esta definicion, se deben considerar los contactos con los Servicios Criticos identificados en la seccion 
+			anterior (seccion 5)
+		</p>
+		<p>
+			Para registrar un <strong>Contacto crítico</strong> haga click en ( <strong><am style="color: rgb(220, 189, 51); font-size: 15px;">&#10010</am>
+				</strong>).
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
 		<table class="lta" >
 		   <thead >
 		   <tr>
-			<th scope="col">NOMBRE</th>
-			<th scope="col">CORREO ELECTRONICO</th>
-			<th scope="col">TELEFONO OFICINA</th>
-			<th scope="col">TELEFONO CELULAR</th>
-			<th scope="col"><a href="{% url 'crea-P6' proced.pk  0 %}"
+			<th scope="col">
+				<a href="{% url 'crea-P6' proced.pk %}?next={{ request.get_full_path|urlencode  }}"
 				class="link"  data-message="Registra un Contacto ...">
-				<strong><am>&#10010</am></strong></a></th>
+				<strong><am style="color: yellow; font-size: 15px;">&#10010</am></strong></a>
+			
+			</th>
+			
+			<th scope="col" style="background-color: yellow; color:black">NOMBRE</th>
+			<th scope="col" style="background-color: yellow; color:black">CORREO ELECTRONICO</th>
+			<th scope="col" style="background-color: yellow; color:black">TELEFONO OFICINA</th>
+			<th scope="col" style="background-color: yellow; color:black">TELEFONO CELULAR</th>
 			
 		   </tr>
 		   </thead>
@@ -89,13 +144,16 @@
 		   {% if contactos %}
 		    {%for con in contactos.all  %}
 		    <tr>
-			<th scope="row"><bb>{{con.nombre}}<bb></th>
-			<th scope="row"><bb>{{con.correo}}<bb></th>
-			<th scope="row"><bb>{{con.tel_lab}}<bb></th>
-			<th scope="row"><bb>{{con.cel_lab}}<bb></th>
-			<th scope="row"><bb><a href="{% url 'borra-P6' con.pk 0  %}"
-				class="link confirm-link" con-message="* * *  Confirma Eliminacion del Contacto? * * *"  data-message="Elimina Contacto ..."> 
-				<rr>&#128465</rr></th>
+			<th scope="row">
+			<a href="{% url 'borra-P6' con.pk  %}?next={{ request.get_full_path|urlencode  }}"
+			class="link confirm-link" con-message="* * *  Confirma Eliminacion del Contacto? * * *"  data-message="Elimina Contacto ..."> 
+			<rr>&#128465</rr></a>
+			</th>
+
+			<th scope="row">{{con.nombre}}</th>
+			<th scope="row">{{con.correo}}</th>
+			<th scope="row">{{con.tel_lab}}</th>
+			<th scope="row">{{con.cel_lab}}</th>
 			
 		    </tr>
        		    {% if not forloop.last %}
@@ -114,22 +172,44 @@
 
 	{% block D %}<!--------- PROCEDIMIENTOS CONT.-------------------------------------------->
 	<br/>
-	<h5><strong>7. Procedimiento de Contingencia (PC)</strong></h5>
-	Describa/Especifique cada uno de los pasos del Procedimiento de Contingencia (PC)&emsp;[{{proced.sec_pasos}}]
-	<br/>
-	<ul class="scr4">
+	
+	<ul class="scr4" style="background-color: white; line-break: normal;">
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>7. Procedimiento de Contingencia (PC)</strong></h4>
+		<p>
+			Esta sección define los pasos que se deben seguir para poner en operaciones este <strong>Procedimiento de Contingencia
+			</strong> y su aplicacion, en el  contexto del <strong>Proceso critico</strong>  asociado   ({{proceso.path}}) y un determinado 
+			<strong>Escenario de Riesgo</strong> al que éste proceso esta expuesto  ({{proced.escenarios.titulo}})
+			 .  
+		</p>
+		<p>
+			Cada paso tiene asociado un tiempo de ejecucion expresado en minutos (T.E.), cuya suma agregada hasta la puesta en 
+			operaciones del Procedimiento no puede ser mayor al <strong>RTO</strong> definido para el 
+			Proceso asociado (en este caso: {{rto}}). 
+		</p>
+		<p>
+			Para registrar un <strong>Paso de Procedimiento</strong> haga click en ( <strong><am style="color: rgb(220, 189, 51); font-size: 15px;">&#10010</am>
+				</strong>).
+		</p>
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+	<ul class="BarraScroll" style="height: 300px;">
 		<table class="lta">
 		   <thead style="background: rgb(184, 183, 183); color:black">
-			<strong>
 		   <tr style="font-size: 10px;">
-			<th scope="col" style="width: 5px;">NRO.</th>
-			<th scope="col" style="width: 400px;">DESCRIPCION</th>
-			<th scope="col" style="width: 250px;">EJECUTOR RESP.</th>
-			<th scope="col" style="width: 10px; font-size: 9px;" 
-			class="link" data-message="Tiempo Esperado Ejec. ...">T.E.(min)</th>
 			<th scope="col" style="width: 10px; text-align: center;">
-				<a href="{% url 'crea-P7' proced.pk 0  %}" class="link"  data-message="Agrega Paso al PC ..."><strong><am style="color:brown">&#10010</am></strong></a></th>
-			</strong>
+				<a href="{% url 'crea-P7' proced.pk 0  %}" class="link"  
+				data-message="Agrega Paso al PC ...">
+				<strong><am style="color: yellow; font-size: 15px;">&#10010</am>
+				</strong></a></th>
+			<th scope="col" style="width: 5px; background: rgba(255, 153, 0, 0.9); color:yellow;">NRO.</th>
+			<th scope="col" style="width: 400px; background: rgba(255, 153, 0, 0.9); color:yellow;">DESCRIPCION</th>
+			<th scope="col" style="width: 250px; background: rgba(255, 153, 0, 0.9); color:yellow;">EJECUTOR RESP.</th>
+			<th scope="col" style="width: 10px; font-size: 9px; background: rgba(255, 153, 0, 0.9); color:yellow;" 
+			class="link" data-message="Tiempo Esperado Ejec. ...">T.E.(min)</th>
+			
 		   </tr>
 		   </thead>
 
@@ -137,15 +217,16 @@
 		   {% if pasos %}
 		    {%for pas in pasos.all  %}
 		    <tr >
+			<th scope="row"><a href="{% url 'borra-P7' pas.pk %}?next={{ request.get_full_path|urlencode  }}"
+			class="link confirm-link" con-message="* * *  Confirma Eliminacion? * * *"  data-message="Elimina Paso ..."
+			> <rr>&#128465<rr>
+
+			</th>
+
 			<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{pas.nro_paso}}<bb></th>
 			<th scope="row"><bb style="font-size: 10px;">{{pas.descripcion}}<bb></th>
 			<th scope="row"><bb style="font-size: 10px;">{{pas.ejecutor}}<bb></th>
 			<th scope="row" style="text-align: center;"><bb style="font-size: 10px;">{{pas.tiempo_esp}}<bb></th>
-			<th scope="row"><a href="{% url 'borra-P7' pas.pk 0  %}"
-				class="link confirm-link" con-message="* * *  Confirma Eliminacion? * * *"  data-message="Elimina Paso ..."
-				> <rr>&#128465<rr>
-
-				</th>
 			
 		    </tr>
        		  {% if not forloop.last %}
@@ -156,46 +237,148 @@
 		   {%endif%}
 		   </tbody>
 		</table>
-	
+	</ul>
 	</ul>
 
 	{% endblock %}<!--------- FIN PROCEDIMIENTOS CONT.----	------------------------------------>
 
+
+	{% block E %}<!--------- PRUEBAS DE PROCEDIMIENTO -------------------------------------------->
+	<br/>
+	
+	<ul class="scr4" style="background-color: white; line-break: normal;">
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>8. Pruebas (Testing) del Procedimiento de Contingencia (PC)</strong></h4>
+		<p>
+			Esta Sección permite definir uno o varios  <strong>modelos de prueba </strong>, que servirá como referencia cada vez 
+			que se evalúe este Procedimiento  dentro de los <strong>ejercicios periodicos de continuidad operativa (Pruebas de BCP/DRP)</strong>.
+			Aquí se establece la información general del plan, como su objetivo, alcance y criterios de éxito.
+		</p>
+		<p>
+			Junto con ello, se definen los <strong>casos de prueba</strong>, que representan las acciones o verificaciones
+			específicas que se realizarán al aplicar este plan de prueba.  
+			De esta forma, el modelo combina la planificación general con los escenarios detallados que deberán ejecutarse
+			y documentarse en cada ejercicio.
+		</p>
+		<p>
+			Cada vez que se realice un <strong>ejercicio de continuidad operativa (BCP/DRP)</strong> esta prueba será 
+			aplicada y se generará una <strong>ejecución</strong> donde se registrarán los
+			resultados, evidencias y observaciones obtenidas.  
+			Esto permite evaluar la efectividad del procedimiento y mejorar la capacidad de respuesta ante incidentes.
+		</p>
+		<p>
+			Para registrar una <strong>Prueba de Procedimiento de Contingencia</strong> haga click en ( <strong><am style="color: rgb(220, 189, 51); font-size: 15px;">&#10010</am>
+				</strong>).
+		</p>
+
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+		<ul class="BarraScroll" style="height: 300px;">
+		<table class="lta">
+		   <thead style="background: rgb(184, 183, 183); color:black">
+			<strong>
+		   <tr style="font-size: 10px; background-color: gray;">
+			<th scope="col" style="width: 50px; text-align: center;">
+				<a href="{% url 'crea-P8' proced.pk %}?next={{ request.get_full_path|urlencode  }}" 
+				class="link"  data-message="Agrega Prueba ...">
+				<strong><am style="color: yellow; font-size: 15px;">&#10010</am>
+				</strong></a></th>
+			<th scope="col" style="width: 20px; background-color: green;">CODIGO</th>
+			<th scope="col" style="width: 300px;background-color: green;">OBJETIVO</th>
+			<th scope="col" style="width: 300px; background-color: green;">ALCANCE</th>
+			<th scope="col" style="width: 300px; background-color: green;">CRITERIOS DE EXITO</th>
+			<th scope="col" style="width: 300px; background-color: green;">REVISOR</th>
+			<th scope="col" style="width: 30px; background-color: green;">CASOS</th>
+			<th scope="col" style="width: 300px; background-color: green;">ESTADO</th>
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		   {% if pruebas %}
+		    {%for test in pruebas.all  %}
+		    <tr >
+				<th scope="row">
+				<!----- Modifica Prueba ------------------->
+				<a href="{% url 'mod-P8' test.pk %}?next={{ request.get_full_path|urlencode  }}"
+				class="link" data-message="Modifica Prueba ..."
+				> <aa>&#128393</aa></a>
+				<!----- Borrar Prueba --------------------->
+				<a href="{% url 'borra-P8' test.pk  %}?next={{ request.get_full_path|urlencode  }}"
+				class="link confirm-link" con-message="* * *  Confirma Eliminacion? * * *"  data-message="Elimina Prueba ..."
+				> <rr>&#128465</rr></a>
+
+				</th>
+
+			<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{test.codigo}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{test.objetivo}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{test.alcance}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{test.criterios_exito}}<bb></th>
+			<th scope="row"><bb style="font-size: 10px;">{{test.responsable}}<bb></th>
+			<th scope="col">
+				<!------- Define Caso de Prueba ---------->
+				<a href="{% url 'Crea-Caso-P8' test.pk  0 %}?next={{ request.get_full_path|urlencode  }}"
+				class="link"  data-message="Casos de Prueba ...">
+				<strong><am style="color: yellow; font-size: 15px;">
+				<img src="/static/img/pc_2.png" width="25" height="25">		
+				</a>
+			</th>
+
+			</th>
+			<th scope="row"><bb style="font-size: 10px;">{{test.estado}}<bb></th>
+			
+		    </tr>
+       		  {% if not forloop.last %}
+        	   {%endif%}
+      		{%endfor%}
+		   {%else%}
+		     Sin Pruebas definidas.
+		   {%endif%}
+		   </tbody>
+		</table>
+		</ul>
+	</ul>
+	{% endblock %}<!--------- FIN PRUEBAS DE PROCEDIMIENTO.---------------------------------------->
+
+
+
 <!-------- Botones de Salida ------------->
-<br/>
+<br/><br/><br/>
 <a href="{% url 'crea-proced-B' proced.pk %}"><bb class="button" >... Volver</bb></a>
 <a href="{% url 'Lista-Proced' 1 %}"><bb class="button" >Salir</bb></a>
 <a href = "{% url 'env-aut-proced' proced.pk %}"><bb class="button" style="color:brown"><strong class="blink">Envia a Autorizacion</bb></strong></a>
 
 <br/>
 <br/>
+<br/>
 
-	<!----- CSS para Scripts ----------------------------------->
-	<!---------------------------------------------------------->
-		<!-- Caja de Comentario -->
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
 
-		<div id="comment-box" class="hidden" style="font-size: 13px;">
-			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
-			<h5><strong>Comentario de Revision:</strong></h5>
-			<textarea id="comment-text" rows="5" cols="30"></textarea>
-			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
-			<button id="close-comment">Cerrar</button>
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
 		</div>
-		
-		<!-- Globo de cómic -->
-		<div id="comicBalloon"></div>
+	</div>
+	
 
-		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
-		<div id="confirmation-dialog" class="hidden">
-			<div class="dialog-content">
-				<p id="confirmation-message"></p>
-				<button id="confirm-yes">Sí</button>
-				<button id="confirm-no">No</button>
-			</div>
-		</div>
-		
-
-	<!--------- Fin CSS para Scripts ------------------------->
+<!--------- Fin CSS para Scripts ------------------------->
 
 <!-------- Nombre del programa --------->
 <br/><br/><br/><br/>

@@ -1,0 +1,140 @@
+<!Programa en HTML>
+<!Despliega la Base de Servicios >
+<!Programado por Marco A. Villalobos Michelson>
+<!==============================================>
+
+{% extends "base_generic.html" %}
+
+
+{% block content %}
+
+	 <ul class="encabezado_B">
+        <p><aa><strong><h3>Administración de la Base de Servicios / Recursos Criticos</h3></aa></strong></p>
+	 </ul>
+
+
+<section>
+  
+
+  <p>
+    Esta sección tiene por objetivo mantener la integridad, trazabilidad y control de la 
+    <strong>Base de Servicios criticos</strong> de Procesos de negocio, permitiendo 
+    <strong>agregar (✚)</strong>, <strong>modificar (🖉)</strong> o <strong>eliminar (🗑)</strong> 
+    los componentes que conforman el catalogo de Servicios de la Organizacion.
+  </p>
+
+</section>
+
+
+<!---- Lista de Servicios/Recursos --------- -->
+
+	<ul class="BarraScroll" style="height: 350px;">	
+
+    <table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+            <!-- Encabezado de columnas -->
+            <thead class="encabezado_N">
+              <tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
+                 <th scope="col">Tipo</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Descripción</th>
+                <th scope="col" style="width: 90px;">
+                      <a href="{% url 'Crea-SRV'  %}?next={{ request.get_full_path|urlencode  }}"
+                      title="Agregar Componente"
+                      style="float:center; color: #ffcc00; text-decoration: none; font-size: 20px; font-weight: bold;">
+                      &#10010;
+
+                </th>
+              </tr>
+            </thead>
+
+      <tbody style="border-top: none;">
+
+        {% if lista_srv %}
+          {% for srv in lista_srv.all %}
+
+            <!-- Fila del componente -->
+            <tr style="border-bottom: 1px solid #ccc;">
+              <td class="link" data-message="{{srv.tipo.descripcion}}"><strong>{{ srv.tipo.nombre }}:</strong></td>
+              <td><strong>{{ srv.nombre }}</strong></td>
+              <td>{{ srv.descripcion }}</td>
+              <td><!-----Opciones ---------------->
+
+                <!-- Modifica el Componente -->
+                <a href="{% url 'Modi-SRV' srv.pk  %}?next={{ request.path|urlencode }}"
+                  class="link"
+                  data-message="Modifica el Componente"
+                  style="margin-left: 8px;">
+                  <strong><aa style="font-size: 15px;">&#128393;</aa></strong>
+                </a>
+
+                <!-- Borra el Componente -->
+                <a href="{% url 'Borra-SRV' srv.pk  %}?next={{ request.path|urlencode }}"
+                  class="link confirm-link"
+                  con-message="* * *  Confirma Eliminación del Componente ? * * *"
+                  data-message="Elimina Componente"
+                  style="margin-left: 8px;">
+                  <strong><rr style="font-size: 15px;">&#128465;</rr></strong>
+                </a>
+
+              </td><!------ Fin Opciones ------------------->
+            </tr>
+          {%endfor%}
+        {%else%}
+            No hay Servicios/Recursos definidos ....
+        {%endif%}
+
+      </tbody>
+    </table>
+		<br/>
+		<br/>
+		
+	</ul>
+<!-- Fin Lista de Servicios / Recursos ----------->
+
+	
+	<!---- Boton de Salida/Retorno ------------------------>
+	{% if origen == 1 %}
+		<a href ="{% url 'Asigna-Servicio' proceso.pk  %}" 
+		><aa class="button">Volver</aa></a>
+	{% elif origen == 2 %}
+  	<a href ="{% url 'Rev-Asigna-Servicios' proceso.pk  %}" 
+		><aa class="button">Volver</aa></a>
+    {%else%}
+  	<a href ="{% url 'Lista-Recursos' %}" 
+		><aa class="button">Volver</aa></a>
+
+	{%endif%}
+
+	</ul>
+
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+{% endblock %}

@@ -6,6 +6,10 @@
 {% extends "base_generic.html" %}
 {% block content %}
 
+<!--------- Inhibe actualizacion del scroll principal -->
+<meta name="inhibir-scroll-principal" content="true">
+
+
 	{% block enc_activo %}
 	<ul class="encabezado_A">
         <aa><strong>7. PROCEDIMIENTO DE RECUPERACION DE CONTINUIDAD</strong></aa>
@@ -31,7 +35,9 @@
 			<th scope="col" style="width: 300px;">DESCRIPCION</th>
 			<th scope="col" style="width: 250px;">EJECUTOR RESP.</th>
 			<th scope="col" style="width: 10px; font-size: 9px;" 
-			class="link" data-message="Tiempo Esperado Ejec. ...">Tiempo Esperado Ejecucion.(min)</th>
+			class="link" data-message="Tiempo Esperado Ejec. ...">Tiempo Esperado Ejecucion.(min)
+			</th>
+			<th> </th>
 			</strong>
 		   </tr>
 		   </thead>
@@ -45,7 +51,7 @@
 			<th scope="row"><bb style="font-size: 10px;">{{pas.descripcion}}<bb></th>
 			<th scope="row"><bb style="font-size: 10px;">{{pas.ejecutor}}<bb></th>
 			<th scope="row" style="text-align: center;"><bb style="font-size: 10px;">{{pas.tiempo_esp}}<bb></th>
-		
+			<th> </th>
 		    </tr>
        		    {% if not forloop.last %}
         	    {%endif%}
@@ -61,14 +67,17 @@
 			<th scope="row" style="background: rgb(184, 183, 183);"><bb style="font-size: 10px;">{{form.descripcion}}<bb></th>
 			<th scope="row" style="background: rgb(184, 183, 183);"><bb style="font-size: 10px;">{{form.ejecutor}}<bb></th>
 			<th scope="row" style="text-align: center; background: rgb(184, 183, 183);"><bb style="font-size: 10px;">{{form.tiempo_esp}}<bb></th>
+			<th scope="row" style="text-align: center; background: rgb(184, 183, 183);">
+				<!------ Boton de Ingreso de Paso. --------->
+				<input type="submit" class="" value="Graba" />
 			</tbody>
 			</table>
 			<bn>Total Tiempo Esperado de Ejecucion ......: <strong>{{acum}}</strong>.[Min.] - <strong>{{acum_h|floatformat:2}}</strong>.[Horas]</bn>
 
 			<br/><br/><br/>
 
-			<a href="{%  url 'lista-c' proc.pk %}"><bn class="button">Volver... </bn></a>	
-			<input type="submit" class="button" value="Graba" />
+			<a href="{%  url 'crea-proced-C' proc.pk %}"><bn class="button">Volver... </bn></a>	
+			
 	
 			</form>
 			<!---- Fin despliega campos a ingresar dentro de la tabla -->
@@ -76,5 +85,35 @@
 
 	{% endblock %}
 
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[prcd_crea_pasP7]</aa>
 
 {% endblock %}

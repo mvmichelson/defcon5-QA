@@ -1,0 +1,60 @@
+<!Programa HTML>
+<!Despliega el formulario para la creacion de un Proceso>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+<div class="page-header">
+    <h1><i class="fas fa-sitemap"></i> Formulario de Creación de Proceso</h1>
+    <span class="path-display">Ruta Actual: {{ proceso.path }}</span>
+</div>
+
+<div class="form-container">
+    <form action="" method="post" class="process-form">
+        {% csrf_token %}
+
+        <div class="form-section">
+            <h2 class="section-title">Información Principal</h2>
+
+            <div class="form-field">
+                <label for="{{ form.nombre.id_for_label }}">Nombre del Proceso:</label>
+                {{ form.nombre }}
+            </div>
+
+            <div class="form-field">
+                <label for="{{ form.objetivo.id_for_label }}">Objetivo del Proceso:</label>
+                {{ form.objetivo }}
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h2 class="section-title">Configuración</h2>
+            <div class="form-field checkbox-field">
+                <label for="{{ form.es_subproceso.id_for_label }}">
+                    {{ form.es_subproceso }}
+                    Es un Proceso Evaluable (SubProceso)
+                </label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'Lista-Procesos' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Registrar Proceso
+            </button>
+        </div>
+        
+        {% if form.errors %}
+            <div class="form-errors">
+                <p>Por favor, corrija los errores a continuación:</p>
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+    </form>
+</div>
+{% endblock %}

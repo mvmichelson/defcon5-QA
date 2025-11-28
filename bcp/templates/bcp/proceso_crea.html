@@ -8,27 +8,46 @@
 
 	{% block encabezado_detalle %}
 	<ul class="encabezado_B">
-        <aa><strong>FORMULARIO DE CREACION DE PROCESO </strong></aa>
+        <h4><strong>FORMULARIO DE CREACION DE PROCESO </strong></h4>
 	</ul>
 	<ul class='encabezado_SB'>
-	<aa>{{proceso.path}} </aa>
+	<aa><h5>Ruta: {{proceso.path}} </h5></aa>
 	</ul>
 	{% endblock %}
 
+<!---------------------------Bloque --------------------------------------------->
+<div class="flex-container" style="width: 100%;">
+	<!-----------------Sector izq ------------------------------------------------>	
+	<div class="flex-item" style="width: 50%;">
 
-    <ul class="scr4"> 
+    <ul class="scr4" style="width: 480px;"> 
     <form action="" method="post">
         {% csrf_token %}
         <table>
-        <p><strong>Nombre..:</strong>&emsp;{{form.nombre}}</p>
+        <p><strong>Nombre..:</strong>&emsp;</p>
+		<p style="width: 200px;">{{form.nombre}}</p>
 	<p><strong>Objetivo..:</strong>&emsp;{{form.objetivo}}</p>
 	</table>
-	<br/>
-	<p><strong>Es un Proceso Evaluable (SubProceso) ?........:</strong>&emsp;{{form.es_subproceso}}
-        <br/>
-	<br/>
+	<p><strong>Marque <aa>(&#10004)</aa> {{form.es_subproceso}}&emsp;si es un Subproceso 
+	final (Evaluable)</strong>&emsp;
+	<br/><br/>
 		<a href="{% url 'Lista-Procesos' %}" ><aa class="button">... Volver</aa></a>
         <input type="submit" class="button" value="Registra Proceso" />
     </form>
    </ul>
+
+	</div>	
+	<!-----------------Fin Sector izq ------------------------------------------------>	
+
+	<!-----------------Sector der ------------------------------------------------>	
+	<div class="flex-item" style="width: 50%;">
+		<img src="/static/img/process-2.webp" width="450" height="282">
+	</div>	
+	<!----------------- Fin Sector der ------------------------------------------------>	
+
+
+</div>	<!-----------------Fin Bloque ------------------------------------------------>	
+
+
+
 {% endblock %}

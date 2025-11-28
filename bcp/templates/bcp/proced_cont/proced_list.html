@@ -128,7 +128,7 @@ defcon={{defcon_est}}
 						
 						<!-- Opcion para mostrar el Procedimiento vigente -->
 						<a href = "{% url 'det-proced-v' proced.pk  %}" 
-						class="link" data-message="Procedimiento de Contingencia Vigente (Aprobado) ..."><bn>&#128215</bn></a> <!ojo >
+						class="link" data-message="Ver Procedimiento de Contingencia Vigente (Aprobado) ..."><bn>&#128215</bn></a> <!ojo >
 						
 
 						<!**************************>
@@ -166,11 +166,11 @@ defcon={{defcon_est}}
 							<!--- Si el usuario de sesion es gestor consultor -->
 								<!Opcion Ingresa parte B>
 								<a href = "{% url 'crea-proced-B'  proced.pk %}"
-								class="link blink" data-message="Especificacion del Procedimiento de Contingencia ...">
+								class="link blink" data-message="Especifica Procedimiento de Contingencia ...">
 								<img src="/static/img/manual_pc.webp" width="17" height="17"></a>	
 									
 								<!Opcion Borra>
-								{% if proced.es_borrable %}
+								{% if  proced.escenarios == Null %}
 									<a href = "{% url 'borra-prcd' proced.pk  %}" 
 									class="link confirm-link" con-message="*** Confirma Eliminacion del Procedimiento de Contingencia (PC) ? ***" data-message="Elimina Procedimiento (PC)">
 									<strong><rr>&#128465</rr></strong></a>						
@@ -228,31 +228,8 @@ defcon={{defcon_est}}
 						<!===============>
 						{% if proced.status == 'A'  %}
 
-							{% if proced.esta_activo == False %}
-								<a  href = "{% url 'actualiza-pc' proced.pk  %}" class="link  confirm-link" con-message=" Confirma Actualizacion del Procedimiento de Contingencias ?" data-message="Actualizacion Procedimiento de Contingencia ..."
+								<a  href = "{% url 'actualiza-pc' proced.pk  %}" class="link  confirm-link" con-message=" Confirma Actualizacion del Procedimiento de Contingencias ?" data-message="Actualiza Procedimiento de Contingencia ..."
 								><img src="/static/img/actualizar.png" width="20" height="20"></a>
-							{%else%}
-								{% if request.user.pk == proced.gestor_ejecutor.user_pk %}
-								<!------ Si el usuario de sesion es el Gestor Ejecutor ------->
-									{% if proced.esta_confirmado %}
-									<!--- Si PC fue confirmado ------->
-										<a href="{% url 'ok-act-pc' proced.pk %}" class="link blink" data-message= "Procedimiento de Contingencia en Ejecucion. Haga Click para finalizar Ejecucion"
-										>&#128214</a>
-									{%else%}
-									<!---- Si PC NO ha sido Confirmado por Gestor Ejecutor ------->
-										<a href="{% url 'ok-act-pc' proced.pk %}" class="link blink" data-message="Procedimiento de Contingencia Activado por Comite de Crisis. Haga Click para Confirmacion al Comite"
-										>&#128213</a>
-									{% endif %}
-									
-								{%else%}
-								<!--- Si no es Gestor Ejecutor --------->
-									<a class="link" data-message="Procedimiento de Contingencia Activado por Comite de Crisis."
-									>&#128213</a>
-
-								{% endif %}
-
-
-							{% endif %}
 
 
 						{% endif %}

@@ -115,6 +115,7 @@ from .models import Proceso, SubProceso, LogAut, Recursos, Tipo_RR, Gestor, Esce
 from .models import Drp, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC 
 from .models import Componentes, Tipo_Componente, LBC, Tipo_Disp, Tipo_Site, Impactos_Asig, Contactos_PC_V, Pasos_PC_V
 from .models import Indicadores_Asig, Log_Revision, SubProceso_V, Control_Cambios, Procedimientos_V, Servicios_PC_V, Impactos_Asig_v, Indicadores_Asig_v
+from .models import CheckList, Check_Pasos, PruebaContingencia, CasoPrueba, EjecucionPrueba, EjecucionCasoPrueba
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User, PermissionsMixin
@@ -132,6 +133,9 @@ from django.contrib.auth.decorators import permission_required
 
 #from django.contrib.sites.models import Site
 from django.core.mail import send_mail
+
+from .utils import substring
+
 
 
 #Variables Globales
@@ -438,7 +442,6 @@ def crea_proceso(request, pk):
     #proc_hijo=Proceso.object.create()
 
     # Determinacion de Codigo a asignar.
-
     cod = proc_padre.proceso
     codigo = cod.strip()+"." 
     hijos_i = proc_padre.nro_hijos+1
@@ -593,53 +596,156 @@ def borra_proceso(request, pk):
 #**************************
 #2.4 Crea Activo o Recurso*
 #**************************
+def Lista_SRV(request, pk_proc, origen):
+
+    """Lista los Servicios o Recursos definidos en la Base de Servicios
     
+        pk_proc: 
+            Si <> 0 Trae el pk del Proceso 
+            0 si viene de la Lista de Asignacion de Activos
+        origen: 
+            0: si viene de la Lista 
+            1: si viene de Asignar el Servicios/Recurso
+            2: si viene de Corregir el Servicios/Recurso
+    """
+
+    print('----- Lista SRV----')
+
+    if pk_proc != 0:
+        proceso=get_object_or_404(Proceso, pk=pk_proc)
+    else:
+        srv=0
+
+    lista_srv=Recursos.objects.all() 
+
+    #url_comp=Componentes.get_absolute_url
+    print('url ant=', url_ant)
+
+    return render(request, 'bcp/map_act/lista_srv.html', context={'lista_srv':lista_srv,
+                                                              'proceso':proceso,
+                                                              'origen':origen
+                                                              })
+
 from .forms import CreaActivoForm
 #@permission_required('Catalogo.can_mark_returned')
-def Crea_Activo(request):
+#def Crea_Activo(request):
+def Crea_SRV(request):
     """
-    Crea en Activo o Recurso
+    Crea un Servicio / Recurso en la Base de Datos.
     """
+    print("=== Entra a Crea_SRV ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+    print('--- CREA CMP ----')
 
-    model=Recursos
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
 
-   
-    #Asigna el formulario creado en Forrms
-    form=CreaActivoForm()
-
-    
-    # If this is a POST request then process the Form data
     if request.method == 'POST':
-
-        # Create a form instance and populate it with data from the request (binding):
         form = CreaActivoForm(request.POST)
 
-        # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
 
-            #Crea el Registro del Proceso
-            activo=Recursos()
+            # Genera el código solo al grabar
+            cod = get_object_or_404(Parametros_G, nombre='CORRELATIVO SERVICIOS/REC')
+            codigo = f"SRV-{cod.valor_2}"
+            cod.valor_2 += 1
+            cod.save()
 
-            activo.nombre = form.cleaned_data['nombre']
-            activo.descripcion = form.cleaned_data['descripcion']
-            activo.tipo = form.cleaned_data['clase']
-            
-            activo.save()
-               
-           
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('Lista-Recursos') )
+            # Crea en BD
+            srv = Recursos(
+                cod_rec=codigo,
+                nombre=form.cleaned_data['nombre'],
+                descripcion=form.cleaned_data['descripcion'],
+                tipo=form.cleaned_data['tipo'],
+            )
+            srv.save()
+
+            print('>>> Componente creado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
         else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
 
-    # If this is a GET (or any other method) create the default form.
     else:
+        form = CreaActivoForm()
 
-        
-        return render(request, 'bcp/map_act/crea_activo.html', {'form': form})
+    return render(request, 'bcp/map_act/crea_srv.html', {
+        'form': form,
+        'next': next_url
+    })
 
+
+from .forms import CreaActivoForm
+#@permission_required('Catalogo.can_mark_returned')
+#def Crea_Activo(request):
+def Mod_SRV(request, pk):
+    """
+    Modifica un Servicio / Recurso en la Base de Datos.
+    pk: pk del Servicio
+    """
+    print("=== Entra a Mod_SRV ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+    print('--- CREA CMP ----')
+
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+
+    srv=get_object_or_404(Recursos, pk=pk)
+    if request.method == 'POST':
+        form = CreaActivoForm(request.POST)
+
+        if form.is_valid():
+
+            # Modifica en BD
+            srv.nombre=form.cleaned_data['nombre']
+            srv.descripcion=form.cleaned_data['descripcion']
+            srv.tipo=form.cleaned_data['tipo']
+            srv.save()
+
+            print('>>> Componente modificado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
+        else:
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
+
+    else:
+        form = CreaActivoForm(initial={'nombre':srv.nombre,
+                                       'descripcion':srv.descripcion,
+                                       'tipo':srv.tipo
+                                       })
+
+    return render(request, 'bcp/map_act/mod_srv.html', {
+        'form': form,
+        'next': next_url
+    })
+
+def Borra_SRV(request, pk):
+    """
+    Borra el Servicio / Recurso de la Base """
+     
+    # Borra el Componente 
+    srv=get_object_or_404(Recursos, pk=pk)
+    srv.delete()
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
 
 
 #************************************************** Fin Creacion/Borrado de Entidades *****************************************************    
@@ -1109,7 +1215,7 @@ def Aut_Asig_BIA(request, pk):
                                                                     'proceso':proceso,
                                                                     'comentarios':comentarios_v})
     
-
+# OBSOLETO (BORRAR) 
 def aut_obs_proceso(request, item, pk, valor):
     """
     Registra observaciones por item a la
@@ -2724,21 +2830,21 @@ def Crea_Rev_OC(request):
     """ Crea un Comentario de Revision durante la Revision
     de cada Proceso o PC segun su etapa. """
 
-    print('---- Crea Observacion  ------')
-    print('metodo=', request.method)
+    print('>>>>> Crea Observacion  ------')
+    print('----- metodo=', request.method)
 
     #Asigna al usuario de sesion como Autorizador
-    print('asigna usuario sesion')
+    print('----- asigna usuario sesion')
     pk_usr_sesion= request.user.pk
     usuario_sesion=Gestor.objects.get(user_pk=pk_usr_sesion)
-    print('usuario de sesion',usuario_sesion)
+    print('----- usuario de sesion',usuario_sesion)
 
     fecha_hoy=datetime.date.today()
 
     if request.method == "POST":
         # rescata datos del json
         data = json.loads(request.body)
-        print('data=', data)
+        print('----- data=', data)
         obj_id = data.get("obj_id") # id del SubProceso asociado
         campo = data.get("field")
         seccion = data.get("seccion")
@@ -2759,8 +2865,10 @@ def Crea_Rev_OC(request):
                     return JsonResponse({"success": True})
             except Proceso.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+            
 
         elif seccion[0] == "D":
+
         # El Comentario proviene de la Fase de definicion del DRP
             try:
                     drp = Drp.objects.get(id=obj_id)
@@ -2775,6 +2883,27 @@ def Crea_Rev_OC(request):
                     return JsonResponse({"success": True})
             except Proceso.DoesNotExist:
                 return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+
+        elif seccion == "C":
+                
+                print('----- Entra a Seccion C Bitacora de Ejecucion')
+
+                try:
+                        procedimiento = Procedimientos_V.objects.get(id=obj_id)
+                        print('----- procedimiento =', procedimiento)
+                        log_revision = Log_Revision(fecha=fecha_hoy,
+                                                    procedimiento_v=procedimiento,
+                                                    gestor_aut=usuario_sesion,
+                                                    seccion=seccion, 
+                                                    campo=campo,
+                                                    comentario=comentario)
+                        log_revision.save()
+                        return JsonResponse({"success": True})
+                except Proceso.DoesNotExist:
+                    return JsonResponse({"success": False, "error": "Proceso no encontrado"})
+
+#------------------------------------------------
+
 
         else:
         # El Comentario proviene de la Fase de Mapeo de Procesos
@@ -2991,11 +3120,14 @@ def asigna_servicio(request, pk):
     recursos_asignados = subproceso.recursos.all()
     recursos_disponibles = Recursos.objects.exclude(id__in=recursos_asignados.values_list('id', flat=True))
 
+    origen=1
+
     return render(request, 'bcp/map_act/asigna_activos_v2.html', {
         'proceso': proceso,
         'subproceso': subproceso,
         'recursos_disponibles': recursos_disponibles,
         'recursos_asignados': recursos_asignados,
+        'origen':origen,
     })
 
 from .forms import EscenarioForm
@@ -3521,8 +3653,6 @@ def cr_prcd_b(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
-
-
         
     print('nombre proceso=', proceso.nombre)
     print('nombre procedimiento=', proced.nombre)
@@ -3547,7 +3677,6 @@ def cr_prcd_b(request, pk):
 
             #Crea el Registro del Proceso
 
-                        
             proced.nombre = form.cleaned_data['nombre']
             #proced.tipo = form.cleaned_data['tipo'] 
             
@@ -3664,7 +3793,7 @@ def cr_prcd_b(request, pk):
         # redirect to a new URL:
         
         #return HttpResponseRedirect(reverse('Lista-Proced'))
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+        return HttpResponseRedirect(reverse('crea-proced-C', args=[str(proced.id)]))
         #return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
         #                                                          'contactos':contactos, 'pasos':pasos})
         
@@ -3706,14 +3835,13 @@ def cr_prcd_b(request, pk):
 from .forms import CreaProc_P5_Form
 
 #@permission_required('Catalogo.can_mark_returned')
-def cr_prcd_P5(request, pk, fase):
+def cr_prcd_P5(request, pk):
     """
     Ingresa Servicios Criticos para el PC
     pk: pk del Procedimiento
     fase: 0: Creacion 1:Revision 
     """
     print('-- CREA Servicios en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     #fase_i=int(fase)
 
@@ -3755,10 +3883,15 @@ def cr_prcd_P5(request, pk, fase):
                      
             # Redirecciona a la lista 
             #return HttpResponseRedirect(url_ant)
-            if fase == 0:
-                return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-            else:
-                return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+            #if fase == 0:
+            #    return HttpResponseRedirect(reverse('rev-proced-c', args=[str(proced.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+            
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+
         
         else:
             print(form.errors)
@@ -3771,11 +3904,12 @@ def cr_prcd_P5(request, pk, fase):
         url_ant=request.META['HTTP_REFERER']
         print(url_ant)
         form = CreaProc_P5_Form()
-        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':proced.servicios_pc})    
+        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form,
+                                                                        'servicios':proced.servicios_pc})    
 
 
 #@permission_required('Catalogo.can_mark_returned')
-def br_prcd_P5(request, pk, fase):
+def br_prcd_P5(request, pk):
     """
     Borra Servicios Criticos para el PC
     pk: pk del Procedimiento
@@ -3783,7 +3917,6 @@ def br_prcd_P5(request, pk, fase):
 
     """
     print('-- BORRA Servicios en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     servicio_pc = get_object_or_404(Servicios_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = servicio_pc.pk_padre)
@@ -3797,16 +3930,21 @@ def br_prcd_P5(request, pk, fase):
     #Borra Servicio                
     servicio_pc.delete()
     
-    if fase == 0:
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-    else:
-        return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+    #if fase == 0:
+    #    return HttpResponseRedirect(reverse('rev-proced-c', args=[str(proced.id)]))
+    #else:
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
 
 
 from .forms import CreaProc_P6_Form
 
-#@permission_required('Catalogo.can_mark_returned')
-def cr_prcd_P6(request, pk, fase):
+
+
+def cr_prcd_P6(request, pk):
     """
     Ingresa Contactos Criticos para el PC
     pk: pk del Procedimiento
@@ -3815,7 +3953,6 @@ def cr_prcd_P6(request, pk, fase):
     """
 
     print('-- CREA Contacto en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     proced = get_object_or_404(Procedimientos, pk = pk)
     
@@ -3849,11 +3986,15 @@ def cr_prcd_P6(request, pk, fase):
             proced.save()
 
             
-            if fase == 0:
-                return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-            else:
-                return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+            #if fase == 0:
+            #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
             
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+
             #proced.servicios_pc.save()
         
         else:
@@ -3871,15 +4012,15 @@ def cr_prcd_P6(request, pk, fase):
         return render(request, 'bcp/proced_cont/prcd_crea_conP6.html', {'form': form, 'contactos':proced.contactos_pc})
     
 
+
 #@permission_required('Catalogo.can_mark_returned')
-def br_prcd_P6(request, pk, fase):
+def br_prcd_P6(request, pk):
     """
     Borra Servicios Criticos para el PC
     pk: pk del Procedimiento
     fase: 0: Creacion 1:Revision
     """
     print('-- BORRA  Contacto en Formulario de Definicion de Procedimiento (cr_prcd_P6)')
-    print('fase =', fase)
 
     contacto_pc = get_object_or_404(Contactos_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = contacto_pc.pk_padre)
@@ -3892,11 +4033,19 @@ def br_prcd_P6(request, pk, fase):
    
     contacto_pc.delete()
 
-    if fase == 0:
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
-    else:
-        return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+   
+    #if fase == 0:
+    #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #else:
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
     
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
+
 from .forms import CreaProc_P7_Form
 
 #@permission_required('Catalogo.can_mark_returned')
@@ -3962,7 +4111,7 @@ def cr_prcd_P7(request, pk, fase):
             
             # redirect to a new URL:
             if fase == 0:
-                return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+                return HttpResponseRedirect(reverse('crea-P7', args=[str(proced.id), 0]))
             else:
                 return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
 
@@ -3987,7 +4136,7 @@ def cr_prcd_P7(request, pk, fase):
     
 
 #@permission_required('Catalogo.can_mark_returned')
-def br_prcd_P7(request, pk, fase):
+def br_prcd_P7(request, pk):
     """
     Borra Pasos del PC
     """
@@ -3996,22 +4145,325 @@ def br_prcd_P7(request, pk, fase):
     paso_pc = get_object_or_404(Pasos_PC, pk = pk)
     proced = get_object_or_404(Procedimientos, pk = paso_pc.pk_padre)
 
-    #Actualiza cantidad de registros    
-    #num = proced.sec_pasos
-    #num = num-1
-    #proced.sec_pasos = num
-    #proced.save()
-   
+ 
     paso_pc.delete()
 
-    if fase == 0:
-        print('vuelva a lista-c')
-        return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #if fase == 0:
+    #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #else:
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
+from .forms import CreaProc_P8_Form
+#@permission_required('Catalogo.can_mark_returned')
+def cr_prcd_P8(request, pk):
+    """
+    Ingresa Pruebas al Procedimiento Parte A (datos generales)
+    pk: pk del Procedimiento
+    fase: 0: Creacion 1:Revision
+    """
+    global url_ant
+
+    print('>>>>>> Crea Prueba ')
+    proced = get_object_or_404(Procedimientos, pk = pk)
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+
+   
+   
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = CreaProc_P8_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+
+            # Determina Codigo de la Prueba (Idem al nombre del Procedimiento + correlativo)
+
+            # Rescata correlativo de Incidente. 
+            n=proced.corr_prbas
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            if n<9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro='0' 
+                nro=nro+str(n)
+            elif n > 99 and n <= 999:
+                nro=str(n)
+            else:
+                proced.corr_prbas=1
+
+            proced.corr_prbas=n+1
+            proced.save()
+
+            #Crea el Registro del Proceso
+            test = PruebaContingencia()
+            print('----- nro=', nro)
+            test.codigo=nro
+            test.procedimiento=proced
+            test.objetivo = form.cleaned_data['objetivo']
+            test.alcance  = form.cleaned_data['alcance']
+            test.criterios_exito = form.cleaned_data['criterios_exito']
+            test.responsable = form.cleaned_data['responsable']
+
+            test.save()
+
+            
+            # redirect to a new URL:
+            #if fase == 0:
+                # Dirige a la lista de casos.
+            #    return HttpResponseRedirect(reverse('Lista-Casos-P8', args=[str(test.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+
+
+            
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            
+
+    # If this is a GET (or any other method) create the default form.
     else:
-        print('vuelve a rev-proced-v')
-        return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+        form = CreaProc_P8_Form(initial={'responsable':proced.gestor_ejecutor})
+
+        #url_ant=request.META['HTTP_REFERER']
+        return render(request, 'bcp/proced_cont/prcd_crea_prbaP8.html', {'form': form, 'pasos':proced.pasos,
+                                                                        'proc':proced,
+                                                                        'proceso':proceso
+                                                                        })
 
 
+
+def br_prcd_P8(request, pk):
+    """
+    Borra la Prueba de Procedimiento C.
+    """
+    print('>>>>> Borra Prueba')
+    print('pk=', pk)
+    test=get_object_or_404(PruebaContingencia, pk=pk)
+    test.delete()
+
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+
+    #if fase == 0:
+    #    print('vuelva a lista-c')
+    #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+    #else:
+    #    print('vuelve a rev-proced-v')
+    #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+    # Dirige la Salida 
+
+
+
+from .forms import CreaProc_P8_Form
+#@permission_required('Catalogo.can_mark_returned')
+def md_prcd_P8(request, pk):
+    """
+    Modifica la Prueba asociada al  Procedimiento -  Parte A (datos generales)
+    pk: pk de la prueba
+    """
+    global url_ant
+
+    print('>>>>>> Crea Prueba ')
+    test = get_object_or_404(PruebaContingencia, pk = pk)
+    proced=test.procedimiento
+
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+
+   
+   
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = CreaProc_P8_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+
+            #Modifica el Registro de la prueba
+            test.objetivo = form.cleaned_data['objetivo']
+            test.alcance  = form.cleaned_data['alcance']
+            test.criterios_exito = form.cleaned_data['criterios_exito']
+            test.responsable = form.cleaned_data['responsable']
+
+            test.save()
+
+            
+            # redirect to a new URL:
+            #if fase == 0:
+            #    # Dirige a la lista de casos.
+            #    return HttpResponseRedirect(reverse('Lista-Casos-P8', args=[str(test.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+        
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            
+    
+    # If this is a GET (or any other method) create the default form.
+    else:
+
+        form = CreaProc_P8_Form(initial={'objetivo':test.objetivo,
+                                         'alcance':test.alcance,
+                                         'criterios_exito':test.criterios_exito,
+                                         'responsable':test.responsable})
+
+        #url_ant=request.META['HTTP_REFERER']
+        return render(request, 'bcp/proced_cont/prcd_crea_prbaP8.html', {'form': form, 'pasos':proced.pasos,
+                                                                        'proc':proced,
+                                                                        'proceso':proceso
+                                                                        })
+
+
+def lta_casos_P8_B(request, pk):
+    """
+    Lista los Casos de Prueba durante ingreso/modificacion de Prueba
+    pk: pk de la Prueba
+    """
+    
+    prueba=get_object_or_404(PruebaContingencia, pk=pk)
+    proced=prueba.procedimiento
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+    lista_casos=CasoPrueba.objects.filter(prueba=prueba)
+
+
+    return render(request, 'bcp/proced_cont/lta_casos_P8.html', {'lista_casos':lista_casos,
+                                                                 'prueba':prueba,
+                                                                 'proceso':proceso,
+                                                                 'proced':proced
+                                                                        })
+
+from .forms import Caso_P8_Form
+#@permission_required('Catalogo.can_mark_returned')
+def cr_caso_P8(request, pk, origen):
+    """
+    Crea Caso de Prueba asociado a una Prueba de Procedimiento
+    pk: pk del la Prueba
+    origen: Origen de la llamada
+            0: Desde la Creacion del Procedimiento
+            1: Desde la Revision del Procedimiento
+    """
+    global url_ant
+
+    prueba = get_object_or_404(PruebaContingencia, pk = pk)
+    proced=prueba.procedimiento
+    proceso=get_object_or_404(Proceso, pk=proced.pk_padre)
+    lista_casos=CasoPrueba.objects.filter(prueba=prueba)
+   
+   
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = Caso_P8_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+
+            # Determina Codigo de la Prueba (Idem al nombre del Procedimiento + correlativo)
+
+            # Rescata correlativo de Incidente. 
+            n=prueba.corr_casos
+            n=n+1
+            prueba.corr_casos=n
+            prueba.save()
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            if n <= 9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro='0' 
+                nro=nro+str(n)
+            elif n > 99 and n <= 999:
+                nro=str(n)
+            else:
+                prueba.corr_casos=1
+                nro='001'
+
+            #Crea el Registro del Proceso
+            caso = CasoPrueba()
+            
+            caso.codigo=nro
+            caso.prueba=prueba
+            caso.descripcion = form.cleaned_data['descripcion']
+            caso.resultado_esperado = form.cleaned_data['resultado_esperado']
+            caso.precondiciones = form.cleaned_data['precondiciones']
+            caso.prioridad = form.cleaned_data['prioridad']
+
+            caso.save()
+
+            
+            # redirect to a new URL:
+            #if fase == 0:
+            #    return HttpResponseRedirect(reverse('lista-c', args=[str(proced.id)]))
+            #else:
+            #    return HttpResponseRedirect(reverse('rev-proced-b', args=[str(proced.id)]))
+                  
+            return HttpResponseRedirect(reverse('Crea-Caso-P8', args=[str(prueba.id), origen ]))
+            
+            # Dirige la Salida 
+            #next_url = request.GET.get('next', '/')
+            #return redirect(next_url)
+
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+
+        form = Caso_P8_Form()
+
+        #url_ant=request.META['HTTP_REFERER']
+        return render(request, 'bcp/proced_cont/crea_caso_P8.html', {'form': form,
+                                                                     'origen':origen,
+                                                                     'prueba':prueba,
+                                                                        'proc':proced,
+                                                                        'proceso':proceso,
+                                                                        'lista_casos':lista_casos
+                                                                        })
+
+def br_caso_P8(request, pk):
+    """
+    Borra un Caso de Prueba"""
+
+    caso = get_object_or_404(CasoPrueba, pk=pk)
+    prueba=caso.prueba
+    caso.delete()
+ 
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+
+    #return HttpResponseRedirect(reverse('Crea-Caso-P8', args=[str(prueba.id), fase]))
 
 #*************************************************************
 # 2.2.4  Borra el Procedimiento de Contingencia              *
@@ -4055,6 +4507,13 @@ def Env_Aut_Proced(request, pk):
     # redirect to a new URL:
     return HttpResponseRedirect(reverse('Lista-Proced', args=[1]) )
 
+
+
+
+
+
+
+
     
 from .forms import Autoriza_Proced_C_Form
 import datetime
@@ -4064,7 +4523,7 @@ def Aut_Proced_C(request, pk):
     Autorizacion del Procedimiento
     Crea o Actualiza el Procedimiento Vigente 
     """
-    print('-------- Entra Autoriza Procedimiento ---------')
+    print('>>>>> Entra Autoriza Procedimiento >>>>>>')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
@@ -4076,6 +4535,17 @@ def Aut_Proced_C(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
+
+    # Selecciona las Pruebas y Casos por cada una
+    tests = PruebaContingencia.objects.filter(procedimiento=proced)
+    lista_prbas=[]
+    for prba in tests:
+        casos=CasoPrueba.objects.filter(prueba=prba)
+
+        lista_prbas.append({'test':prba,
+                 'casos':casos})
+        
+    print('---- Lista de Pruebas :', lista_prbas)
 
     # Selecciona observaciones del PC ("P")
     comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
@@ -4647,78 +5117,10 @@ def Aut_Proced_C(request, pk):
                                                                     'proced':proced,
                                                                     'servicios':servicios,
                                                                     'contactos':contactos,
+                                                                    'lista_prbas':lista_prbas,
                                                                     'comentarios':comentarios_pc,
                                                                     'pasos':pasos})
 
-
-
-from .forms import Autoriza_obs_Proced_C_Form
-def aut_obs_proced(request, item, pk, valor):
-    """
-    Registra observaciones por item a la
-    Autorizacion de Procedimientos
-    """
-
-    global  url_ant_obs_aut
-
-    print('item pk :', pk)
-    print('item nro:', item)
-    print('item nro 2:', valor)
-    
-    proced = get_object_or_404(Procedimientos, pk = pk)
-        
-    #aut=LogAut()
-    #Asigna al usuario de sesion como Autorizador
-    #print('asigna usuario sesion')
-    pk_usr_sesion= request.user.pk
-    #aut.gestor_aprobador=Gestor.objects.get(user_pk=pk_usr_sesion)
-    #print('usuario de sesion',aut.gestor_aprobador)
-
-     
-    #aut.cod_proceso=proced.codigo
-    #aut.item=item
-    
-
-    if request.method=='POST':
-
-        form = Autoriza_obs_Proced_C_Form(request.POST)
-        
-        print('FORMATO VALID0?',form.is_valid())
-        
-        if form.is_valid():
-            
-            #Registra autorizacion en log
-                                
-            #aut.fecha=datetime.date.today()
-            #aut.p_status=proced.status+'P'
-            #aut.observacion=form.cleaned_data['comentario']
-            #aut.Aprobado=form.cleaned_data['aprobacion']
-            
-            #notifica=form.cleaned_data['notifica']
-            #aprobado=form.cleaned_data['aprobacion']
-            
-            #---
-                            
-           
-            #Graba en Base de Datos                
-            #aut.save()
-            #proced.log_auth.add(aut)      
-            proced.save()
-            
-                
-            # redirect to a new URL:
-            return HttpResponseRedirect(url_ant_obs_aut)
-        
-        else:
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
-        
-    else:
-    
-        url_ant_obs_aut =request.META['HTTP_REFERER']
-        form= Autoriza_obs_Proced_C_Form()
-        
-        return render(request, 'bcp/proced_cont/proced_obs_auth.html', {'form': form, 'proced':proced, 'item':item, 'valor':valor})
 
 
 
@@ -4743,6 +5145,9 @@ def Revisa_Proced_B(request, pk):
     contactos = proced.contactos_pc
     pasos = proced.pasos
 
+    # rescata las Pruebas asociadas al procedimiento
+    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+
     comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
 
     print('nombre proceso=', proceso.nombre)
@@ -4750,16 +5155,14 @@ def Revisa_Proced_B(request, pk):
 
     print('Revisa parte B')
     
-    #Asigna el formulario creado en Forrms
-    form=Revisa_Proced_B_Form()
-    
+
     
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
         # Create a form instance and populate it with data from the request (binding):
         #form = Revisa_Proced_B_Form(request.POST)
-        form = CreaProc_B_Form(request.POST)
+        #form = CreaProc_B_Form(request.POST)
         form = CreaProc_B_Form(request.POST  or None, param=escenarios.all()) # Envia Escenarios del Proceso
 
         
@@ -4770,10 +5173,9 @@ def Revisa_Proced_B(request, pk):
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
 
             #Actualiza el Registro del Proceso
-
                         
             proced.nombre = form.cleaned_data['nombre']
-            proced.tipo = form.cleaned_data['tipo']
+            #proced.tipo = form.cleaned_data['tipo']
             
             proced.escenarios = form.cleaned_data['escenarios']
 
@@ -4791,7 +5193,7 @@ def Revisa_Proced_B(request, pk):
             
             # Cambia Status a "a" (Por Autorizar)
             
-            proced.status = 'a'
+            #proced.status = 'a'
             
 
             #if notifica: (manda correo de notificacion)
@@ -4805,8 +5207,8 @@ def Revisa_Proced_B(request, pk):
             
             # redirect to a new URL:
         
-            return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
-
+            #return HttpResponseRedirect(reverse('Lista-Proced', args=[1]))
+            return HttpResponseRedirect(reverse('rev-proced-c', args=[str(proced.id)]))
             
         else:
             
@@ -4816,7 +5218,8 @@ def Revisa_Proced_B(request, pk):
     # If this is a GET (or any other method) create the default form.
     else:
         print('nombre procedimiento=', proced.nombre)
-        form = CreaProc_B_Form(initial= {
+        form = CreaProc_B_Form(request.POST  or None, param=escenarios.all(),
+                               initial= {
                                 'nombre':proced.nombre,
                                 'tipo':proced.tipo,
                                 'escenarios':proced.escenarios,
@@ -4838,18 +5241,21 @@ def Revisa_Proced_B(request, pk):
                                                                      'servicios':servicios,
                                                                      'contactos':contactos,
                                                                      'pasos':pasos,
-                                                                     'comentarios':comentarios_pc})
+                                                                     'pruebas':pruebas,
+                                                                     'comentarios':comentarios_pc
+                                                                     })
 
 
 
 
     
 #*******************************************************************************
-#1.10 Lista de Servicios, Contactos y Pasos en Creacion de Procedimiento(PC)   *
+#1.10 Lista de Servicios, Contactos, Pasos y Pruebas en Creacion de Procedimiento(PC)   *
 #*******************************************************************************
 def cr_prcd_list(request, pk):
     """
-    Generic class-based view listing books on loan to current user.
+    Lista de Servicios, Contactos, Pasos y Pruebas en Creacion de Procedimiento(PC)
+    pk: pk del procedimiento
     """
     print('lista Servicios/Contactos/Pasos')
     proced = get_object_or_404(Procedimientos, pk = pk)
@@ -4858,11 +5264,71 @@ def cr_prcd_list(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
-    
-    
-    return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced, 'proceso':proceso, 'escenarios':escenarios, 'servicios':servicios,
-                                                                  'contactos':contactos, 'pasos':pasos})
 
+    # rescata las Pruebas asociadas al procedimiento
+    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+
+    # rescata el valor del rto para controlar el tiempo total de los pasos del PC
+    indicadores=proceso.subproceso.indicador_subp
+    for ind in indicadores.all():
+        print('ind nombre', ind.indicador.nombre)
+        print('ind nivel ', ind.nivel.valor)
+
+        if ind.indicador.nombre=="RTO":
+            rto=ind.nivel.definicion
+    print('rto',rto)
+
+    
+    return render(request, 'bcp/proced_cont/proced_crea_C.html', {'proced':proced,
+                                                                  'proceso':proceso,
+                                                                  'escenarios':escenarios,
+                                                                  'servicios':servicios,
+                                                                  'contactos':contactos,
+                                                                  'pasos':pasos,
+                                                                  'pruebas':pruebas,
+                                                                  'rto':rto})
+
+def rev_prcd_list(request, pk):
+    """
+    Lista de Servicios, Contactos, Pasos y Pruebas en Revision de la Creacion de 
+    Procedimiento(PC)
+    pk: pk del procedimiento
+    origen: 0: Desde Creacion del Procedimiento
+            1: Desde Revision del PC. 
+    """
+    print('lista Servicios/Contactos/Pasos')
+    proced = get_object_or_404(Procedimientos, pk = pk)
+    proceso = get_object_or_404(Proceso, pk=proced.pk_padre)
+    escenarios = proceso.subproceso.escenarios
+    servicios = proced.servicios_pc
+    contactos = proced.contactos_pc
+    pasos = proced.pasos
+
+    # rescata las Pruebas asociadas al procedimiento
+    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+
+    comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
+
+    # rescata el valor del rto para controlar el tiempo total de los pasos del PC
+    indicadores=proceso.subproceso.indicador_subp
+    for ind in indicadores.all():
+        print('ind nombre', ind.indicador.nombre)
+        print('ind nivel ', ind.nivel.valor)
+
+        if ind.indicador.nombre=="RTO":
+            rto=ind.nivel.definicion
+    print('rto',rto)
+
+    
+    return render(request, 'bcp/proced_cont/proced_rev_C.html', {'proced':proced,
+                                                                  'proceso':proceso,
+                                                                  'escenarios':escenarios,
+                                                                  'servicios':servicios,
+                                                                  'contactos':contactos,
+                                                                  'pasos':pasos,
+                                                                  'pruebas':pruebas,
+                                                                  'comentarios':comentarios_pc,
+                                                                  'rto':rto})
 
 #******************************************************
 # 1.10 Muestra datos (detalle) del Procedimiento(PC)  *
@@ -5601,6 +6067,65 @@ def Crea_CMP(request):
         'next': next_url
     })
 
+#************************************
+# 6.9.3.1 Crea Componentes en la BD *
+#************************************
+from .forms import Crea_CMP_Form
+
+def Modifica_CMP(request, pk):
+    """
+    Modifica Componente de Infraestructura de Hw o Sw en la Base de Datos.
+    pk: pk del Componente
+    """
+    print("=== Entra a Modifica_CMP ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+
+    comp=get_object_or_404(Componentes, pk=pk)
+
+    if request.method == 'POST':
+        form = Crea_CMP_Form(request.POST)
+
+        if form.is_valid():
+
+            # Modifica en BD
+            comp.tipo_act=form.cleaned_data['tipo_act']
+            comp.nombre=form.cleaned_data['nombre']
+            comp.descripcion=form.cleaned_data['descripcion']
+            comp.identificacion=form.cleaned_data['identificacion']
+            comp.fabricante=form.cleaned_data['fabricante']
+            comp.codigo_inv=form.cleaned_data['codigo_inv']
+
+            comp.save()
+
+            print('>>> Componente creado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
+        else:
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
+
+    else:
+        form = Crea_CMP_Form(initial={'tipo_act':comp.tipo_act,
+                                      'nombre':comp.nombre,
+                                      'descripcion':comp.descripcion,
+                                      'identificacion':comp.identificacion,
+                                      'fabricante':comp.fabricante,
+                                      'codigo_inv':comp.codigo_inv})
+
+    return render(request, 'bcp/drp/crea_cmp.html', {
+        'form': form,
+        'next': next_url
+    })
 
 
 #*************************************
@@ -5654,7 +6179,7 @@ from .forms import Crea_LBC_Form
 def Crea_LBC(request, pk):
     """Crea una Parametro de Linea Base de Configuracion para un
     Componente de Infraestructura de Hw o Sw.
-    pk      :pk del Componente
+    pk        :pk del Componente
     """
     print("=== Entra a Crea PARAMETRO de LBC ===")
     print("Método:", request.method)
@@ -5716,6 +6241,56 @@ def Crea_LBC(request, pk):
         form = Crea_LBC_Form()
         return render(request, 'bcp/drp/crea_lbc.html', {'form':form, 'cmp':cmp})  
 
+
+def Modifica_LBC(request, pk, pk_cmp):
+    """
+    Modifica un Parametro de LBC del Componente de Infraestructura de Hw o Sw en la Base de Datos.
+    pk          : pk del Parametro del LBC
+    pk_cmp      : pk del Componente asociado.
+    """
+    print("=== Entra a Modifica_LBC ===")
+    print("Método:", request.method)
+    print("GET:", request.GET)
+    print("POST:", request.POST)
+
+    # Determina el URL al que volver
+    next_url = request.GET.get("next") or request.POST.get("next") or "/"
+    print(">>> next_url:", next_url)
+
+    lbc=get_object_or_404(LBC, pk=pk)
+    cmp=get_object_or_404(Componentes, pk=pk_cmp)
+
+    if request.method == 'POST':
+        form = Crea_LBC_Form(request.POST)
+
+        if form.is_valid():
+
+            # Modifica en BD
+            lbc.nombre=form.cleaned_data['nombre']
+            lbc.descripcion=form.cleaned_data['descripcion']
+            lbc.metodo_acceso=form.cleaned_data['metodo_acceso']
+            lbc.valor=form.cleaned_data['valor']
+
+            lbc.save()
+
+            print('>>> Parametro de LBC modificado, redirigiendo a:', next_url)
+            return redirect(next_url)
+
+        else:
+            print('>>> Error de formulario:', form.errors)
+            return render(
+                request,
+                'bcp/mensajes/mensajes_error_Form.html',
+                {'form': form.errors}
+            )
+
+    else:
+        form = Crea_LBC_Form(initial={'nombre':lbc.nombre,
+                                      'descripcion':lbc.descripcion,
+                                      'metodo_acceso':lbc.metodo_acceso,
+                                      'valor':lbc.valor})
+
+    return render(request, 'bcp/drp/crea_lbc.html', {'form': form, 'cmp':cmp, 'next': next_url })
 
 #***************************
 # 6.9.3.5 Borra la LBC     *
@@ -7686,7 +8261,7 @@ def Declara_Inc(request):
     """
     Registra el Incidente y Selecciona los Procesos relacionados con las amenazas 
     declaradas en el mismo. """
-    print('----- Entra a Registro de Incidente ------')
+    print('>>>>>  Entra a Registro de Incidente ------')
 
     model = Incidentes
     
@@ -7694,25 +8269,42 @@ def Declara_Inc(request):
 
   
     if request.method=='POST':
-        print('metodo POST')
+        print('---- metodo POST')
         form = Declara_Incidente_Form(request.POST)
         
         if form.is_valid():
-            print('Formato valido')
+            print('----- Formato valido')
             
             incidente=Incidentes()
             
             incidente.save()
             
+
+            # Define codigo del incidente
+            #==============================
+
             # Rescata correlativo de Incidente. 
             parametro = get_object_or_404(Parametros_G, nombre = 'FOLIO INCIDENTES')
 
-            # Define codigo del incidente
-            f_i = incidente.fecha.strftime('%d-%m-%Y')
-            #descripcion = form.cleaned_data['descripcion']
-            folio=parametro.valor_2
-            incidente.codigo = f_i+'/ '+str(folio)
-            parametro.valor_2=folio+1
+            f_i = incidente.fecha.strftime('%Y%m')
+            n=parametro.valor_2
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            nro=''
+            if n<9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro='0' 
+                nro=nro+str(n)
+            elif n > 99 and n <= 999:
+                nro=str(n)
+            else:
+                parametro.valor_2=1
+
+            incidente.codigo = f_i+'/'+nro  # codigo = YYYYMM/999 (largo= 10)
+            parametro.valor_2=n+1
+            parametro.save()
             
             # Graba intancias en Registro (Base de Incidentes)
             incidente.nombre_r = form.cleaned_data['nombre']
@@ -7721,18 +8313,31 @@ def Declara_Inc(request):
             incidente.test= form.cleaned_data['test']
             #incidente.correo = form.cleaned_data['correo']
 
-            amenazas_declaradas = form.cleaned_data['amenazas_i']
-            incidente.amenazas_i.set(amenazas_declaradas)
+            #amenazas_declaradas = form.cleaned_data['amenazas_i']
+            #incidente.amenazas_i.set(amenazas_declaradas)
+            incidente.save()
 
+            # Rescata los Datos seleccionados desde el Script
+            amenazas_ids = request.POST.get("amenazas_i", "").split(",")
+            amenazas_ids = [int(e) for e in amenazas_ids if e.isdigit()]
+            print('---- Amenazas rescatadas:', amenazas_ids)
 
+            if amenazas_ids:
+                
+                incidente.amenazas_i.set(Amenazas.objects.filter(id__in=amenazas_ids))
+            #else:
+                #subproceso.escenarios.clear()
+
+            
             # Selecciona los Procesos asociados al incidente en base a las amenazas declaradas
             # =================================================================================
 
+            amenazas_declaradas=incidente.amenazas_i
             # Identifica los escenarios alcanzados
             # ------------------------------------
 
             # Recorre amenazas declaradas
-            for amenaza in amenazas_declaradas:
+            for amenaza in amenazas_declaradas.all():
 
                 # Recorre los Escenarios de cada "amenaza" declarada
                 escenarios_en_amenaza=amenaza.landscape
@@ -7783,7 +8388,30 @@ def Declara_Inc(request):
     else:
 
         form = Declara_Incidente_Form()
-        return render(request, 'bcp/inc_mgm/crea_inc.html',{'form':form })
+
+        #amenazas_disponibles = Amenazas.objects.exclude(id__in=incidente.amenazas_i.values_list('id', flat=True))
+        #amenazas_asignadas = incidente.amenazas_i.all()
+        amenazas_disponibles = Amenazas.objects.all()
+
+        return render(request, 'bcp/inc_mgm/crea_inc.html',{'form':form,
+                                                            'amenazas_disponibles':amenazas_disponibles })
+
+
+def Borra_Incidente(request, pk):
+    """
+    Borra el Incidente"""
+
+    print('>>>>> Borra el Incidente')
+
+    incidente=get_object_or_404(Incidentes, pk=pk)
+    incidente.delete()
+
+    print('----- Borra el Incidente y retorna')
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
+ 
+
 
 
 #************************************
@@ -7793,13 +8421,83 @@ def Lista_Incidentes(request):
     """
     Generic class-based view listing books on loan to current user.
     """
+    print('>>>>> Lista Incidentes')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Gestion de Crisis']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[400] ))
 
     incidentes=Incidentes.objects.all()
-    
-    return render(request, 'bcp/inc_mgm/incidentes__list.html', {'incidentes':incidentes})
+
+    lista_incidentes=[]
+    for inc in incidentes:
+        print('-- Incidente :',inc.codigo)
+
+
+        # Determina si algun Procedimiento del incidente asociado se encuentra Activado.
+        # ------------------------------------------------------------------------------
+        proced_act=False
+        procesos=inc.procesos_i
+        amenazas=inc.amenazas_i
+      
+        for amn in amenazas.all():
+        # Para cada amenaza del Incidente
+            print('----  Amenaza :', amn.titulo)
+            escenarios_amn=amn.landscape
+
+            for esc_amn in escenarios_amn.all():
+            # Para cada escenario de la Amenaza del Incidente
+                print('---- Escenario x Amenaza:', esc_amn.titulo)
+
+                escenario_amenaza=esc_amn.titulo #(1)
+                                                
+                for prc in procesos.all():
+                # Para cada Proceso asociado al  Incidente
+                    escenarios_proceso=prc.escenarios
+                    procedimientos_proceso=prc.procedimientos_contingencia_v
+                
+                    print('------ Proceso Asociado al Incidente :', prc.nombre)
+
+                    for esc_prc in escenarios_proceso.all():
+                    # Para cada Escenario asociado al Proceso en Incidente 
+                        print('---- Escenario del Proceso', esc_prc.titulo)
+                        
+                        escenario_prc=esc_prc.titulo #(2)
+
+                        if escenario_prc == escenario_amenaza:
+                            print('> ESCENARIO AMENAZA = ESCENARIO PROCESO')
+
+                            for prcd in procedimientos_proceso.all():
+                            # Para cada Procedimiento de cada Proceso del Incidente
+                                print('---------- Procedimientos Asociado al Proceso', prcd.nombre)
+                                
+                                escenario_procedimiento=prcd.escenarios.titulo #(3)
+
+                                if escenario_prc  == escenario_procedimiento:
+                                    print('> ESCENARIO PROCESO = ESCENARIO PROCEDIMIENTO')
+
+                                    # Condiciones para Borrado
+                                    # ------------------------
+
+                                    if prcd.esta_activo:
+                                        print('---------- Procedimiento Activo !!. Canbia a True')
+                                        proced_act=True
+                                    else:
+                                        print('---------- Procedimiento NO Activo !!. Se mantiene False ')
+                        
+                                else:
+                                    print('> ESCENARIO PROCESO DISTINTO A ESCENARIO PROCEDIMIENTO')
+
+                        else:
+                            print('> ESCENARIO AMENAZA DISTINTO A ESCENARIO PROCESO')
+
+   
+        inc_2={'inc':inc, 'activo':proced_act}
+        print('---- incidente', inc.codigo, 'inc_2=', inc_2)
+        lista_incidentes.append(inc_2)
+        
+
+
+    return render(request, 'bcp/inc_mgm/incidentes__list.html', {'lista_incidentes':lista_incidentes})
 
 #****************************
 #6.2.1  Modifica Incidente  *
@@ -7818,83 +8516,77 @@ def Modifica_Inc(request, pk):
 
     incidente = get_object_or_404(Incidentes, pk = pk)
    
-    #Borra todos los Procesos aociados al incidente
-    #for prc in incidente.procesos_i.all():
-    #    print('Borra :', prc.path)
-    #    prc.delete()
-        
-        
-    #procesos=get_object_or_404(Proceso)
-
-    form = Modifica_Incidente_Form()
-
-    print('llegue al if')
     
     if request.method=='POST':
         print('metodo POST')
-        form = Modifica_Incidente_Form(request.POST)
-        
-        if form.is_valid():
-            print('Formato valido')
+          
+        # Rescata los Datos seleccionados desde el Script
+        amenazas_ids = request.POST.get("amenazas_i", "").split(",")
+        amenazas_ids = [int(e) for e in amenazas_ids if e.isdigit()]
+        print('---- Amenazas rescatadas:', amenazas_ids)
+
+        if amenazas_ids:
             
-            #Graba intancias en Registro
-            nuevas_amenazas_declaradas = form.cleaned_data['amenazas_i']
-            incidente.amenazas_i.set(nuevas_amenazas_declaradas)
-            incidente.changed=True
+            incidente.amenazas_i.set(Amenazas.objects.filter(id__in=amenazas_ids))
+        #else:
+            #subproceso.escenarios.clear()
+
+
+        # Selecciona los nuevos Procesos y Escenarios asociados al incidente en base a las nuevas amenazas declaradas
+        # ===========================================================================================================
+
+        # Identifica los escenarios alcanzados
+        # ------------------------------------
+
+
+        #incidente.escenarios_i.clear() # Borra todos los escenarios del incidente
+        #incidente.procesos_i.clear() # Borra todos los procesos antiguos del incidente
+
+        sprocesos=SubProceso_V.objects.all() # rescata todos los subprocesos vigentes
+        sprocesos_selec=[]
+        escenarios_selec=[]
+
+        # Recorre las nuevas amenazas declaradas
+
+        nuevas_amenazas_declaradas=incidente.amenazas_i
+        print('---- Recorre nuevas amenazas :.', nuevas_amenazas_declaradas)
+
+
+        for amenaza in nuevas_amenazas_declaradas.all():
+            print('--- Amenaza: ', amenaza)
+
+            # Recorre los Escenarios de cada "amenaza" declarada
+            escenarios_en_amenaza=amenaza.landscape
             #incidente.save()
 
-            # Selecciona los nuevos Procesos y Escenarios asociados al incidente en base a las nuevas amenazas declaradas
-            # ===========================================================================================================
+            for escenario in escenarios_en_amenaza.all():
 
-            # Identifica los escenarios alcanzados
-            # ------------------------------------
+                # Identifica a los Procesos Vigentes asociados al nuevo escenario.
+                for sproc in sprocesos:
+                    
+                    # Selecciona los Escenarios que estan Asociados al Sproceso
+                    esc_en_sproc=sproc.escenarios # Escenarios asociados al Proceso
+                    
+                    for esc in esc_en_sproc.all():
 
+                        # Si el Escenario en la "amenaza" es igual al Escenario en el Sproceso
+                        if escenario == esc:
 
-            #incidente.escenarios_i.clear() # Borra todos los escenarios del incidente
-            #incidente.procesos_i.clear() # Borra todos los procesos antiguos del incidente
+                            # Asigna el Escenario a los Escenarios del Incidente
+                            if not esc in escenarios_selec:
+                                escenarios_selec.append(esc)
+                                #incidente.escenarios_i.add(esc)
+                                #incidente.save()
+                                print('--- Nuevo escenario :', esc.titulo)
 
-            sprocesos=SubProceso_V.objects.all() # rescata todos los subprocesos vigentes
-            sprocesos_selec=[]
-            escenarios_selec=[]
-
-            # Recorre las nuevas amenazas declaradas
-            print('---- Recorre nuevas amenazas :.', nuevas_amenazas_declaradas)
-
-            for amenaza in nuevas_amenazas_declaradas:
-                print('--- Amenaza: ', amenaza)
-
-                # Recorre los Escenarios de cada "amenaza" declarada
-                escenarios_en_amenaza=amenaza.landscape
-                #incidente.save()
-
-                for escenario in escenarios_en_amenaza.all():
-
-                    # Identifica a los Procesos Vigentes asociados al nuevo escenario.
-                    for sproc in sprocesos:
-                        
-                        # Selecciona los Escenarios que estan Asociados al Sproceso
-                        esc_en_sproc=sproc.escenarios # Escenarios asociados al Proceso
-                        
-                        for esc in esc_en_sproc.all():
-
-                            # Si el Escenario en la "amenaza" es igual al Escenario en el Sproceso
-                            if escenario == esc:
-
-                                # Asigna el Escenario a los Escenarios del Incidente
-                                if not esc in escenarios_selec:
-                                    escenarios_selec.append(esc)
-                                    #incidente.escenarios_i.add(esc)
-                                    #incidente.save()
-                                    print('--- Nuevo escenario :', esc.titulo)
-
-                                    # Asigna el Proceso a los Procesos del Incidente
-                                    #pk_padre=sproc.pk_padre
-                                    #proceso=get_object_or_404(Proceso, pk=pk_padre)
-                                if not sproc in sprocesos_selec:
-                                    sprocesos_selec.append(sproc)
-                                    #incidente.procesos_i.add(sproc)
-                                    #incidente.save()
-                                    print('--- Nuevo Proceso :', sproc.nombre)
+                                # Asigna el Proceso a los Procesos del Incidente
+                                #pk_padre=sproc.pk_padre
+                                #proceso=get_object_or_404(Proceso, pk=pk_padre)
+                            if not sproc in sprocesos_selec:
+                                sprocesos_selec.append(sproc)
+                                #incidente.procesos_i.add(sproc)
+                                #incidente.save()
+                                print('--- Nuevo Proceso :', sproc.nombre)
 
 
             print('----- escenarios selecc:', escenarios_selec)
@@ -7909,21 +8601,18 @@ def Modifica_Inc(request, pk):
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('Lista-Incidentes'))                          
 
-        else:
+                      
 
-            print(form.errors)
-            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
-            
-              
+    amenazas_disponibles = Amenazas.objects.exclude(id__in=incidente.amenazas_i.values_list('id', flat=True))
+    amenazas_asignadas = incidente.amenazas_i.all()
 
-    else:
 
-        amn_in=incidente.amenazas_i.all()
-        form = Modifica_Incidente_Form(initial= {'amenazas_i':set(amn_in)})
-
-        print('GET')
-        
-        return render(request, 'bcp/inc_mgm/modi_inc.html',{'form':form, 'incidente':incidente })
+    print('GET')
+    
+    return render(request, 'bcp/inc_mgm/modi_inc.html',{'form':Modifica_Incidente_Form(),
+                                                        'amenazas_disponibles':amenazas_disponibles,
+                                                        'amenazas_asignadas':amenazas_asignadas,
+                                                        'incidente':incidente })
 
       
 
@@ -8133,54 +8822,120 @@ def contar_procesos_por_servicio(incidente):
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import Procedimientos  # Asegúrate de importar el modelo correcto
 import json
 
 @csrf_exempt
 def toggle_procedimiento(request, procedimiento_id=None):
     """
-    Switch de Activacion/Desactivacion del Procedimiento
+    Switch de Activacion/Desactivacion del Procedimiento desde DashBoard del 
+    Comite de Crisis
     """
+    print('>>>>> Entra a Switch ')
     if request.method == "POST":
         try:
             data = json.loads(request.body)
+            print("---- Datos recibidos en POST:", data)
             procedimiento = Procedimientos_V.objects.get(id=procedimiento_id)
             nuevo_estado = data.get("esta_activo", False)
+            incidente_id = data.get("incidente_id")
+
+            print(f"---- nuevo estado: {nuevo_estado}")
+            print(f"---- Procedimiento: {procedimiento.nombre}")
+            print(f"---- Incidente recibido: {incidente_id}")
+
             procedimiento.esta_activo = nuevo_estado
             procedimiento.save()
 
+            if nuevo_estado:
+                print('----  Estado es Activado')
+                print('----  Crea CheckList de Ejecucion')
+
+                # ✅ Validamos que incidente_id sea válido antes de usarlo
+                if not incidente_id:
+                    print("⚠️  No se recibió incidente_id válido, se omite creación de checklist")
+                else:
+                    try:
+                        # 🧩 Bloque de diagnóstico insertado aquí
+                        print("CheckList importado desde:", CheckList.__module__)
+                        print("CheckList clase real:", CheckList)
+
+                        print("---- Intentando obtener incidente con ID:", incidente_id)
+                        incidente = Incidentes.objects.get(pk=int(incidente_id))
+                        print("---- Incidente encontrado:", incidente.codigo)
+
+                        # Crea Checklist
+                        #-------------------
+
+                        # Determina el nro. del Checklist
+                        n=procedimiento.correlativo_chk
+                        if n<9:
+                            nro='0000' 
+                            nro=nro+str(n)
+                        elif n > 9 and n <= 99:
+                            nro='000' 
+                            nro=nro+str(n)
+                        elif n > 99 and n <= 999:
+                            nro='00'
+                            nro=nro+str(n)
+                        elif n > 999 and n <= 9999:
+                            nro='0'
+                            nro=nro+str(n)
+                        elif n > 9999:
+                            nro=str(n)
+
+                        procedimiento.correlativo_chk=n+1
+
+                        print("---- Creando instancia de CheckList vacía...")
+                        chk = CheckList()
+                        chk.nro_chk=nro
+                        chk.procedimiento = procedimiento
+                        chk.incidente = incidente
+                        chk.save()
+                        print(f"---- CheckList asociado al incidente: {incidente.codigo}")
+
+                        # Crear items del checklist
+                        for item in procedimiento.pasos.all():
+                            chk_p = Check_Pasos(checklist=chk, paso=item)
+                            chk_p.save()
+
+                    except (Incidentes.DoesNotExist, ValueError) as e:
+                        print(f"⚠️  Error al obtener incidente ({incidente_id}): {e}")
+
+                    except Exception as e:
+                        import traceback
+                        print("❌ Error al crear Checklist:", e)
+                        traceback.print_exc()
+
+                if incidente.test:
+                    print('---- Crea Checklist de Prueba')
+
+            else:
+                print('>>>>> Estado Desactivado')
+                procedimiento.esta_confirmado = False
+                procedimiento.save()
+
             # --------------------------------------------
-            # 🚀 Aquí se dispara el envío de correo
+            # 🚀 Envío de correo (simulado)
             # --------------------------------------------
             try:
-                accion = "Activado"  if nuevo_estado  else "Desactivado"
-                if nuevo_estado:
-                    accion="Activado PC: "+procedimiento.nombre
-                else:
-                    accion="Desactivado PC: "+procedimiento.nombre
-
-                # Ojo: debes definir de dónde obtienes email y cc_email
-                # puede ser del procedimiento mismo o del usuario logeado
-                email = "destinatario@dominio.com"   # <- reemplazar
-                cc_email = "cc@dominio.com"          # <- reemplazar
-                nombre = procedimiento.nombre
-                #proceso = procedimiento.proceso.nombre if procedimiento.proceso else "N/A"
-
-                #Manda_Correo(email, cc_email, nombre, proceso, accion)
-                print('Se envia correo de', accion)
-
-
+                accion = "Activado PC: " + procedimiento.nombre if nuevo_estado else "Desactivado PC: " + procedimiento.nombre
+                print('Se envía correo de', accion)
             except Exception as e:
                 print(f"⚠️ Error enviando correo: {e}")
 
             return JsonResponse({"success": True, "nuevo_estado": procedimiento.esta_activo})
 
-       
-
-        except Procedimientos.DoesNotExist:
+        except Procedimientos_V.DoesNotExist:
+            print("❌ Procedimiento no encontrado")
             return JsonResponse({"success": False, "error": "Procedimiento no encontrado"}, status=404)
+
         except json.JSONDecodeError:
+            print("❌ Error en JSON recibido")
             return JsonResponse({"success": False, "error": "Error en JSON"}, status=400)
+
+        except Exception as e:
+            print(f"❌ Error general en toggle_procedimiento: {e}")
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
 
     elif request.method == "GET":
         procedimientos = Procedimientos_V.objects.values("id", "esta_activo")
@@ -8188,6 +8943,93 @@ def toggle_procedimiento(request, procedimiento_id=None):
         return JsonResponse(list(procedimientos), safe=False)
 
     return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.apps import apps
+import json
+
+@csrf_exempt
+def toggle_field(request, app_label, model_name, object_id):
+    """
+    Endpoint genérico para cambiar el valor de cualquier campo booleano
+    en cualquier modelo Django.
+    """
+    print('>>>>> Toggle de Switch general desde:', model_name)
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        field = data.get("field")
+        value = data.get("value")
+
+        if field is None:
+            return JsonResponse({"success": False, "error": "Falta 'field' en el JSON"}, status=400)
+
+        # Obtener el modelo dinámicamente
+        Model = apps.get_model(app_label, model_name)
+        print('>>>>> Modelo=', Model)
+        if not Model:
+            print('>>>>> Modelo no encontrado')
+            return JsonResponse({"success": False, "error": f"Modelo {app_label}.{model_name} no encontrado"}, status=404)
+
+        # Obtener la instancia
+        instance = Model.objects.get(id=object_id)
+
+        # Validar que el campo exista y sea booleano
+        field_obj = Model._meta.get_field(field)
+        if field_obj.get_internal_type() != "BooleanField":
+            return JsonResponse({"success": False, "error": f"El campo '{field}' no es booleano"}, status=400)
+
+        # Actualizar y guardar
+        setattr(instance, field, bool(value))
+        instance.save()
+
+        # Funciones segun Modelo
+        #========================
+        # Esta seccion se usa para incorporar funcionalidades dentro del toggle
+        # segun Modelo de origen.
+
+        if model_name == "check_pasos":
+            print('---- Entra a funciones s/ Modelo:', Model)
+        
+            # Determina si todos los Items(pasos) han sido completados
+            completado=True
+            checkl=instance.checklist # Identifica el CheckList asociado al paso
+            items_check=Check_Pasos.objects.filter(checklist=checkl) # Selecciona los items asociado al CheckList
+            for chk in items_check:
+                if not chk.terminado:
+                    completado=False
+            if completado:
+                checkl.completado=True
+            else:
+                checkl.completado=False
+
+            checkl.save()
+                
+
+
+
+
+        print(f"✔️ {Model.__name__}({object_id}) → {field} = {value}")
+
+        return JsonResponse({
+            "success": True,
+            "model": f"{app_label}.{model_name}",
+            "id": object_id,
+            "field": field,
+            "nuevo_estado": bool(value)
+        })
+
+    except Model.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Objeto no encontrado"}, status=404)
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=500)
+
+
 
 
 #***************************************************
@@ -8243,7 +9085,188 @@ def ActivaDesactivaPc(request, pk ):
     url_ant=request.META['HTTP_REFERER']
     return HttpResponseRedirect(url_ant)
 
-   
+# ********************************************
+# Lista de Procesos de Contingencia x Gestor *
+# ********************************************
+def Lista_ProcedimientosxGestor(request):
+    """
+    Lista los Procedimientos asociados al Gestor en Sesion
+    """
+
+    print('>>>>> Lista de Procesos x Gestor en sesion')
+
+    # Verifica si el usuario en sesion esta habilitado
+    if not es_del_grupo([request.user, 'Autorizadores', 'Ejecutores']):
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[302] ))
+
+    # Identifica a username del Gestor en Sesion
+    usr=request.user
+    username=usr.username
+    print('username=', username)
+    
+    # Selecciona los Procedimientos de BCP asociados al Gestor en sesion
+    # ===================================================================
+    procedimientos=Procedimientos_V.objects.all()
+    Lista_Procedimientos=[]
+    for prc in procedimientos.all():
+
+        # Identifica usernames
+        # -------------------- 
+        user_resp=prc.resp_proceso.user_gestor.username
+        if prc.bck_resp:
+            user_bck_r =prc.bck_resp.user_gestor.username
+        else:
+            user_bck_r="no definido"
+
+        user_ejecutor =prc.gestor_ejecutor.user_gestor.username
+        if prc.gestor_ejecutor:
+            user_bck_e =prc.gestor_ejecutor.user_gestor.username
+        else:
+            user_bck_e="no definido"
+
+        print('responsable:', user_resp, 'respaldo:', user_bck_r)
+        print('ejecutor :', user_ejecutor, 'respaldo', user_bck_e)
+
+
+        # Determina el rol del usuario en sesion
+        # -------------------------------------- 
+
+        if username == user_resp:
+            rol='Responsable'
+          
+        elif username == user_bck_r:
+            rol='Respaldo Responsable'
+
+        elif username == user_ejecutor:
+            rol='Ejecutor'
+
+        elif username == user_bck_e:
+            rol='Respaldo Ejecutor'
+        else:
+            rol='no identificado'
+
+        # Determina el RTO asociado al Procedimiento
+        # ------------------------------------------
+        if rol != 'no identificado':
+            proceso=get_object_or_404(Proceso, pk=prc.pk_padre) # Identifica el Proceso padre
+
+            indicadores=proceso.subproceso_v.indicador_subp # Rescata tabla de indicadores
+
+            for ind in indicadores.all():
+                indicador_asig=ind.indicador.nombre
+                indicador_nivel=ind.nivel.nivel
+                if indicador_asig == "RTO":
+                    rto=indicador_nivel+':'+ind.nivel.definicion
+                elif indicador_asig=="RPO":
+                    rpo=indicador_nivel+':'+ind.nivel.definicion
+
+            print('---- RTO:', rto)
+            print('---- RPO:', rpo)
+
+            # Carga flags de estados
+            #-----------------------
+            activado  =prc.esta_activo
+            confirmado=prc.esta_confirmado
+
+            # Arma lista de Diccionario
+            proced={'pc':prc,
+                    'rol':rol,
+                    'rto':rto,
+                    'rpo':rpo,
+                    'tipo':'BCP',
+                    'activado':activado,
+                    'confirmado':confirmado}
+
+            Lista_Procedimientos.append(proced)
+
+     # Selecciona los Procedimientos de DRP asociados al Gestor en sesion (Completar)
+           
+
+
+    return render(request,'bcp/inc_mgm/proced_list.html',
+                  context={'lista_procedimientos':Lista_Procedimientos}) 
+
+
+
+# Lista CheckList por Procediiento e Incidente *
+#***********************************************
+
+def Lista_CheckList(request, pk):
+    """
+    pk: Pk del Procedimiento
+    """
+
+    print('>>>>> Entra a Listado Checklist')
+    proc=get_object_or_404(Procedimientos_V, pk=pk)
+    proceso=get_object_or_404(Proceso, pk=proc.pk_padre) # Identifica el Proceso padre
+    lista_chk=CheckList.objects.filter(procedimiento=proc)
+
+    # Determina el RTO asociado al Procedimiento
+    # ------------------------------------------
+    indicadores=proceso.subproceso_v.indicador_subp # Rescata tabla de indicadores
+
+    for ind in indicadores.all():
+        indicador_asig=ind.indicador.nombre
+        indicador_nivel=ind.nivel.nivel
+        if indicador_asig == "RTO":
+            rto=indicador_nivel+':'+ind.nivel.definicion
+        elif indicador_asig=="RPO":
+            rpo=indicador_nivel+':'+ind.nivel.definicion
+
+    print('---- RTO:', rto)
+    print('---- RPO:', rpo)
+
+
+    return render(request,'bcp/inc_mgm/checklist_list.html',
+                  context={'lista_chk':lista_chk,
+                           'proc':proc,
+                           'rto':rto,
+                           'rpo':rpo}) 
+
+def Ejecucion_CheckList(request, pk):
+    """
+    Registra en un  checklist la ejecucion de los pasos del Procedimiento.
+    pk: Pk del Checklist
+    """
+
+    print('>>>>> Ejecucion Checklist')
+
+    check=get_object_or_404(CheckList,pk=pk)
+    proced=check.procedimiento
+    items=Check_Pasos.objects.filter(checklist=check)
+
+    # Identifica al Comite de Crisis.
+    comite=[]
+    gestores=Gestor.objects.all()
+    for integrante in gestores:
+        for grp in integrante.user_gestor.groups.all():
+            if grp.name=='Gestion de Crisis':
+                comite.append(integrante)
+    print('---- integrantes del comite =', comite)
+
+    # Rescata los Comentarios 
+    comentarios_proceso=Log_Revision.objects.filter(procedimiento_v=proced)
+    comentarios_m=[]
+    for com in comentarios_proceso:
+        cod=com.campo
+        codigo_inc=substring(cod,0,10)
+        print('---- codigo incidente=', codigo_inc)
+
+        if com.seccion == "C":
+            #Selecciona los asociados al Incidente 
+            comentarios_m.append(com)
+
+
+
+
+    return render(request,'bcp/inc_mgm/checklist.html',
+                    context={'check':check,
+                             'proced':proced,
+                             'comite':comite,
+                             'comentarios':comentarios_m,
+                            'items':items}) 
+
+
 #*********************************************** Fin Administracion del Incidente *********************************************************
    
 #*********************************************************************************************************************************************
@@ -8735,6 +9758,9 @@ def Err_Sesion_Mgm(request, ce):
 
     elif ce== '301':
             mensaje='301: Usuario debe pertenecer al grupo de Consultores o  Autorizadores'
+
+    elif ce== '302':
+            mensaje='301: Usuario debe pertenecer al grupo de Autorizadores o Ejecutores'
             
     elif ce == '400':
          mensaje='400: Usuario debe pertenecer al grupo de Gestion de Crisis'
@@ -9919,6 +10945,9 @@ def reparar_integridad(request):
     # Al final mostrar resultados
     return render(request, "bcp/conf/auditoria_reparacion_result.html", {"results": results})
 
+
+
+
 # *********************************************
 # Vista para Grabar en cada Seleccion de Item *
 #**********************************************
@@ -9939,6 +10968,8 @@ logger = logging.getLogger(__name__)
 ALLOWED_MODELS = {
     "bcp.Drp",
     "bcp.Proceso",
+    "bcp.SubProceso",
+    "bcp.Incidentes"
     # Añade aquí solo los modelos que explícitamente quieras exponer.
 }
 

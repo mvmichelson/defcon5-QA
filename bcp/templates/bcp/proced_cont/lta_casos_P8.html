@@ -1,0 +1,162 @@
+<!Programa HTML>
+<!Lista los casos de Prueba asociados a una Prueba de PC>
+<!Programado por Marco A. Villalobos M.>
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+<!--------- Encabezado -------------------------------------------->
+<ul class="encabezado_A">
+	<aa><strong>FORMULARIO DE CREACION DE CASOS DE PRUEBA  </strong></aa>
+	</ul>
+<ul class="encabezado_A">
+	<aa><strong>Proceso: [</strong> {{proceso.subproceso.path}} <strong>] &nbsp;&nbsp; \ &nbsp;&nbsp; Procedimiento: [</strong> {{proced.nombre}} <strong>]</strong></aa>
+</ul>
+
+
+<ul class="scr4" style="background-color: white; line-break: normal;">
+
+<!------------ Mensaje ---------------------------------------------->
+<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+<h4><strong>8.5. Casos</strong></h4>
+<p>
+	Los Casos de Prueba representan situaciones específicas que deben ejecutarse durante la prueba de contingencia 
+	para validar que el procedimiento funciona correctamente bajo distintos escenarios.  
+</p>
+<p>
+	Defina (+) uno o mas Casos de Prueba para la Prueba del Procedimiento de Contingencia. 
+</p>
+
+</div></strong>
+<!------------ Fin Mensaje ---------------------------------------------->
+<strong><h6>PRUEBA:</h6></strong>
+		<table class="lta">
+		   <thead style="background: rgb(184, 183, 183); color:black">
+		   <tr style="font-size: 10px; background-color: gray;">
+			<th scope="col" style="width: 20px;background-color: green;">CODIGO</th>
+			<th scope="col" style="width: 200px; background-color: green;">OBJETIVO</th>
+			<th scope="col" style="width: 200px; background-color: green;">ALCANCE</th>
+			<th scope="col" style="width: 200px; background-color: green;">CRITERIOS DE EXITO</th>
+			<th scope="col" style="width: 200px; background-color: green;">REVISOR.</th>
+			<th scope="col" style="width: 30px; background-color: green;">ESTADO</th>
+			
+		   </tr>
+		   </thead>
+
+		   <tbody>
+		    <tr >
+				<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{prueba.codigo}}<bb></th>
+				<th scope="row"><bb style="font-size: 10px;">{{prueba.objetivo}}<bb></th>
+				<th scope="row"><bb style="font-size: 10px;">{{prueba.alcance}}<bb></th>
+				<th scope="row"><bb style="font-size: 10px;">{{prueba.criterios_exito}}<bb></th>
+				<th scope="row"><bb style="font-size: 10px;">{{prueba.responsable}}<bb></th>
+				<th scope="row"><bb style="font-size: 10px;">{{prueba.estado}}<bb></th>
+	
+		    </tr>
+		   </tbody>
+		</table>
+
+
+
+<!--------- Fin Encabezado -------------------------------------------->
+<br/>
+<h6>CASOS:</h6>
+	
+	{% block B %}<!--------- CASOS  --------------------------------------------->
+	
+		<table class="lta">
+		   <thead style="background: greenyellow; color:black">
+		   <tr>
+			<th scope="col">
+				<!------- Define Caso de Prueba ---------->
+				<a href="{% url 'Crea-Caso-P8'  prueba.pk  %}"
+				class="link"  data-message="Registra un Servicio ...">
+				<strong><am style="color: yellow; font-size: 15px;">&#10010</am></strong></a>
+			</th>
+			<th scope="col">CODIGO</th>
+			<th scope="col">DESCRIPCION/OBJETIVO</th>
+			<th scope="col">RESULTADO ESPERADO</th>
+			<th scope="col">PRECONDICIONES</th>
+			<th scope="col">PRIORIDAD</th>
+			
+		   </tr>
+		   </thead>
+
+		   <body>
+		   {% if lista_casos %}
+		    {%for caso in lista_casos %}
+		    <tr>
+			<th scope="row">
+				<!-------- Modifica Caso ----------->
+
+				<!-------- Borra Caso -------------->
+				<a href="{% url 'En-Construccion' %}"
+				class="link confirm-link" con-message="* * *  Confirma Eliminacion del Caso ? * * *"  data-message="Elimina Caso ...">
+				<rr>&#128465</rr> 
+			</th>
+			<th scope="row"><bb>{{caso.codigo}}<bb></th>
+			<th scope="row"><bb>{{caso.descripcion}}<bb></th>
+			<th scope="row"><bb>{{caso.resultado_esperado}}<bb></th>
+			<th scope="row"><bb>{{caso.precondiciones}}<bb></th>
+			<th scope="row"><bb>{{caso.prioridad}}<bb></th>
+			
+		    </tr>
+      		{%endfor%}
+				{%else%}
+					Sin casos definidos.
+			{%endif%}
+
+		   <tbody>
+		</table>
+
+	<br/><br/>
+	</ul>
+
+	{% endblock %}<!--------- FIN CASOS  --------------------------------------------->
+
+</ul>
+
+
+
+
+<!-------- Botones de Salida ------------->
+<br/>
+
+<a href="{% url 'lista-c' proced.pk %}"><bb class="button" >Registrar</bb></a>
+
+<br/>
+<br/>
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[lta_casos_P8]</aa>
+
+{% endblock %}
