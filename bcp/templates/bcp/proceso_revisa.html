@@ -20,10 +20,10 @@
 {% endblock %}
 
 <!----------- Bloque A ------------------------------------>
-<div class="flex-container"> 
+<div class="flex-container" style="width: 100%;"> 
 
 <!----- Seccion izq - Datos Proceso ---------->
-<div class="flex-item" style="width: 55%;"> 
+<div class="flex-item" style="width: 650px;"> 
 
 <ul class="scr4" style="text-align: center;background: white;">
 <strong>REVISION DATOS</strong>
@@ -56,9 +56,8 @@
 		<table class="lta"> 
 			<thead class="encabezado_C" style="text-align: center">
 			<tr>
-			<th scope="col" style="width: 20%;">Referencia.Dato</th>
+			<th scope="col" style="width: 20%;">Referencia:</th>
 			<th scope="col" style="width: 500px">Comentario</th>
-			<th scope="col" style="width: 10px;">Fecha</th>
 			</tr>
 			</thead>
 			
@@ -69,7 +68,9 @@
 					{%if com.gestor_aut != proceso.subproceso.gestor_C %}
 					<!--- Si el usuario en sesion es el Gestor Consultor --->
 						<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							({{com.fecha}})
 							<p>{{com.campo}}</p>
+							<!--- 
 							(
 								{% if com.resuelto %}
 								<a href="{% url 'OK-Rev-OC' com.pk %} " 
@@ -80,7 +81,7 @@
 								data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
 								{%endif%}
 							)
-						</th>
+						</th> -->
 					{%else%}
 						<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
 						<p>{{com.campo}}
@@ -90,10 +91,11 @@
 					{%endif%}
 
 					<th scope="row" style="width: 500px";> {{com.comentario}}
-						{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+					<!--
+					{%if com.gestor_aut != proceso.subproceso.gestor_C %}-->
 
-							<p>
-							<!---------  Comentario de Revision ----->
+							<!-- <p> -->
+							<!---------  Comentario de Revision -----
 							<span class="comment-icon link" data-message="Hacer Comentario a '{{com.campo}}' ..."
 							data-id="{{ proceso.id }}"
 							data-sec="M"
@@ -101,11 +103,11 @@
 							>
 							<img src="/static/img/Comentario_1.png" width="15" height="15">
 							</span>
-							<!---------  Fin Comentario de Revision ----->
-							</p>
+							-------  Fin Comentario de Revision ----->
+							<!--</p>
 						{%endif%}
+					-->
 					</th>
-					<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
 				{%endfor%}
 			
 			{%else%}

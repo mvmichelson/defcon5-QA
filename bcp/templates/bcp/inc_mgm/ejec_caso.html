@@ -1,0 +1,259 @@
+<!Programa HTML>
+<!Lista los Checklist de Ejecucion de Casos de Prueba de un Procedimiento Vigente>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+{%extends "base_generic.html"%}
+{% load static %}
+
+{% block content %}
+
+
+<!----------------- ENCABEZADOS ------------------>
+<ul class="encabezado_B">
+	<p><strong>EJECUCION DE CASO DE PRUEBA DE PROCEDIMIENTO DE CONTINGENCIA</strong></p>
+</ul>
+
+
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Seccion 1.1 - Caso {{caso_ejec.caso.codigo}} </strong></h5>
+	<p> {{caso_ejec.caso.descripcion}}.</p>
+	</div>
+
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
+
+
+	<table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+		<!-- Encabezado de columnas -->
+		<thead class="encabezado_N" style="background: rgb(65, 1, 1);">
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+				<th scope="col">INCIDENTE</th>
+				<th scope="col">PROCEDIMIENTO</th>
+				<th scope="col">ESCENARIO RIESGO</th>
+				<th scope="col">ESTRATEGIA</th>
+			</tr>
+		</thead>
+
+      <tbody style="border-top: none;">
+
+            <tr style="border-bottom: 1px solid #ccc;">
+				<td><strong>{{checklist.incidente.codigo}}:</strong>{{checklist.incidente.descripcion}}</td>
+				<td>{{proc.nombre }}</td>
+				<td>{{proc.escenarios}}</td>
+				<td>{{proc.estrategia}}</td>
+            </tr>
+
+      </tbody>
+    </table>
+
+	
+<!---- Prueba Asociada ----------->
+	<br/><br/>
+	<h5><strong>PRUEBA :</strong></h5>
+	<ul class="scr4">
+	<table class="ita" style="width: 100%; border-collapse: collapse;
+	padding: 0px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 1.1rem;">
+		 
+	<thead class="encabezado_N" style="color:white ">
+		
+		<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+			<div class="flex-container">
+			<div class="flex-item">
+				<!--------- Columna Plan de Prueba  -->
+				<th scope="col" style="width: 50px; background-color:RED;" >Codigo</th>
+				<th scope="col" style="width: 100px; background-color:RED;">Objetivo</th>
+				<th scope="col" style="width: 200px; background-color:RED;">Alcance</th>
+			</div>
+			<div class="flex-item">
+				<!--------- Columna Resultados de Prueba -->
+				<th scope="col">Fecha</th>
+				<th scope="col">Resultado</th>
+				<th scope="col">Comentario</th>
+				<th scope="col">Conclusion</th>
+			</div>
+			</div>
+
+		</tr>
+	</thead>
+
+	<tbody style="border-top: none;">
+
+	<tr style="border-bottom: 1px solid #ccc;">
+		<div class="flex-container">
+		<div class="flex-item">
+			<!--- Datos de la Prueba Planificada vigente ----->
+			<td>{{ejec.prueba.codigo}}</td>
+			<td>{{ejec.prueba.objetivo}}</td>
+			<td>{{ejec.prueba.alcance}}</td>
+		</div>
+		<div class="flex-item">
+		<!------ Datos de la Prueba ---------->
+			<td>{{ejec.fecha_creacion}}</td>
+			<td>
+				{%if ejec.resultados_obtenidos%}
+					{{ejec.resultados_obtenidos}}
+				{%else%}
+					Pendiente...
+				{%endif%}
+			</td>
+			<td>
+				{%if ejec.incidentes%}
+					{{ejec.incidentes}}
+				{%else%}
+					Pendiente...
+				{%endif%}
+			</td>
+			<td>
+				{%if ejec.evaluacion_final %}
+					{{ejec.evaluacion_final}}
+				{%else%}
+					Pendiente...
+				{%endif%}
+			</td>
+			
+		</div>
+	</tr>
+	</tbody>
+    
+	</table>
+
+</ul>
+<!---- Fin Prueba Asociada ----------->
+
+<!----------------- FIN  ENCABEZADOS ------------------>
+
+
+
+<!---------------- DATOS DEL CASO DE PRUEBA  -------------------------------------->
+	<br/><br/><br/>
+	<h5><strong>CASO A EVALUAR :</strong></h5>
+	
+<!----- Area Evaluacion -------------->
+<div class="flex-container">
+
+	<!---- Seccion 1 - Datos de Planificacion del Caso ----------->	
+	<div class="flex-item" >
+		<table class="ita" >
+
+		<thead class="encabezado_N" style="color:white ">
+			
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+					<!--------- Columna Casos del Plan de Prueba  -->
+					<th scope="col" style="width: 50px; background-color:RED;" >Codigo</th>
+					<th scope="col" style="width: 200px; background-color:RED;">Descripcion</th>
+					<th scope="col" style="width: 300px; background-color:RED;">Resultado Esperado</th>
+					<th scope="col" style="width: 200px; background-color:RED;">Precondiciones</th>
+					<th scope="col" style="width: 20px; background-color:RED;">Prioridad</th>
+
+				</tr>
+		</thead>
+
+		<tbody style="border-top: none;">
+
+			<tr style="border-bottom: 1px solid #ccc;">
+				<!--- Datos de la Prueba Planificada vigente ----->
+				<td>{{caso_ejec.caso.codigo}}</td>
+				<td>{{caso_ejec.caso.descripcion}}</td>
+				<td>{{caso_ejec.caso.resultado_esperado}}</td>
+				<td>{{caso_ejec.caso.precondiciones}}</td>
+				<td>{{caso_ejec.caso.prioridad}}</td>
+			</tr>
+
+		</tbody>
+	</table>
+</div><!---- Fin Seccion 1 - Datos de Planificacion del Caso ----------->	
+	
+<!---- Seccion 2 - Datos de Ejecucion  del Caso ----------->	
+<div class="flex-item" style="text-align:left; align-self:flex-start;">
+<ul class="scr4" style="margin: 0%; padding-left: 10px; width: 450px;">
+	<!---  INGRESO DE DATOS DE EVALUACION DEL CASO  ----------------->
+	<form method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+
+	<!--- Registro Resultado ----------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Resultado</strong></h5>
+	<p> Califique segun el resultado esperado:</p>
+	
+	<ul class="scr4" style="font-size: 0.9rem;">
+	<p> <strong>Exitosa:</strong> La prueba cumple el 100% con el resultado esperado</p>
+	<p> <strong>Fallida:</strong> La prueba cumple parcialmente o no cumple con el resultado esperado</p>
+	<p> <strong>En Proceso:</strong> Se esta aplicando sin resutados observables aun</p>
+	<p> <strong>No Aplica:</strong> Se ha decidido no aplicar el Caso de Prueba o no estan las condiciones</p>
+	</ul>
+	<br/>
+	{{form.resultado}}
+	</div>
+	
+	<!--- Registro Observaciones ----------------->
+	<br/>
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Observaciones</strong></h5>
+	<p> Registre aquellos eventos relevantes observados.</p>
+	{{form.observaciones}}
+	</div>
+	
+	<!--- Registro Datos Adjuntos ----------------->
+	<br/>
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Evidencia</strong></h5>
+	<p> Adjunte archivo con evidencias de los resultados obtenidos. Para <strong>eliminar</strong> evidencia marca la casilla <strong>Clear</strong> </p>
+	<p>Para <strong>cambiar</strong> el actual archivo seleccionado señalado en <strong>Currently</strong>, solo selecciones otro en <strong>Change</strong>.</p>
+	<ul class="scr4"  style="color: white;  background-color: green;">{{form.evidencia}}</ul>
+	</div>
+	
+		
+</ul>
+</div><!---- Fin Seccion 2 - Datos de Ejecucion  del Caso ----------->
+
+</div><!----- Fin Area Evaluacion -------------->
+
+
+
+<!----- Botones de Salida ------------------------------------------->
+	<button class="button btn-primary mt-3" type="submit">Graba ...</button>
+
+	</form>
+
+	<!--- FIN INGRESO DE DATOS DE EVALUACION DEL CASO  ----------------->
+
+
+
+
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[ejec_caso]</aa>
+
+
+{%endblock%}
+

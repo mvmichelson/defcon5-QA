@@ -38,7 +38,7 @@
 </div><!--------- Fin Seccion Datos --------------------->
 
 <!---------- Seccion Block de Comentarios --------------->
-<div class="flex-item" style="width: 45%;">
+<div class="flex-item" style="width: 70%;">
 	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
 		<strong>Block de Comentarios de Revision</strong>
 	</ul>
@@ -48,9 +48,8 @@
 		<table class="lta"> 
 			<thead class="encabezado_C" style="text-align: center">
 			<tr>
-			<th scope="col" style="width: 20%;">Referencia.Dato</th>
-			<th scope="col" style="width: 500px">Comentario</th>
-			<th scope="col" style="width: 10px;">Fecha</th>
+			<th scope="col" style="width: 30%;">Referencia:</th>
+			<th scope="col" style="width: 70%">Comentario</th>
 			</tr>
 			</thead>
 			
@@ -60,8 +59,9 @@
 				<tr style="font-size: 9px;">
 
 					<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+						({{com.fecha}})
 						<p>{{com.campo}}</p>
-						(
+						<!-- (
 						
 						{% if com.resuelto %}
 						<a href="{% url 'OK-Rev-OC' com.pk %} " 
@@ -71,11 +71,10 @@
 						<a href="{% url 'OK-Rev-OC' com.pk %}" class="link confirm-link" con-message="Confirma Marcar como Realizado?"  
 						data-message="Pendiente (Haga click para marcar  como Realizado)">&#10067
 						{%endif%}
-						)
+					)-->
 						
 					</th>
 					<th scope="row" style="width: 500px";> {{com.comentario}}</th>
-					<th scope="row" style="width: 10;"><bb>{{com.fecha}}<bb></th>
 				{%endfor%}
 			
 			{%else%}

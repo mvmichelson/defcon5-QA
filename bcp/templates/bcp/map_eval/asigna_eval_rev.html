@@ -6,6 +6,12 @@
 {% extends "base_generic.html" %}
 {% load static}
 
+{% block extra_head %}
+<!--------- Inhibe actualizacion del scroll principal -->
+<meta name="inhibir-scroll-principal" content="true">
+{% endblock %}
+
+
 {% block content %}
 
 	<ul class="encabezado_B">

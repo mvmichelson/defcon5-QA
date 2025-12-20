@@ -25,14 +25,18 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" defer></script>
   <!-- Boostrap-->
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pZ8+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-
  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Para alertas de scripts-->
 
+ <!----- Para el ingreso de Fechas y horas -----------> 
+ <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+ <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"/>
+ <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/airbnb.css"/>
+ <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> <!--- Para Ingreso de Fechas y horas -->
+
+ 
+ <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
 <!--- nueva ----------------------------------------------------------------->
-
-
-
-
 <!-- Estaticos locales del Sistema -->
   <script src="/static/js/main.js" defer></script>
 
@@ -104,11 +108,14 @@
 
           <div class="menu-section menu-title">0.- Gestión de Crisis</div>
           <ul class="menu-list inline">
-              <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link">
+              <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link" >
                 <img src="/static/img/dashboard.png" class="icon" alt="Metodología"> Dashboard Panel&nbsp;de&nbsp;Control
               </a></li>
+              <li><a href="{% url 'Define-Plan-Pruebas-A' %}" class="menu-link">
+                <img src="/static/img/Autorizar.png" class="icon" alt="Metodologia" style="background-color: white;"> Plan&nbsp;de Pruebas
+              </a></li>
               <li><a href="{% url 'Lista-Proced' %}" class="menu-link">
-                <img src="/static/img/Evaluacion.jpg" class="icon" alt="Metodología">Procedimientos&nbsp;de Contingencia
+                <img src="/static/img/Evaluacion.jpg" class="icon" alt="Metodología">Mis&nbsp;Procedimientos de&nbsp;Contingencia
               </a></li>
 
             </ul>
@@ -145,6 +152,33 @@
     </div>
 
   </div>
+
+  	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
+
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
 
 {% block extra_js %}{% endblock %}
 </body>

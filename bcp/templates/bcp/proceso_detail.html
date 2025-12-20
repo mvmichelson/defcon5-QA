@@ -105,10 +105,10 @@
 
 			<tr>
 				{{proceso.subproceso.imp}}
-				<th scope="row"><bb>{{imp.impacto.nombre}}</bb></th>
-				<th scope="row"><bb>{{imp.impacto.descripcion}}</bb></th>
-				<th scope="row"><aa>{{imp.nivel.nombre}}</aa></th>
-				<th scope="row"><aa>{{imp.nivel.descripcion}}</aa></th>
+				<th scope="row">{{imp.impacto.nombre}}</th>
+				<th scope="row">{{imp.impacto.descripcion}}</th>
+				<th scope="row">{{imp.nivel.nombre}}</th>
+				<th scope="row">{{imp.nivel.descripcion}}</th>
 			</tr>
 
 			{%endfor%}
@@ -137,10 +137,10 @@
 	 
 				 <tr>
 					 {{proceso.subproceso.imp}}
-					 <th scope="row"><bb>{{ind.indicador.nombre}}</bb></th>
-					 <th scope="row"><bb>{{ind.indicador.descripcion}}</bb></th>
-					 <th scope="row"><aa>{{ind.nivel.nivel}}</aa></th>
-					 <th scope="row"><aa>{{ind.nivel.definicion}}</aa></th>
+					 <th scope="row">{{ind.indicador.nombre}}</th>
+					 <th scope="row">{{ind.indicador.descripcion}}</th>
+					 <th scope="row">{{ind.nivel.nivel}}</th>
+					 <th scope="row">{{ind.nivel.definicion}}</th>
 				 </tr>
 	 
 				 {%endfor%}
@@ -173,9 +173,9 @@
 		   <tbody>
 		   {%for act in proceso.subproceso.recursos.all  %}
 		   <tr>
-			<th scope="row"><bb>{{act.nombre}}</bb></th>
-			<th scope="row"><bb>{{act.descripcion}}</bb></th>
-			<th scope="row"><bb>{{act.tipo}}</bb></th>
+			<th scope="row">{{act.nombre}}</th>
+			<th scope="row">{{act.descripcion}}</th>
+			<th scope="row">{{act.tipo}}</th>
 			
 		   </tr>
        		   {% if not forloop.last %}
@@ -200,7 +200,7 @@
 
 	  {% if proceso.subproceso.escenarios.all %}
 		<table class="lta">
-		   <thead  class='encabezado_C')>
+		   <thead  class='encabezado_C'>
 		   <tr>
 			<th scope="col">Titulo</th>
 			<th scope="col">Descripcion</th>
@@ -211,8 +211,8 @@
 		   <tbody>
 		   {%for esc in proceso.subproceso.escenarios.all  %}
 		   <tr>
-			<th scope="row"><bb>{{esc.titulo}}</bb></th>
-			<th scope="row"><bb>{{esc.descripcion}}</bb></th>
+			<th scope="row">{{esc.titulo}}</th>
+			<th scope="row">{{esc.descripcion}}</th>
 						
 		   </tr>
        		   {% if not forloop.last %}
@@ -255,11 +255,11 @@
 		   {%for prcd in proceso.subproceso.procedimientos_contingencia.all  %}
 		   <tr>
 			<th scope="row"><a href = "{% url 'det-proced' prcd.pk  %}">{{prcd.codigo}}</a></th>
-			<th scope="row"><bb>{{prcd.nombre}}</bb></th>
-			<th scope="row"><bb>{{prcd.tipo}}</bb></th>
-			<th scope="row"><bb>{{prcd.version}}</bb></th>
-			<th scope="row"><bb>{{prcd.escenarios}}</bb></th>
-			<th scope="row"><bb>{{prcd.estrategia}}</bb></th>
+			<th scope="row">{{prcd.nombre}}</th>
+			<th scope="row">{{prcd.tipo}}</th>
+			<th scope="row">{{prcd.version}}</th>
+			<th scope="row">{{prcd.escenarios}}</th>
+			<th scope="row">{{prcd.estrategia}}</th>
 						
 		   </tr>
        		   {% if not forloop.last %}
@@ -298,12 +298,12 @@
 		   <tbody style="font-size: 10px;">
 		   {%for aut in comentarios.all %}
 		   <tr >
-			<th scope="row"><bb>{{aut.fecha}}</bb></th>
-			<th scope="row"><bb>{{aut.gestor_aut}}</bb></th>
+			<th scope="row">{{aut.fecha}}</th>
+			<th scope="row">{{aut.gestor_aut}}</th>
 
-			<th scope="row"><bb>{{aut.seccion}}</bb></th>
-			<th scope="row"><bb>{{aut.campo}}</bb></th>
-			<th scope="row"><bb>{{aut.comentario}}</bb></th>
+			<th scope="row">{{aut.seccion}}</th>
+			<th scope="row">{{aut.campo}}</th>
+			<th scope="row">{{aut.comentario}}</th>
 			{% if aut.resuelto %}
 			   <th scope="row"><aa>Resuelto</aa></th>
 			{%else%}

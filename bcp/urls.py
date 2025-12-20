@@ -180,6 +180,14 @@ urlpatterns += [
     path('inc_mgm/<int:pk>/lista_chk', views.Lista_CheckList, name='Lista-Checklist'),
     path('inc_mgm/<int:pk>/check', views.Ejecucion_CheckList, name='Checklist'),
     
+    path('incidentes/plan_prbas_a', views.Define_Plan_Pruebas_A, name='Define-Plan-Pruebas-A'),
+    path('incidentes/<int:pk>/plan_prbas_b', views.Define_Plan_Pruebas_B, name='Define-Plan-Pruebas-B'),
+    path('incidentes/<int:pk>/modi_plan_prbas', views.Modif_Plan_Pruebas, name='Modi-Plan-Pruebas'),
+
+    path('incidentes/<int:pk>/lista_ejec_prbas', views.Lista_Ejec_Prbas, name='Lista-Ejec-Prbas'),
+    path('incidentes/<int:pk>/lista_ejec_casos', views.Lista_Ejec_Casos, name='Lista-Ejec-Casos'),
+    path('incidentes/<int:pk>/ejec_prba', views.Ejec_Prba, name='Ejec-Prba'),
+    path('incidentes/<int:pk>/ejec_caso', views.Ejec_Caso, name='Ejec-Caso'),
 
 ]
 
@@ -236,7 +244,6 @@ urlpatterns += [
     path("procedimientos/toggle/", views.toggle_procedimiento, name="toggle_procedimiento"),  # Obtener estados
     path("procedimientos/toggle/<int:procedimiento_id>/", views.toggle_procedimiento, name="toggle_procedimiento"),  # Cambiar estado
     #path("procedimientos/toggle/<int:procedimiento_id>/", views.toggle_procedimiento, name="toggle_procedimiento"),
-    
 
 ]
 

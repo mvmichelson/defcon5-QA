@@ -5,6 +5,10 @@
 
 {% extends "base_generic.html" %}
 {% load static}
+{% block extra_head %}
+<!--------- Inhibe actualizacion del scroll principal -->
+<meta name="inhibir-scroll-principal" content="true">
+{% endblock %}
 
 {% block content %}
 
@@ -73,9 +77,9 @@
 					</th>
 					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{imp.nivel}}" ><bb>{{imp.nivel.nombre}}<bb></th>
 
-					<th scope="row"><bb>{{imp.impacto.nombre}}<bb></th>
-					<th scope="row"><bb>{{imp.impacto.descripcion}}<bb></th>
-					<th scope="row" style="width: 10%; text-align: center;"><bb>{{imp.impacto.ponderacion}}<bb>%</th>
+					<th scope="row">{{imp.impacto.nombre}}</th>
+					<th scope="row">{{imp.impacto.descripcion}}</th>
+					<th scope="row" style="width: 10%; text-align: center;">{{imp.impacto.ponderacion}}%</th>
 
 				 </tr>
 						{% if not forloop.last %}
@@ -122,11 +126,11 @@
 					<th scope="row" style="width: 10%; height: 70px;   text-align: center;">
 						<a href="{% url 'Asig-Nivel-Ind'  ind.pk  'V' %}" class="link" data-message="Asigna Niveles"><bb class="button"><img src="/static/img/niveles.jpg" width="25" height="20"></img></bb></a>
 					</th>
-					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{ind.nivel}}"><bb>{{ind.nivel.nivel}}<bb></th>
+					<th scope="row" style="width: 10%; text-align: center;" class="link" data-message="{{ind.nivel}}">{{ind.nivel.nivel}}</th>
 
 					<th scope="row" style="text-align: center; background: blue; color: white;">{{ind.indicador.nombre}}</th>
 
-					<th scope="row" style="padding: 5px;"><bb>{{ind.indicador.descripcion}}<bb></th>
+					<th scope="row" style="padding: 5px;">{{ind.indicador.descripcion}}</th>
 
 				 </tr>
 						{% if not forloop.last %}

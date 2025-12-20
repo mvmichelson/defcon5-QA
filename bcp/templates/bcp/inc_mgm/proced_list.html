@@ -1,5 +1,5 @@
 <!Programa HTML>
-<!Lista los Procesos del Mapa en modalidad Scrool>
+<!Lista los Procedimientos x Usuario sesion >
 <!Programado por Marco A. Villalobos M>
 <!===============================================>
 
@@ -13,11 +13,10 @@
 
 {% block content %}
 <!----------------- ENCABEZADOS ------------------>
-<ul class="encabezado_B" style="background-color: red;">
-	<img src="/static/img/Evaluacion.jpg" class="icon" width="70" height="40">
-	<p class='blink' >
-	<strong><am>PANEL DE PROCEDIMIENTOS DE CONTINGENCIA</am></strong></p>
-</ul>
+<ul class="encabezado" style="background-color:red; color:yellow; text-align: center;border-radius: 10px;">
+<img src="/static/img/Evaluacion.jpg" class="icon" width="70" height="40">
+<h4 class="blink"><strong>PANEL DE PROCEDIMIENTOS DE CONTINGENCIA</strong></h4></ul>
+
 <!----------------- FIN  ENCABEZADOS ------------------>
 	
 <!---- Lista de Servicios/Recursos --------- -->
@@ -30,7 +29,8 @@
             <!-- Encabezado de columnas -->
             <thead class="encabezado_N" style="background: rgb(65, 1, 1);">
               <tr style="background-color: #eaeaea; border-bottom: 1px solid #ccc;">
-                 <th scope="col" style="width: 10%;">Procedimiento</th>
+				<th></th>
+                 <th scope="col" style="width: 200px;">Procedimiento</th>
                  <th scope="col">Tipo</th>
                  <th scope="col">Rol Asignado</th>
                  <th scope="col">RTO</th>
@@ -47,7 +47,15 @@
           {% for prcd in lista_procedimientos %}
 
             <tr style="border-bottom: 1px solid #ccc;">
-				<td>{{prcd.pc.nombre }}</td>
+				<td>
+					<!-- Opcion para mostrar el Procedimiento vigente -->
+					<a href = "{% url 'det-proced-v' prcd.pc.pk  %}" 
+					class="link" data-message="Ver Procedimiento de Contingencia Vigente (Aprobado) ...">
+					<bn>&#128215</bn></a>
+				</td>
+				<td><strong>{{prcd.pc.nombre }}</strong>-[{{prcd.pc.escenarios.titulo}}]</td>
+				
+				</td>
 				<td>{{prcd.tipo }}</td>
 				<td>{{prcd.rol}}</td>
 				<td>{{prcd.rto}}</td>

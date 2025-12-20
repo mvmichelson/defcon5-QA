@@ -1,0 +1,134 @@
+<!Programa HTML                                           >
+<!Despliega el formulario para la Programacion de Pruebas de BCP >
+<!Programado por Marco A. Villalobos M.                   >
+<!========================================================>
+
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block content %}
+
+<!--- Encabezado ------------------>
+<ul class="encabezado" style="background-color:red; color:yellow; text-align: center;border-radius: 10px;">
+<h4 class=""><strong>PLAN DE PRUEBAS BCP/DRP</strong></h4></ul>
+<!--- Fin Encabezado ------------------>
+
+<!-- template_evento.html -->
+
+
+<div class=" mt-4">
+    <form method="post">
+        {% csrf_token %}
+
+		<!---- ====================================== -->
+		<!---- Fecha y Hora de ejecucion de la Prueba -->
+		<!---- ====================================== -->
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>1. Fecha de Ejecucion</strong></h4>
+		<p>
+			Programe  una fecha y hora para el inicio de la Prueba de BCP/DRP.     
+		</p>
+		<p>
+			
+		</p>
+
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
+        <ul class="scr4">
+        <div class="flex-container">
+            <div class="flex-item col-md-6  mb-3">
+                
+                <strong>FECHA</strong>
+				{{ form.fecha }}
+
+				<!-- Mostrar errores debajo del campo -->
+				{% if form.fecha.errors %}
+					<div class="text-danger small mt-1">
+						<strong style="font-size: 1.2rem;">{{ form.fecha.errors.as_text|linebreaksbr }}</strong>
+					</div>
+				{% endif %}
+            </div>
+
+            <div class="flex-item col-md-6  mb-3 " style="text-align: left;">
+                <strong>HORA</strong>
+				{{ form.hora }}
+				<!-- Mostrar errores debajo del campo -->
+				{% if form.hora.errors %}
+					<div class="text-danger small mt-1">
+						<strong style="font-size: 1.2rem;">{{ form.hora.errors.as_text|linebreaksbr }}</strong>
+					</div>
+				{% endif %}
+            </div>
+        </div>
+
+	</ul>
+		<!------ Boton de Salida ----------------------------->
+		<br/>
+		<button class="button btn-primary mt-3" type="submit">Siguiente ...</button>
+
+		</form>
+	
+	</div>
+	
+		
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+
+<script>
+// Calendario en español para fecha
+flatpickr(".flatpickr-date", {
+    dateFormat: "Y-m-d",
+    locale: "es"
+});
+
+// Selector de hora en español (solo campo hora)
+flatpickr(".flatpickr-time", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    minuteIncrement: 1,
+    locale: "es"
+});
+</script>
+
+
+
+<aa style="font-size: 8px;">[crea_plan_prba]</aa>
+
+
+
+
+<!--------------------------------------------------------------------->
+{% endblock %}
+
+

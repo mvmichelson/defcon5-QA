@@ -9,7 +9,7 @@ from .models import  Drp, Drp_V, Procedimientos, Tipo_Proc, Servicios_PC, Contac
 from .models import  LBC, Tipo_Site, Tipo_Disp, Componentes, Tipo_Componente, Impactos_Asig, Indicadores_Asig, Log_Revision
 from .models import  Procedimientos_V, Servicios_PC_V, Contactos_PC_V, Pasos_PC_V, Impactos_Asig_v, Indicadores_Asig_v
 from .models import  CheckList, Check_Pasos, PruebaContingencia, CasoPrueba, EjecucionPrueba, EjecucionCasoPrueba
-
+from .models import  PruebaContingencia_V, CasoPrueba_V
 
 @admin.register(Proceso)
 class AdminProceso(admin.ModelAdmin):
@@ -108,7 +108,7 @@ class AdminParametros_G(admin.ModelAdmin):
 @admin.register(Incidentes)
 class AdminIncidentes(admin.ModelAdmin):
 
-    list_display = ('fecha', 'codigo', 'nombre_r', 'descripcion', 'estado')
+    list_display = ('fecha', 'fecha_creacion', 'codigo', 'nombre_r', 'descripcion', 'estado')
 
 @admin.register(Procedimientos)
 class AdminProcedimientos(admin.ModelAdmin):
@@ -250,8 +250,26 @@ class AdminCheck_Pasos(admin.ModelAdmin):
 class AdminPruebaContingencia(admin.ModelAdmin):
     list_display = ('codigo','objetivo', 'alcance', 'criterios_exito', 'fecha_programada', 'estado')
 
+@admin.register(PruebaContingencia_V)
+class AdminPruebaContingencia_V(admin.ModelAdmin):
+    list_display = ('codigo','objetivo', 'alcance', 'criterios_exito', 'fecha_programada', 'estado')
+
+
 @admin.register(CasoPrueba)
 class AdminCasoPrueba(admin.ModelAdmin):
     list_display = ('codigo','descripcion', 'resultado_esperado', 'precondiciones', 'prioridad')
 
+@admin.register(CasoPrueba_V)
+class AdminCasoPrueba_V(admin.ModelAdmin):
+    list_display = ('codigo','descripcion', 'resultado_esperado', 'precondiciones', 'prioridad')
+
+@admin.register(EjecucionPrueba)
+class AdminEjecucionPrueba(admin.ModelAdmin):
+    list_display = ('nro_ejecucion','fecha_real','descripcion_ejecucion',
+                    'resultados_obtenidos', 'incidentes', 'evaluacion_final', 'lecciones_aprendidas',
+                    'evidencia_general')
+
+@admin.register(EjecucionCasoPrueba)
+class AdminEjecucionCasoPrueba(admin.ModelAdmin):
+    list_display = ('nro_ejecucion', 'resultado', 'observaciones', 'evidencia')
 

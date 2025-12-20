@@ -29,6 +29,7 @@ from django.core.exceptions import ValidationError
 # Se debe cambiar ugettext_lazy  por version django 4.xx 
 from django.utils.translation import gettext_lazy as _
 import datetime #for checking renewal date range.
+from datetime import datetime, date
 
 from .models import Drp, Proceso, SubProceso, LogAut, Recursos, Tipo_RR, Gestor, Escenarios, Amenazas, Estrategias, Grupos
 from .models import Tipo_Impacto, Nivel_Impacto, Indicadores_BIA, Procedimientos, Tipo_Proc, User, Area, Cod_Area
@@ -930,7 +931,6 @@ class Declara_Incidente_Form(forms.Form):
     area = forms.CharField(max_length= 25, label='Area:')
     #correo = forms.EmailField(required=True)
     descripcion = forms.CharField(max_length=500, label='Descripcion:',  help_text='Describir Incidente :', widget=forms.Textarea(attrs={'rows':8, 'cols':70}))
-    test= forms.BooleanField(required=False)
     #amenazas_i = forms.ModelMultipleChoiceField(queryset=Amenazas.objects.all().order_by('titulo'),
     #                                      label=_('Amenazas Ocurridas :'),
     #                                      required= True,
@@ -946,6 +946,196 @@ class Declara_Incidente_Form(forms.Form):
     #   }
         # Adding this javascript is crucial
     #    js = ['/admin/jsi18n/']
+
+
+from django import forms
+from datetime import datetime, date
+
+class Plan_Pruebas_A_Form(forms.Form):
+    """
+    Form para programar pruebas: fecha + hora separados,
+    con mensajes de error personalizados.
+    """
+
+    fecha = forms.DateField(
+        widget=forms.TextInput(attrs={
+            "class": "form-control flatpickr-date",
+            "placeholder": "Seleccione fecha",
+            "autocomplete": "off",
+        }),
+        input_formats=["%Y-%m-%d"],
+        error_messages={
+            "required": "Debe definir una fecha de ejecución.",
+            "invalid": "Formato de fecha inválido. Use AAAA-MM-DD."
+        }
+    )
+
+    hora = forms.TimeField(
+        widget=forms.TextInput(attrs={
+            "class": "form-control flatpickr-time",
+            "placeholder": "Seleccione hora",
+            "autocomplete": "off",
+        }),
+        input_formats=["%H:%M"],
+        error_messages={
+            "required": "Debe definir una hora de inicio de la Prueba.",
+            "invalid": "Formato de hora inválido. Use HH:MM (24h)."
+        }
+    )
+
+    fecha_hora = None
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data.get("fecha")
+        hoy = date.today()
+        # ejemplo: prohibir hoy o anterior
+        if fecha and fecha <= hoy:
+            raise forms.ValidationError("La fecha no puede ser hoy o anterior.")
+        return fecha
+
+    def clean_hora(self):
+        hora = self.cleaned_data.get("hora")
+        # Nota: si el campo está vacío no llegas aquí porque el validator 'required' ya levantó.
+        # Aquí validaciones extra (rango, etc.)
+        if hora is None:
+            # Esto normalmente no se ejecuta si el campo está vacío porque required ya lo cubre,
+            # pero lo dejamos por si quieres detectar un valor None explícito.
+            raise forms.ValidationError("Debe definir una hora de inicio de la Prueba.")
+        return hora
+
+    def clean(self):
+        cleaned_data = super().clean()
+        fecha = cleaned_data.get("fecha")
+        hora = cleaned_data.get("hora")
+
+        if fecha and hora:
+            cleaned_data["fecha_hora"] = datetime.combine(fecha, hora)
+
+            # Ejemplo extra: si la fecha es hoy, la hora debe ser futura
+            if fecha == date.today():
+                ahora = datetime.now().time()
+                if hora <= ahora:
+                    self.add_error('hora', "La hora debe ser posterior a la hora actual.")
+        return cleaned_data
+
+
+class Plan_Pruebas_B_Form(forms.Form):
+
+    pass
+
+
+class EjecucionPruebasForm(forms.Form):
+    """
+    Ejecucion de la Prueba
+    """
+
+    descripcion_ejecucion = forms.CharField(
+        label="Descripción de la ejecución",
+        required=True,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "rows": 4,
+            "placeholder": "Describa cómo se ejecutó la prueba (actividades, contexto, observaciones relevantes)",
+        }),
+        error_messages={
+            "required": "Debe ingresar una descripción de la ejecución.",
+        }
+    )
+
+    incidentes = forms.CharField(
+        label="Incidentes de la ejecución",
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "rows": 4,
+            "placeholder": "En caso de haberlos, describa los incidentes ocurridos durante la ejecucion de la prueba.(actividades, contexto, observaciones relevantes)",
+        }),
+        error_messages={
+            "required": "Debe ingresar una descripción de la ejecución.",
+        }
+    )
+
+    resultados_obtenidos = forms.CharField(
+        label="Resultados obtenidos",
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "rows": 4,
+            "placeholder": "Detalle los resultados obtenidos durante la ejecución",
+        })
+    )
+
+    evaluacion_final = forms.ChoiceField(
+        label="Evaluación final",
+        required=False,
+        choices=[
+            ('Exitosa', 'Exitosa'),
+            ('Parcial', 'Parcial'),
+            ('Fallida', 'Fallida'),
+            ('En Ejecucion', 'En Ejecucion'),
+        ],
+        widget=forms.Select(attrs={
+            "class": "form-select",
+        })
+    )
+
+    lecciones_aprendidas = forms.CharField(
+        label="Lecciones aprendidas",
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "rows": 4,
+            "placeholder": "Lecciones aprendidas, oportunidades de mejora o recomendaciones",
+        })
+    )
+
+    evidencia_general = forms.FileField(
+        label="Evidencia general",
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            "class": "form-control",
+        })
+    )
+
+
+
+from django import forms
+
+
+class EjecucionCasoPruebaForm(forms.Form):
+
+    resultado = forms.ChoiceField(
+        label="Resultado del caso",
+        required=False,
+        choices=[
+            ('Exitosa', 'Exitosa'),
+            ('Fallida', 'Fallida'),
+            ('En Proceso', 'En Proceso'),
+            ('No Aplica', 'No Aplica'),
+        ],
+        widget=forms.Select(attrs={
+            "class": "form-select",
+        })
+    )
+
+    observaciones = forms.CharField(
+        label="Observaciones",
+        required=False,
+        widget=forms.Textarea(attrs={
+            "class": "form-control",
+            "rows": 3,
+            "placeholder": "Observaciones, incidencias o comentarios relevantes durante la ejecución del caso",
+        })
+    )
+
+    evidencia = forms.FileField(
+        label="Evidencia del caso",
+        required=False,
+        widget=forms.ClearableFileInput(attrs={
+            "class": "form-control",
+        })
+    )
+
 
 
 class Modifica_Incidente_Form(forms.Form):

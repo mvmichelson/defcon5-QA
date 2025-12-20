@@ -51,11 +51,11 @@
 		   <tbody>
 		    <tr >
 				<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{prueba.codigo}}<bb></th>
-				<th scope="row"><bb style="font-size: 10px;">{{prueba.objetivo}}<bb></th>
-				<th scope="row"><bb style="font-size: 10px;">{{prueba.alcance}}<bb></th>
-				<th scope="row"><bb style="font-size: 10px;">{{prueba.criterios_exito}}<bb></th>
-				<th scope="row"><bb style="font-size: 10px;">{{prueba.responsable}}<bb></th>
-				<th scope="row"><bb style="font-size: 10px;">{{prueba.estado}}<bb></th>
+				<th scope="row">{{prueba.objetivo}}</th>
+				<th scope="row">{{prueba.alcance}}</th>
+				<th scope="row">{{prueba.criterios_exito}}</th>
+				<th scope="row">{{prueba.responsable}}</th>
+				<th scope="row">{{prueba.estado}}</th>
 	
 		    </tr>
 		   </tbody>
@@ -67,7 +67,7 @@
 <h6>CASOS:</h6>
 	
 	{% block B %}<!--------- CASOS  --------------------------------------------->
-	<ul class="BarraScroll" style="height: 200px;">
+	<ul class="BarraScroll" style="height: 300px;">
 		<table class="lta">
 		   <thead style="background: greenyellow; color:black">
 		   <tr>
@@ -93,10 +93,10 @@
 				class="link confirm-link" con-message="* * *  Confirma Eliminacion del Caso de Prueba? * * *"  data-message="Elimina Servicio ...">
 				<rr>&#128465</rr> 
 			</th>
-			<th scope="row"><bb>{{caso.codigo}}<bb></th>
-			<th scope="row"><bb>{{caso.precondiciones}}<bb></th>
-			<th scope="row"><bb>{{caso.descripcion}}<bb></th>
-			<th scope="row"><bb>{{caso.resultado_esperado}}<bb></th>
+			<th scope="row">{{caso.codigo}}</th>
+			<th scope="row">{{caso.precondiciones}}</th>
+			<th scope="row">{{caso.descripcion}}</th>
+			<th scope="row">{{caso.resultado_esperado}}</th>
 			
 			<th scope="row"><bb>{{caso.prioridad}}<bb></th>
 			
@@ -120,10 +120,10 @@
 				<strong><am style="color: rgb(255, 183, 0); font-size: 15px;">&#10010</am></strong></a>
 			</th>
 			<th scope="row" style="width: 20px;"><bb>{{caso.codigo}}<bb></th>
-			<th scope="row" style="width: 100px;"><bb>{{form.descripcion}}<bb></th>
-			<th scope="row"><bb>{{form.resultado_esperado}}<bb></th>
-			<th scope="row"><bb>{{form.precondiciones}}<bb></th>
-			<th scope="row"><bb>{{form.prioridad}}<bb></th>
+			<th scope="row" style="width: 100px;">{{form.precondiciones}}</th>
+			<th scope="row">{{form.descripcion}}</th>
+			<th scope="row">{{form.resultado_esperado}}</th>
+			<th scope="row">{{form.prioridad}}</th>
 			<th scope="row">
 			<!--------Boton de Salida ---------------->
 			<input type="submit" value="Graba" />

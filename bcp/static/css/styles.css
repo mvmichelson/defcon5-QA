@@ -17,6 +17,8 @@ Opcion */
 
 /* Switch Activa/Desactiva Procedimiento de Contingencia */
 
+/* Ingreso de Fechas y Horas.*/
+
 /* ===========================================================================================*/
 
 /*body {
@@ -476,7 +478,9 @@ textarea{
 
 .flex-container {
         display: flex;
-        justify-content: space-between;
+        justify-content: flex-start; /* CLAVE */
+        gap: 20px; 
+        
 }
 
 .flex-item {
@@ -908,3 +912,56 @@ a span:hover {
     font-weight: bold;
     border-left: 3px solid yellow;
 }
+
+
+/* ================================================
+   Ingreso de Fechas y Horas.
+   Normalización de campos Flatpickr (fecha y hora)
+   para que se vean idénticos a Bootstrap form-control
+   ================================================ */
+
+.flatpickr-date,
+.flatpickr-time,
+.flatpickr-input {
+    display: block;
+    width: 50% !important;
+    height: 38px !important;               /* Alto estándar Bootstrap */
+    padding: 0.375rem 0.75rem !important;  /* Padding estándar */
+    font-size: 1.2rem !important;
+    line-height: 1.5 !important;
+    color: #212529 !important;
+    background-color: rgb(227, 221, 221) !important;
+    background-clip: padding-box !important;
+    border: 1px solid #ced4da !important;  /* Borde igual a form-control */
+    border-radius: 0.375rem !important;    /* Radio igual a form-control */
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out !important;
+    box-sizing: border-box !important;
+}
+
+/* Hover */
+.flatpickr-date:hover,
+.flatpickr-time:hover,
+.flatpickr-input:hover {
+    border-color: #b3b3b3 !important;
+}
+
+/* Focus visible (misma animación que Bootstrap) */
+.flatpickr-date:focus,
+.flatpickr-time:focus,
+.flatpickr-input:focus {
+    border-color: #86b7fe !important;
+    outline: 0 !important;
+    box-shadow: 0 0 0 .25rem rgba(13, 110, 253, .25) !important;
+}
+
+/* Evitar que Flatpickr meta un input interno que desconfigure */
+.flatpickr-input[readonly] {
+    background-color: #fff !important;
+    cursor: pointer;
+}
+
+/* Contenedor del calendario más compacto */
+.flatpickr-calendar {
+    font-size: 1.5rem;
+}
+

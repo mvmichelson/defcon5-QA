@@ -330,7 +330,7 @@
 											
 							<!--- Si el escenario es igual al escenario del Procedimiento -->
 							{% if escenario == prc.escenarios.titulo %}
-							
+								{{prc.nombre}}
 								<a href="{% url 'det-proced-v' prc.pk %}" 
 								class="link" 
 								data-message="Ver Procedimiento: {{ prc.nombre }}">
@@ -344,6 +344,7 @@
 								</a>
 
 								<!--- Activa / Desactiva Procedimiento -->
+								{%if incidente.estado %}
 								<label class="switch">
 									<input type="checkbox" id="toggle-activo-{{ prc.id }}" 
 										data-id="{{ prc.id }}"
@@ -353,6 +354,7 @@
 										data-message="Activa/Desactiva el PC .: {{ prc.nombre }}">
 									</span>
 								</label>
+								{%endif%}
 								<!--- Fin Activa/Desactiva ----->
 								<!---- Estado del procedimiento -->
 							

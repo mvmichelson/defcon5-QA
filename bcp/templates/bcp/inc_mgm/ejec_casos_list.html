@@ -1,0 +1,273 @@
+<!Programa HTML>
+<!Lista los Checklist de Ejecucion de Casos de Prueba de un Procedimiento Vigente>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+{%extends "base_generic.html"%}
+{% load static %}
+
+{% block extra_head %}
+<meta http-equiv="refresh" content="30">
+{% endblock %}
+
+
+{% block content %}
+<!----------------- ENCABEZADOS ------------------>
+<ul class="encabezado_B">
+	<p><strong>PRUEBA DE PROCEDIMIENTO DE CONTINGENCIA</strong></p>
+</ul>
+
+
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Seccion 1 - Casos de Prueba</strong></h5>
+	<p> En esta seccion debe desarrollar los casos de prueba planificados.</p>
+	</div>
+
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
+
+
+	<table class="lta" style="width: 100%; border-collapse: collapse;">
+
+      <!-- Encabezado superior -->
+		<!-- Encabezado de columnas -->
+		<thead class="encabezado_N" style="background: rgb(65, 1, 1);">
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+				<th scope="col">INCIDENTE</th>
+				<th scope="col">PROCEDIMIENTO</th>
+				<th scope="col">ESCENARIO RIESGO</th>
+				<th scope="col">ESTRATEGIA</th>
+			</tr>
+		</thead>
+
+      <tbody style="border-top: none;">
+
+            <tr style="border-bottom: 1px solid #ccc;">
+				<td><strong>{{checklist.incidente.codigo}}:</strong>{{checklist.incidente.descripcion}}</td>
+				<td>{{proc.nombre }}</td>
+				<td>{{proc.escenarios}}</td>
+				<td>{{proc.estrategia}}</td>
+            </tr>
+
+      </tbody>
+    </table>
+
+	
+<!---- Prueba Asociada ----------->
+	<br/><br/>
+	<h5><strong>PRUEBA :</strong></h5>
+	<ul class="scr4">
+	<table class="ita" style="width: 100%; border-collapse: collapse;
+	padding: 0px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    font-size: 1.1rem;">
+      <!-- Encabezado superior -->
+		<!-- Encabezado de columnas -->
+		 
+		<thead class="encabezado_N" style="color:white ">
+			
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+				<div class="flex-container">
+				<div class="flex-item">
+					<!--------- Columna Plan de Prueba  -->
+					<th scope="col" style="width: 50px; background-color:RED;" >Codigo</th>
+					<th scope="col" style="width: 100px; background-color:RED;">Objetivo</th>
+					<th scope="col" style="width: 200px; background-color:RED;">Alcance</th>
+				</div>
+				<div class="flex-item">
+					<!--------- Columna Resultados de Prueba -->
+					<th scope="col" style="width: 30px;">Nro.</th>
+					<th scope="col">Fecha</th>
+					<th scope="col">Resultado</th>
+					<th scope="col">Comentario</th>
+					<th scope="col">Conclusion</th>
+				</div>
+				</div>
+
+			</tr>
+		</thead>
+
+      <tbody style="border-top: none;">
+
+		<tr style="border-bottom: 1px solid #ccc;">
+			<div class="flex-container">
+			<div class="flex-item">
+				<!--- Datos de la Prueba Planificada vigente ----->
+				<td>{{ejec.prueba.codigo}}</td>
+				<td>{{ejec.prueba.objetivo}}</td>
+				<td>{{ejec.prueba.alcance}}</td>
+			</div>
+			<div class="flex-item">
+			<!------ Datos de la Prueba ---------->
+				<td>{{ejec.nro_ejecucion}}</td>
+				<td>{{ejec.fecha_creacion}}</td>
+				<td>
+					{%if ejec.resultados_obtenidos%}
+						{{ejec.resultados_obtenidos}}
+					{%else%}
+						Pendiente...
+					{%endif%}
+				</td>
+				<td>
+					{%if ejec.incidentes%}
+						{{ejec.incidentes}}
+					{%else%}
+						Pendiente...
+					{%endif%}
+				</td>
+				<td>
+					{%if ejec.evaluacion_final %}
+						{{ejec.evaluacion_final}}
+					{%else%}
+						Pendiente...
+					{%endif%}
+				</td>
+				
+			</div>
+		</tr>
+	</tbody>
+    </table>
+
+</ul>
+<!---- Fin Prueba Asociada ----------->
+
+<!----------------- FIN  ENCABEZADOS ------------------>
+
+
+
+<!---------------- LISTADO DE CASOS DE PRUEBAS -------------------------------------->
+	<br/><br/><br/>
+	<h5><strong>CASOS :</strong></h5>
+	<ul class="scr4 BarraScroll" style="height: 250px;">
+	
+    <table class="ita" style="width: 100%;">
+
+      <!-- Encabezado superior -->
+		<!-- Encabezado de columnas -->
+		 
+		<thead class="encabezado_N" style="color:white ">
+			
+			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
+					<!--------- Columna Casos del Plan de Prueba  -->
+					<th scope="col" style="width: 50px; background-color:RED;" >Codigo</th>
+					<th scope="col" style="width: 100px; background-color:RED;">Descripcion</th>
+					<th scope="col" style="width: 200px; background-color:RED;">Resultado Esperado</th>
+					<th scope="col" style="width: 20px; background-color:RED;">Prioridad</th>
+					<!--------- Columna Resultados Casos de Prueba -->
+					<th scope="col" style="width: 20px; text-align: center; text-align: center;">Evaluacion</th>
+					<th scope="col">Observaciones</th>
+					<th scope="col" style="width: 20px; text-align: center;">Evidencia</th>
+					<th scope="col" style="width: 20px; text-align: center;">Detalle</th>
+			</tr>
+		</thead>
+
+      <tbody style="border-top: none;">
+
+        {% if lista_ejec_casos %}
+          {% for ejec in lista_ejec_casos %}
+            <tr style="border-bottom: 1px solid #ccc;">
+				<div class="flex-container">
+				<div class="flex-item">
+					<!--- Datos de la Prueba Planificada vigente ----->
+					<td>{{ejec.caso.codigo}}</td>
+					<td>{{ejec.caso.descripcion}}</td>
+					<td>{{ejec.caso.resultado_esperado}}</td>
+					<td>
+					<strong>
+						{%if ejec.caso.prioridad == 'Baja' %}
+							<p class="" style="color:green"> {{ejec.caso.prioridad}}</p>
+						{%elif ejec.caso.prioridad == 'Alta' %}
+							<p class="blink" style="color: red"> {{ejec.caso.prioridad}}</p>
+						{%else%}
+							<p class="" style="color: rgb(240, 221, 77)"> {{ejec.caso.prioridad}}</p>
+						{%endif%}
+					</strong>
+					</td>
+				</div>
+				<div class="flex-item">
+				<!------ Datos de la Prueba ---------->
+					<td>
+					<strong>
+						{%if ejec.resultado == 'Exitosa' %}
+							<p class="" style="color:green"> {{ejec.resultado}}</p>
+						{%elif ejec.resultado == 'Fallida' %}
+							<p class="blink" style="color: red"> {{ejec.resultado}}</p>
+						{%else%}
+							<p class="" style="color: rgb(240, 221, 77)"> {{ejec.resultado}}</p>
+						{%endif%}
+					</strong>
+					</td>
+					<td>{{ejec.observaciones}}</td>
+					<td>
+						{% if ejec.evidencia %}
+							<a href="{{ ejec.evidencia.url }}" target="_blank">
+								<img src="/static/img/Comentario_1.png" width="25" height="25">
+							</a>
+						{% else %}
+							Sin evidencia
+						{% endif %}
+					</td>
+					
+				<td><!------------ Checklist de Ejecucion de Pruebas  ----------------->
+					<a class="link blink" data-message="Revisar Evaluacion y Autorizar u Observar ..." 
+					href="{% url 'Ejec-Caso'   ejec.pk  %}">
+					<img src="/static/img/Evaluacion.jpg" width="25" height="25"></img>
+					</a>
+				</td>
+				</div>
+           </tr>
+          {%endfor%}
+        {%else%}
+            Sin Pruebas definidas ....
+        {%endif%}
+
+      </tbody>
+    </table>
+</ul>
+		
+<!---------------- FIN LISTADO DE CASOS DE PRUEBAS -------------------------------------->
+
+<br/><br/>
+<!--- Mensaje seccion 2 - Conclusion General de la Prueba ----------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Seccion 2 - Conclusion</strong></h5>
+	<p> En esta seccion debe concluir respecto de la evaluacion final de la prueba 
+		<strong>{{ejec.prueba.codigo}}</strong> correspondiente al Procedimiento 
+		<strong>{{proc.nombre}}</strong>
+		en base a los resultados obtenidos de la ejecucion de los Casos de Prueba.</p>
+	</div>
+
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
+
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+
+<br/>
+<aa style="font-size: 8px;">[ejec_casos_list]</aa>
+
+
+{%endblock%}
+

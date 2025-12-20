@@ -7,13 +7,17 @@
 
 {% extends "base_generic.html" %}
 {% block extra_head %}
+<!-------- Refresca la pagina cada x segundos ---------->
 <meta http-equiv="refresh" content="300">
+<!--------- Inhibe actualizacion del scroll principal -->
+<meta name="inhibir-scroll-principal" content="true">
 {% endblock %}
 
 
+
 {% block content %}
-<ul class="encabezado_SB">
-<aa><h4><strong>MAPA DE PROCESOS</strong></h4></aa>	
+<ul class="encabezado" style="color:white; text-align: center;border-radius: 10px;">
+<h4><strong>MAPA DE PROCESOS</strong></h4>	
 </ul>
 	
 
@@ -38,7 +42,7 @@
 		<!---- Opcion 3 ----->
 		<div class="flex-item" style="width: 34%;">
 			<ul class="encabezado_B">
-				<a href="{% url 'Lista-Recursos' %}"><strong><aa>Servicios Cr./ Escenarios de Riesgo</aa></strong></a>		</ul>
+				<a href="{% url 'Lista-Recursos' %}"><strong><aa>Servicios Cr. &  Escenarios de Riesgo</aa></strong></a>		</ul>
 			</ul>
 		</div><!---- Fin  Opcion 3 ----->
 	

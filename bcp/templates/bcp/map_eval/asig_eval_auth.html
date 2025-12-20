@@ -57,7 +57,7 @@
 			<table class="lta"> 
 				<thead class="encabezado_C" style="text-align: center">
 				<tr>
-				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 20%;">Referencia:</th>
 				<th scope="col" style="width: 500px">Comentario</th>
 				<th scope="col" style="width: 10;">Est.</th>
 				</tr>
@@ -137,20 +137,20 @@
    
 			 <tr>
 				 
-				 <th scope="row"><bb>{{imp.impacto.nombre}}</bb></th>
-				 <th scope="row"><bb>{{imp.impacto.descripcion}}</bb></th>
-				 <th scope="row"><aa>{{imp.nivel.nombre}}</aa>
+				 <th scope="row">{{imp.impacto.nombre}}</th>
+				 <th scope="row">{{imp.impacto.descripcion}}</th>
+				 <th scope="row">{{imp.nivel.nombre}}
 					<!---------  Comentario de Revision ----->
 					<span class="comment-icon link"  data-message="Comentar el nivel asignado ..."
 					data-id="{{ proceso.id }}"
 					data-sec="V" 
-					data-field="Revisar el nivel asignado al Riesgo: {{imp.impacto.nombre}} "
+					data-field="Observado por {{autorizador}} : Revisar el nivel asignado al Riesgo: {{imp.impacto.nombre}} "
 					> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 					</span>
 					<!---------  Fin Comentario de Revision ----->
 
 				 </th>
-				 <th scope="row"><aa>{{imp.nivel.descripcion}}</aa></th>
+				 <th scope="row">{{imp.nivel.descripcion}}</th>
 			 </tr>
    
 			 {%endfor%}
@@ -180,14 +180,14 @@
 		{% for ind in proceso.subproceso.indicador_subp.all %}
 
 		<tr>
-			<th scope="row" style="text-align: center;"><bb>{{ind.indicador.nombre}}</bb></th>
-			<th scope="row"><bb>{{ind.indicador.descripcion}}</bb></th>
-			<th scope="row"><aa>{{ind.nivel.nivel}}</aa>
+			<th scope="row" style="text-align: center;">{{ind.indicador.nombre}}</th>
+			<th scope="row">{{ind.indicador.descripcion}}</th>
+			<th scope="row">{{ind.nivel.nivel}}
 			<!---------  Comentario de Revision ----->
 			<span class="comment-icon link"  data-message="Comentar el nivel asignado a {{ind.indicador.nombre}}..."
 			data-id="{{ proceso.id }}"
 			data-sec="V" 
-			data-field="Revisar el nivel asignado al Indicador de Recuperacion: {{ind.indicador.nombre}} "
+			data-field="Observado por {{autorizador}} : Revisar el nivel asignado al Indicador de Recuperacion: {{ind.indicador.nombre}} "
 			> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 			</span>
 			<!--------- Fin Comentario de Revision ----->
@@ -210,7 +210,7 @@
 			<span class="comment-icon link"  data-message="Comentario general ..."
 			data-id="{{ proceso.id }}"
 			data-sec="V"
-			data-field="Punto de Atencion."
+			data-field="Observado por {{autorizador}} : Punto de Atencion."
 			>
 			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
 			</span>

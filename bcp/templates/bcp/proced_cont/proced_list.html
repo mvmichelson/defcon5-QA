@@ -12,12 +12,10 @@
 defcon={{defcon_est}}
 
 {% block content %}
-
-
-	<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.9);">
-    		 <strong> PROCEDIMIENTOS DE CONTINGENCIA  (PC) </strong>
-	</ul>  
 	
+<ul class="encabezado" style="background: rgba(255, 153, 0, 0.9); color:white; text-align: center;border-radius: 10px;">
+<h4><strong>PROCEDIMIENTOS DE CONTINGENCIA</strong></h4></ul>
+
 	<!------ Menu Encabezado ---------------------------------->
 	<div class="flex-container">
 
@@ -96,7 +94,7 @@ defcon={{defcon_est}}
 			</p>
 
 	{%else%}
-		<aa><strong>{{ proceso.nombre }}</strong></aa>
+		<aa><strong>{{ proceso.nombre | upper }}</strong></aa>
 		</p>
 	{%endif%}
          		
@@ -128,7 +126,7 @@ defcon={{defcon_est}}
 						
 						<!-- Opcion para mostrar el Procedimiento vigente -->
 						<a href = "{% url 'det-proced-v' proced.pk  %}" 
-						class="link" data-message="Ver Procedimiento de Contingencia Vigente (Aprobado) ..."><bn>&#128215</bn></a> <!ojo >
+						class="link" data-message="Ver Procedimiento de Contingencia Vigente (Aprobado) ..."><bn>&#128215</bn></a> 
 						
 
 						<!**************************>
@@ -159,7 +157,8 @@ defcon={{defcon_est}}
 						<!* Despliega Opciones *>
 						<!**********************>
 
-						<!En definicion>
+						<!-- En Definicion inicial x Consultor -->
+						<!-- ==================================-->			
 						{% if proced.status == 'C' %}
 
 							{% if request.user.pk == proced.gestor_consultor.user_pk %}
@@ -183,12 +182,11 @@ defcon={{defcon_est}}
 
 						{% endif %}
 
-						<!En Autorizacion>
-						<!===============>			
+						<!-- En Autorizacion x Ejecutor    -->
+						<!-- ==============================-->			
 						{% if proced.status == 'a' %}
 
-							{% if request.user.pk == proced.resp_proceso.user_pk %}			
-							<! Mostrar Procedimiento>
+							{% if request.user.pk == proced.gestor_ejecutor.user_pk %}			
 							<! ir a Autorizacion>
 								<a href = "{% url 'aut-proced' proced.pk %}"
 								class="link blink" data-message="Autorizar PC propuesto ... ">
@@ -196,25 +194,42 @@ defcon={{defcon_est}}
 								</a> 	
 								
 							{%else%}
-								<a class="link" data-message="En Autorizacion por Gestor Responsable del Proceso de Negocio ... ({{proced.resp_proceso}}) ">
+								<a class="link" data-message="En Autorizacion por Gestor Ejecutor del Procedimiento ... ({{proced.gestor_ejecutor}}) ">
 								<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
 								</a> 	
-						{%endif%}
+							{%endif%}
 							
 						{% endif %}
-						
-						<!En correccion por Consultor>
-						<!===========================>
-						{% if proced.status == 'x' %}
-						
 
+						<!-- En Autorizacion x Responsable -->
+						<!-- ==============================-->			
+						{% if proced.status == 'A' %}
+
+							{% if request.user.pk == proced.resp_proceso.user_pk %}			
+							<! ir a Autorizacion>
+								<a href = "{% url 'aut-proced' proced.pk %}"
+								class="link blink" data-message="Autorizar PC propuesto ... ">
+								<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
+								</a> 	
+								
+							{%else%}
+								<a class="link" data-message="En Autorizacion por Gestor Responsable del Procedimiento ... ({{proced.resp_proceso}}) ">
+								<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
+								</a> 	
+							{%endif%}
+							
+						{% endif %}
+
+						
+						<!-- En Correccion x Gestor Consultor -->
+						<!-- =================================-->			
+						{% if proced.status == 'x' %}
 							{% if request.user.pk == proced.gestor_consultor.user_pk %}
 							<!----- Si usuario en sesion es Consultor ---------->
 								<a href = "{% url 'rev-proced-b'  proced.pk %}"
 								class="link blink" data-message="Revisar Comentarios y Corregir ... ">
 									<img src="/static/img/En_Revision.png" width="17" height="17">
 								</a>
-
 							{%else%}
 							<a class="link" data-message="En Revision y Correccion por Gestor Consultor ({{proced.gestor_consultor}})">
 								<img src="/static/img/En_Revision.png" width="17" height="17">
@@ -226,11 +241,14 @@ defcon={{defcon_est}}
 
 						<!Aprobado>
 						<!===============>
-						{% if proced.status == 'A'  %}
-
+						{% if proced.status == 'R'  %}
+							{% if request.user.pk == proced.gestor_consultor.user_pk %}
 								<a  href = "{% url 'actualiza-pc' proced.pk  %}" class="link  confirm-link" con-message=" Confirma Actualizacion del Procedimiento de Contingencias ?" data-message="Actualiza Procedimiento de Contingencia ..."
 								><img src="/static/img/actualizar.png" width="20" height="20"></a>
-
+							{%else%}
+								<a  class="link" data-message="Aprobado. Sujeto a Actualizacion (Solicitar a Gestor Consultor)..."
+								><strong>&#9989</strong></a>
+							{%endif%}
 
 						{% endif %}
 						

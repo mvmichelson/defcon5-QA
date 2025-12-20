@@ -1,28 +1,42 @@
 <!Programa HTML                                           >
-<!Despliega el formulario para el Reporte de un Incidente >
+<!Despliega el formulario para la Programacion de Pruebas de BCP >
 <!Programado por Marco A. Villalobos M.                   >
 <!========================================================>
 
 {% extends "base_generic.html" %}
+{% load static %}
+
 {% block content %}
 
 <!--- Encabezado ------------------>
 <ul class="encabezado" style="background-color:red; color:yellow; text-align: center;border-radius: 10px;">
-<h4 class="blink"><strong>REPORTE DE INCIDENTE</strong></h4></ul>
+<h4 class=""><strong>PLAN DE PRUEBAS BCP/DRP</strong></h4></ul>
 <!--- Fin Encabezado ------------------>
 
+<!-- template_evento.html -->
 
-	<form action="" method="post">
-		{% csrf_token %}
-          
 
-	  <ul class="scr4">
-	   <p><strong>Nombre.........:</strong>&emsp;{{form.nombre }}</p>
-	   <p><strong>Area...........:</strong>&emsp;{{form.area}}</p>
-	   <p><strong>Descripcion....:</strong>&emsp;{{form.descripcion}}</p>
-	 </ul>
+<div class=" mt-4">
+    <form method="post">
+        {% csrf_token %}
 
-        
+		<!---- ===================== -->
+		<!---- Alcance de la Prueba  -->
+		<!---- ===================== -->
+
+		<!------------ Mensaje ---------------------------------------------->
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h4><strong>2. Alcance de la Prueba</strong></h4>
+		<p>
+			Seleccione los Escenarios de Riesgo que seran cubiertos por la Prueba del BCP/DRP.     
+		</p>
+		<p>
+			
+		</p>
+
+		</div>
+		<!------------ Fin Mensaje ---------------------------------------------->
+
 	<!-------- ------------------------------------->
 	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
 	<!---------------------------------------------->
@@ -30,7 +44,7 @@
 	<div data-asignacion
      data-model="bcp.Incidentes"         
      data-obj-id="{{ incidentes.id }}"   
-     data-field="amenazas_i" > 
+     data-field="escenarios_i" > 
 	 <!-- data-model="bcp.Drp"       : formato app_label.ModelName; DEBE estar en ALLOWED_MODELS -->
      <!-- data-obj-id="{{ drp.id }}  : id del objeto base -->
      <!-- data-field="componentes"   : nombre exacto del campo M2M en el modelo -->
@@ -41,23 +55,23 @@
 
 				<!-- Escenarios Disponibles -->
 				<div style="flex:1;">
-					<h4><strong>⏼ Amenazas Disponibles</strong></h4>
+					<h4><strong>⏼ Escenarios Disponibles</strong></h4>
 					<input type="text" class="filtro-disponibles" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
 					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
 					<table class="lta tabla-disponibles styled-table" style="width:100%; margin-top:10px;">
 						<thead style="background: greenyellow;">
 							<tr style="color:black">
-								<th style="width:30%;">Amenaza:</th>
+								<th style="width:30%;">Escenario:</th>
 								<th>Descripción</th>
 								<th style="width:12%;" class="link" data-message="Selecciona"  style="align-content: center;"></th>
 							</tr>
 						</thead>
 						<tbody>
-						{% for amenaza in amenazas_disponibles %}
-							<tr data-id="{{ amenaza.id }}">
-								<td><strong>{{ amenaza.titulo }}</strong></td>
-								<td>{{ amenaza.descripcion }}</td>
+						{% for escenario in escenarios_disponibles %}
+							<tr data-id="{{ escenario.id }}">
+								<td><strong>{{ escenario.titulo }}</strong></td>
+								<td>{{ escenario.descripcion }}</td>
 								<td>
 									<button type="button" class="btn-mover button" data-destino="asignados" style="background: lightgreen; font-size:12px;">⏩</button>
 								</td>
@@ -72,23 +86,23 @@
 
 				<!-- Escenarios Asignados -->
 				<div style="flex:1;">
-					<h4><strong>⏼ Amenazas Seleccionadas</strong></h4>
+					<h4><strong>⏼ Escenarios Seleccionadas</strong></h4>
 					<input type="text" class="filtro-asignados" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
 					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
 					<table class="lta tabla-asignados styled-table" style="width:100%; margin-top:10px;">
 						<thead style="background: lightblue;">
 							<tr style="color:black">
-								<th style="width:30%;">Amenaza:</th>
+								<th style="width:30%;">Escenario:</th>
 								<th>Descripción</th>
 								<th style="width:12%;" class="link" data-message="Descarta"  style="align-content: center;" ></th>
 							</tr>
 						</thead>
 						<tbody>
-						{% for amenaza_a in amenazas_asignadas %}
-							<tr data-id="{{ amenaza_a.id }}"> 
-								<td><strong>{{ amenaza_a.titulo }}</strong></td>
-								<td>{{ amenaza_a.descripcion }}</td>
+						{% for escenario_a in escenarios_asignados %}
+							<tr data-id="{{ escenario_a.id }}"> 
+								<td><strong>{{ escenario_a.titulo }}</strong></td>
+								<td>{{ escenario_a.descripcion }}</td>
 								<td>
 									<button type="button" class="btn-mover button " data-destino="disponibles" style="background: red; color: white; font-size:12px;">⏪</button>
 								</td>
@@ -104,43 +118,71 @@
 			</div>
 
 			<!-- Campo hidden para IDs -->
-			<input type="hidden" name="amenazas_i" class="input-seleccion" value="">
+			<input type="hidden" name="escenarios_i" class="input-seleccion" value="">
 
 			<br/>
-			<!--- Botones de Salida -------->
-			<button type="submit" class="button">Guardar Selección</button>
 
+			<!------ Boton de Salida ----------------------------->
+        	<button class="button btn-primary mt-3" type="submit">Registrar Plan</button>
 		</form>
 	</div>
 	<!----- FIN CAJAS DE ASIGNACION DISPONIBLES / ASIGNADOS -->
-
-	<!----- CSS para Scripts ----------------------------------->
-	<!---------------------------------------------------------->
-		<!-- Caja de Comentario -->
-
-		<div id="comment-box" class="hidden" style="font-size: 13px;">
-			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
-			<h5><strong>Comentario de Revision:</strong></h5>
-			<textarea id="comment-text" rows="5" cols="30"></textarea>
-			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
-			<button id="close-comment">Cerrar</button>
-		</div>
 		
-		<!-- Globo de cómic -->
-		<div id="comicBalloon"></div>
 
-		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
-		<div id="confirmation-dialog" class="hidden">
-			<div class="dialog-content">
-				<p id="confirmation-message"></p>
-				<button id="confirm-yes">Sí</button>
-				<button id="confirm-no">No</button>
-			</div>
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
 		</div>
+	</div>
+	
 
-<br/>
-<aa style="font-size: 8px;">[crea_inc]</aa>
-	
-	
+<!--------- Fin CSS para Scripts ------------------------->
+
+
+<script>
+// Calendario en español para fecha
+flatpickr(".flatpickr-date", {
+    dateFormat: "Y-m-d",
+    locale: "es"
+});
+
+// Selector de hora en español (solo campo hora)
+flatpickr(".flatpickr-time", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    minuteIncrement: 1,
+    locale: "es"
+});
+</script>
+
+
+
+<aa style="font-size: 8px;">[crea_plan_prba]</aa>
+
+
+
+
 <!--------------------------------------------------------------------->
 {% endblock %}
+
+

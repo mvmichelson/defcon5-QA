@@ -118,7 +118,7 @@
 	<p><strong>&emsp; ASIGNACION DE SERVICIOS CRITICOS</strong></p>
 </ul>
 
-<ul class="scr4">
+<ul class="scr4 BarraScroll" style="height: 270px;">
 <br/>
 
 <div class="flex-container">
@@ -143,9 +143,9 @@
 		{%for act_d  in activos_disp %}
 		{% if  act_d not in activos.all %}
 			<tr>
-			<th scope="row"><bb>{{act_d.tipo.nombre}}<bb></th>
-			<th scope="row"><bb>{{act_d.nombre}}<bb></th>
-			<th scope="row"><bb>{{act_d.descripcion}}<bb></th>
+			<th scope="row">{{act_d.tipo.nombre}}</th>
+			<th scope="row">{{act_d.nombre}}</th>
+			<th scope="row">{{act_d.descripcion}}</th>
 			<th scope="row">
 					<!---------  Comentario de Revision ----->
 					<span class="comment-icon link"  data-message="Comentar Servicio ..."
@@ -191,9 +191,9 @@
 		<tbody>
 		{%for act in activos.all  %}
 		<tr>
-		<th scope="row"><bb>{{act.tipo.nombre}}<bb></th>
-		<th scope="row"><bb>{{act.nombre}}<bb></th>
-		<th scope="row"><bb>{{act.descripcion}}<bb></th>
+		<th scope="row">{{act.tipo.nombre}}</th>
+		<th scope="row">{{act.nombre}}</th>
+		<th scope="row">{{act.descripcion}}</th>
 		<th scope="row">
 				<!---------  Comentario de Revision ----->
 				<span class="comment-icon link"  data-message="Comentar Servicio ..."
@@ -232,7 +232,7 @@
 	<p><strong>&emsp; ASIGNACION DE ESCENARIOS </strong></p>
 </ul>
 
-<ul class="scr4">
+<ul class="scr4 BarraScroll" style="height: 270px;">
 <br/>
 
 <div class="flex-container">
@@ -245,9 +245,9 @@
 	<thead class='encabezado_A'>
 	<tr>
  
-	 <th scope="col" style="font-size: 10px;">ESCENARIO DE RIESGO</th>
-	 <th scope="col" style="font-size: 10px;">DESCRIPCION</th>
-	 <th scope="col" style="font-size: 10px;"></th>
+	 <th scope="col" >ESCENARIO DE RIESGO</th>
+	 <th scope="col">DESCRIPCION</th>
+	 <th scope="col" ></th>
 	</tr>
 	</thead>
 
@@ -256,8 +256,8 @@
 	{% if  esc_d not in escenarios.all %}
 	  <tr>
 	   
-	   <th scope="row"><bb style="font-size: 12px;">{{esc_d.titulo}}<bb></th>
-	   <th scope="row"><bb style="font-size: 10px;">{{esc_d.descripcion}}<bb></th>
+	   <th scope="row">{{esc_d.titulo}}</th>
+	   <th scope="row">{{esc_d.descripcion}}</th>
 	   <th scope="row">
 					<!---------  Comentario de Revision ----->
 					<span class="comment-icon link"  data-message="Comentar o hacer observacion sobre el Escenario {{esc_d.titulo}} disponible ..."
@@ -291,9 +291,9 @@
 	<thead class='encabezado_A'>
 	<tr>
  
-	 <th scope="col" style="font-size: 10px;">ESCENARIO DE RIESGO</th>
-	 <th scope="col" style="font-size: 10px;">DESCRIPCION</th>
-	 <th scope="col" style="font-size: 10px;"></th>
+	 <th scope="col" >ESCENARIO DE RIESGO</th>
+	 <th scope="col" >DESCRIPCION</th>
+	 <th scope="col" ></th>
 	</tr>
 	</thead>
 
@@ -301,8 +301,8 @@
 	{%for esc_a  in escenarios.all  %}
 	  <tr>
 	   
-	   <th scope="row"><bb style="font-size: 12px;">{{esc_a.titulo}}<bb></th>
-	   <th scope="row"><bb style="font-size: 10px;">{{esc_a.descripcion}}<bb></th>
+	   <th scope="row">{{esc_a.titulo}}</th>
+	   <th scope="row">{{esc_a.descripcion}}</th>
 	   <th scope="row"> 
 		<!---------  Comentario de Revision ----->
 		<span class="comment-icon link"  data-message="Comentar o hacer observacion sobre el Escenario {{esc_a.titulo}} asignado ..."
@@ -339,7 +339,7 @@
 		<form action="" method="post">
         		{% csrf_token %}
         		
-				<bn>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si desea autorizar los Escenarios de Riesgo asignados para el Proceso - <strong>{{proc.nombre}}</strong>  -.
+				<bn>Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;si desea autorizar los Escenarios de Riesgo asignados al Proceso - <strong>{{proc.nombre}}</strong>  -.
 					Considerar las observaciones en estado pendiente en el Block de Revision (Est.=<a style="font-size: 10px;">&#10067</a>).
 					Si Registra sin Autorizar, el proceso sera devuelto al Gestor [C]onsultor para su revision en base a sus comentarios.
 				</bn>

@@ -115,7 +115,7 @@ from .models import Proceso, SubProceso, LogAut, Recursos, Tipo_RR, Gestor, Esce
 from .models import Drp, Indicadores_BIA, Tipo_Indicador, Parametros_G, Incidentes, Procedimientos, Tipo_Proc, Servicios_PC, Contactos_PC, Pasos_PC 
 from .models import Componentes, Tipo_Componente, LBC, Tipo_Disp, Tipo_Site, Impactos_Asig, Contactos_PC_V, Pasos_PC_V
 from .models import Indicadores_Asig, Log_Revision, SubProceso_V, Control_Cambios, Procedimientos_V, Servicios_PC_V, Impactos_Asig_v, Indicadores_Asig_v
-from .models import CheckList, Check_Pasos, PruebaContingencia, CasoPrueba, EjecucionPrueba, EjecucionCasoPrueba
+from .models import CheckList, Check_Pasos, PruebaContingencia, PruebaContingencia_V, CasoPrueba, CasoPrueba_V, EjecucionPrueba, EjecucionCasoPrueba
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User, PermissionsMixin
@@ -1014,15 +1014,15 @@ def Autoriza_M(request, pk):
                         proc.subproceso.status='x'
 
                         # Crea Log de Observacion de [R]esponsable
-                        log=Log_Revision()
-                        log.fecha = datetime.date.today()
-                        log.proceso= proc
-                        log.gestor_aut=usr_aut
-                        log.seccion="M"
-                        log.campo="Observado por:"+aut
-                        log.comentario="Proceso observado por Gestor Responsable. Se envia a Revision por Gestor Autorizador."
-                        log.resuelto=True
-                        log.save()
+                        #log=Log_Revision()
+                        #log.fecha = datetime.date.today()
+                        #log.proceso= proc
+                        #log.gestor_aut=usr_aut
+                        #log.seccion="M"
+                        #log.campo="Observado por:"+aut
+                        #log.comentario="Proceso observado por Gestor Responsable. Se envia a Revision por Gestor Autorizador."
+                        #log.resuelto=True
+                        #log.save()
 
 
                 
@@ -1052,7 +1052,8 @@ def Autoriza_M(request, pk):
                                         }
                              )
                                         
-        return render(request, 'bcp/proceso_auth.html', {'form': form, 
+        return render(request, 'bcp/proceso_auth.html', {'form': form,
+                                                         'autorizador':aut, 
                                                          'proceso':proc,
                                                          'comentarios':comentarios_m})
     
@@ -1138,15 +1139,15 @@ def Aut_Asig_BIA(request, pk):
                     proceso.subproceso.status='x'
 
                     # Crea Log de rechazo de Autorizador
-                    log=Log_Revision()
-                    log.fecha = datetime.date.today()
-                    log.proceso= proceso
-                    log.gestor_aut=usr_aut
-                    log.seccion="V"
-                    log.campo="Observado por:"+aut
-                    log.comentario="BIA observado por Gestor Autorizador. Se envia a revision por Gestor Consultor"
-                    log.resuelto=True
-                    log.save()
+                    #log=Log_Revision()
+                    #log.fecha = datetime.date.today()
+                    #log.proceso= proceso
+                    #log.gestor_aut=usr_aut
+                    #log.seccion="V"
+                    #log.campo="Observado por:"+aut
+                    #log.comentario="BIA observado por Gestor Autorizador. Se envia a revision por Gestor Consultor"
+                    #log.resuelto=True
+                    #log.save()
 
                     email = proceso.subproceso.gestor_C.user_gestor.email
                     accion='Tomar accion sobre las modificaciones solicitadas por el gestor Autorizador para el'
@@ -1212,6 +1213,7 @@ def Aut_Asig_BIA(request, pk):
                              )
                                         
         return render(request, 'bcp/map_eval/asig_eval_auth.html', {'form': form,
+                                                                    'autorizador':aut,
                                                                     'proceso':proceso,
                                                                     'comentarios':comentarios_v})
     
@@ -3504,7 +3506,7 @@ def Lista_Procedimientos(request, vigente):
     else:
         procedimientos_vigentes = False
 
-    print('-------- Entra a Lista de Procedimientos ----------')
+    print('>>>> Entra a Lista de Procedimientos ----------')
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
@@ -4465,6 +4467,14 @@ def br_caso_P8(request, pk):
 
     #return HttpResponseRedirect(reverse('Crea-Caso-P8', args=[str(prueba.id), fase]))
 
+
+#**************************************************************
+# Ejecucion de Pruebas 
+
+
+
+
+
 #*************************************************************
 # 2.2.4  Borra el Procedimiento de Contingencia              *
 #*************************************************************
@@ -4523,7 +4533,7 @@ def Aut_Proced_C(request, pk):
     Autorizacion del Procedimiento
     Crea o Actualiza el Procedimiento Vigente 
     """
-    print('>>>>> Entra Autoriza Procedimiento >>>>>>')
+    print('>>>>> Entra Autoriza Procedimiento')
     # Verifica si el usuario en sesion esta habilitado
     if not es_del_grupo([request.user, 'Autorizadores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
@@ -4590,491 +4600,707 @@ def Aut_Proced_C(request, pk):
                             
             if aprobado:
 
-                # Cambia a estado A (Aprobado)
-                # ============================
-                print('> aprobo C->A')
-                proced.status='A'
-                print('status=',proced.status)
+                # Cambia de estado 
+                # ================
+                print('Estado Inicial=', proced.status)
+                if proced.status == 'a':   
+                    print('> aprobo a->A')
+                    proced.status='A'      # Aprobado por Gestor Ejecutor
+                    print('status final=',proced.status)
+
+                elif proced.status == 'A':
+                    print('> aprobo A->R')
+                    proced.status='R'      # Aprobado por Gestor Responsable de Procedimiento
+                    print('status final=',proced.status)
 
 
-                # Crea o Modifica Procedimiento  (SubProceso) Vigente
-                # Crea una entrada al log de Control de Cambios
-                # =============================================
+                    # Crea o Modifica Procedimiento  (SubProceso) Vigente
+                    # Crea una entrada al log de Control de Cambios
+                    # =============================================
 
-                # Determina si el PC existe para ese Proceso Vigente.
-                #pc_en_proceso_v=proceso.subproceso_v.procedimientos_contingencia_v
+                    # Determina si el PC existe para ese Proceso Vigente.
+                    #pc_en_proceso_v=proceso.subproceso_v.procedimientos_contingencia_v
 
-                codigo_prcd=proced.codigo
+                    codigo_prcd=proced.codigo
 
-                existe=Procedimientos_V.objects.filter(codigo=codigo_prcd).exists()
-                hay_cambios=False
+                    existe=Procedimientos_V.objects.filter(codigo=codigo_prcd).exists()
+                    hay_cambios=False
 
-                if not existe:    # Verifica si el PC Vigente existe
-                        print('> Procedimiento NO Existe pc=', existe)
+                    if not existe:    # Verifica si el PC Vigente existe
+                            print('> Procedimiento NO Existe pc=', existe)
 
+                            #===================================
+                            # Crea Nuevo Procedimiento Vigente /
+                            #===================================
 
-                        # Crea Procedimiento Vigente
-                        # ==========================
+                            proced_v = Procedimientos_V()
+                            print('>  PC vigente  no existe. Crea version inicial del PC vigente.')
+                            detalle_log="Version Inicial."
+                            proced_v.version = 1  
+                            
 
-                        proced_v = Procedimientos_V()
-                        print('>  PC vigente  no existe. Crea version inicial del PC vigente.')
-                        detalle_log="Version Inicial."
-                        proced_v.version = 1  
-                        
+                            proced_v.fecha_c = datetime.date.today()
+                            proced_v.pk_padre = proced.pk_padre
+                            proced_v.codigo   = proced.codigo
 
-                        proced_v.fecha_c = datetime.date.today()
-                        proced_v.pk_padre = proced.pk_padre
-                        proced_v.codigo   = proced.codigo
-
-                        #Asigna Identificacion del Procedimiento
-                        proced_v.nombre = proced.nombre
-                        proced_v.tipo = proced.tipo
-
-                        #Asigna Contexto
-                        proced_v.escenarios = proced.escenarios
-                        proced_v.estrategia = proced.estrategia
-
-                        #Asigna Responsables
-                        proced_v.resp_proceso = proced.resp_proceso
-                        proced_v.bck_resp = proced.bck_resp
-                        proced_v.gestor_ejecutor = proced.gestor_ejecutor 
-                        proced_v.bck_ejecutor  = proced.bck_ejecutor
-
-                        proced_v.enlace_c_crisis = proced.enlace_c_crisis
-                        proced_v.bck_enlace = proced.bck_enlace
-                        proced_v.gestor_consultor = proced.gestor_consultor
-                        proced_v.save()
-
-                        #Asigna Servicios  
-                        for spc in proced.servicios_pc.all():
-                            # Crea entrada a Servicios
-                            servicios_pc_v=Servicios_PC_V()
-
-                            servicios_pc_v.pk_padre = spc.pk_padre 
-                            servicios_pc_v.nombre = spc.nombre
-                            servicios_pc_v.objetivo = spc.objetivo
-                            servicios_pc_v.contacto = spc.contacto
-                            servicios_pc_v.contacto_bck = spc.contacto_bck
-
-                            servicios_pc_v.save()
-                            proced_v.servicios_pc.add(servicios_pc_v)
-
-                        
-                        # Asigna Contactos
-                        for con in proced.contactos_pc.all():
-                            # Crea entrada de Contactos Vigentes
-                            contactos_pc_v=Contactos_PC_V()
-
-                            contactos_pc_v.pk_padre = con.pk_padre
-                            contactos_pc_v.cont_int = con.cont_int
-                            contactos_pc_v.nombre = con.nombre
-                            contactos_pc_v.correo = con.correo
-                            contactos_pc_v.tel_lab = con.tel_lab
-                            contactos_pc_v.cel_lab = con.cel_lab
-
-                            contactos_pc_v.save()
-                            proced_v.contactos_pc.add(contactos_pc_v)
-
-                        #Asigna Pasos del Procedimiento
-                        for pas in proced.pasos.all():
-                            # Crea entrada de Pasos Vigentes
-                            pasos_v=Pasos_PC_V()
-
-                            pasos_v.pk_padre = pas.pk_padre
-                            pasos_v.nro_paso = pas.nro_paso
-                            pasos_v.descripcion = pas.descripcion
-                            pasos_v.ejecutor = pas.ejecutor
-                            pasos_v.tiempo_esp = pas.tiempo_esp
-
-                            pasos_v.save()
-                            proced_v.pasos.add(pasos_v)
-                        
-
-                        proced.existe_p_vigente=True  # Marca que el Procedimiento Vigente existe
-                        
-                        proced_v.save()
-
-                        proced.save()
-
-                        # asigna el Procedimiento Vigente al Proceso (vigente)
-                        proceso.subproceso_v.save()
-                        proceso.subproceso_v.procedimientos_contingencia_v.add(proced_v)
-
-
-                else:
-
-                        # Cambios en Procedimiento vigente (PC) existente 
-                        # =======================================
-
-                        print('-- > Existe PC vigente. Lo modifica! ')
-
-                        proced_v=get_object_or_404(Procedimientos_V, codigo=codigo_prcd)
-
-                        proced_v.fecha_c = datetime.date.today()        # Fecha de la autorizacion
-                        version=int(proced_v.version)+1 # Incrementa version
-                        proced_v.version = version      # asigna version 
-                        detalle_log="Cambios autorizados a version "+str(version)+" : "
-
-                        hay_cambios=False
-                        # Deteccion de Cambios y actualizacion de Control de Cambios
-                        # ==========================================================
-
-                        # Cambio de Nombre   
-                        if proced_v.nombre != proced.nombre:
-                            print('--- Cambio Nombre')
-                            detalle_log=detalle_log+'Cambio al Nombre "'+proced_v.nombre+'", por "'+proced.nombre+'". // '
+                            #Asigna Identificacion del Procedimiento
                             proced_v.nombre = proced.nombre
-                            hay_cambios=True
-                        else:
-                            print('--- Sin Cambio en en nombre')
-
-                        # Cambio Tipo
-                        if proced_v.tipo != proced.tipo:
-                            print('--- Cambio Tipo')
-                            detalle_log=detalle_log+'Cambio al Tipo de PC ['+proced_v.tipo.nombre+'], por ['+proced.tipo.nombre+']. //'
                             proced_v.tipo = proced.tipo
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Tipo')
 
-
-                        # Cambio a Escenario
-                        if proced_v.escenarios != proced.escenarios:
-                            print('--- Cambio en Escenarios')
-                            detalle_log=detalle_log+'Cambio al Escenario ['+proced_v.escenarios.titulo+'], por ['+proced.escenarios.titulo+']. //'
+                            #Asigna Contexto
                             proced_v.escenarios = proced.escenarios
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Escenario')
-
-
-                        # Cambio en Estrategia
-                        if proced_v.estrategia != proced.estrategia:
-                            print('--- Cambio en Estrategia')
-                            detalle_log=detalle_log+'Cambio a la Estrategia ['+proced_v.estrategia+'], por ['+proced.estrategia+']. // '
                             proced_v.estrategia = proced.estrategia
-                            hay_cambios=True 
-                        else:
-                            print('--- Sin cambio en Estrategia')
 
-
-
-                        # Cambios en Roles
-                        if proced_v.resp_proceso != proced.resp_proceso:
-                            print('--- Cambio en el Responsable')
-                            detalle_log=detalle_log+'Cambio al Responsable -'+proced_v.resp_proceso.user_gestor.last_name+'-, por -'+proced.resp_proceso.user_gestor.last_name+'-. '
+                            #Asigna Responsables
                             proced_v.resp_proceso = proced.resp_proceso
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Responsable')
-
-
-                        if proced_v.bck_resp != proced.bck_resp:
-                            print('--- Cambio en el Respaldo del Responsable')
-                            if proced_v.bck_resp != None and  proced.bck_resp != None:
-                                detalle_log=detalle_log+'Cambio al Respaldo del Responsable -'+proced_v.bck_resp.user_gestor.last_name+'-,'+proced_v.bck_resp.user_gestor.first_name+', por '+proced.bck_resp.user_gestor.last_name+','+proced_v.bck_resp.user_gestor.first_name+'.'
-                            elif  proced.bck_resp == None:
-                                detalle_log=detalle_log+'Se elimino al Respaldo del Responsable sin Asignacion definida. '
-                            else:
-                                detalle_log=detalle_log+'Se asigna a '+proced.bck_resp.user_gestor.last_name+' Como Respaldo al Responsable.'
                             proced_v.bck_resp = proced.bck_resp
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Respaldo Responsable')
+                            proced_v.gestor_ejecutor = proced.gestor_ejecutor 
+                            proced_v.bck_ejecutor  = proced.bck_ejecutor
 
-
-                        if proced_v.gestor_ejecutor != proced.gestor_ejecutor:
-                            print('--- Cambio en el Ejecutor')
-                            detalle_log=detalle_log+'Cambio al Ejecutor '+proced_v.gestor_ejecutor.user_gestor.last_name+' '+proced_v.gestor_ejecutor.user_gestor.first_name+', por '+proced.gestor_ejecutor.user_gestor.last_name+' '+proced.gestor_ejecutor.user_gestor.first_name+'.'
-                            proced_v.gestor_ejecutor = proced.gestor_ejecutor
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Ejecutor')
-
-
-                        if proced_v.bck_ejecutor != proced.bck_ejecutor:
-                            print('--- Cambio en el Respaldo Ejecutor')
-                            if proced_v.bck_ejecutor != None : 
-                                detalle_log=detalle_log+'Cambio al Respaldo del Ejecutor '+proced_v.bck_ejecutor.user_gestor.last_name+','+proced_v.bck_ejecutor.user_gestor.first_name+', por '+proced.bck_ejecutor.user_gestor.last_name+','+proced_v.bck_ejecutor.user_gestor.first_name+'.'
-                            elif  proced.bck_ejecutor == None:
-                                detalle_log=detalle_log+'Se elimino al Respaldo del Ejecutor sin Asignacion definida. '
-                            else:
-                                detalle_log=detalle_log+'Se asigna a '+proced.bck_ejecutor.user_gestor.last_name+' '+proced.bck_ejecutor.user_gestor.first_name+' Como Respaldo al Ejecutor.'
-
-                            proced_v.bck_ejecutor = proced.bck_ejecutor
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Respaldo Ejecutor')
-
-                        if proced_v.enlace_c_crisis != proced.enlace_c_crisis:
-                            print('--- Cambio en el Enlace CC')
-                            detalle_log=detalle_log+'Cambio al Enlace del Comite de Crisis '+proced.enlace_c_crisis.user_gestor.last_name+' '+proced.enlace_c_crisis.user_gestor.first_name+', por '+proced_v.enlace_c_crisis.user_gestor.last_name+' '+proced_v.enlace_c_crisis.user_gestor.first_name +'.'
                             proced_v.enlace_c_crisis = proced.enlace_c_crisis
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambio en Enlace')
-
-
-                        if proced_v.bck_enlace != proced.bck_enlace:
-                            print('--- Cambio en el Respaldo Enlace CC')
-                            if proced_v.bck_enlace != None and proced.bck_enlace != None:
-                                detalle_log += 'Cambio del  Respaldo del Enlace del Comite de Crisis sr(a) '+proced_v.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+', por el sr(a) '+proced.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+'.'
-                            elif  proced.bck_enlace == None:
-                                detalle_log=detalle_log+'Se elimino al Respaldo del Enlace del Comite de Crisis sin Asignacion definida. '
-                            else:
-                                detalle_log += 'Se asigna a '+ proced.bck_enlace.user_gestor.last_name+' '+proced.bck_enlace.user_gestor.first_name+' Como Respaldo del Enlace del Comite de Crisis.'
-
                             proced_v.bck_enlace = proced.bck_enlace
-                            hay_cambios=True
-                        else:
-                            print('--- Sin cambios en Respaldo Enlace')
-
-
-                        detalle_log += './/'
-
-                        # Actualiza Servicios
-                        # ===================
-
-                            #impactos_p = list(proc.subproceso.impact_subp.all())
-                            #impactos_v = list(sub_proceso_v.impact_subp.all())
-
-                            # Diccionarios por nombre de impacto
-
-                            #dict_p = {imp.impacto.nombre: imp for imp in impactos_p}
-                            #dict_v = {imp.impacto.nombre: imp for imp in impactos_v}
-
-                            #nombres_p = set(dict_p.keys())
-                            #nombres_v = set(dict_v.keys())
-
-                            #impactos_agregados = nombres_p - nombres_v
-                            #impactos_eliminados = nombres_v - nombres_p
-                            #impactos_comunes = nombres_p & nombres_v
-
-
-                        # Obtener Servicios como conjuntos
-                        servicios_p = list(proced.servicios_pc.all())
-                        servicios_v = list(proced_v.servicios_pc.all())
-
-                        # Diccionarios por nombre de servicio
-                        dict_p = {ser.nombre: ser for ser in servicios_p}
-                        dict_v = {ser.nombre: ser for ser in servicios_v}
-
-                        servicios_p = set(dict_p.keys())
-                        servicios_v = set(dict_v.keys())
-
-                        # Detectar diferencias
-                        servicios_agregados = servicios_p - servicios_v
-                        servicios_eliminados = servicios_v - servicios_p
-                        print('-- servicios_agregados :', servicios_agregados)
-                        print('-- servicios eliminados :', servicios_eliminados)
-
-                        # Si hay cambios
-                        if servicios_agregados or servicios_eliminados:
-                            hay_cambios = True
-
-                            # Actualiza los servicios vigentes a partir de los servicios
-                            servicios_p2 = []
-                            for s in proced.servicios_pc.all():  # s es de Servicios_PC
-                                print('s=', s.nombre)
-                                # Buscar el equivalente en Servicios_PC_V (por nombre en comun)
-                                s_v = Servicios_PC_V.objects.filter(nombre=s.nombre).first()
-                                print('s_v=', s_v)
-                                if s_v:
-                                    servicios_p2.append(s_v)
-                                else:
-                                    # Crea entrada a Servicios
-                                    s_v=Servicios_PC_V()
-                                    s_v.pk_padre = s.pk_padre 
-                                    s_v.nombre = s.nombre
-                                    s_v.objetivo = s.objetivo
-                                    s_v.contacto = s.contacto
-                                    s_v.contacto_bck = s.contacto_bck
-                                    s_v.save()
-
-                                    servicios_p2.append(s_v)
-
-                            print("proced_v PK:", proced_v.pk)
-                            print("Servicios actuales en proced_v:", list(proced_v.servicios_pc.all()))
-                            print("Servicios en lista a asignar:", servicios_p2)
+                            proced_v.gestor_consultor = proced.gestor_consultor
                             proced_v.save()
-                            proced_v.servicios_pc.set(servicios_p2)
 
-                            detalle_log += "Cambios en Servicios:\n"
+                            #Asigna Servicios  
+                            for spc in proced.servicios_pc.all():
+                                # Crea entrada a Servicios
+                                servicios_pc_v=Servicios_PC_V()
 
-                            if servicios_agregados:
-                                detalle_log += 'Servicios Agregados :'
-                                for servicio in servicios_agregados:
-                                    detalle_log += servicio+', '
+                                servicios_pc_v.pk_padre = spc.pk_padre 
+                                servicios_pc_v.nombre = spc.nombre
+                                servicios_pc_v.objetivo = spc.objetivo
+                                servicios_pc_v.contacto = spc.contacto
+                                servicios_pc_v.contacto_bck = spc.contacto_bck
 
-                            for servicio in servicios_eliminados:
-                                detalle_log += f"- Servicio eliminado: {servicio}\n"
+                                servicios_pc_v.save()
+                                proced_v.servicios_pc.add(servicios_pc_v)
+
+                            
+                            # Asigna Contactos
+                            for con in proced.contactos_pc.all():
+                                # Crea entrada de Contactos Vigentes
+                                contactos_pc_v=Contactos_PC_V()
+
+                                contactos_pc_v.pk_padre = con.pk_padre
+                                contactos_pc_v.cont_int = con.cont_int
+                                contactos_pc_v.nombre = con.nombre
+                                contactos_pc_v.correo = con.correo
+                                contactos_pc_v.tel_lab = con.tel_lab
+                                contactos_pc_v.cel_lab = con.cel_lab
+
+                                contactos_pc_v.save()
+                                proced_v.contactos_pc.add(contactos_pc_v)
+
+                            #Asigna Pasos del Procedimiento
+                            for pas in proced.pasos.all():
+                                # Crea entrada de Pasos Vigentes
+                                pasos_v=Pasos_PC_V()
+
+                                pasos_v.pk_padre = pas.pk_padre
+                                pasos_v.nro_paso = pas.nro_paso
+                                pasos_v.descripcion = pas.descripcion
+                                pasos_v.ejecutor = pas.ejecutor
+                                pasos_v.tiempo_esp = pas.tiempo_esp
+
+                                pasos_v.save()
+                                proced_v.pasos.add(pasos_v)
+
+                            #Asigna Pruebas del Procedimiento
+                            pruebas_prcd=PruebaContingencia.objects.filter(procedimiento=proced)
+                            for prba in pruebas_prcd:
+                                test_v=PruebaContingencia_V()
+
+                                test_v.procedimiento=proced_v
+                                test_v.codigo=prba.codigo
+                                test_v.objetivo=prba.objetivo
+                                test_v.alcance=prba.alcance
+                                test_v.criterios_exito=prba.criterios_exito
+                                test_v.fecha_programada=prba.fecha_programada
+                                test_v.responsable=prba.responsable
+                                test_v.estado=prba.estado
+
+                                test_v.save()
+
+                                # Asigna Casos de Prueba
+                                casos_prba=CasoPrueba.objects.filter(prueba=prba)
+                                for caso in casos_prba:
+                                    caso_v=CasoPrueba_V()
+
+                                    caso_v.prueba=test_v
+                                    caso_v.codigo=caso.codigo
+                                    caso_v.descripcion=caso.descripcion
+                                    caso_v.resultado_esperado=caso.resultado_esperado
+                                    caso_v.precondiciones=caso.precondiciones
+                                    caso_v.prioridad=caso.prioridad
+
+                                    caso_v.save()
+                            
+
+                            proced.existe_p_vigente=True  # Marca que el Procedimiento Vigente existe
+                            
+                            proced_v.save()
+
+                            proced.save()
+
+                            # asigna el Procedimiento Vigente creado al Proceso (vigente)
+                            #proceso.subproceso_v.save()
+                            proceso.subproceso_v.procedimientos_contingencia_v.add(proced_v)
+                            proceso.subproceso_v.save()
+
+
+                    else:
+                            #=================================================
+                            # Cambios en Procedimiento vigente (PC) existente /
+                            #=================================================
+
+                            print('-- > Existe PC vigente. Lo modifica! ')
+
+                            proced_v=get_object_or_404(Procedimientos_V, codigo=codigo_prcd)
+
+                            proced_v.fecha_c = datetime.date.today()        # Fecha de la autorizacion
+                            version=int(proced_v.version)+1 # Incrementa version
+                            proced_v.version = version      # asigna version 
+                            detalle_log="Cambios autorizados a version "+str(version)+" : "
+
+                            hay_cambios=False
+
+                            #=============================================================
+                            # Deteccion de Cambios y actualizacion de Control de Cambios /
+                            #=============================================================
+
+                            # Cambio de Nombre   
+                            if proced_v.nombre != proced.nombre:
+                                print('--- Cambio Nombre')
+                                detalle_log=detalle_log+'Cambio al Nombre "'+proced_v.nombre+'", por "'+proced.nombre+'". // '
+                                proced_v.nombre = proced.nombre
+                                hay_cambios=True
+                            else:
+                                print('--- Sin Cambio en en nombre')
+
+                            # Cambio Tipo
+                            if proced_v.tipo != proced.tipo:
+                                print('--- Cambio Tipo')
+                                detalle_log=detalle_log+'Cambio al Tipo de PC ['+proced_v.tipo.nombre+'], por ['+proced.tipo.nombre+']. //'
+                                proced_v.tipo = proced.tipo
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Tipo')
+
+
+                            # Cambio a Escenario
+                            if proced_v.escenarios != proced.escenarios:
+                                print('--- Cambio en Escenarios')
+                                detalle_log=detalle_log+'Cambio al Escenario ['+proced_v.escenarios.titulo+'], por ['+proced.escenarios.titulo+']. //'
+                                proced_v.escenarios = proced.escenarios
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Escenario')
+
+
+                            # Cambio en Estrategia
+                            if proced_v.estrategia != proced.estrategia:
+                                print('--- Cambio en Estrategia')
+                                detalle_log=detalle_log+'Cambio a la Estrategia ['+proced_v.estrategia+'], por ['+proced.estrategia+']. // '
+                                proced_v.estrategia = proced.estrategia
+                                hay_cambios=True 
+                            else:
+                                print('--- Sin cambio en Estrategia')
+
+
+
+                            # Cambios en Roles
+                            if proced_v.resp_proceso != proced.resp_proceso:
+                                print('--- Cambio en el Responsable')
+                                detalle_log=detalle_log+'Cambio al Responsable -'+proced_v.resp_proceso.user_gestor.last_name+'-, por -'+proced.resp_proceso.user_gestor.last_name+'-. '
+                                proced_v.resp_proceso = proced.resp_proceso
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Responsable')
+
+
+                            if proced_v.bck_resp != proced.bck_resp:
+                                print('--- Cambio en el Respaldo del Responsable')
+                                if proced_v.bck_resp != None and  proced.bck_resp != None:
+                                    detalle_log=detalle_log+'Cambio al Respaldo del Responsable -'+proced_v.bck_resp.user_gestor.last_name+'-,'+proced_v.bck_resp.user_gestor.first_name+', por '+proced.bck_resp.user_gestor.last_name+','+proced_v.bck_resp.user_gestor.first_name+'.'
+                                elif  proced.bck_resp == None:
+                                    detalle_log=detalle_log+'Se elimino al Respaldo del Responsable sin Asignacion definida. '
+                                else:
+                                    detalle_log=detalle_log+'Se asigna a '+proced.bck_resp.user_gestor.last_name+' Como Respaldo al Responsable.'
+                                proced_v.bck_resp = proced.bck_resp
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Respaldo Responsable')
+
+
+                            if proced_v.gestor_ejecutor != proced.gestor_ejecutor:
+                                print('--- Cambio en el Ejecutor')
+                                detalle_log=detalle_log+'Cambio al Ejecutor '+proced_v.gestor_ejecutor.user_gestor.last_name+' '+proced_v.gestor_ejecutor.user_gestor.first_name+', por '+proced.gestor_ejecutor.user_gestor.last_name+' '+proced.gestor_ejecutor.user_gestor.first_name+'.'
+                                proced_v.gestor_ejecutor = proced.gestor_ejecutor
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Ejecutor')
+
+
+                            if proced_v.bck_ejecutor != proced.bck_ejecutor:
+                                print('--- Cambio en el Respaldo Ejecutor')
+                                if proced_v.bck_ejecutor != None : 
+                                    detalle_log=detalle_log+'Cambio al Respaldo del Ejecutor '+proced_v.bck_ejecutor.user_gestor.last_name+','+proced_v.bck_ejecutor.user_gestor.first_name+', por '+proced.bck_ejecutor.user_gestor.last_name+','+proced_v.bck_ejecutor.user_gestor.first_name+'.'
+                                elif  proced.bck_ejecutor == None:
+                                    detalle_log=detalle_log+'Se elimino al Respaldo del Ejecutor sin Asignacion definida. '
+                                else:
+                                    detalle_log=detalle_log+'Se asigna a '+proced.bck_ejecutor.user_gestor.last_name+' '+proced.bck_ejecutor.user_gestor.first_name+' Como Respaldo al Ejecutor.'
+
+                                proced_v.bck_ejecutor = proced.bck_ejecutor
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Respaldo Ejecutor')
+
+                            if proced_v.enlace_c_crisis != proced.enlace_c_crisis:
+                                print('--- Cambio en el Enlace CC')
+                                detalle_log=detalle_log+'Cambio al Enlace del Comite de Crisis '+proced.enlace_c_crisis.user_gestor.last_name+' '+proced.enlace_c_crisis.user_gestor.first_name+', por '+proced_v.enlace_c_crisis.user_gestor.last_name+' '+proced_v.enlace_c_crisis.user_gestor.first_name +'.'
+                                proced_v.enlace_c_crisis = proced.enlace_c_crisis
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambio en Enlace')
+
+
+                            if proced_v.bck_enlace != proced.bck_enlace:
+                                print('--- Cambio en el Respaldo Enlace CC')
+                                if proced_v.bck_enlace != None and proced.bck_enlace != None:
+                                    detalle_log += 'Cambio del  Respaldo del Enlace del Comite de Crisis sr(a) '+proced_v.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+', por el sr(a) '+proced.bck_enlace.user_gestor.last_name+','+proced_v.bck_enlace.user_gestor.first_name+'.'
+                                elif  proced.bck_enlace == None:
+                                    detalle_log=detalle_log+'Se elimino al Respaldo del Enlace del Comite de Crisis sin Asignacion definida. '
+                                else:
+                                    detalle_log += 'Se asigna a '+ proced.bck_enlace.user_gestor.last_name+' '+proced.bck_enlace.user_gestor.first_name+' Como Respaldo del Enlace del Comite de Crisis.'
+
+                                proced_v.bck_enlace = proced.bck_enlace
+                                hay_cambios=True
+                            else:
+                                print('--- Sin cambios en Respaldo Enlace')
+
 
                             detalle_log += './/'
-                            print("CAMBIOS EN SERVICIOS:\n", detalle_log)
-                        else:
-                            print("Sin cambios en servicios.")
-                    
 
-                        # Actualiza Contactos
-                        # ====================
+                            # Actualiza Servicios
+                            # ===================
 
-                        # Obtener Contactos como conjuntos
-                        contactos_p = list(proced.contactos_pc.all())
-                        contactos_v = list(proced_v.contactos_pc.all())
+                                #impactos_p = list(proc.subproceso.impact_subp.all())
+                                #impactos_v = list(sub_proceso_v.impact_subp.all())
 
-                        # Diccionarios por nombre de servicio
-                        dict_p = {ser.nombre: ser for ser in contactos_p}
-                        dict_v = {ser.nombre: ser for ser in contactos_v}
+                                # Diccionarios por nombre de impacto
 
-                        contactos_p = set(dict_p.keys())
-                        contactos_v = set(dict_v.keys())
+                                #dict_p = {imp.impacto.nombre: imp for imp in impactos_p}
+                                #dict_v = {imp.impacto.nombre: imp for imp in impactos_v}
 
-                        # Detectar diferencias
-                        contactos_agregados = contactos_p - contactos_v
-                        contactos_eliminados = contactos_v - contactos_p
-                        print('-- Contactos agregados :', contactos_agregados)
-                        print('-- Contactos eliminados :', contactos_eliminados)
+                                #nombres_p = set(dict_p.keys())
+                                #nombres_v = set(dict_v.keys())
+
+                                #impactos_agregados = nombres_p - nombres_v
+                                #impactos_eliminados = nombres_v - nombres_p
+                                #impactos_comunes = nombres_p & nombres_v
 
 
-                        # Si hay cambios
-                        if contactos_agregados or contactos_eliminados:
-                            hay_cambios = True
+                            # Obtener Servicios como conjuntos
+                            servicios_p = list(proced.servicios_pc.all())
+                            servicios_v = list(proced_v.servicios_pc.all())
 
-                            # Crea Contactos vigentes 
-                            contactos_p2 = []
-                            for s in proced.contactos_pc.all():  # s es de Contactos_PC
-                                # Buscar el equivalente en Contactos_PC_V (por nombre en comun)
-                                s_v = Contactos_PC_V.objects.filter(nombre=s.nombre).first()
-                                if s_v:
-                                    contactos_p2.append(s_v)
-                                else:
-                                    # Crea entrada de Contactos Vigentes
-                                    s_v = Contactos_PC_V()
-                                    s_v.pk_padre = s.pk_padre
-                                    s_v.cont_int = s.cont_int
-                                    s_v.nombre = s.nombre
-                                    s_v.correo = s.correo
-                                    s_v.tel_lab = s.tel_lab
-                                    s_v.cel_lab = s.cel_lab
-                                    s_v.save()
-                                    contactos_p2.append(s_v)
+                            # Diccionarios por nombre de servicio
+                            dict_p = {ser.nombre: ser for ser in servicios_p}
+                            dict_v = {ser.nombre: ser for ser in servicios_v}
 
-                            proced_v.contactos_pc.set(contactos_p2)
-                            proced_v.save()
+                            servicios_p = set(dict_p.keys())
+                            servicios_v = set(dict_v.keys())
 
-                            detalle_log += "Cambios en Contactos:\n"
+                            # Detectar diferencias
+                            servicios_agregados = servicios_p - servicios_v
+                            servicios_eliminados = servicios_v - servicios_p
+                            print('-- servicios_agregados :', servicios_agregados)
+                            print('-- servicios eliminados :', servicios_eliminados)
 
-                            for contacto in contactos_agregados:
-                                detalle_log += f"+ Contacto agregado: {contacto}\n"
+                            # Si hay cambios
+                            if servicios_agregados or servicios_eliminados:
+                                hay_cambios = True
 
-                            for contacto in contactos_eliminados:
-                                    detalle_log += f"- Contacto eliminado: {contacto}\n"
+                                # Actualiza los servicios vigentes a partir de los servicios
+                                servicios_p2 = []
+                                for s in proced.servicios_pc.all():  # s es de Servicios_PC
+                                    print('s=', s.nombre)
+                                    # Buscar el equivalente en Servicios_PC_V (por nombre en comun)
+                                    s_v = Servicios_PC_V.objects.filter(nombre=s.nombre).first()
+                                    print('s_v=', s_v)
+                                    if s_v:
+                                        servicios_p2.append(s_v)
+                                    else:
+                                        # Crea entrada a Servicios
+                                        s_v=Servicios_PC_V()
+                                        s_v.pk_padre = s.pk_padre 
+                                        s_v.nombre = s.nombre
+                                        s_v.objetivo = s.objetivo
+                                        s_v.contacto = s.contacto
+                                        s_v.contacto_bck = s.contacto_bck
+                                        s_v.save()
 
-                            detalle_log +='.//'
-                            print("CAMBIOS EN CONTACTOS:\n", detalle_log)
+                                        servicios_p2.append(s_v)
 
-                        else:
-                                print("Sin cambios en contactos.")
+                                print("proced_v PK:", proced_v.pk)
+                                print("Servicios actuales en proced_v:", list(proced_v.servicios_pc.all()))
+                                print("Servicios en lista a asignar:", servicios_p2)
+                                proced_v.save()
+                                proced_v.servicios_pc.set(servicios_p2)
 
+                                detalle_log += "Cambios en Servicios:\n"
 
-                        # Actualiza Pasos del PC
-                        # ======================
+                                if servicios_agregados:
+                                    detalle_log += 'Servicios Agregados :'
+                                    for servicio in servicios_agregados:
+                                        detalle_log += servicio+', '
+
+                                for servicio in servicios_eliminados:
+                                    detalle_log += f"- Servicio eliminado: {servicio}\n"
+
+                                detalle_log += './/'
+                                print("CAMBIOS EN SERVICIOS:\n", detalle_log)
+                            else:
+                                print("Sin cambios en servicios.")
                         
-                        # Obtener Pasos como conjuntos
-                        pasos_p = list(proced.pasos.all())
-                        pasos_v = list(proced_v.pasos.all())
 
-                        # Diccionarios por nombre de servicio
-                        dict_p = {ser.descripcion: ser for ser in pasos_p}
-                        dict_v = {ser.descripcion: ser for ser in pasos_v}
+                            # Actualiza Contactos
+                            # ====================
 
-                        pasos_p = set(dict_p.keys())
-                        pasos_v = set(dict_v.keys())
+                            # Obtener Contactos como conjuntos
+                            contactos_p = list(proced.contactos_pc.all())
+                            contactos_v = list(proced_v.contactos_pc.all())
 
-                        # Detectar diferencias
-                        pasos_agregados = pasos_p - pasos_v
-                        pasos_eliminados = pasos_v - pasos_p
-                        print('-- Pasos agregados :', pasos_agregados)
-                        print('-- Pasos eliminados :', pasos_eliminados)
+                            # Diccionarios por nombre de servicio
+                            dict_p = {ser.nombre: ser for ser in contactos_p}
+                            dict_v = {ser.nombre: ser for ser in contactos_v}
 
-                        # Si hay cambios
-                        if pasos_agregados or pasos_eliminados:
-                            hay_cambios = True
+                            contactos_p = set(dict_p.keys())
+                            contactos_v = set(dict_v.keys())
 
-                            # Actualiza Pasos vigentes 
-                            pasos_p2 = []
-                            for s in proced.pasos.all():  # s es de Pasos_PC
-                                # Buscar el equivalente en Contactos_PC_V (por descripcion)
-                                s_v = Pasos_PC_V.objects.filter(descripcion=s.descripcion).first()
-                                if s_v:
-                                    pasos_p2.append(s_v)
-                                else:
-                                    # Crea  Pasos Vigentes
-                                    s_v=Pasos_PC_V()
-                                    s_v.pk_padre = s.pk_padre
-                                    s_v.nro_paso = s.nro_paso
-                                    s_v.descripcion = s.descripcion
-                                    s_v.ejecutor = s.ejecutor
-                                    s_v.tiempo_esp = s.tiempo_esp
-                                    s_v.save()
-                                    pasos_p2.append(s_v)
+                            # Detectar diferencias
+                            contactos_agregados = contactos_p - contactos_v
+                            contactos_eliminados = contactos_v - contactos_p
+                            print('-- Contactos agregados :', contactos_agregados)
+                            print('-- Contactos eliminados :', contactos_eliminados)
 
-                            proced_v.pasos.set(pasos_p2)
+
+                            # Si hay cambios
+                            if contactos_agregados or contactos_eliminados:
+                                hay_cambios = True
+
+                                # Crea Contactos vigentes 
+                                contactos_p2 = []
+                                for s in proced.contactos_pc.all():  # s es de Contactos_PC
+                                    # Buscar el equivalente en Contactos_PC_V (por nombre en comun)
+                                    s_v = Contactos_PC_V.objects.filter(nombre=s.nombre).first()
+                                    if s_v:
+                                        contactos_p2.append(s_v)
+                                    else:
+                                        # Crea entrada de Contactos Vigentes
+                                        s_v = Contactos_PC_V()
+                                        s_v.pk_padre = s.pk_padre
+                                        s_v.cont_int = s.cont_int
+                                        s_v.nombre = s.nombre
+                                        s_v.correo = s.correo
+                                        s_v.tel_lab = s.tel_lab
+                                        s_v.cel_lab = s.cel_lab
+                                        s_v.save()
+                                        contactos_p2.append(s_v)
+
+                                proced_v.contactos_pc.set(contactos_p2)
+                                proced_v.save()
+
+                                detalle_log += "Cambios en Contactos:\n"
+
+                                for contacto in contactos_agregados:
+                                    detalle_log += f"+ Contacto agregado: {contacto}\n"
+
+                                for contacto in contactos_eliminados:
+                                        detalle_log += f"- Contacto eliminado: {contacto}\n"
+
+                                detalle_log +='.//'
+                                print("CAMBIOS EN CONTACTOS:\n", detalle_log)
+
+                            else:
+                                    print("Sin cambios en contactos.")
+
+
+                            # Deteccion de Cambios y Actualizacion Pasos del PC
+                            # =================================================
+                            
+                            # Obtener Pasos como conjuntos
+                            pasos_p = list(proced.pasos.all())
+                            pasos_v = list(proced_v.pasos.all())
+
+                            # Diccionarios por nombre de servicio
+                            dict_p = {ser.descripcion: ser for ser in pasos_p}
+                            dict_v = {ser.descripcion: ser for ser in pasos_v}
+
+                            pasos_p = set(dict_p.keys())
+                            pasos_v = set(dict_v.keys())
+
+                            # Detectar diferencias
+                            pasos_agregados = pasos_p - pasos_v
+                            pasos_eliminados = pasos_v - pasos_p
+                            print('-- Pasos agregados :', pasos_agregados)
+                            print('-- Pasos eliminados :', pasos_eliminados)
+
+                            # Si hay cambios
+                            if pasos_agregados or pasos_eliminados:
+                                hay_cambios = True
+
+                                # Actualiza Pasos vigentes 
+                                pasos_p2 = []
+                                for s in proced.pasos.all():  # s es de Pasos_PC
+                                    # Buscar el equivalente en Contactos_PC_V (por descripcion)
+                                    s_v = Pasos_PC_V.objects.filter(descripcion=s.descripcion).first()
+                                    if s_v:
+                                        pasos_p2.append(s_v)
+                                    else:
+                                        # Crea  Pasos Vigentes
+                                        s_v=Pasos_PC_V()
+                                        s_v.pk_padre = s.pk_padre
+                                        s_v.nro_paso = s.nro_paso
+                                        s_v.descripcion = s.descripcion
+                                        s_v.ejecutor = s.ejecutor
+                                        s_v.tiempo_esp = s.tiempo_esp
+                                        s_v.save()
+                                        pasos_p2.append(s_v)
+
+                                proced_v.pasos.set(pasos_p2)
+                                proced_v.save()
+
+                                detalle_log += "Cambios en pasos del PC:\n"
+
+                                for paso in pasos_agregados:
+                                    detalle_log += f"+ Paso agregado: {paso}\n"
+
+                                for paso in pasos_eliminados:
+                                        detalle_log += f"- Paso eliminado: {paso}\n"
+
+                                detalle_log +='.//'
+                                print("CAMBIOS EN PASOS:\n", detalle_log)
+
+                            else:
+                                    print("Sin cambios en pasos.")
+
+
+                            # Deteccion de Cambios y Actualizacion de Pruebas
+                            # ===============================================
+
+                            # --- OBTENER LAS PRUEBAS PARA EL PROCEDIMIENTO (NO M2M, filtrado por FK) ---
+                            pruebas_p_qs = PruebaContingencia.objects.filter(procedimiento=proced)
+                            pruebas_v_qs = PruebaContingencia_V.objects.filter(procedimiento=proced_v)
+
+                            # Diccionarios por codigo (clave lógica)
+                            dict_p = {p.codigo: p for p in pruebas_p_qs}
+                            dict_v = {p.codigo: p for p in pruebas_v_qs}
+
+                            set_p = set(dict_p.keys())
+                            set_v = set(dict_v.keys())
+
+                            pruebas_agregadas = set_p - set_v
+                            pruebas_eliminadas = set_v - set_p
+                            pruebas_comunes = set_p & set_v
+
+                            detalle_log += f"-- Pruebas agregadas: {pruebas_agregadas}\n"
+                            detalle_log += f"-- Pruebas eliminadas: {pruebas_eliminadas}\n"
+
+                            # Campos de cabecera a comparar/actualizar en PruebaContingencia_V
+                            campos_prueba = ['codigo', 'objetivo', 'alcance', 'criterios_exito', 'fecha_programada', 'responsable', 'estado', 'corr_casos']
+
+                            with transaction.atomic():
+                                cambios_globales = False
+
+                                # ----------------------------
+                                # 1) Crear PruebaContingencia_V faltantes (agregadas en diseño)
+                                # ----------------------------
+                                for codigo in pruebas_agregadas:
+                                    p = dict_p[codigo]  # PruebaContingencia origen
+                                    p_v = PruebaContingencia_V.objects.create(
+                                        procedimiento=proced_v,
+                                        codigo=p.codigo,
+                                        objetivo=p.objetivo,
+                                        alcance=p.alcance,
+                                        criterios_exito=p.criterios_exito,
+                                        fecha_programada=p.fecha_programada,
+                                        responsable=p.responsable,
+                                        estado=p.estado,
+                                        corr_casos=p.corr_casos,
+                                    )
+                                    cambios_globales = True
+                                    hay_cambios = True
+                                    detalle_log += f"+ Prueba agregada: {p.codigo}\n"
+
+                                    # Crear también todos los casos asociados a la prueba nueva
+                                    casos_origen = CasoPrueba.objects.filter(prueba=p)
+                                    for c in casos_origen:
+                                        CasoPrueba_V.objects.create(
+                                            prueba=p_v,
+                                            codigo=c.codigo,
+                                            descripcion=c.descripcion,
+                                            resultado_esperado=c.resultado_esperado,
+                                            precondiciones=c.precondiciones,
+                                            prioridad=c.prioridad,
+                                        )
+                                        detalle_log += f"    + Caso agregado (al crear prueba): {c.codigo}\n"
+
+                                # ----------------------------
+                                # 2) Eliminar PruebaContingencia_V que ya no existen en diseño
+                                # ----------------------------
+                                for codigo in pruebas_eliminadas:
+                                    p_v = dict_v[codigo]
+                                    # opcional: loguear cuantos casos tenía antes de borrar
+                                    num_casos = CasoPrueba_V.objects.filter(prueba=p_v).count()
+                                    detalle_log += f"- Prueba eliminada: {p_v.codigo} (casos vigentes borrados: {num_casos})\n"
+                                    p_v.delete()
+                                    cambios_globales = True
+                                    hay_cambios = True
+
+                                # ----------------------------
+                                # 3) Para pruebas existentes en ambos lados, comparar cabecera y sincronizar
+                                # ----------------------------
+                                for codigo in pruebas_comunes:
+                                    p = dict_p[codigo]   # PruebaContingencia origen
+                                    p_v = dict_v[codigo] # PruebaContingencia_V vigente
+                                    cambios_cabecera = []
+
+                                    for campo in campos_prueba:
+                                        # Normalizaciones simples si las necesitas, por ejemplo:
+                                        val_p = getattr(p, campo)
+                                        val_v = getattr(p_v, campo)
+                                        # Si trabajas con DateTimeField y zonas horarias, normalizar antes de comparar
+                                        if val_p != val_v:
+                                            cambios_cabecera.append((campo, val_v, val_p))
+                                            setattr(p_v, campo, val_p)
+
+                                    if cambios_cabecera:
+                                        p_v.save()
+                                        cambios_globales = True
+                                        hay_cambios = True
+                                        detalle_log += f"* Prueba actualizada: {codigo}\n"
+                                        for campo, old, new in cambios_cabecera:
+                                            detalle_log += f"    - {campo}: '{old}' -> '{new}'\n"
+
+                                    # --- Ahora sincronizar los CASOS de esta prueba ---
+                                    casos_p_qs = CasoPrueba.objects.filter(prueba=p)
+                                    casos_v_qs = CasoPrueba_V.objects.filter(prueba=p_v)
+
+                                    dict_c_p = {c.codigo: c for c in casos_p_qs}
+                                    dict_c_v = {c.codigo: c for c in casos_v_qs}
+
+                                    set_c_p = set(dict_c_p.keys())
+                                    set_c_v = set(dict_c_v.keys())
+
+                                    casos_agregados = set_c_p - set_c_v
+                                    casos_eliminados = set_c_v - set_c_p
+                                    casos_comunes = set_c_p & set_c_v
+
+                                    # Crear casos agregados
+                                    for cc in casos_agregados:
+                                        c = dict_c_p[cc]
+                                        CasoPrueba_V.objects.create(
+                                            prueba=p_v,
+                                            codigo=c.codigo,
+                                            descripcion=c.descripcion,
+                                            resultado_esperado=c.resultado_esperado,
+                                            precondiciones=c.precondiciones,
+                                            prioridad=c.prioridad,
+                                        )
+                                        cambios_globales = True
+                                        hay_cambios = True
+                                        detalle_log += f"    + Caso agregado: {c.codigo}\n"
+
+                                    # Eliminar casos que ya no existen
+                                    for cc in casos_eliminados:
+                                        c_v = dict_c_v[cc]
+                                        detalle_log += f"    - Caso eliminado: {c_v.codigo}\n"
+                                        c_v.delete()
+                                        cambios_globales = True
+                                        hay_cambios = True
+
+                                    # Actualizar campos en casos comunes
+                                    campos_caso = ['descripcion', 'resultado_esperado', 'precondiciones', 'prioridad']
+                                    for cc in casos_comunes:
+                                        c = dict_c_p[cc]
+                                        c_v = dict_c_v[cc]
+                                        cambios_campos_caso = []
+                                        for campo in campos_caso:
+                                            val_p = getattr(c, campo)
+                                            val_v = getattr(c_v, campo)
+                                            if val_p != val_v:
+                                                cambios_campos_caso.append((campo, val_v, val_p))
+                                                setattr(c_v, campo, val_p)
+                                        if cambios_campos_caso:
+                                            c_v.save()
+                                            cambios_globales = True
+                                            hay_cambios = True
+                                            detalle_log += f"    * Caso actualizado: {cc}\n"
+                                            for campo, old, new in cambios_campos_caso:
+                                                detalle_log += f"        - {campo}: '{old}' -> '{new}'\n"
+
+                                    # Mantener corr_casos en p_v sincronizado con la cantidad real (si cambió)
+                                    nueva_corr = CasoPrueba_V.objects.filter(prueba=p_v).count()
+                                    if p_v.corr_casos != nueva_corr:
+                                        detalle_log += f"    # corr_casos: {p_v.corr_casos} -> {nueva_corr}\n"
+                                        p_v.corr_casos = nueva_corr
+                                        p_v.save()
+                                        cambios_globales = True
+                                        hay_cambios = True
+
+                                if cambios_globales:
+                                    detalle_log += ".//\n"
+
+                            # Al final puedes imprimir o persistir el log
+                            if hay_cambios:
+                                print("CAMBIOS DETECTADOS:\n", detalle_log)
+                            else:
+                                print("Sin cambios en Pruebas ni Casos.")
+
+                            #=================================================================
+                            # FIN Deteccion de Cambios y actualizacion de Control de Cambios /
+                            #=================================================================
+
+
+                            if not hay_cambios:
+                                detalle_log='Vigenteo version '+str(version)+' sin cambios en version anterior.'
+
+                            print('Detalle log final', detalle_log)
+
                             proced_v.save()
+                            #proceso.subproceso_v.procedimientos_contingencia_v.set([proced_v])
+                            proceso.subproceso_v.save()
+                            proceso.save()
 
-                            detalle_log += "Cambios en pasos del PC:\n"
+                            # FIN PC existe. Se modifica 
+                    
+                    # Crea registro del Control de Cambios
+                    # =======================================
 
-                            for paso in pasos_agregados:
-                                detalle_log += f"+ Paso agregado: {paso}\n"
+                    print('> Crea entrada al log de Control de Cambios')
+                    log=Control_Cambios()
 
-                            for paso in pasos_eliminados:
-                                    detalle_log += f"- Paso eliminado: {paso}\n"
-
-                            detalle_log +='.//'
-                            print("CAMBIOS EN PASOS:\n", detalle_log)
-
-                        else:
-                                print("Sin cambios en pasos.")
-
-
-
-                        if not hay_cambios:
-                            detalle_log='Vigenteo version '+str(version)+' sin cambios en version anterior.'
-
-                        print('Detalle log final', detalle_log)
-
-                        proced_v.save()
-                        #proceso.subproceso_v.procedimientos_contingencia_v.set([proced_v])
-                        proceso.subproceso_v.save()
-                        proceso.save()
-
-                        # FIN PC existe. Se modifica 
-                  
-                # Crea registro del Control de Cambios
-                # =======================================
-
-                print('> Crea entrada al log de Control de Cambios')
-                log=Control_Cambios()
-
-                # Crea entrada
-                log.procedimiento=proced_v
-                log.gestor_aut=proced_v.resp_proceso
-                log.descripcion=detalle_log
-                log.save()
+                    # Crea entrada
+                    log.procedimiento=proced_v
+                    log.gestor_aut=proced_v.resp_proceso
+                    log.descripcion=detalle_log
+                    log.save()
 
 
-                # Prepara email para Gestor Consultor
-                # ===================================
-                #  
-                # nombre=proc.subproceso.gestor_C.user_gestor.last_name
-                # email = proc.subproceso.gestor_C.user_gestor.email
-                # accion='tomar conocimiento de la puesta en vigencia del '
+                    # Prepara email para Gestor Consultor
+                    # ===================================
+                    #  
+                    # nombre=proc.subproceso.gestor_C.user_gestor.last_name
+                    # email = proc.subproceso.gestor_C.user_gestor.email
+                    # accion='tomar conocimiento de la puesta en vigencia del '
 
 
-                # Prepara mensaje x correo
-                #nombre=proced.resp_proceso.user_gestor.last_name
-                #email = proc_rev.subproceso.gestor_R.user_gestor.email
-                #accion='dar visto bueno o requerir cambios para el '
+                    # Prepara mensaje x correo
+                    #nombre=proced.resp_proceso.user_gestor.last_name
+                    #email = proc_rev.subproceso.gestor_R.user_gestor.email
+                    #accion='dar visto bueno o requerir cambios para el '
                     
             else:
 
@@ -5340,7 +5566,21 @@ def detalle_procedimiento(request, pk ):
 
     proced = get_object_or_404(Procedimientos, pk = pk)
     proceso = get_object_or_404(Proceso, pk=proced.pk_padre)
-    return render(request, 'bcp/proced_cont/proced_detalle.html', {'proced':proced, 'proceso':proceso})
+
+        # Selecciona las Pruebas y Casos por cada una
+    tests = PruebaContingencia.objects.filter(procedimiento=proced)
+    lista_prbas=[]
+    for prba in tests:
+        casos=CasoPrueba.objects.filter(prueba=prba)
+
+        lista_prbas.append({'test':prba,
+                 'casos':casos})
+        
+    print('---- Lista de Pruebas :', lista_prbas)
+
+    return render(request, 'bcp/proced_cont/proced_detalle.html', {'proced':proced,
+                                                                   'lista_prbas':lista_prbas, 
+                                                                   'proceso':proceso})
     
 def detalle_procedimiento_v(request, pk): 
     """ Muestra detalle del Procedimiento Vigente
@@ -5353,9 +5593,23 @@ def detalle_procedimiento_v(request, pk):
 
     c_cambio=Control_Cambios.objects.filter(procedimiento=proced_v)
 
+    # Selecciona las Pruebas y Casos por cada una
+    tests = PruebaContingencia_V.objects.filter(procedimiento=proced_v)
+    lista_prbas=[]
+    for prba in tests:
+        casos=CasoPrueba_V.objects.filter(prueba=prba)
+
+        lista_prbas.append({'test':prba,
+                 'casos':casos})
+        
+    print('---- Lista de Pruebas :', lista_prbas)
+
+
     return render(request, 'bcp/proced_cont/proced_detalle_v.html', {'proced':proced_v,
                                                                      'proceso':proceso,
+                                                                     'lista_prbas':lista_prbas,
                                                                      'c_cambio':c_cambio})
+
 
 #******************************************************
 # 1.11 Muestra datos (detalle) del Procedimiento(PC)  *
@@ -8310,7 +8564,6 @@ def Declara_Inc(request):
             incidente.nombre_r = form.cleaned_data['nombre']
             incidente.area_r = form.cleaned_data['area']
             incidente.descripcion = form.cleaned_data['descripcion']
-            incidente.test= form.cleaned_data['test']
             #incidente.correo = form.cleaned_data['correo']
 
             #amenazas_declaradas = form.cleaned_data['amenazas_i']
@@ -8397,6 +8650,233 @@ def Declara_Inc(request):
                                                             'amenazas_disponibles':amenazas_disponibles })
 
 
+from .forms import Plan_Pruebas_A_Form
+#@permission_required('Catalogo.can_mark_returned')
+def Define_Plan_Pruebas_A(request):
+    """
+    Define el Plan de Pruebas 
+    """
+    print('>>>>>  Entra a Registro del PLAN DE PRUEBAS A ------')
+  
+    #procesos=get_object_or_404(Proceso)
+
+  
+    if request.method=='POST':
+        print('---- metodo POST')
+        form = Plan_Pruebas_A_Form(request.POST)
+        
+        if form.is_valid():
+            print('----- Formato valido')
+            
+            incidente=Incidentes()
+            
+            incidente.save()
+            
+
+            # Define codigo del incidente
+            #==============================
+
+            # Rescata correlativo de Incidente. 
+            parametro = get_object_or_404(Parametros_G, nombre = 'FOLIO INCIDENTES')
+
+            f_i = incidente.fecha.strftime('%Y%m')
+            n=parametro.valor_2
+
+            # Compone la parte numerica del codigo a un largo fijo 
+            nro=''
+            if n<9:
+                nro='00' 
+                nro=nro+str(n)
+            elif n > 9 and n <= 99:
+                nro=str(n)
+            else:
+                parametro.valor_2=1
+
+            incidente.codigo = f_i+'P/'+nro  # codigo = YYYYMMP/99 (largo= 10)
+            parametro.valor_2=n+1
+            parametro.save()
+            
+            # Graba intancias en Registro (Base de Incidentes)
+            incidente.fecha_creacion = form.cleaned_data['fecha_hora']
+            incidente.fecha = form.cleaned_data['fecha_hora']
+            incidente.nombre_r = 'COMITE DE CRISIS'
+            incidente.area_r = 'Preparado por Gestion de Riesgos'
+            incidente.descripcion = 'Prueba integral de Procedimientos de Contingencias del BCP/DRP'
+            incidente.test= True
+            incidente.estado=False
+
+              
+            #Graba en BD
+            print('Grabo incidente')
+            
+            incidente.save()
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('Define-Plan-Pruebas-B',  args=[str(incidente.id)]))
+            
+
+        else:
+
+            print('Form invalido', form.errors)
+            #return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+
+
+            return render(request, 'bcp/inc_mgm/crea_plan_prba_A.html',{'form':form })
+
+
+    else:
+
+        form = Plan_Pruebas_A_Form()
+
+        return render(request, 'bcp/inc_mgm/crea_plan_prba_A.html',{'form':form })
+
+
+from .forms import Plan_Pruebas_B_Form
+#@permission_required('Catalogo.can_mark_returned')
+def Define_Plan_Pruebas_B(request, pk):
+    """
+    Define el Plan de Pruebas 
+    """
+    print('>>>>>  Entra a Registro del PLAN DE PRUEBAS B ------')
+  
+    incidente=get_object_or_404(Incidentes, pk=pk)
+
+  
+    if request.method=='POST':
+        print('---- metodo POST')
+        form = Plan_Pruebas_B_Form(request.POST)
+        
+        if form.is_valid():
+            print('----- Formato valido')
+     
+
+            # Rescata los Datos seleccionados desde el Script
+            escenarios_ids = request.POST.get("escenarios_i", "").split(",")
+            escenarios_ids = [int(e) for e in escenarios_ids if e.isdigit()]
+            print('---- Escenarios rescatados:', escenarios_ids)
+
+            if escenarios_ids:
+                
+                incidente.escenarios_i.set(Escenarios.objects.filter(id__in=escenarios_ids))
+            #else:
+                #subproceso.escenarios.clear()
+
+            
+            # Selecciona las Amenazas y Procesos asociados al incidente
+            # en base a los Escenarios declarados 
+            # =========================================================
+
+            alcance_prba=incidente.escenarios_i
+
+            # Identificacion de Amenazas
+            # --------------------------
+            amenazas=Amenazas.objects.all()
+
+            for amn in amenazas:
+                escenarios=amn.landscape
+                for esc in escenarios.all():
+                    if esc in alcance_prba.all():
+                        incidente.amenazas_i.add(amn)
+
+
+            # Identificacion de Procesos
+            # --------------------------
+            sprocesos=SubProceso_V.objects.all()
+
+            for proc in sprocesos.all():
+                escenarios=proc.escenarios
+                for esc in escenarios.all():
+                    if esc in alcance_prba.all():
+                        incidente.procesos_i.add(proc)
+
+
+
+            #print('-- Procesos   Sel.=', sprocesos_selec)
+            #print('-- Escenarios Sel.=', escenarios_selec)                
+                
+            #Graba en BD
+            print('Grabo incidente')
+            
+            incidente.save()
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('Lista-Incidentes'))
+            
+
+    else:
+
+        form = Plan_Pruebas_B_Form()
+
+        escenarios_disponibles = Escenarios.objects.exclude(id__in=incidente.escenarios_i.values_list('id', flat=True))
+        escenarios_asignados   = incidente.escenarios_i.all()
+        #escenarios_disponibles = Escenarios.objects.all()
+
+        return render(request, 'bcp/inc_mgm/crea_plan_prba_B.html',{'form':form,
+                                                            'escenarios_disponibles':escenarios_disponibles,
+                                                            'escenarios_asignados':escenarios_asignados })
+
+
+
+from .forms import Plan_Pruebas_A_Form
+#@permission_required('Catalogo.can_mark_returned')
+def Modif_Plan_Pruebas(request, pk):
+    """
+    Modifica el Plan de Pruebas 
+    pk:pk del Plan de Pruebas
+    """
+    print('>>>>>  Entra a Modificacion del PLAN DE PRUEBAS A ------')
+  
+    incidente=get_object_or_404(Incidentes, pk=pk)
+  
+    if request.method=='POST':
+        print('---- metodo POST')
+        form = Plan_Pruebas_A_Form(request.POST)
+        
+        if form.is_valid():
+            print('----- Formato valido')
+         
+          
+            
+            # Graba intancias en Registro (Base de Incidentes)
+            incidente.fecha_creacion = form.cleaned_data['fecha_hora']
+            incidente.fecha = form.cleaned_data['fecha_hora']
+            incidente.nombre_r = 'COMITE DE CRISIS'
+            incidente.area_r = 'Preparado por Gestion de Riesgos'
+            incidente.descripcion = 'Prueba integral de Procedimientos de Contingencias del BCP/DRP'
+            incidente.test= True
+            incidente.estado=False
+
+              
+            #Graba en BD
+            print('Grabo incidente')
+            
+            incidente.save()
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('Define-Plan-Pruebas-B',  args=[str(incidente.id)]))
+            
+
+        else:
+
+            print('Form invalido', form.errors)
+            #return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+
+
+            return render(request, 'bcp/inc_mgm/crea_plan_prba_A.html',{'form':form })
+
+
+    else:
+
+        form = Plan_Pruebas_A_Form(initial={'fecha': incidente.fecha_creacion.date(),
+                                            'hora':  incidente.fecha_creacion.strftime("%H:%M"),
+                                            })
+
+        return render(request, 'bcp/inc_mgm/crea_plan_prba_A.html',{'form':form })
+
+
+
+
+
 def Borra_Incidente(request, pk):
     """
     Borra el Incidente"""
@@ -8411,8 +8891,6 @@ def Borra_Incidente(request, pk):
     next_url = request.GET.get('next', '/')
     return redirect(next_url)
  
-
-
 
 #************************************
 #6.2 Lista de Incidentes reportados *
@@ -8722,6 +9200,10 @@ def Perfil_Inc(request, pk):
 
 from collections import defaultdict
 
+#===============================================
+# Contadores de Procesos x variable estadistica 
+#===============================================
+
 def contar_procesos_por_tipo_nivel_impacto(incidente):
     """
     Contabilizacion estadistica de Procesos x Impacto y Nivel
@@ -8818,7 +9300,7 @@ def contar_procesos_por_servicio(incidente):
 
     return dict(contador)  # Convertir defaultdict en un diccionario normal
 
-
+# ---- Fin Contadores ---------------------------------------------------
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -8864,7 +9346,7 @@ def toggle_procedimiento(request, procedimiento_id=None):
                         print("---- Incidente encontrado:", incidente.codigo)
 
                         # Crea Checklist
-                        #-------------------
+                        # ==============
 
                         # Determina el nro. del Checklist
                         n=procedimiento.correlativo_chk
@@ -8884,6 +9366,7 @@ def toggle_procedimiento(request, procedimiento_id=None):
                             nro=str(n)
 
                         procedimiento.correlativo_chk=n+1
+                        procedimiento.save()
 
                         print("---- Creando instancia de CheckList vacía...")
                         chk = CheckList()
@@ -8898,6 +9381,46 @@ def toggle_procedimiento(request, procedimiento_id=None):
                             chk_p = Check_Pasos(checklist=chk, paso=item)
                             chk_p.save()
 
+
+                        # Crea  Check de Pruebas (en caso de ser un Incidente de Prueba)
+                        # ============================================================
+                        if incidente.test:
+                            print('---- Crea Check de Ejecuciones de Prueba. test =', incidente.test)
+                            print('---- Procedimiento : ', procedimiento.id,':',procedimiento.nombre)
+                            # Crea Ejecucion de Prueba
+                            # ------------------------
+                            pruebas_proced=PruebaContingencia_V.objects.filter(procedimiento=procedimiento)
+                            
+                            for prba in pruebas_proced.all():
+                                
+                                ejec_prba=EjecucionPrueba()
+                                ejec_prba.incidente=incidente
+                                ejec_prba.prueba=prba
+                                ejec_prba.checklist=chk
+                                ejec_prba.nro_ejecucion=prba.codigo
+                                ejec_prba.save()
+                                print('----- Crea Ejecucion de Prueba. Prueba: ', prba.codigo)
+                                print("----- ID ejec_prba:", ejec_prba.id)
+
+                                # Crea Ejecucion de Caso de Prueba
+                                casos=CasoPrueba_V.objects.filter(prueba=prba)
+                                for cas in casos.all():
+
+                                    ejec_caso=EjecucionCasoPrueba()
+                                    ejec_caso.caso=cas
+                                    ejec_caso.ejecucion=ejec_prba
+                                    ejec_caso.nro_ejecucion=cas.codigo
+                                    print("CASO ID:", cas.id)
+                                    print("CASO EXISTS DB:", CasoPrueba_V.objects.filter(id=cas.id).exists())
+                                    print("TABLA:", CasoPrueba_V._meta.db_table)
+                                    print("MANAGED:", CasoPrueba_V._meta.managed)
+                                    ejec_caso.save()
+                                    print('----- Crea Caso de Prueba. Caso=', cas.codigo)
+
+
+
+                                
+
                     except (Incidentes.DoesNotExist, ValueError) as e:
                         print(f"⚠️  Error al obtener incidente ({incidente_id}): {e}")
 
@@ -8905,9 +9428,6 @@ def toggle_procedimiento(request, procedimiento_id=None):
                         import traceback
                         print("❌ Error al crear Checklist:", e)
                         traceback.print_exc()
-
-                if incidente.test:
-                    print('---- Crea Checklist de Prueba')
 
             else:
                 print('>>>>> Estado Desactivado')
@@ -8955,7 +9475,7 @@ import json
 def toggle_field(request, app_label, model_name, object_id):
     """
     Endpoint genérico para cambiar el valor de cualquier campo booleano
-    en cualquier modelo Django.
+    (ACTIVA/DESACTIVA)  en cualquier modelo Django.
     """
     print('>>>>> Toggle de Switch general desde:', model_name)
     if request.method != "POST":
@@ -9049,12 +9569,15 @@ def Lista_PC_Px(request, pk, pk_padre):
                   context={'proceso_det':proceso_det, 'proceso_enc':proceso_enc, 'proced':proced,
                            'url_ant':url_ant,'pk_padre':pk_padre}) 
 
+
 #********************************************************
 # 6.5 Activa/Desactiva un Procedimiento de Contingencia *
 #********************************************************
 
-
 def ActivaDesactivaPc(request, pk ):
+    """
+    Activacion/Desactivacion del PC por el Comite de Crisis
+    """
 
     print('pk proced', pk)
         
@@ -9084,6 +9607,7 @@ def ActivaDesactivaPc(request, pk ):
     # redirect to a new URL:
     url_ant=request.META['HTTP_REFERER']
     return HttpResponseRedirect(url_ant)
+
 
 # ********************************************
 # Lista de Procesos de Contingencia x Gestor *
@@ -9265,6 +9789,171 @@ def Ejecucion_CheckList(request, pk):
                              'comite':comite,
                              'comentarios':comentarios_m,
                             'items':items}) 
+
+#============================================
+# Lista de Checklist de Ejecucion de Pruebas 
+#============================================
+def Lista_Ejec_Prbas(request, pk):
+    """
+    Lista los Checklist de Ejecucion de Pruebas asociados a un incidente
+    pk: pk del checklist 
+    """
+    checklist=get_object_or_404(CheckList, pk=pk)
+    proc=checklist.procedimiento
+    lista_ejec_prbas=EjecucionPrueba.objects.filter(checklist=checklist)
+    print('Lista de Ejecucion de Pruebas =', lista_ejec_prbas)
+
+    return render(request,'bcp/inc_mgm/ejec_prbas_list.html',
+                    context={'lista_ejec_prbas':lista_ejec_prbas,
+                    'checklist':checklist,
+                    'proc':proc})
+
+
+
+def Lista_Ejec_Casos(request, pk):
+    """
+    Lista los casos asociados a una Prueba de Procedimiento
+    pk: pk de Ejecucion de Pruebas
+    """
+ 
+    ejec_prueba=get_object_or_404(EjecucionPrueba, pk=pk)
+    incidente=ejec_prueba.incidente     # Incidente asociado
+    prueba=ejec_prueba.prueba           # Prueba asociada
+    checklist=ejec_prueba.checklist     # Checklist de PC  asociado
+    proc=checklist.procedimiento        # Procedimiento asociado
+
+    lista_ejec_casos=EjecucionCasoPrueba.objects.filter(ejecucion=ejec_prueba)
+
+
+    return render(request,'bcp/inc_mgm/ejec_casos_list.html',   
+                        context={'lista_ejec_casos':lista_ejec_casos,
+                                'incidente':incidente,
+                                'prueba':prueba,
+                                'ejec':ejec_prueba,
+                                'checklist':checklist,
+                                'proc':proc})
+
+
+
+#============================================
+# Checklist de Ejecucion de Pruebas 
+#============================================
+
+def Ejec_Prba(request, pk):
+    """
+    Lista los Checklist de Ejecucion de Pruebas asociados a un incidente
+    pk: pk del checklist de ejecucion 
+    """
+    checklist_ejec=get_object_or_404(EjecucionPrueba, pk=pk)
+    proc=checklist_ejec.checklist.procedimiento
+    lista_ejec_casos=EjecucionCasoPrueba.objects.filter(ejecucion=checklist_ejec)
+    print('Lista de Ejecucion de Pruebas =', lista_ejec_casos)
+
+
+    if request.method=='POST':
+        print('---- metodo POST')
+        form = Plan_Pruebas_A_Form(request.POST)
+        
+        if form.is_valid():
+            print('----- Formato valido')
+         
+           
+            
+            # Graba intancias en Registro (Base de Incidentes)
+
+              
+            #Graba en BD
+            print('Grabo incidente')
+            
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('Define-Plan-Pruebas-B',  args=[str(incidente.id)]))
+            
+
+        else:
+
+            print('Form invalido', form.errors)
+            #return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/inc_mgm/ejec_prba.html',{'form':form })
+
+    else:
+
+        return render(request,'bcp/inc_mgm/ejec_prba.html',
+                        context={'checklist_ejec':checklist_ejec,
+                                'lista_ejec_casos':lista_ejec_casos,
+                                'proc':proc})
+
+
+from .forms import EjecucionCasoPruebaForm
+def Ejec_Caso(request, pk):
+    """
+    Ejecuta Caso de Prueba de Procedimiento asociados a un incidente
+    pk: pk de la Ejecucion de Caso  
+    """
+
+    # Aplicar solo una vez (Borrar) --------------------------------------------
+    from bcp.models import EjecucionCasoPrueba
+    EjecucionCasoPrueba.objects.filter(evidencia='False').update(evidencia=None)
+    # Borrar -----------------------------------------
+
+    print('>>>>> Registra Ejecucion del Caso')
+    caso_ejec=get_object_or_404(EjecucionCasoPrueba, pk=pk)
+    prba_ejec=caso_ejec.ejecucion
+    checklist=prba_ejec.checklist           # Prueba asociada al Caso
+    proc=prba_ejec.checklist.procedimiento  # Procedimiento asociado al Caso
+
+    if request.method=='POST':
+        print('---- metodo POST')
+        form = EjecucionCasoPruebaForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            print('----- Formato valido')
+            #form.save()
+
+            # Graba intancia 
+            caso_ejec.resultado = form.cleaned_data['resultado']
+            caso_ejec.observaciones = form.cleaned_data['observaciones']
+
+            # Graba Archivo Adjunto. 
+            archivo = form.cleaned_data['evidencia']
+            print('---- ARCHIVO =', archivo)
+            if archivo is False:
+                # Usuario marcó "clear"
+                caso_ejec.evidencia.delete(save=False)
+                caso_ejec.evidencia = None
+
+            elif archivo:
+                # Usuario subió archivo nuevo
+                caso_ejec.evidencia = archivo
+
+            # else: no tocar
+            caso_ejec.save()
+
+            print('---- Graba instancia caso_ejec :', caso_ejec)
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('Lista-Ejec-Casos',  args=[str(prba_ejec.id)]))
+            
+
+        else:
+
+            print('Form invalido', form.errors)
+            #return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
+            return render(request, 'bcp/inc_mgm/ejec_caso.html',{'form':form })
+
+    else:
+
+        form=EjecucionCasoPruebaForm(initial={'resultado':caso_ejec.resultado,
+                                              'observaciones':caso_ejec.observaciones,
+                                              'evidencia':caso_ejec.evidencia})
+
+        return render(request,'bcp/inc_mgm/ejec_caso.html',
+                        context={'caso_ejec':caso_ejec,
+                                 'checklist':checklist,
+                                'ejec':prba_ejec, # Se adapto al Template (ejec)
+                                'proc':proc,
+                                'form':form})
+
 
 
 #*********************************************** Fin Administracion del Incidente *********************************************************

@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 🚨 === CAMBIO AÑADIDO AQUÍ ===
             // Confirmación con SweetAlert2
-            let mensajeConfirmacion = isChecked ? "Confirma Orden de Activación?. Se notificará a los ejecutores y se asignará un Checklist de Ejecucion" : "Confirma Orden de Desactivación?";
+            let mensajeConfirmacion = isChecked ? "Confirma Orden de Activación?" : "Confirma Orden de Desactivación?";
             Swal.fire({
                 title: mensajeConfirmacion,
                 text: "¿Deseas continuar con esta acción?",
@@ -528,9 +528,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log("Estado cambiado correctamente:", data.nuevo_estado);
                         Swal.fire({
                             icon: "success",
-                            title: "Actualización exitosa",
-                            text: isChecked ? "Procedimiento activado. Se enviará" : "Procedimiento desactivado.",
-                            timer: 1500,
+                            title: "Desactivacio exitosa",
+                            text: isChecked ? "Se notificará via correo y wassap a gestores involucrados" : "Se notificará via correo y wassap a gestores involucrados",
+                            timer: 8000,
                             showConfirmButton: false
                         });
                     } else {
@@ -621,7 +621,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             icon: "success",
                             title: "Actualización exitosa",
                             text: value ? "Activado correctamente." : "Desactivado correctamente.",
-                            timer: 1500,
+                            timer: 6000,
                             showConfirmButton: false
                         });
                     }
