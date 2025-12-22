@@ -6,26 +6,12 @@
 {%extends "base_generic.html"%}
 {% load static %}
 
-{% block extra_head %}
-<meta http-equiv="refresh" content="30">
-{% endblock %}
-
 
 {% block content %}
 <!----------------- ENCABEZADOS ------------------>
 <ul class="encabezado_B">
 	<p><strong>PRUEBA DE PROCEDIMIENTO DE CONTINGENCIA</strong></p>
 </ul>
-
-
-<!--- Mensaje seccion 1 - Lista de Casos ----------------->
-	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
-	<h5 class="alert-heading"><strong>Seccion 1 - Casos de Prueba</strong></h5>
-	<p> En esta seccion debe desarrollar los casos de prueba planificados.</p>
-	</div>
-
-<!--- Mensaje seccion 1 - Lista de Casos ----------------->
-
 
 	<table class="lta" style="width: 100%; border-collapse: collapse;">
 
@@ -54,9 +40,7 @@
 
 	
 <!---- Prueba Asociada ----------->
-	<br/><br/>
-	<h5><strong>PRUEBA :</strong></h5>
-	<ul class="scr4">
+<br/>
 	<table class="ita" style="width: 100%; border-collapse: collapse;
 	padding: 0px;
     letter-spacing: 1px;
@@ -68,14 +52,10 @@
 		<thead class="encabezado_N" style="color:white ">
 			
 			<tr style="background-color: green; border-bottom: 1px solid #ccc;">
-				<div class="flex-container">
-				<div class="flex-item">
 					<!--------- Columna Plan de Prueba  -->
 					<th scope="col" style="width: 50px; background-color:RED;" >Codigo</th>
 					<th scope="col" style="width: 100px; background-color:RED;">Objetivo</th>
 					<th scope="col" style="width: 200px; background-color:RED;">Alcance</th>
-				</div>
-				<div class="flex-item">
 					<!--------- Columna Resultados de Prueba -->
 					<th scope="col" style="width: 30px;">Nro.</th>
 					<th scope="col">Fecha</th>
@@ -91,14 +71,10 @@
       <tbody style="border-top: none;">
 
 		<tr style="border-bottom: 1px solid #ccc;">
-			<div class="flex-container">
-			<div class="flex-item">
 				<!--- Datos de la Prueba Planificada vigente ----->
 				<td>{{ejec.prueba.codigo}}</td>
 				<td>{{ejec.prueba.objetivo}}</td>
 				<td>{{ejec.prueba.alcance}}</td>
-			</div>
-			<div class="flex-item">
 			<!------ Datos de la Prueba ---------->
 				<td>{{ejec.nro_ejecucion}}</td>
 				<td>{{ejec.fecha_creacion}}</td>
@@ -123,22 +99,25 @@
 						Pendiente...
 					{%endif%}
 				</td>
-				
-			</div>
+		
 		</tr>
 	</tbody>
     </table>
 
-</ul>
 <!---- Fin Prueba Asociada ----------->
 
 <!----------------- FIN  ENCABEZADOS ------------------>
+<br/><br/><br/>
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
+	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+	<h5 class="alert-heading"><strong>Seccion 1 - Casos de Prueba</strong></h5>
+	<p> En esta seccion debe desarrollar los casos de prueba planificados.</p>
+	</div>
 
+<!--- Mensaje seccion 1 - Lista de Casos ----------------->
 
 
 <!---------------- LISTADO DE CASOS DE PRUEBAS -------------------------------------->
-	<br/><br/><br/>
-	<h5><strong>CASOS :</strong></h5>
 	<ul class="scr4 BarraScroll" style="height: 250px;">
 	
     <table class="ita" style="width: 100%;">
@@ -167,8 +146,6 @@
         {% if lista_ejec_casos %}
           {% for ejec in lista_ejec_casos %}
             <tr style="border-bottom: 1px solid #ccc;">
-				<div class="flex-container">
-				<div class="flex-item">
 					<!--- Datos de la Prueba Planificada vigente ----->
 					<td>{{ejec.caso.codigo}}</td>
 					<td>{{ejec.caso.descripcion}}</td>
@@ -184,8 +161,6 @@
 						{%endif%}
 					</strong>
 					</td>
-				</div>
-				<div class="flex-item">
 				<!------ Datos de la Prueba ---------->
 					<td>
 					<strong>
@@ -237,8 +212,134 @@
 		<strong>{{proc.nombre}}</strong>
 		en base a los resultados obtenidos de la ejecucion de los Casos de Prueba.</p>
 	</div>
-
 <!--- Mensaje seccion 1 - Lista de Casos ----------------->
+
+<!---  INGRESO DE DATOS DE CONCLUSION DE LA PRUEBA  ----------------->
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+
+	<!------ Linea 1 de Conclusion -------->
+	<div class="flex-container">
+		
+		<div class="flex-item">
+		<!--------  Columna 1 ----------------->
+			
+			<!--- Registro Resultados Obtenidos ----------------->
+			<br/>
+			<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+			<h5 class="alert-heading"><strong>2.1 Descripcion de la Ejecucion</strong></h5>
+			<p> Describa cómo se ejecutó la prueba en terminos de su aplicacion y diseño (actividades, contexto, observaciones relevantes).</p>
+			{{form.descripcion_ejecucion}}
+			</div>
+
+
+
+		</div><!-----  Fin Columna 1 ----------------->
+		<!-------------------------------------------->
+		
+		<div class="flex-item">
+		<!--------  Columna 2 ----------------->
+
+			<!--- Registro de Incidentes ----------------->
+			<br/>
+			<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+			<h5 class="alert-heading"><strong>2.2 Incidentes de la Ejecucion</strong></h5>
+			<p> En caso de haberlos, describa los incidentes ocurridos durante la ejecucion de la prueba en 
+				terminos contexto.(actividades, contexto, observaciones relevantes).</p>
+			{{form.incidentes}}
+			</div>
+			
+		</div> <!-------- Fin Columna 2 ----------------->
+
+	</div><!------ Fin Linea 1 de Conclusion -------->
+
+
+
+	<!------ Linea 2 de Conclusion -------->
+	<div class="flex-container">
+		
+		<div class="flex-item">
+		<!--------  Columna 1 ----------------->
+			
+		<!--- Registro Resultados Obtenidos ----------------->
+		<br/>
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h5 class="alert-heading"><strong>2.3 Resultados Obtenidos</strong></h5>
+		<p> Describa todos aquellos eventos relevantes observados en los resultados de la 
+			aplicacion de la prueba. Considerar los <strong>resultados esperados</strong>
+		del (os) casos definidos versus sus <strong>evaluaciones</strong> y  <strong>observaciones</strong></p>
+		{{form.resultados_obtenidos}}
+		</div>
+
+
+		</div><!-----  Fin Columna 1 ----------------->
+		<!-------------------------------------------->
+		
+		<div class="flex-item" style="width: 100%;">
+		<!--------  Columna 2 ----------------->
+			<!--- Registro Resultados Obtenidos ----------------->
+			<br/>
+			<!--- Registro Evaluacion Final ----------------->
+			<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+			<h5 class="alert-heading"><strong>2.4 Evaluacion Final</strong></h5>
+			<p> Evalue en general el resultado de la Prueba: </p>
+			
+			<ul class="scr4" style="font-size: 0.9rem;">
+			<p> <strong>Exitosa:</strong> El  100% de los casos son calificados como <strong>Exitosos</strong>.</p>
+			<p> <strong>Parcial:</strong> Todos los casos de <strong>prioridad Alta</strong> son calificados <strong>Exitosos</strong>
+				pero hay algunos de menor prioridad calificados como <strong>Fallidos</strong>. </p>
+			<p> <strong>Fallida:</strong> Una o mas de los casos de <strong>prioridad Alta</strong> son calificados <strong>Fallidos</strong></p>
+			<p> <strong>En Ejecucion:</strong> Uno o mas de los casos de <strong>prioridad Alta</strong> son calificados <strong>En Proceso</strong></p>
+			</ul>
+			<br/>
+			{{form.evaluacion_final}}
+			</div>
+ 			
+		</div> <!-------- Fin Columna 2 ----------------->
+
+
+	</div><!------ Fin Linea 2 de Conclusion -------->
+
+
+	<!------ Linea 3 de Conclusion -------->
+	<div class="flex-container">
+		
+		<div class="flex-item" style="width: 100%;">
+		<!--------  Columna 1 ----------------->
+			
+		<!--- Registro Lecciones Aprendidas ----------------->
+		<br/>
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h5 class="alert-heading"><strong>2.5 Lecciones Aprendidas</strong></h5>
+		<p> Lecciones aprendidas, oportunidades de mejora o recomendaciones</p>
+		{{form.lecciones_aprendidas}}
+		</div>
+
+		</div><!-----  Fin Columna 1 ----------------->
+		<!-------------------------------------------->
+		
+		<div class="flex-item">
+		<!--------  Columna 2 ----------------->
+		<!--- Registro Datos Adjuntos ----------------->
+		<br/>
+		<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+		<h5 class="alert-heading"><strong>2.6 Evidencia General</strong></h5>
+		<p> En caso de ser necesario, adjunte archivo con evidencias general. Para <strong>eliminar</strong> evidencia marca la casilla <strong>Clear</strong> </p>
+		<p>Para <strong>cambiar</strong> el actual archivo seleccionado señalado en <strong>Currently</strong>, solo selecciones otro en <strong>Change</strong>.</p>
+		<ul class="scr4"  style="color: white;  background-color: green;">
+			{{form.evidencia_general}}</ul>
+		</div>
+ 			
+		</div> <!-------- Fin Columna 2 ----------------->
+
+
+	</div><!------ Fin Linea 3 de Conclusion -------->
+
+<!----- Botones de Salida ------------------------------------------->
+	<button class="button btn-primary mt-3" type="submit">Graba ...</button>
+
+	</form>
+
 
 
 <!----- CSS para Scripts ----------------------------------->

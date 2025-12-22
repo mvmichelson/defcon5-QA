@@ -1031,11 +1031,11 @@ class EjecucionPruebasForm(forms.Form):
 
     descripcion_ejecucion = forms.CharField(
         label="Descripción de la ejecución",
-        required=True,
+        required=False,
         widget=forms.Textarea(attrs={
             "class": "form-control",
             "rows": 4,
-            "placeholder": "Describa cómo se ejecutó la prueba (actividades, contexto, observaciones relevantes)",
+            "placeholder": "ej.: Se requiere revisar el alcance de la prueba incorporando el caso de...",
         }),
         error_messages={
             "required": "Debe ingresar una descripción de la ejecución.",
@@ -1048,7 +1048,7 @@ class EjecucionPruebasForm(forms.Form):
         widget=forms.Textarea(attrs={
             "class": "form-control",
             "rows": 4,
-            "placeholder": "En caso de haberlos, describa los incidentes ocurridos durante la ejecucion de la prueba.(actividades, contexto, observaciones relevantes)",
+            "placeholder": "Ej.: Durante la ejecucion de la Prueba se interrumpio la operacion del Site de Contingencias ...",
         }),
         error_messages={
             "required": "Debe ingresar una descripción de la ejecución.",
@@ -1061,7 +1061,7 @@ class EjecucionPruebasForm(forms.Form):
         widget=forms.Textarea(attrs={
             "class": "form-control",
             "rows": 4,
-            "placeholder": "Detalle los resultados obtenidos durante la ejecución",
+            "placeholder": "ej.: Para los casos 001 y 003 las pruebas resultaron fallidas debido a ....",
         })
     )
 

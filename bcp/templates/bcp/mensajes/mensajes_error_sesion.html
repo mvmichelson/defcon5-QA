@@ -12,10 +12,10 @@
 	<h1>defcon-5 / bcp</h1>
 	<br/>
 	
-	<p> <strong>Error de sesion.....:</strong> &emsp;<aa>{{mensaje}}</aa></p>
+	<p> <strong>Error de Contexto !!.....:</strong> &emsp;<aa>{{mensaje}}</aa></p>
 
 
-	<a href="{% url 'index' %}"><span style='font-size:30px;'>&#128281</span></a>
+	<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
 
 {% endblock %}
 
