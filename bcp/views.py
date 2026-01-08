@@ -108,6 +108,7 @@
 from queue import Full
 from django.shortcuts import render
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Modelos del Sistema.
 
@@ -180,6 +181,7 @@ class Base_GenericPageView(TemplateView):
         #print('base_generic', defcon_est)
         return context
 
+@login_required
 def index(request):
     """
     Función de vista para la página inicio del sitio.
@@ -209,6 +211,7 @@ def index(request):
     #    context={'num_proc':num_proc,'num_sproc':num_sproc, 'num_proced':num_proced,'num_visits':num_visits,
     #             'defcon':defcon})
 
+
 def En_Construccion(request):
     return render(request, 'bcp/mensajes/en_construccion.html')
 
@@ -237,7 +240,7 @@ def Mapa_RIA(request):
 #***********************
 # 1.1 Lista de Procesos *
 #***********************
-
+@login_required
 def Lista_Procesos(request):
     """
     Lista Procesos 
@@ -249,22 +252,28 @@ def Lista_Procesos(request):
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
-    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
+    bia_max   = get_object_or_404(Parametros_G, nombre = 'BIA_MAX')
 
-    tramo_1 = float(bia_bajo.valor_2)/100*5
-    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
+    tramo_1 = float(bia_bajo.valor_2)/100
+    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100
+    valor_max=float(bia_max.valor_2)
     print('tramo_1:', tramo_1)
-    print('tramo_2:', tramo_2) 
+    print('tramo_2:', tramo_2)
+    print('valor_max:', valor_max) 
 
     lista_procesos = Proceso.objects.all()
     
     return render(request, 'bcp/proceso_list.html',
-                  context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
+                  context={'lista_procesos':lista_procesos,
+                           'tramo_1':tramo_1, 
+                           'tramo_2':tramo_2,
+                           'valor_max':valor_max})
  
 
 #********************************************
 # 1.2 Lista de Procesos para asociar Activos*
 #********************************************
+@login_required
 def Lista_Recursos(request):
     """
     Lista Procesos para asociar Servicios Criticos
@@ -276,20 +285,28 @@ def Lista_Recursos(request):
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
-    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
+    bia_max   = get_object_or_404(Parametros_G, nombre = 'BIA_MAX')
 
-    tramo_1 = float(bia_bajo.valor_2)/100*5
-    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
+    tramo_1 = float(bia_bajo.valor_2)/100
+    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100
+    valor_max=float(bia_max.valor_2)
+    print('tramo_1:', tramo_1)
+    print('tramo_2:', tramo_2)
+    print('valor_max:', valor_max) 
 
     lista_procesos = Proceso.objects.all()
     return render(request, 'bcp/map_act/map_activos__list.html',
-                  context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
+                  context={'lista_procesos':lista_procesos,
+                           'tramo_1':tramo_1,
+                           'tramo_2':tramo_2,
+                           'valor_max':valor_max})
     
 
 
 #***********************************************
 # 1.3 Lista de Procesos para asociar Escenarios*
 #***********************************************
+@login_required
 def Lista_Escenarios(request):
     """
     Lista Procesos para asignar Escenarios.
@@ -302,22 +319,29 @@ def Lista_Escenarios(request):
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
-    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
+    bia_max   = get_object_or_404(Parametros_G, nombre = 'BIA_MAX')
 
-    tramo_1 = float(bia_bajo.valor_2)/100*5
-    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
+    tramo_1 = float(bia_bajo.valor_2)/100
+    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100
+    valor_max=float(bia_max.valor_2)
+    print('tramo_1:', tramo_1)
+    print('tramo_2:', tramo_2)
+    print('valor_max:', valor_max) 
 
     lista_procesos = Proceso.objects.all()
     
     return render(request, 'bcp/map_esc/map_esc_list.html',
-                  context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
+                  context={'lista_procesos':lista_procesos,
+                           'tramo_1':tramo_1,
+                           'tramo_2':tramo_2,
+                           'valor_max':valor_max})
     
 
 
 #***********************************************
 # 1.4 Lista de Procesos para asociar Evaluacion*
 #***********************************************
-
+@login_required
 def Lista_Evaluaciones(request):
     """
     Lista Procesos para Evaluacion BIA.
@@ -330,15 +354,22 @@ def Lista_Evaluaciones(request):
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
-    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
+    bia_max   = get_object_or_404(Parametros_G, nombre = 'BIA_MAX')
 
-    tramo_1 = float(bia_bajo.valor_2)/100*5
-    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
+    tramo_1 = float(bia_bajo.valor_2)/100
+    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100
+    valor_max=float(bia_max.valor_2)
+    print('tramo_1:', tramo_1)
+    print('tramo_2:', tramo_2)
+    print('valor_max:', valor_max) 
 
     lista_procesos = Proceso.objects.all()
     
     return render(request, 'bcp/map_eval/map_eval__list.html',
-                  context={'lista_procesos':lista_procesos, 'tramo_1':tramo_1, 'tramo_2':tramo_2})
+                  context={'lista_procesos':lista_procesos,
+                           'tramo_1':tramo_1,
+                           'tramo_2':tramo_2,
+                           'valor_max':valor_max})
 
 
     
@@ -348,7 +379,7 @@ def Lista_Evaluaciones(request):
 class ProcesoDetailView(generic.DetailView):
     model = Proceso
 
-
+@login_required
 def Detalle_Proceso(request, pk):
     """
     muestra todos los datos asociados al proceso pk
@@ -362,6 +393,7 @@ def Detalle_Proceso(request, pk):
     return render(request, 'bcp/proceso_detail.html',
                   context={'proceso':proceso, 'comentarios':comentarios})
 
+@login_required
 def Detalle_Proceso_V(request, pk):
     """
     muestra todos los datos asociados al proceso vigente
@@ -378,6 +410,7 @@ def Detalle_Proceso_V(request, pk):
     return render(request, 'bcp/proceso_detail_v.html',
                   context={'proceso':proceso, 'control_c':control_cambios})
 
+@login_required
 def Detalle_Proceso_V2(request, pk):
     """
     muestra todos los datos asociados al proceso vigente
@@ -425,7 +458,7 @@ class LogAutRevListView(generic.ListView):
 
 from .forms import CreaProcesoForm
 
-#@permission_required('Catalogo.can_mark_returned')
+@login_required
 def crea_proceso(request, pk):
     """
     Funcio de vista para crear un Proceso
@@ -549,6 +582,7 @@ def crea_proceso(request, pk):
 #***********************
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def borra_proceso(request, pk):
 
     # Verifica si el usuario en sesion esta habilitado
@@ -596,6 +630,7 @@ def borra_proceso(request, pk):
 #**************************
 #2.4 Crea Activo o Recurso*
 #**************************
+@login_required
 def Lista_SRV(request, pk_proc, origen):
 
     """Lista los Servicios o Recursos definidos en la Base de Servicios
@@ -629,6 +664,7 @@ def Lista_SRV(request, pk_proc, origen):
 from .forms import CreaActivoForm
 #@permission_required('Catalogo.can_mark_returned')
 #def Crea_Activo(request):
+@login_required
 def Crea_SRV(request):
     """
     Crea un Servicio / Recurso en la Base de Datos.
@@ -686,6 +722,7 @@ def Crea_SRV(request):
 from .forms import CreaActivoForm
 #@permission_required('Catalogo.can_mark_returned')
 #def Crea_Activo(request):
+@login_required
 def Mod_SRV(request, pk):
     """
     Modifica un Servicio / Recurso en la Base de Datos.
@@ -735,6 +772,7 @@ def Mod_SRV(request, pk):
         'next': next_url
     })
 
+@login_required
 def Borra_SRV(request, pk):
     """
     Borra el Servicio / Recurso de la Base """
@@ -757,7 +795,7 @@ def Borra_SRV(request, pk):
 #****************
 # Actualizacion *
 #****************
-
+@login_required
 def Actualiza_Mapeo(request, pk):
     """
     Cambia el estado de un Proceso autorizado en todas sus fases para su actualizacion
@@ -801,7 +839,7 @@ def Actualiza_Mapeo(request, pk):
 # 3.1 Asignacion  RACI*
 #**********************
 from .forms import AsignaRaciForm
-
+@login_required
 def Asigna_Raci(request, pk, etapa):
     """
     Funcion de vista para asignar usuarios a esquema RACI
@@ -912,7 +950,7 @@ def Asigna_Raci(request, pk, etapa):
 #*********************************
 from .forms import AutorizaRaciForm
 import datetime
-
+@login_required
 def Autoriza_M(request, pk):
     
     proc = get_object_or_404(Proceso, pk = pk)
@@ -1063,7 +1101,7 @@ def Autoriza_M(request, pk):
 #********************************************************
 from .forms import Autoriza_BIA_Form
 #import datetime
-
+@login_required
 def Aut_Asig_BIA(request, pk):
     """ Los comentarios se registran mediante un script (main.js) en el Template y se cargan a la 
     base con la vista "Crea_Rev_OC" """
@@ -1294,7 +1332,7 @@ def aut_obs_proceso(request, item, pk, valor):
         
         return render(request, 'bcp/proceso_obs_auth.html', {'form': form, 'proc':proc, 'item':item, 'valor':valor})
 
-
+@login_required
 def borra_obs_proceso(request, pk):
     """
     Borra observacion a nivel de item
@@ -1314,7 +1352,7 @@ def borra_obs_proceso(request, pk):
 #*********************************************************
 from .forms import Autoriza_Act_x_Proc_Form
 import datetime
-
+@login_required
 def Aut_Asig_Act(request, pk):
 
     print('--- Entra a Vista: Autorizacion de ASignacion Aut_Asig_Act')
@@ -1510,7 +1548,7 @@ def Aut_Asig_Act(request, pk):
 from .forms import Autoriza_Asig_Escenarios_Form
 import datetime
 
-#def Aut_Asig_Esc(request, pk):
+@login_required
 def auth_asig_SCER(request, pk): 
     """
     Autorizacion de los Servicios Criticos y Escenarios de Riesgo asignados
@@ -2123,7 +2161,7 @@ def auth_asig_SCER(request, pk):
 #3.6  Revision de Proceso con autorizazion RACI rechazada*
 #*********************************************************
 from .forms import RevisaProcesoForm
-
+@login_required
 def Revisa_Proceso(request, pk):
     """
     Funcion de vista para ingresar cambios a los Procesos
@@ -2284,7 +2322,7 @@ def Revisa_Proceso(request, pk):
 #3.7  Revision de Asignacion de Activos a Proceso con autorizazion RACI rechazada*
 #*********************************************************************************
 from .forms import Revisa_AsigAct_x_Proc_Form
-
+@login_required
 def Revisa_AsigActxProceso(request, pk):
 
     # Verifica si el usuario en sesion esta habilitado
@@ -2381,6 +2419,7 @@ def Revisa_AsigActxProceso(request, pk):
         return render(request, 'bcp/map_act/asigna_act_revisa.html', {'form': form, 'proceso':proc_rev})
 
 
+@login_required
 def rev_asigna_servicio(request, pk):
     """ ----------------------------------------------------------------------------------
     Presenta los Comentarios realizados por los Supervisores durante la Autorizacion
@@ -2445,7 +2484,7 @@ def rev_asigna_servicio(request, pk):
 # 3.8 Revision de Asignacion de Escenarios a Proceso con autorizazion RACI rechazada *
 #*************************************************************************************
 from .forms import Revisa_Asig_Esc_Form
-
+@login_required
 def Revisa_Asig_Esc(request, pk): 
 
     # Verifica si el usuario en sesion esta habilitado
@@ -2552,7 +2591,8 @@ def Revisa_Asig_Esc(request, pk):
         return render(request, 'bcp/map_esc/asigna_esc_revisa.html', {'form': form,
                                                                       'proceso':proc_rev,
                                                                       'comentarios':comentarios_m})
-    
+
+@login_required   
 def rev_asigna_escenarios(request, pk):
     """ ----------------------------------------------------------------
     Presenta los Comentarios realizados por los Supervisores durante la 
@@ -2625,7 +2665,7 @@ def rev_asigna_escenarios(request, pk):
 # 3.9 Revision de Asignacion BIA  a Proceso con autorizazion RACI rechazada *
 #****************************************************************************
 from .forms import Revisa_Asig_BIA_Form
-
+@login_required
 def Revisa_Asig_BIA(request, pk):
 
     print('-- Revisa Asignacion BIA (Revisa_Asig_BIA)')
@@ -2828,6 +2868,7 @@ from .models import Log_Revision
 import json
 
 @csrf_exempt
+@login_required
 def Crea_Rev_OC(request):
     """ Crea un Comentario de Revision durante la Revision
     de cada Proceso o PC segun su etapa. """
@@ -2930,7 +2971,7 @@ def Crea_Rev_OC(request):
 #********************************
 #  Borra Comentario de Revision *
 #********************************
-
+@login_required
 def Borra_Rev_OC(request, pk):
     """
     Borra un Comentario de Revision """
@@ -2946,7 +2987,7 @@ def Borra_Rev_OC(request, pk):
 #********************************
 #  Marca Comentario de Revision *
 #********************************
-
+@login_required
 def OK_Rev_OC(request, pk):
     """
     Marca el Comentario de Revision como resuelto.
@@ -2978,6 +3019,7 @@ def OK_Rev_OC(request, pk):
 from .forms import Asig_Esc_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Asigna_Escenarios(request, pk):
 
     # Verifica si el usuario en sesion esta habilitado
@@ -3035,6 +3077,7 @@ from .forms import Act_x_Proc_Form
 # CODIGO OBSOLETO - BORRAR
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Asigna_Activos(request, pk):
 
     # Verifica si el usuario en sesion esta habilitado
@@ -3092,6 +3135,7 @@ from django.urls import reverse
 from .models import Proceso, SubProceso, Recursos
 from .forms import ServicioForm
 
+@login_required
 def asigna_servicio(request, pk):
     """
     Asigna Servicios Criticos al Proceso
@@ -3134,6 +3178,7 @@ def asigna_servicio(request, pk):
 
 from .forms import EscenarioForm
 
+@login_required
 def asigna_escenarios(request, pk):
     """
     Asigna los Escenarios de Riesgo asociados al Proceso 
@@ -3180,6 +3225,7 @@ def asigna_escenarios(request, pk):
 #***********************************************
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Asigna_Imp_Ind(request, pk):
     """
     Lista los (Riesgos) Impactos e Indicadores asignados al subproceso pk
@@ -3271,6 +3317,7 @@ def Asigna_Imp_Ind(request, pk):
                                                              'total_pro':total_pro})
 
 from .forms import Asig_Imp_Form 
+@login_required
 def Asig_Imp(request, pk, status):
     """
     Asigna un nivel al nub (proceso/Impacto) pk
@@ -3322,6 +3369,7 @@ def Asig_Imp(request, pk, status):
                                                                       'form':form})
 
 from .forms import Asig_Ind_Form
+@login_required
 def Asig_Ind(request, pk, status):
     """
     Asigna un nivel al nub (proceso/Impacto) pk
@@ -3372,6 +3420,7 @@ def Asig_Ind(request, pk, status):
                                                                       'indicador':indicador,
                                                                       'form':form})
 
+@login_required
 def Envia_Ev_RACI(request, pk, etapa):
     """
     Envia al Proceso a la definicion del esquema RACI.
@@ -3404,7 +3453,7 @@ def Envia_Ev_RACI(request, pk, etapa):
         return HttpResponseRedirect(reverse('Lista-Escenarios'))
 
 
-
+@login_required
 def Envia_Auth(request, pk, etapa):
     """
     Envia a proceso de Autorizacion luego de correccion de los Comentarios.
@@ -3496,7 +3545,7 @@ class ProcedimientosListView(generic.ListView):
     model =  Proceso
     template_name='bcp/proced_cont/proced_list.html'
 
-
+@login_required
 def Lista_Procedimientos(request, vigente):
     """
     Lista Procedimientos 
@@ -3508,14 +3557,18 @@ def Lista_Procedimientos(request, vigente):
 
     print('>>>> Entra a Lista de Procedimientos ----------')
     #Determina tramos de criticidad del Proceso
+        #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
-    bia_alto  = get_object_or_404(Parametros_G, nombre = 'BIA_ALTO')
+    bia_max   = get_object_or_404(Parametros_G, nombre = 'BIA_MAX')
 
-    tramo_1 = float(bia_bajo.valor_2)/100*5
-    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100*5
+    tramo_1 = float(bia_bajo.valor_2)/100
+    tramo_2 = tramo_1 + float(bia_medio.valor_2)/100
+    valor_max=float(bia_max.valor_2)
     print('tramo_1:', tramo_1)
-    print('tramo_2:', tramo_2) 
+    print('tramo_2:', tramo_2)
+    print('valor_max:', valor_max) 
+
 
 
     # Verifica si el usuario en sesion esta habilitado
@@ -3534,7 +3587,7 @@ def Lista_Procedimientos(request, vigente):
 
     return render(request, 'bcp/proced_cont/proced_list.html',
                   context={'lista_procesos':lista_procesos_v, 'tramo_1':tramo_1,
-                           'tramo_2':tramo_2,
+                           'tramo_2':tramo_2, 'valor_max':valor_max,
                            'procedimientos_vigentes':procedimientos_vigentes})
     
 #*****************************************************
@@ -3547,6 +3600,7 @@ def Lista_Procedimientos(request, vigente):
 from .forms import CreaProc_A_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_prcd_a(request, pk):
     """
     Realiza la creacion inicial al hacer click en +
@@ -3646,6 +3700,7 @@ def cr_prcd_a(request, pk):
 from .forms import CreaProc_B_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_prcd_b(request, pk):
 
     proced = get_object_or_404(Procedimientos, pk = pk)
@@ -3837,6 +3892,7 @@ def cr_prcd_b(request, pk):
 from .forms import CreaProc_P5_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_prcd_P5(request, pk):
     """
     Ingresa Servicios Criticos para el PC
@@ -3911,6 +3967,7 @@ def cr_prcd_P5(request, pk):
 
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def br_prcd_P5(request, pk):
     """
     Borra Servicios Criticos para el PC
@@ -3945,7 +4002,7 @@ def br_prcd_P5(request, pk):
 from .forms import CreaProc_P6_Form
 
 
-
+@login_required
 def cr_prcd_P6(request, pk):
     """
     Ingresa Contactos Criticos para el PC
@@ -4016,6 +4073,7 @@ def cr_prcd_P6(request, pk):
 
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def br_prcd_P6(request, pk):
     """
     Borra Servicios Criticos para el PC
@@ -4051,6 +4109,7 @@ def br_prcd_P6(request, pk):
 from .forms import CreaProc_P7_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_prcd_P7(request, pk, fase):
     """
     Ingresa Pasos del PC
@@ -4138,6 +4197,7 @@ def cr_prcd_P7(request, pk, fase):
     
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def br_prcd_P7(request, pk):
     """
     Borra Pasos del PC
@@ -4163,6 +4223,7 @@ def br_prcd_P7(request, pk):
 
 from .forms import CreaProc_P8_Form
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_prcd_P8(request, pk):
     """
     Ingresa Pruebas al Procedimiento Parte A (datos generales)
@@ -4250,7 +4311,7 @@ def cr_prcd_P8(request, pk):
                                                                         })
 
 
-
+@login_required
 def br_prcd_P8(request, pk):
     """
     Borra la Prueba de Procedimiento C.
@@ -4278,6 +4339,7 @@ def br_prcd_P8(request, pk):
 
 from .forms import CreaProc_P8_Form
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def md_prcd_P8(request, pk):
     """
     Modifica la Prueba asociada al  Procedimiento -  Parte A (datos generales)
@@ -4341,7 +4403,7 @@ def md_prcd_P8(request, pk):
                                                                         'proceso':proceso
                                                                         })
 
-
+@login_required
 def lta_casos_P8_B(request, pk):
     """
     Lista los Casos de Prueba durante ingreso/modificacion de Prueba
@@ -4362,6 +4424,7 @@ def lta_casos_P8_B(request, pk):
 
 from .forms import Caso_P8_Form
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_caso_P8(request, pk, origen):
     """
     Crea Caso de Prueba asociado a una Prueba de Procedimiento
@@ -4452,7 +4515,7 @@ def cr_caso_P8(request, pk, origen):
                                                                         'proceso':proceso,
                                                                         'lista_casos':lista_casos
                                                                         })
-
+@login_required
 def br_caso_P8(request, pk):
     """
     Borra un Caso de Prueba"""
@@ -4478,7 +4541,7 @@ def br_caso_P8(request, pk):
 #*************************************************************
 # 2.2.4  Borra el Procedimiento de Contingencia              *
 #*************************************************************
-
+@login_required
 def borra_procedimiento(request, pk):
     "Borra el Procedimiento de Contingencia (PC)"
 
@@ -4495,7 +4558,7 @@ def borra_procedimiento(request, pk):
 # 3.10 Autorizacion del  Procedimiento de Contingencia *
 #*******************************************************
 
-
+@login_required
 def Env_Aut_Proced(request, pk):
     """
     Envia el Procedimiento a Autorizacion 
@@ -4527,7 +4590,7 @@ def Env_Aut_Proced(request, pk):
     
 from .forms import Autoriza_Proced_C_Form
 import datetime
-
+@login_required
 def Aut_Proced_C(request, pk):
     """
     Autorizacion del Procedimiento
@@ -5355,7 +5418,7 @@ def Aut_Proced_C(request, pk):
 #****************************************************************************
 
 from .forms import Revisa_Proced_B_Form
-
+@login_required
 def Revisa_Proced_B(request, pk):
 
     # Verifica si el usuario en sesion esta habilitado
@@ -5478,6 +5541,8 @@ def Revisa_Proced_B(request, pk):
 #*******************************************************************************
 #1.10 Lista de Servicios, Contactos, Pasos y Pruebas en Creacion de Procedimiento(PC)   *
 #*******************************************************************************
+
+@login_required
 def cr_prcd_list(request, pk):
     """
     Lista de Servicios, Contactos, Pasos y Pruebas en Creacion de Procedimiento(PC)
@@ -5514,6 +5579,7 @@ def cr_prcd_list(request, pk):
                                                                   'pruebas':pruebas,
                                                                   'rto':rto})
 
+@login_required
 def rev_prcd_list(request, pk):
     """
     Lista de Servicios, Contactos, Pasos y Pruebas en Revision de la Creacion de 
@@ -5559,6 +5625,7 @@ def rev_prcd_list(request, pk):
 #******************************************************
 # 1.10 Muestra datos (detalle) del Procedimiento(PC)  *
 #******************************************************
+@login_required
 def detalle_procedimiento(request, pk ):
     """ Detalle del Procedimiento
     pk: Identificacion del Procedimiento
@@ -5581,7 +5648,8 @@ def detalle_procedimiento(request, pk ):
     return render(request, 'bcp/proced_cont/proced_detalle.html', {'proced':proced,
                                                                    'lista_prbas':lista_prbas, 
                                                                    'proceso':proceso})
-    
+
+@login_required   
 def detalle_procedimiento_v(request, pk): 
     """ Muestra detalle del Procedimiento Vigente
     pk: Identificacion del Procedimiento Vigente
@@ -5614,6 +5682,7 @@ def detalle_procedimiento_v(request, pk):
 #******************************************************
 # 1.11 Muestra datos (detalle) del Procedimiento(PC)  *
 #******************************************************
+@login_required
 def ActualizaPC(request, pk):
     """
     Cambia el estado del PC de A (Autorizado) a C (En definicion) 
@@ -5635,6 +5704,7 @@ def ActualizaPC(request, pk):
 #*******************************
 # 1.12 Activa / Desactiva PC   *
 #*******************************
+@login_required
 def ConfirmaActivacionPC(request, pk):
     """
     Flag de Confirmacion por parte del Gestor Ejecutor de la Activacion del PC
@@ -5661,7 +5731,7 @@ def ConfirmaActivacionPC(request, pk):
 #********************************
 # 6.1 Lista los DRPs definidos  *
 #********************************
-
+@login_required
 def Lista_DRP(request):
     """Lista los DRPs"""
 
@@ -5676,6 +5746,7 @@ def Lista_DRP(request):
 #******************************************************
 # 6.2 Muestra el Indice con las Secciones del DRP     *
 #******************************************************
+@login_required
 def Indice_DRP(request, pk):
     """
     Indice de DRP 
@@ -5691,7 +5762,7 @@ def Indice_DRP(request, pk):
 # 6.3 Crea un DRP     *
 #**********************
 from .forms import Crea_DRP_Enc_Form
-
+@login_required
 def Crea_Drp(request):
 
     # Verifica si el usuario en sesion esta habilitado
@@ -5740,6 +5811,7 @@ def Crea_Drp(request):
 #**********************
 # 6.4 Borra un DRP    *
 #**********************
+@login_required
 def Borra_Drp(request, pk):
     """ 
     Borra el DRP. Debe estar en estado de Creacion
@@ -5757,7 +5829,7 @@ def Borra_Drp(request, pk):
 # 6.5 registra Objetivo del  DRP     *
 #*************************************
 from .forms import Drp_Sec_1_Form
-
+@login_required
 def Drp_Sec_1(request, pk):
     """
     Registra Objetivo del DRP
@@ -5802,7 +5874,7 @@ def Drp_Sec_1(request, pk):
 # 6.6 registra Equipo Gestores  DRP  *
 #*************************************
 from .forms import Drp_Sec_2_Form
-
+@login_required
 def Drp_Sec_2(request, pk):
     """
     Registra el equipo de Gestores del DRP
@@ -6096,7 +6168,7 @@ def Drp_Sec_3(request, pk):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Drp, SubProceso_V
-
+@login_required
 def asigna_procesos_drp(request, pk):
     """ Asigna al DRP los Procesos que seran cubiertos por el DRP (Alcance) 
         Filtra por aquellos que tienen activa_drp=True en su Estrategia Asociada. 
@@ -6131,7 +6203,7 @@ def asigna_procesos_drp(request, pk):
 # 6.8 Definicion la Estrategia del   DRP   *
 #*******************************************
 from .forms import Drp_Sec_4_Form
-
+@login_required
 def Drp_Sec_4(request, pk):
     """
     Registra la Estrategia de Recuperacion del del  DRP """
@@ -6183,7 +6255,7 @@ def Drp_Sec_4(request, pk):
 #**************************************
 # 6.9 Especificacion Tecnica  del DRP *
 #**************************************
-    
+@login_required
 def asigna_componentes(request, pk):
     """
     Asigna al DRP los Componentes de Hw y Sw. Base del Site. 
@@ -6229,7 +6301,7 @@ def asigna_componentes(request, pk):
 #**********************************
 # 6.9.1 Lista Componentes del DRP *
 #**********************************
-
+@login_required
 def Lista_CMP(request, pk_drp, origen):
     """Lista los Componentes de Hw y Sw del DRPs
     
@@ -6263,7 +6335,7 @@ def Lista_CMP(request, pk_drp, origen):
 # 6.9.3.1 Crea Componentes en la BD *
 #************************************
 from .forms import Crea_CMP_Form
-
+@login_required
 def Crea_CMP(request):
     """
     Crea un Componente de Infraestructura de Hw o Sw en la Base de Datos.
@@ -6325,7 +6397,7 @@ def Crea_CMP(request):
 # 6.9.3.1 Crea Componentes en la BD *
 #************************************
 from .forms import Crea_CMP_Form
-
+@login_required
 def Modifica_CMP(request, pk):
     """
     Modifica Componente de Infraestructura de Hw o Sw en la Base de Datos.
@@ -6385,7 +6457,7 @@ def Modifica_CMP(request, pk):
 #*************************************
 # 6.9.3.2 Borra Componentes de la BD *
 #*************************************
-
+@login_required
 def Borra_CMP(request, cmp_pk):
      
     # Borra el Componente 
@@ -6406,6 +6478,7 @@ def Borra_CMP(request, cmp_pk):
 #****************************
 
 #def Lista_LBC(request, pk, ulr_comp):
+@login_required
 def Lista_LBC(request, url_retorno):
     """Lista la Linea Base de Configuracion de un Componente
     pk      : Pk del Componente
@@ -6429,7 +6502,7 @@ def Lista_LBC(request, url_retorno):
 # 6.9.3.4 Crea  la LBC     *
 #***************************
 from .forms import Crea_LBC_Form
-
+@login_required
 def Crea_LBC(request, pk):
     """Crea una Parametro de Linea Base de Configuracion para un
     Componente de Infraestructura de Hw o Sw.
@@ -6496,6 +6569,7 @@ def Crea_LBC(request, pk):
         return render(request, 'bcp/drp/crea_lbc.html', {'form':form, 'cmp':cmp})  
 
 
+@login_required
 def Modifica_LBC(request, pk, pk_cmp):
     """
     Modifica un Parametro de LBC del Componente de Infraestructura de Hw o Sw en la Base de Datos.
@@ -6549,6 +6623,7 @@ def Modifica_LBC(request, pk, pk_cmp):
 #***************************
 # 6.9.3.5 Borra la LBC     *
 #***************************
+@login_required
 def Borra_LBC(request, pk):
     """ 
     Borra un registro de Linea Base de Configuracion asociado a un Componente
@@ -6574,7 +6649,7 @@ def Borra_LBC(request, pk):
 #****************************************
 # 6.10.1 Lista  Servicios Criticos DRP  *
 #****************************************
-
+@login_required
 def Lista_Serv_Crtc(request, pk):
     
     """Lista los Servicios Criticos asociados al DRPs"""
@@ -6593,6 +6668,7 @@ def Lista_Serv_Crtc(request, pk):
 #**************************************
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_drp_P5(request, pk, acc):
     """
     Ingresa Servicios Criticos para el DRP
@@ -6687,6 +6763,7 @@ def cr_drp_P5(request, pk, acc):
 #***************************************
     
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def br_drp_P5(request, pk, acc):
     """
     Borra Servicios Criticos para el DRP
@@ -6726,6 +6803,7 @@ from .forms import CreaProc_P6_Form
 #**************************************************
 # 6.11.1 Lista Pasos del  Procedimiento del  DRP  *
 #**************************************************
+@login_required
 def Lista_Pasos_Drp(request, pk):
     """Lista los Componentes de Hw y Sw del DRPs"""
 
@@ -6740,6 +6818,7 @@ def Lista_Pasos_Drp(request, pk):
 # 6.11 Procedimiento del  DRP  *
 #*******************************
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_drp_P7(request, pk):
     """
     Ingresa Pasos del DRP
@@ -6799,6 +6878,7 @@ def cr_drp_P7(request, pk):
     
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def br_drp_P7(request, pk):
     """
     Borra Pasos del DRP
@@ -6828,6 +6908,7 @@ def br_drp_P7(request, pk):
 #******************************************************
 # 6.12.1 Lista Contactos del  Procedimiento del  DRP  *
 #******************************************************
+@login_required
 def Lista_Contactos_DRP(request, pk):
     """Lista de Contactos del DRPs"""
 
@@ -6840,6 +6921,7 @@ def Lista_Contactos_DRP(request, pk):
 
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def cr_drp_P6(request, pk):
     """
     Crea Contactos Criticos para el DRP
@@ -6901,6 +6983,7 @@ def cr_drp_P6(request, pk):
     
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def md_drp_P6(request, pk):
     """
     Modifica Contactos Criticos para el PC
@@ -6965,6 +7048,7 @@ def md_drp_P6(request, pk):
 
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def br_drp_P6(request, pk):
     """
     Borra Contactos para el DRP
@@ -6995,6 +7079,7 @@ from .forms import CreaProc_P7_Form
 from django.views.decorators.cache import never_cache
 
 @never_cache
+@login_required
 def Env_Aut_DRP(request, pk, sec):
     """
     Envia la Seccion 'sec' del DRP  a Autorizacion 
@@ -7043,6 +7128,7 @@ import datetime
 from django.views.decorators.cache import never_cache, cache_control
 @never_cache
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+@login_required
 def Aut_Drp(request, pk, sec):
     """
     Autorizacion/Observacion  del Jefe de Operacion a la seccion (sec) del DRP 
@@ -7350,6 +7436,7 @@ def Aut_Drp(request, pk, sec):
 from django.views.decorators.cache import never_cache
 
 @never_cache
+@login_required
 def Aut_Drp_V(request, pk, sec):
     """
     Autorizacion/Observacion  del Responsable DRP a la seccion (sec) del DRP 
@@ -7732,6 +7819,7 @@ def aut_obs_proced(request, item, pk, valor):
 
 from django.views.decorators.cache import never_cache
 @never_cache # inhibe el boton de vuelta atras desde el indice 
+@login_required
 def Rev_S2_Drp(request, pk):
     """
     Revisa la denegacion de autorizacion  para cada  la seccion 2 : Responsbles DRP 
@@ -8007,6 +8095,7 @@ def Rev_S2_Drp(request, pk):
 
 from django.views.decorators.cache import never_cache
 @never_cache # inhibe el boton de vuelta atras desde el indice 
+@login_required
 def Rev_S1_Drp(request, pk):
     """
     Revisa la denegacion de autorizacion  para cada  la seccion 2 : Objetivo del  DRP 
@@ -8149,7 +8238,8 @@ def Rev_S3_Drp(request, pk):
                                                            'comentarios':comentarios})
 
 from django.views.decorators.cache import never_cache
-@never_cache # inhibe el boton de vuelta atras desde el indice 
+@never_cache # inhibe el boton de vuelta atras desde el indice
+@login_required 
 def rev_asigna_procesos_drp(request, pk):
     """ Modifica la Asignacion de los Procesos que seran cubiertos por el DRP (Alcance) en 
         base a los comentarios de revision.
@@ -8228,7 +8318,7 @@ def rev_asigna_procesos_drp(request, pk):
 from django.views.decorators.cache import never_cache, cache_control
 @never_cache
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)
-
+@login_required
 def Rev_S4_Drp(request, pk):
     """
     Revisa las observaciones realizadas 
@@ -8329,6 +8419,7 @@ def Rev_S4_Drp(request, pk):
 #***************************************************************
 from django.views.decorators.cache import never_cache
 @never_cache # inhibe el boton de vuelta atras desde el indice 
+@login_required
 def Rev_S5_Drp(request, pk):
     """
     Revisa las observaciones realizadas 
@@ -8378,7 +8469,8 @@ def Rev_S5_Drp(request, pk):
         return render(request, 'bcp/drp/drp_s5_rev.html', {'form': form, 'drp':drp,
                                                            'lista_cmp':lista_cmp})
 
-@never_cache # inhibe el boton de vuelta atras desde el indice 
+@never_cache # inhibe el boton de vuelta atras desde el indice
+@login_required 
 def rev_esp_tec_drp(request, pk):
     """ Modifica la Especificacion Tecnica (Asignacion de Componentes) del DRP en 
         base a los comentarios de revision.
@@ -8452,6 +8544,7 @@ def rev_esp_tec_drp(request, pk):
 #***************************************************************
 from django.views.decorators.cache import never_cache
 @never_cache # inhibe el boton de vuelta atras desde el indice 
+@login_required
 def Rev_S6_Drp(request, pk):
     """
     Revisa las observaciones realizadas 
@@ -8472,7 +8565,7 @@ def Rev_S6_Drp(request, pk):
 #****************************************************
 # 6.15  Detalle del DRP en Desarrollo/Actualizacion *
 #****************************************************
-
+@login_required
 def detalle_drp(request, pk):
 
     drp = get_object_or_404(Drp, pk = pk)
@@ -8511,6 +8604,7 @@ def detalle_drp(request, pk):
 from .forms import Declara_Incidente_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Declara_Inc(request):
     """
     Registra el Incidente y Selecciona los Procesos relacionados con las amenazas 
@@ -8652,11 +8746,17 @@ def Declara_Inc(request):
 
 from .forms import Plan_Pruebas_A_Form
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Define_Plan_Pruebas_A(request):
     """
     Define el Plan de Pruebas 
     """
     print('>>>>>  Entra a Registro del PLAN DE PRUEBAS A ------')
+
+    # Verifica si el usuario en sesion esta habilitado
+    if not es_del_grupo([request.user, 'Gestion de Crisis']):
+        return HttpResponseRedirect(reverse('error-sesion-mgm', args=[400] ))
+
   
     #procesos=get_object_or_404(Proceso)
 
@@ -8667,19 +8767,26 @@ def Define_Plan_Pruebas_A(request):
         
         if form.is_valid():
             print('----- Formato valido')
-            
+
+            # Graba intancias en Registro (Base de Incidentes)
+            # ================================================
+
             incidente=Incidentes()
-            
-            incidente.save()
-            
+            fecha=form.cleaned_data['fecha_hora']
+            incidente.fecha_creacion = fecha
+            incidente.fecha = fecha
+            incidente.nombre_r = 'COMITE DE CRISIS'
+            incidente.area_r = 'Preparado por Gestion de Riesgos'
+            incidente.descripcion = 'Prueba integral de Procedimientos de Contingencias del BCP/DRP'
+            incidente.test= True
+            incidente.estado=False
 
-            # Define codigo del incidente
+             # Define codigo del incidente
             #==============================
-
             # Rescata correlativo de Incidente. 
             parametro = get_object_or_404(Parametros_G, nombre = 'FOLIO INCIDENTES')
 
-            f_i = incidente.fecha.strftime('%Y%m')
+            f_i = fecha.strftime('%Y%m')
             n=parametro.valor_2
 
             # Compone la parte numerica del codigo a un largo fijo 
@@ -8695,15 +8802,6 @@ def Define_Plan_Pruebas_A(request):
             incidente.codigo = f_i+'P/'+nro  # codigo = YYYYMMP/99 (largo= 10)
             parametro.valor_2=n+1
             parametro.save()
-            
-            # Graba intancias en Registro (Base de Incidentes)
-            incidente.fecha_creacion = form.cleaned_data['fecha_hora']
-            incidente.fecha = form.cleaned_data['fecha_hora']
-            incidente.nombre_r = 'COMITE DE CRISIS'
-            incidente.area_r = 'Preparado por Gestion de Riesgos'
-            incidente.descripcion = 'Prueba integral de Procedimientos de Contingencias del BCP/DRP'
-            incidente.test= True
-            incidente.estado=False
 
               
             #Graba en BD
@@ -8733,12 +8831,14 @@ def Define_Plan_Pruebas_A(request):
 
 from .forms import Plan_Pruebas_B_Form
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Define_Plan_Pruebas_B(request, pk):
     """
     Define el Plan de Pruebas 
     """
     print('>>>>>  Entra a Registro del PLAN DE PRUEBAS B ------')
-  
+
+      
     incidente=get_object_or_404(Incidentes, pk=pk)
 
   
@@ -8819,6 +8919,7 @@ def Define_Plan_Pruebas_B(request, pk):
 
 from .forms import Plan_Pruebas_A_Form
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Modif_Plan_Pruebas(request, pk):
     """
     Modifica el Plan de Pruebas 
@@ -8876,7 +8977,7 @@ def Modif_Plan_Pruebas(request, pk):
 
 
 
-
+@login_required
 def Borra_Incidente(request, pk):
     """
     Borra el Incidente"""
@@ -8895,6 +8996,7 @@ def Borra_Incidente(request, pk):
 #************************************
 #6.2 Lista de Incidentes reportados *
 #************************************
+@login_required
 def Lista_Incidentes(request):
     """
     Generic class-based view listing books on loan to current user.
@@ -8983,6 +9085,7 @@ def Lista_Incidentes(request):
 from .forms import Modifica_Incidente_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Modifica_Inc(request, pk):
     """
     Permite modificar la declaracion inicial del incidente
@@ -9097,7 +9200,7 @@ def Modifica_Inc(request, pk):
 #*************************************
 # 6.3 Reporte de Perfil de Incidente *
 #*************************************
-
+@login_required
 def Perfil_Inc(request, pk):
 
 
@@ -9203,7 +9306,7 @@ from collections import defaultdict
 #===============================================
 # Contadores de Procesos x variable estadistica 
 #===============================================
-
+@login_required
 def contar_procesos_por_tipo_nivel_impacto(incidente):
     """
     Contabilizacion estadistica de Procesos x Impacto y Nivel
@@ -9230,6 +9333,7 @@ def contar_procesos_por_tipo_nivel_impacto(incidente):
 
     return contador
 
+@login_required
 def contar_procesos_por_tipo_nivel_indicadores(incidente):
     """
     Contabilizacion estadistica de Procesos x Indicadores de Recuperacion
@@ -9258,7 +9362,7 @@ def contar_procesos_por_tipo_nivel_indicadores(incidente):
 
 
 from collections import defaultdict
-
+@login_required
 def contar_procesos_por_escenario(incidente):
     """
     Contabilización estadística de Procesos por Escenarios
@@ -9307,6 +9411,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 @csrf_exempt
+@login_required
 def toggle_procedimiento(request, procedimiento_id=None):
     """
     Switch de Activacion/Desactivacion del Procedimiento desde DashBoard del 
@@ -9472,6 +9577,7 @@ from django.apps import apps
 import json
 
 @csrf_exempt
+@login_required
 def toggle_field(request, app_label, model_name, object_id):
     """
     Endpoint genérico para cambiar el valor de cualquier campo booleano
@@ -9555,7 +9661,7 @@ def toggle_field(request, app_label, model_name, object_id):
 #***************************************************
 # 6.4 Lista PC asociados a Proceso para Activacion *
 #***************************************************
-
+@login_required
 def Lista_PC_Px(request, pk, pk_padre):
 
 
@@ -9573,7 +9679,7 @@ def Lista_PC_Px(request, pk, pk_padre):
 #********************************************************
 # 6.5 Activa/Desactiva un Procedimiento de Contingencia *
 #********************************************************
-
+@login_required
 def ActivaDesactivaPc(request, pk ):
     """
     Activacion/Desactivacion del PC por el Comite de Crisis
@@ -9612,6 +9718,7 @@ def ActivaDesactivaPc(request, pk ):
 # ********************************************
 # Lista de Procesos de Contingencia x Gestor *
 # ********************************************
+@login_required
 def Lista_ProcedimientosxGestor(request):
     """
     Lista los Procedimientos asociados al Gestor en Sesion
@@ -9714,7 +9821,7 @@ def Lista_ProcedimientosxGestor(request):
 
 # Lista CheckList por Procediiento e Incidente *
 #***********************************************
-
+@login_required
 def Lista_CheckList(request, pk):
     """
     pk: Pk del Procedimiento
@@ -9747,6 +9854,7 @@ def Lista_CheckList(request, pk):
                            'rto':rto,
                            'rpo':rpo}) 
 
+@login_required
 def Ejecucion_CheckList(request, pk):
     """
     Registra en un  checklist la ejecucion de los pasos del Procedimiento.
@@ -9793,6 +9901,7 @@ def Ejecucion_CheckList(request, pk):
 #============================================
 # Lista de Checklist de Ejecucion de Pruebas 
 #============================================
+@login_required
 def Lista_Ejec_Prbas(request, pk):
     """
     Lista los Checklist de Ejecucion de Pruebas asociados a un incidente
@@ -9811,6 +9920,7 @@ def Lista_Ejec_Prbas(request, pk):
 
 
 from .forms import EjecucionPruebasForm
+@login_required
 def Lista_Ejec_Casos(request, pk):
     """
     Lista los casos asociados a una Prueba de Procedimiento y registra Conclusion
@@ -9907,6 +10017,7 @@ def Lista_Ejec_Casos(request, pk):
     else:
 
         form=EjecucionPruebasForm( initial= { 'descripcion_ejecucion':ejec_prueba.descripcion_ejecucion,
+                                             'incidentes':ejec_prueba.incidentes,
                                             'resultados_obtenidos':ejec_prueba.resultados_obtenidos,
                                            'evaluacion_final':ejec_prueba.evaluacion_final,
                                            'lecciones_aprendidas':ejec_prueba.lecciones_aprendidas,
@@ -9927,7 +10038,7 @@ def Lista_Ejec_Casos(request, pk):
 #============================================
 # Checklist de Ejecucion de Pruebas 
 #============================================
-
+@login_required
 def Ejec_Prba(request, pk):
     """
     Lista los Checklist de Ejecucion de Pruebas asociados a un incidente
@@ -9974,6 +10085,7 @@ def Ejec_Prba(request, pk):
 
 
 from .forms import EjecucionCasoPruebaForm
+@login_required
 def Ejec_Caso(request, pk):
     """
     Ejecuta Caso de Prueba de Procedimiento asociados a un incidente
@@ -10075,7 +10187,7 @@ def Ejec_Caso(request, pk):
 #*********************************************************************************************************************************************
 #***********************************************  6. Maestros ********************************************************************************
 #*********************************************************************************************************************************************
-
+@login_required
 def Menu_Conf(request):
     """
     Menu para la definicion de Datos Fijos
@@ -10093,7 +10205,7 @@ def Menu_Conf(request):
 #******************************************
 
 from .forms import Crea_Gestor_Form, Crea_Gestor2_Form
-
+@login_required
 def Crea_G(request):
     """
     Creacion de un usuario o gestor
@@ -10183,7 +10295,7 @@ def Crea_G(request):
 
 from .forms import Borra_Gestor_Form
 
-
+@login_required
 def Borra_Gestor(request):
 
     """
@@ -10252,6 +10364,7 @@ class GestorListView(generic.ListView):
 from .forms import Asigna_Grupo_Form
 
 #@permission_required('Catalogo.can_mark_returned')
+@login_required
 def Asigna_Grupo(request, pk):
     
     model = User
@@ -10302,7 +10415,7 @@ def Asigna_Grupo(request, pk):
 # **********************************
 # Administracion de Riesgo/Impacto *
 # **********************************
-
+@login_required
 def Lista_riesgos(request):
 
     print('Entra a Lista Impactos')
@@ -10329,6 +10442,7 @@ def Lista_riesgos(request):
 
 
 from .forms import Crea_Impacto_Form
+@login_required
 def Crea_Impacto(request):
     """
     Crea un Registro de Riesgo/Impacto propuesto
@@ -10379,6 +10493,7 @@ def Crea_Impacto(request):
 
 
 from .forms import Crea_Impacto_Form
+@login_required
 def Mod_Impacto(request, pk):
     """
     Crea un Registro de Riesgo/Impacto
@@ -10435,6 +10550,7 @@ def Mod_Impacto(request, pk):
                                         
         return render(request, 'bcp/ria/mod_impacto.html', {'form':form })
 
+@login_required
 def Borra_Impacto(request, pk):
     """
     Borra el Registro de Riesgo/Impacto
@@ -10445,7 +10561,7 @@ def Borra_Impacto(request, pk):
 
     return HttpResponseRedirect(reverse('Lista-Impactos') )
 
-
+@login_required
 def Lista_Nivel_Impactos(request, pk):
     """
     Lista los niveles de impacto del riesgo pk (propuestos)
@@ -10462,6 +10578,7 @@ def Lista_Nivel_Impactos(request, pk):
 
 
 from .forms import Crea_Nivel_Imp_Form
+@login_required
 def Crea_Nivel_Impacto(request, pk):
     """
     Crea un nivel asociada al riesgo pk
@@ -10513,7 +10630,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.template.loader import get_template
 from django.core.mail import EmailMultiAlternatives
-
+@login_required
 def Manda_Correo(email,cc_email,nombre,proceso, accion):
 
     context = {'email':email, 'nombre':nombre,'proceso':proceso, 'accion':accion}
@@ -10547,10 +10664,11 @@ def Err_Sesion_Mgm(request, ce):
     #if user.is_authenticated:
         #mensaje='Debe iniciar sesion con su nombre de usuario y clave'
         
-    if not request.user.is_authenticated:
-        mensaje='El Usuario no esta en una sesion autenticada. Inicie sesion con su username y clave '
+    #if not request.user.is_authenticated:
+    #    mensaje='El Usuario no esta en una sesion autenticada. Inicie sesion con su username y clave '
+    #   ce='NA'
 
-    elif ce == '100':
+    if ce == '100':
         mensaje='100: Usuario debe pertenecer al grupo de Administracion'
         
     elif ce == '200':
@@ -10598,7 +10716,8 @@ def Err_Sesion_Mgm(request, ce):
         mensaje='Error de Sesion no identificado.'
         
  
-    return render(request, 'bcp/mensajes/mensajes_error_sesion.html', context={'mensaje':mensaje}) 
+    return render(request, 'bcp/mensajes/mensajes_error_sesion.html', context={'mensaje':mensaje,
+                                                                               'error':ce}) 
 
 #*******************************
 #Valida el acceso de la sesion *
@@ -10654,6 +10773,11 @@ def get_chart(request):
 
 
 def selec_usr(grupos):
+    """
+    funcion que devuelve una lista con los usuarios asociados al grupo.
+    
+    :param grupos: grupos de usuarios
+    """
 
     seleccion=[]
     gestores=Gestor.objects.all()
@@ -10675,6 +10799,7 @@ from django.db import connection
 from django.conf import settings
 
 from .forms import Reset
+@login_required
 def reset(request):
     """ Reinicia toda la Base de Datos"""
     print('**** REINICIA BASE DE DATOS *****')
@@ -10760,7 +10885,7 @@ def reset(request):
 from django.core.management import call_command
 from django.http import HttpResponse
 import os
-
+@login_required
 def importa_usuarios(request):
     try:
         ruta_fixture = os.path.join('bcp', 'fixtures', 'usuarios.json')
@@ -10779,6 +10904,7 @@ from django.http import HttpResponse
 # from django.contrib.admin.views.decorators import staff_member_required
 
 # @staff_member_required
+@login_required
 def importa_backup(request):
     try:
         nombres_archivos = [
@@ -10831,7 +10957,7 @@ import json
 from django.core import serializers
 from django.http import HttpResponse
 from django.apps import apps
-
+@login_required
 def respaldo_json_zip(request):
     """
     Genera un ZIP con un archivo JSON por cada modelo de la app 'bcp'
@@ -10898,7 +11024,7 @@ from django.db.models import AutoField
 from django.core import serializers
 from django.core.exceptions import FieldDoesNotExist
 from django.contrib.auth.models import User, Group
-
+@login_required
 def recuperar_json_zip(request):
     """
     Vista para restaurar datos desde un archivo ZIP de respaldo.

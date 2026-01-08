@@ -92,7 +92,7 @@
       <!--- Define la barra de Menu de opciones -->
       <!--- ====================================-->
       {% block sidebar %}
-      <nav class="sidebar-nav">
+      <nav class="sidebar-nav" style="width: 180px; font-size: 2rem;">
           <div class="menu-title">MENU</div>
 
           <ul class="menu-list inline">
@@ -106,7 +106,7 @@
           </ul>
 
 
-          <div class="menu-section menu-title">0.- Gestión de Crisis</div>
+          <div class="menu-section menu-title"><strong>0.- Gestión de Crisis</strong></div>
           <ul class="menu-list inline">
               <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link" >
                 <img src="/static/img/dashboard.png" class="icon" alt="Metodología"> Dashboard Panel&nbsp;de&nbsp;Control
@@ -120,7 +120,7 @@
 
             </ul>
 
-          <div class="menu-section menu-title">1.- Gestión de Contingencia</div>
+          <div class="menu-section menu-title"><strong>1.- Gestión de Contingencia</strong></div>
           <div class="menu-section menu-title">1.1.- Mapeo</div>
           <ul class="menu-list inline">
               <li><a href="{% url 'Lista-Procesos' %}" class="menu-link"><span class="icon">&#10146;</span> Definición&nbsp;Procesos</a></li>
@@ -135,7 +135,7 @@
               <li><a href="{% url 'Lista-DRP' %}" class="menu-link"><span class="icon">&#10146;</span>Procedimientos TI&nbsp;(DRP)</a></li>
           </ul>
 
-          <div class="menu-section menu-title">3.- Configuración</div>
+          <div class="menu-section menu-title"><strong>3.- Configuración</strong></div>
           <ul class="menu-list inline">
               <li><a href="{% url 'menu-conf' %}" class="menu-link"><span class="icon">&#9965;</span> Configuración</a></li>
           </ul>

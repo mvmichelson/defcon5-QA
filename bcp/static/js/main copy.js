@@ -438,6 +438,40 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
     }
 });
+
+
+// Semaforos de Riesgo
+// ===========================================================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  document.querySelectorAll(".semaforo").forEach(semaforo => {
+
+    const ranking = parseFloat(semaforo.dataset.ranking) || 0;
+    const biaMax  = parseFloat(semaforo.dataset.biaMax) || 1;
+    const tramo1  = parseFloat(semaforo.dataset.tramo1);
+    const tramo2  = parseFloat(semaforo.dataset.tramo2);
+
+    const ratio = ranking / biaMax;
+
+    let activa = "verde";
+    if (ratio > tramo2) activa = "roja";
+    else if (ratio > tramo1) activa = "amarilla";
+
+    ["verde", "amarilla", "roja"].forEach(color => {
+      const luz = document.createElement("span");
+      luz.className = `luz ${color}` + (color === activa ? " on" : "");
+      semaforo.appendChild(luz);
+    });
+
+    // Tooltip informativo (opcional)
+    semaforo.title = `Ranking: ${ranking} / ${biaMax} (${(ratio*100).toFixed(1)}%)`;
+
+  });
+
+});
+
+
 // ==========================================================================================
 
 

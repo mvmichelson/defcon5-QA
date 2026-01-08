@@ -18,7 +18,11 @@
 	{% block enc_activo %}
 	<ul class="encabezado_B">
 		<p><img src="/static/img/dashboard.png" class="icon" width="70" height="50"></p>
-        <rr class="blink"><strong>PANEL DE CONTROL DE INCIDENTE :&nbsp;{{incidente.codigo}}</strong></rr>
+        <rr class="blink"><strong>PANEL DE CONTROL DE INCIDENTE :&nbsp;{{incidente.codigo}}
+		{%if incidente.test == True %}
+			(Prueba BCP/DRP)
+		{%endif%}
+		</strong></rr>
 	</ul>
 	{% endblock %}
 
@@ -28,7 +32,7 @@
 
 	<!------------ Seccion 1 Reporte ---------->
 	<div class="flex-item" style="width: 100%; height: 300px;">
-		<ul class="encabezado_SB"><h5><strong>REPORTE</strong></h5></ul>
+		<ul class="encabezado_SB" style="background-color: yellow;"><h5><strong>REPORTE</strong></h5></ul>
 		<ul class="BarraScroll" style="width: 100%; height: 300px;">
 			<br/>
 				<p><strong>Codigo...............:<strong>&emsp;{{incidente.codigo}}</p>
@@ -73,9 +77,8 @@
 	
 
 	<!------------ Seccion 2 Lista del Comite de Crisis ---------->
-	<div class="flex-item" >
-	<ul class="encabezado_SB" style="width: 400px;"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
-	<ul class="BarraScroll" style="width: 400px; height: 300px;">
+	<div class="flex-item" style="width: 100%;">
+	<ul class="encabezado_SB" style="background-color: yellow;"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
 	<table class="lta">
 		<thead>
 			<tr>
@@ -101,7 +104,6 @@
 		</tbody>
 	
 		</table>
-	</ul>
 	
 	<br/>
 
@@ -113,7 +115,7 @@
 
 
 
-<br/>
+<br/><br/><br/><br/><br/>
 <ul class="encabezado_SB"><h5><strong>ALCANCE DEL INCIDENTE</strong></h5></ul>
 <br/>
 <ul class="scr3">
@@ -147,7 +149,7 @@
 				<tr>
 				<th scope="col">Tipo</th>
 				<th scope="col">Nivel</th>
-				<th scope="col"># Procesos</th>
+				<th scope="col" style="width: 110px;">Alcance</th>
 	
 				</tr> 
 			</thead>
@@ -158,7 +160,10 @@
 						<tr>
 							<td>{{ tipo }}</td>
 							<td>{{ nivel }}</td>
-							<td>{{ cantidad }}</td>
+							<td>
+								<!-- Indicador LED -->
+								<div class="led-panel" data-value="{{ cantidad }}"></div>
+							</td>
 						</tr>
 					{% endfor %}
 				{% endfor %}
@@ -178,7 +183,7 @@
 			<tr>
 			<th scope="col">Tipo</th>
 			<th scope="col">Nivel</th>
-			<th scope="col"># Procesos</th>
+			<th scope="col" style="width: 110px;">Alcance</th>
 
 			</tr> 
 		</thead>
@@ -189,7 +194,10 @@
 					<tr>
 						<td>{{ tipo }}</td>
 						<td>{{ nivel }}</td>
-						<td>{{ cantidad }}</td>
+						<td>
+								<!-- Indicador LED -->
+								<div class="led-panel" data-value="{{ cantidad }}"></div>
+						</td>
 					</tr>
 				{% endfor %}
 			{% endfor %}
@@ -215,8 +223,8 @@
 		<table class="lta">
 			<thead>
 				<tr>
-				<th scope="col">Escenario</th>
-				<th scope="col"># Procesos</th>
+				<th scope="col" style="width: 200px;">Escenario</th>
+				<th scope="col" style="width: 110px;">Alcance</th>
 	
 				</tr> 
 			</thead>
@@ -225,12 +233,11 @@
 				{% for escenario, cantidad  in estadistica_escenarios.items %}
 						<tr>
 						{%if escenario in escenarios_inc %}
-							<td><strong class="blink" style="color: red;">{{ escenario }}</strong></td>
-							<td style="text-align: center;"><strong class="blink" style="color: red;">{{ cantidad }}</strong></td>
-						{%else%}
-							<td><a style="color: grey;">{{ escenario }}</a></td>
-							<td style="text-align: center;"><a style="color: grey;">{{ cantidad }}</a></td>
-
+							<td><strong class="" style="color: red;">{{ escenario }}</strong></td>
+							<td>
+								<!-- Indicador LED -->
+								<div class="led-panel" data-value="{{ cantidad }}"></div>
+						</td>
 						{%endif%}
 						</tr>
 				{% endfor %}
@@ -250,7 +257,7 @@
 				<thead>
 					<tr>
 					<th scope="col">Servicios/Recursos</th>
-					<th scope="col"># Procesos</th>
+					<th scope="col" style="width: 110px;">Alcance</th>
 		
 					</tr> 
 				</thead>
@@ -259,7 +266,10 @@
 					{% for recurso, cantidad  in estadistica_recursos.items %}
 							<tr>
 								<td>{{ recurso }}</td>
-								<td>{{ cantidad }}</td>
+								<td>
+								<!-- Indicador LED -->
+								<div class="led-panel" data-value="{{ cantidad }}"></div>
+								</td>
 							</tr>
 					{% endfor %}
 				</tbody>		

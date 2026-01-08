@@ -138,10 +138,12 @@
 					</a>
 				</td>
 				<td><!------------ Checklist de Ejecucion de Pruebas  ----------------->
+					{% if chk.incidente.test %}
 					<a class="link blink" data-message="Revisar Evaluacion y Autorizar u Observar ..." 
 					href="{% url 'Lista-Ejec-Prbas' chk.pk  %}">
 					<img src="/static/img/Evaluacion.jpg" width="25" height="25"></img>
 					</a>
+					{%endif%}
 				</td>
 				</div>
            </tr>

@@ -232,24 +232,16 @@ defcon={{defcon_est}}
 			<!* Despliega codigo y nombre del Proceso *>
 			<!*****************************************>
 			{% if proceso.es_subproceso %}<!---- Si es Subproceso ------->
-				<span class="proceso-nombre" style="
-				margin-top:5px;
-				font-family: sans-serif;
-				font-size: 1.4rem;
-				color:green;
-				padding:0px;">&#10149; {{ proceso.nombre }}</span>
-
-				<span class="semaforo"
-					data-ranking="{{ proceso.subproceso.ranking }}"
-					data-bia-max="{{ valor_max }}"
-					data-tramo-1="{{ tramo_1 }}"
-					data-tramo-2="{{ tramo_2 }}"
-					title="Puntaje: [{{ proceso.subproceso.ranking }}]">
-
-					<span class="luz verde"></span>
-					<span class="luz amarillo"></span>
-					<span class="luz rojo"></span>
-				</span>
+					<aa>&#10149  {{ proceso.nombre }} </aa>&emsp;
+						[ 
+						{% if proceso.subproceso.ranking <= tramo_1 %}
+							<aa><strong> {{proceso.subproceso.ranking}} </strong></aa>
+						{% elif  proceso.subproceso.ranking > tramo_1  and  proceso.subproceso.ranking <= tramo_2 %}
+							<sa><strong> {{proceso.subproceso.ranking}} </strong></sa>
+						{% elif  proceso.subproceso.ranking > tramo_2 %}
+							<rr><strong> {{proceso.subproceso.ranking}} </strong></rr>
+						{%endif%}
+						]
 				{% if proceso.subproceso.actualiza %}
 					&nbsp;<img class="blink link" src="/static/img/actualizacion.png" width="12" height="12"
 					data-message="En actualizacion">

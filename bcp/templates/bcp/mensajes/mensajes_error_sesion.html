@@ -12,10 +12,12 @@
 	<h1>defcon-5 / bcp</h1>
 	<br/>
 	
-	<p> <strong>Error de Contexto !!.....:</strong> &emsp;<aa>{{mensaje}}</aa></p>
+	<p> <strong>Error !!.....:</strong> &emsp;<aa>{{mensaje}}</aa></p>
 
-
-	<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
-
+	{% if error != 'NA' %}
+		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>
+	{%else%}
+		<a href="{% url 'login'%}?next={{request.path}}"><span style='font-size:30px;'>&#128281</span></a>
+	{%endif%}
 {% endblock %}
 

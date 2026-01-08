@@ -649,6 +649,90 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
     }
 });
+
+
+// Enciende / Apaga LEDs  segun valor
+// ===================================
+
+// Este script:
+// Lee data-value="{{ cantidad }}"
+// Crea esa cantidad de LEDs
+// Los enciende automáticamente 
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".led-panel").forEach(panel => {
+
+    const value = Math.min(parseInt(panel.dataset.value) || 0, 10);
+
+    let colorClass = "low";
+    if (value >= 7) colorClass = "high";
+    else if (value >= 4) colorClass = "medium";
+
+    for (let i = 0; i < value; i++) {
+      const led = document.createElement("span");
+      led.className = `led ${colorClass}`;
+      panel.appendChild(led);
+    }
+
+  });
+});
+
 // =====================================================================================
+
+// Semaforo de Riesgo
+// ===========================================================================================
+document.addEventListener("DOMContentLoaded", () => {
+    // Se seleccionan todos los semáforos en la página
+    document.querySelectorAll(".semaforo").forEach(sem => {
+        // Se extraen los datos del semáforo
+        const ranking = parseFloat(sem.dataset.ranking);  // Convertir a número flotante
+        const valorMax = parseFloat(sem.dataset.biaMax);  // Correcto: data-bia-max -> sem.dataset.biaMax
+        const tramo1 = parseFloat(sem.dataset["tramo-1"]);
+        const tramo2 = parseFloat(sem.dataset["tramo-2"]);
+
+        // Si alguno de los valores es NaN, significa que no se ha definido correctamente
+        if ([ranking, valorMax, tramo1, tramo2].some(v => isNaN(v))) {
+            console.warn("Semáforo sin datos completos:", sem.dataset);
+            // En este caso, no se hace nada más con ese semáforo
+            return;
+        }
+
+        // Validamos que los valores tengan sentido
+        if (valorMax <= 0) {
+            console.warn(`El valor de valorMax debe ser mayor que 0, pero es ${valorMax}`);
+            return;  // Si es incorrecto, no hacemos nada
+        }
+
+        if (tramo1 < 0 || tramo1 > 1 || tramo2 < 0 || tramo2 > 1) {
+            console.warn(`Los tramos deben estar en el rango [0, 1]. Valores recibidos: tramo1=${tramo1}, tramo2=${tramo2}`);
+            return;  // Si los tramos están fuera de rango, no hacemos nada
+        }
+
+        if (tramo1 > tramo2) {
+            console.warn(`El tramo 1 debe ser menor o igual al tramo 2. Valores recibidos: tramo1=${tramo1}, tramo2=${tramo2}`);
+            return;  // Si el tramo 1 es mayor que el tramo 2, no hacemos nada
+        }
+
+        // Calculamos el ratio: ranking dividido por valorMax
+        const ratio = ranking / valorMax;
+
+        // Limpiamos las luces antes de agregar la luz activa
+        sem.querySelectorAll(".luz").forEach(l => l.classList.remove("on"));
+
+        // Si ratio es 0, no encendemos ninguna luz
+        if (ratio === 0) {
+            return; // Salimos sin hacer nada si ratio es 0
+        }
+
+        // Según el valor de 'ratio', activamos la luz correspondiente
+        if (ratio <= tramo1) {
+            sem.querySelector(".verde").classList.add("on");
+        } else if (ratio <= tramo2) {
+            sem.querySelector(".amarillo").classList.add("on");
+        } else {
+            sem.querySelector(".rojo").classList.add("on");
+        }
+    });
+});
+// ==========================================================================================
 
 

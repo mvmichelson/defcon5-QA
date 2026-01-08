@@ -220,8 +220,25 @@
 				<!Opcion para ver detalle del Proceso>
 			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><bb class="link" data-message="Detalle del Proceso ...">&#128065</bb></a>
 
-				<!-- Despliega nombre del Proceso --> 
-                            	<aa> &nbsp;&nbsp; &#10149 {{ proceso.nombre }} </aa>
+				<span class="proceso-nombre" style="
+				margin-top:5px;
+				font-family: sans-serif;
+				font-size: 1.4rem;
+				color:green;
+				padding:0px;">&#10149; {{ proceso.nombre }}</span>
+
+				<span class="semaforo"
+					data-ranking="{{ proceso.subproceso.ranking }}"
+					data-bia-max="{{ valor_max }}"
+					data-tramo-1="{{ tramo_1 }}"
+					data-tramo-2="{{ tramo_2 }}"
+					title="Puntaje: [{{ proceso.subproceso.ranking }}]">
+
+					<span class="luz verde"></span>
+					<span class="luz amarillo"></span>
+					<span class="luz rojo"></span>
+				</span>
+				
  				</p> <!Salta linea al desplegar el nombre del Proceso>
 
 			  {%endif%}
