@@ -17,16 +17,19 @@
           
 
 	  <ul class="scr4">
-	   <p><strong>Nombre.........:</strong>&emsp;{{form.nombre }}</p>
-	   <p><strong>Area...........:</strong>&emsp;{{form.area}}</p>
-	   <p><strong>Descripcion....:</strong>&emsp;{{form.descripcion}}</p>
+	   <p><strong>Nombre</strong></p>
+		<p>{{form.nombre }}</p>
+	   <p><strong>Area</strong></p>
+	   <p>{{form.area}}</p>
+	   <p><strong>Descripcion</strong></p>
+	   <p>{{form.descripcion}}</p>
 	 </ul>
 
         
 	<!-------- ------------------------------------->
 	<!----- CAJAS DE DISPONIBLES Y ASIGNADOS ------->
 	<!---------------------------------------------->
-
+	<br/>
 	<div data-asignacion
      data-model="bcp.Incidentes"         
      data-obj-id="{{ incidentes.id }}"   
@@ -41,7 +44,7 @@
 
 				<!-- Escenarios Disponibles -->
 				<div style="flex:1;">
-					<h4><strong>⏼ Amenazas Disponibles</strong></h4>
+					<ul class="encabezado_SB"> <h4><strong>⏼ Amenazas Disponibles</strong></h4></ul>
 					<input type="text" class="filtro-disponibles" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
 					<ul class="BarraScroll" style="background: #efefaa; height:250px;">
@@ -72,7 +75,7 @@
 
 				<!-- Escenarios Asignados -->
 				<div style="flex:1;">
-					<h4><strong>⏼ Amenazas Seleccionadas</strong></h4>
+					<ul class="encabezado_SB"> <h4><strong>⏼ Amenazas Seleccionadas</strong></h4></ul>
 					<input type="text" class="filtro-asignados" placeholder="Filtrar escenarios..." style="width: 100%; padding: 5px; background:#efefaa;">
 					<br/><br/>
 					<ul class="BarraScroll" style="background: #efefaa; height:250px;">

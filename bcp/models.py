@@ -326,7 +326,9 @@ class Gestor(models.Model):
     area =  models.ForeignKey('Area', on_delete=models.SET_NULL, null=True)
     fono_t = models.CharField(max_length= 50, blank=True)
     cod_area = models.ForeignKey('Cod_Area', on_delete=models.SET_NULL, null=True)
-    fono_c = models.CharField(max_length= 50, blank=True) 
+    fono_c = models.CharField(max_length= 50, blank=True)
+
+    must_change_password = models.BooleanField(default=False) # Flag para forzar el cambio de passwd. 
     
     class Meta:
         ordering = ["apellido"]

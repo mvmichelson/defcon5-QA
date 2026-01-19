@@ -9,10 +9,16 @@
 {% block content %}
 
 
-	<h1>defcon-5 / bcp</h1>
+	<ul class="encabezado_B"><h1>defcon5</h1></ul>
+	<br/>
+	<br/>
 	<br/>
 	
-	<p> <strong>Error !!.....:</strong> &emsp;<aa>{{mensaje}}</aa></p>
+	<ul style="background-color: yellow; font-size: 2rem; border: 4px solid red;border-radius: 10px;">
+	<p style="text-align: center;"> <strong>Error !!.....:</strong> &emsp;<rr class="blink">{{mensaje}}</rr></p>
+	</ul>
+	<br/>
+	<br/>
 
 	{% if error != 'NA' %}
 		<a href="{{ request.META.HTTP_REFERER }}"><span style='font-size:30px;'>&#128281</span></a>

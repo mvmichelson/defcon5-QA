@@ -5,14 +5,54 @@
 <!Programado por Marco A. Villalobos Michelson>
 
 {% extends "base_generic.html" %}
-
 {% load static %}
 
 {% block content %}
+<div class="defcon-hero">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h3 style="color: var(--accent-green); font-family: 'Courier New'; margin: 0; text-shadow: 0 0 10px var(--accent-green);">
+                defcon5 : BCP/DRP
+            </h3>
+            <p style="letter-spacing: 5px; font-size: 10px; color: #4ade80; margin: 0;">MONITOREO DE CONTINUIDAD</p>
+        </div>
+    </div>
 
- <ul  class="fondo_img">
-   
- </ul>
- 
+    <div class="row" style="display: flex; align-items: center;">
+        <div class="col-md-3">
+            <div class="tech-stat-card">
+                <small style="color: var(--accent-green); font-size: 9px;">PROCESOS CRITICOS</small>
+                <div style="font-size: 16px; color: white; font-weight: bold;">{{nro_procesos}}</div>
+            </div>
+            <div class="tech-stat-card">
+                <small style="color: var(--accent-green); font-size: 9px;">NRO. INCIDENTES ABIERTOS</small>
+                <div style="font-size: 16px; color: white; font-weight: bold;">{{nro_incidentes}}</div>
+            </div>
+            <div class="tech-stat-card">
+                <small style="color: var(--accent-green); font-size: 9px;">PROCEDIMIENTOS DE CONTINGENCIA ACTIVOS</small>
+                <div style="font-size: 16px; color: white; font-weight: bold;">{{nro_proced_act}} / {{nro_proced}}</div>
+            </div>
+        </div>
 
+        <div class="col-md-6 text-center">
+            <div class="radar-main">
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;">
+                    <i class="fa fa-crosshairs fa-2x" style="color: var(--accent-green);"></i>
+                </div>
+            </div>
+            <p style="color: white; font-size: 10px; letter-spacing: 2px; margin: 0;">SCANNING NODES...</p>
+        </div>
+
+        <div class="col-md-3">
+            <div class="tech-stat-card">
+                <small style="color: var(--accent-green); font-size: 9px;">EVENT LOGS</small>
+                <div id="live-console-output" class="console-output"></div>
+            </div>
+
+            <a href="{% url 'Declara-Incidente' %}" class="btn btn-danger-defcon btn-block">
+                <i class="fa fa-warning"></i> DECLARAR INCIDENTE
+            </a>
+        </div>
+    </div>
+</div>
 {% endblock %}

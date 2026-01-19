@@ -568,7 +568,6 @@
                 <!-- 6.- Servicios Criticos -->
                 <!-- ====================== -->
 
-
                 <tr>
                 <th scope="row"><bb>6.<bb></th>
                 <th scope="row"><bb>Servicios criticos </bb></th>
@@ -618,7 +617,7 @@
                                         <a class="link blink" data-message="Definir Servicios Criticos del DRP ..."
                                                 href="{% url 'Lista-SC' drp.pk %}"><aa>&#128209</aa></a>
 
-                                                {% if  drp.servicios_drp  %}
+                                                {% if  drp.servicios_drp  %} 
                                                         &nbsp;<a class="link" data-message="Envia a Autorizar ..."
                                                         href="{% url 'Envia-Aut-DRP' drp.pk 6  %}"><aa>&#128229</aa></a>
                                                 {%endif%}

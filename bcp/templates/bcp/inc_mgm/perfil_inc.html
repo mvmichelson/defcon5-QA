@@ -32,8 +32,8 @@
 
 	<!------------ Seccion 1 Reporte ---------->
 	<div class="flex-item" style="width: 100%; height: 300px;">
-		<ul class="encabezado_SB" style="background-color: yellow;"><h5><strong>REPORTE</strong></h5></ul>
-		<ul class="BarraScroll" style="width: 100%; height: 300px;">
+		<ul class="encabezado_SB" ><h5><strong>REPORTE</strong></h5></ul>
+		<ul class="BarraScroll" style="width: 100%; height: 300px;background-color: black; color:whitesmoke">
 			<br/>
 				<p><strong>Codigo...............:<strong>&emsp;{{incidente.codigo}}</p>
 				<p><strong>Fecha................:<strong>&emsp;{{incidente.fecha_creacion}}</p>
@@ -78,7 +78,7 @@
 
 	<!------------ Seccion 2 Lista del Comite de Crisis ---------->
 	<div class="flex-item" style="width: 100%;">
-	<ul class="encabezado_SB" style="background-color: yellow;"><h5><strong>COMITE DE CRISIS</strong></h5></ul>
+	<ul class="encabezado_SB" ><h5><strong>COMITE DE CRISIS</strong></h5></ul>
 	<table class="lta">
 		<thead>
 			<tr>
@@ -91,10 +91,10 @@
 	
 		<tbody>
 		   {%for int in comite %}
-		<tr>
-			<th scope="row" ><bb style="font-size: 10px;">{{int.user_gestor.last_name}},{{int.user_gestor.first_name}}</bb></th>
-		  	<th scope="row"><bb style="font-size: 10px;">{{int.user_gestor.email}}</bb></th>
-			<th scope="row"><bb style="font-size: 10px;">{{int.fono_c}}</bb></th>
+		<tr  style="background-color: black; color:whitesmoke">
+			<th scope="row" ><bb style="font-size: 10px; color:whitesmoke">{{int.user_gestor.last_name}},{{int.user_gestor.first_name}}</bb></th>
+		  	<th scope="row"><bb style="font-size: 10px; color:whitesmoke">{{int.user_gestor.email}}</bb></th>
+			<th scope="row"><bb style="font-size: 10px; color:whitesmoke">{{int.fono_c}}</bb></th>
 
 		  
 		</tr>
@@ -118,17 +118,16 @@
 <br/><br/><br/><br/><br/>
 <ul class="encabezado_SB"><h5><strong>ALCANCE DEL INCIDENTE</strong></h5></ul>
 <br/>
-<ul class="scr3">
 
-
+<ul class="encabezado_SB">
 <!-- /******************************* Bloque A *************************************/ -->
 <div class="flex-container" style="width: 100%;">
 
 	<!-- COLUMNA IZQUIERDA ----->
 	<div class="flex-item" style="width: 35%;">
-	<ul class="encabezado_SB" style="background: yellow;"><h5><strong>GENERALES</strong></h5></ul>
+	<ul class="encabezado_SB" ><h5><strong>GENERALES</strong></h5></ul>
 	<br/>
-	<ul class="scr4" style="background: white;">
+	<ul class="scr4" style="background-color: black; color:whitesmoke; font-size: 1.2rem;">
 		<br/>
 		<p><strong>Numero de Procesos Alcanzados :&ensp;{{n_procesos}}</strong></p>
 		<p><strong>Puntaje Promedio ...........:&ensp;{{puntaje_x |floatformat:2}}</strong></p>
@@ -142,7 +141,7 @@
 	<!------------ COLUMNA CENTRAL  ---------->
 	<div class="flex-item"style="width: 36%;">
 		<!------------ Indicadores de Impactos ---------->
-		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Indicadores de Impacto</strong></h5></ul>
+		<ul class="encabezado_SB" ><h5><strong>Indicadores de Impacto</strong></h5></ul>
 		<br/>
 		<table class="lta">
 			<thead>
@@ -157,7 +156,7 @@
 			<tbody>
 				{% for tipo, niveles in estadistica_impactos.items %}
 					{% for nivel, cantidad in niveles.items %}
-						<tr>
+						<tr style="background-color: black; color:whitesmoke">
 							<td>{{ tipo }}</td>
 							<td>{{ nivel }}</td>
 							<td>
@@ -176,7 +175,7 @@
 	<!------------ COLUMNA DERECHA   ---------->
 	<div class="flex-item"style="width: 34%;">
 	<!----- Indicadores de Recuperacion ------------->
-	<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Indicadores de Recuperacion</strong></h5></ul>
+	<ul class="encabezado_SB" ><h5><strong>Indicadores de Recuperacion</strong></h5></ul>
 	<br/>
 	<table class="lta">
 		<thead>
@@ -191,7 +190,7 @@
 		<tbody>
 			{% for tipo, niveles in estadistica_indicadores.items %}
 				{% for nivel, cantidad in niveles.items %}
-					<tr>
+					<tr style="background-color: black; color:whitesmoke">
 						<td>{{ tipo }}</td>
 						<td>{{ nivel }}</td>
 						<td>
@@ -218,7 +217,7 @@
 	<div class="flex-item" style="width: 33%;">
 			
 		<!---- Escenarios de Riesgo ---------->
-		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Escenarios de Riesgo </strong></h5></ul>
+		<ul class="encabezado_SB" ><h5><strong>Escenarios de Riesgo </strong></h5></ul>
 		<br/>
 		<table class="lta">
 			<thead>
@@ -231,7 +230,7 @@
 		
 			<tbody>
 				{% for escenario, cantidad  in estadistica_escenarios.items %}
-						<tr>
+						<tr style="background-color: black; color:whitesmoke">
 						{%if escenario in escenarios_inc %}
 							<td><strong class="" style="color: red;">{{ escenario }}</strong></td>
 							<td>
@@ -251,7 +250,7 @@
 	<div class="flex-item" style="width: 33%;">
 
 		<!------------- Servicios / Recursos ------->
-		<ul class="encabezado_SB" style="background: yellow;"><h5><strong>Servicios / Recursos </strong></h5></ul>
+		<ul class="encabezado_SB" ><h5><strong>Servicios / Recursos </strong></h5></ul>
 		<br/>
 		<table class="lta">
 				<thead>
@@ -264,7 +263,7 @@
 			
 				<tbody>
 					{% for recurso, cantidad  in estadistica_recursos.items %}
-							<tr>
+							<tr style="background-color: black; color:whitesmoke">
 								<td>{{ recurso }}</td>
 								<td>
 								<!-- Indicador LED -->
@@ -288,16 +287,13 @@
 
 </div>
 <!-- /******************************* Bloque B *************************************/ -->
-
-
-
-</ul>	
+</ul>
 
 <br/>
 <br/>
 <ul class="encabezado_SB"><h5><strong>MATRIZ DE CONTINGENCIAS</strong></h5></ul>
 
-<ul class="BarraScroll" style="height: 350px;">
+<ul class="BarraScroll" style="height: 350px; background-color : black; color:whitesmoke">
 <table class="lta">
 	<thead>
 		<tr> <!--- Encabezado ------>
@@ -323,7 +319,7 @@
 				<a href="{% url 'Detalle-Proceso-V2'  proc.pk %}" style="color:green">{{proc.path}}</a></td>
 			{%for ind in proc.indicador_subp.all %} <!-- Busca indicador RTO -->
 				{%if ind.indicador.nombre == 'RTO' %}
-					<td scope="row" style="width: 200px; padding: 1px  5px;">{{ind.nivel.nivel}}: {{ind.nivel.definicion}}</td>
+					<td scope="row" style="width: 200px; padding: 1px  5px; color:black">{{ind.nivel.nivel}}: {{ind.nivel.definicion}}</td>
 				{%endif%}
 			{%endfor%}
 

@@ -5,7 +5,7 @@
 
 {% extends "base_generic.html" %}
 
-
+ 
 {% block content %}
 
 {% block encabezado_auth %}
@@ -24,15 +24,15 @@
 		el Ejecutivo del Proveedor encargado y un contacto de respaldo en caso de no estar disponible.</p>
 		<br/>
 		<table class="lta">
-		   <thead class="encabezado_E">
+		   <thead class="">
 		   <tr>
-			<th scope="col">Nombre Servicio</th>
-			<th scope="col">Objetivo</th>
-			<th scope="col">Contacto</th>
-			<th scope="col">Respaldo</th>
+			<th scope="col" style="width: 400px;">Nombre Servicio</th>
+			<th scope="col" style="width: 50%;">Objetivo</th>
+			<th scope="col" style="width: 300px;">Contacto</th>
+			<th scope="col" style="width: 300px;">Respaldo</th>
 			
-			<th scope="col"><a href="{% url 'crea-P5-DRP' drp.pk 'crea'  %}"><strong><am>&#10010</am></strong></a></th>
-			
+								<!-- 'crea-P5-DRP' drp.pk 'crea' -->
+			<th scope="col" style="width: 200px;"><a href="{% url 'crea-P5-DRP' drp.pk  %}?next={{ request.get_full_path|urlencode  }}"><strong><am style="font-size: 15px;">&#10010</am></strong></a></th>
 			
 		   </tr>
 		   </thead>
@@ -42,11 +42,21 @@
 
 		    	{%for sc in lista_sc.all  %}
 		    	<tr>
-				<th scope="row"><bb>{{sc.nombre}}<bb></th>
-				<th scope="row"><bb>{{sc.objetivo}}<bb></th>
-				<th scope="row"><bb>{{sc.contacto}}<bb></th>
-				<th scope="row"><bb>{{sc.contacto_bck}}<bb></th>
-				<th scope="row"><a href="{% url 'borra-P5-DRP' sc.pk  'crea' %}"><rr>&#128465</rr></a></th>
+				<th scope="row">{{sc.nombre}}</th>
+				<th scope="row">{{sc.objetivo}}</th>
+				<th scope="row">{{sc.contacto}}</th>
+				<th scope="row">{{sc.contacto_bck}}</th>
+							<!--'borra-P5-DRP' sc.pk  'crea'-->
+				<th scope="row" style="width: 80px; text-align: center;">
+					<a href="{% url 'mod-P5-DRP' sc.pk %}?next={{ request.get_full_path|urlencode  }}"
+					class="link"  data-message="Modifica Servicio Critico">
+					<aa>&#128393</aa></a>
+
+					<a href="{% url 'borra-P5-DRP' sc.pk %}?next={{ request.get_full_path|urlencode  }}"
+					class="link confirm-link" con-message="*** Confirma Eliminacion ? ***" data-message="Elimina Servicio Critico">
+					<rr>&#128465</rr></a>
+				
+				</th>
 
 				</tr>
        		        {% if not forloop.last %}
@@ -70,12 +80,37 @@
 {%block pie%}
 	<br/>
 	<ul class="encabezado_A">
-	
-	<strong><p><am>&#10010</am>&nbsp;:<tm>Crea Servicio Critico</tm></strong>&emsp;&emsp; 
-	<strong><rr>&#128465</rr> &nbsp;:<tm>Borra Servicio Critico</tm></strong> 
-	
+
 	</ul>
 {% endblock %}
 
+	<!----- CSS para Scripts ----------------------------------->
+	<!---------------------------------------------------------->
+		<!-- Caja de Comentario -->
 
+		<div id="comment-box" class="hidden" style="font-size: 13px;">
+			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+			<h5><strong>Comentario de Revision:</strong></h5>
+			<textarea id="comment-text" rows="5" cols="30"></textarea>
+			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+			<button id="close-comment">Cerrar</button>
+		</div>
+		
+		<!-- Globo de cómic -->
+		<div id="comicBalloon"></div>
+
+		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+		<div id="confirmation-dialog" class="hidden">
+			<div class="dialog-content">
+				<p id="confirmation-message"></p>
+				<button id="confirm-yes">Sí</button>
+				<button id="confirm-no">No</button>
+			</div>
+		</div>
+		
+
+	<!--------- Fin CSS para Scripts ------------------------->
+
+<br/>
+<aa style="font-size: 8px;">[lista_sc]</aa>
 {% endblock %}

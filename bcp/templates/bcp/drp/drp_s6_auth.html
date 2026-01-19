@@ -14,18 +14,251 @@
 
 {% block content %}
 	
-	{% block encabezado_auth %}
-	 <ul class="encabezado_B">
-        <p><aa><strong>FORMULARIO DE AUTORIZACION  DE LA ESPECIFICACION DE SERVICIOS CRITICOS</aa></strong></p>
-	 </ul>
-	 <ul class="encabezado_SB">
-		<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
-	 </ul>
-	{% endblock %}
+<!--------------------------------- ENCABEZADO ----------------------------->
+<ul class="encabezado_B">
+<p><aa><strong>FORMULARIO DE AUTORIZACION  DE LA ESPECIFICACION DE SERVICIOS CRITICOS</aa></strong></p>
+</ul>
+<ul class="encabezado_SB">
+<p><aa><strong>{{drp.codigo}}&nbsp;/&nbsp;{{drp.nombre}}</strong></aa></p>
+</ul>
 
-		
+<!--------------------------------- FIN ENCABEZADO ----------------------------->
+
+ <!-------------------------------- Bloque A -------------------------------->
+<div class="flex-container">
+
+<!--------- Columna 1 --------------->
+  <div class="flex-item" style="width: 45%;"> 
+
+<!------------ Mensaje ---------------------------------------------->
+<div class="alert alert-info" role="alert" style="font-size: 1.1rem;">
+    <p>
+        En esta sección se presentan los <strong>servicios y recursos críticos</strong> definidos para la ejecución del
+        Plan de Recuperación ante Desastres (DRP) durante un incidente.
+    </p>
+
+    <p>
+        La autorización de esta información deja constancia de la <strong>revisión y conformidad</strong> respecto de los
+        servicios y recursos documentados, en el marco del DRP vigente.
+    </p>
+
+    <p>
+        Estos servicios o recursos pueden incluir, entre otros:
+    </p>
+
+    <ul>
+        <li>Herramientas de software (planillas prediseñadas, bases de datos independientes, sitios web).</li>
+        <li>Documentación física o impresa (por ejemplo, listados de estados de cuenta).</li>
+        <li>Servicios externos, tales como transporte de personas, mensajería o instalaciones físicas alternativas.</li>
+    </ul>
+
+    <p>
+        Los servicios y recursos descritos en esta sección se relacionan con la
+        <strong>Sección 7: Procedimiento de Contingencia</strong>, donde se detalla su uso operativo,
+        y con el <strong>Anexo-A: Nómina de Contactos</strong>, que concentra la información de contacto asociada.
+    </p>
+</div>
+<!------------ Fin Mensaje ---------------------------------------------->
+
+<p><bn>Revise los Servicios criticos  declarados para este DRP. Si existe alguna observacion, 
+	registrela en (<img src="/static/img/Comentario_1.png" width="15" height="15">) frente al item correspondiente.</p>
+	</bn></p>
+
+</div><!--------- Fin Columna 1 --------------->
+
+
+<!----- Seccion  Block de Comentarios (Autorizador) ---------->
+<div class="flex-text" style="width: 52%;">
+	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+		<strong>Block de Comentarios de Revision</strong>
+	</ul>
+
+	<ul class="BarraScroll" style="height: 310px; width: 100%; border-radius: 10px; border: 3px solid black; ">
+		<!-- Log de Comentarios -->
+			<table class="lta"> 
+				<thead class="encabezado_C" style="text-align: center">
+				<tr>
+				<th scope="col" style="width: 20%;">Referencia.Dato</th>
+				<th scope="col" style="width: 500px">Comentario</th>
+				<th scope="col" style="width: 10;">Est.</th>
+				</tr>
+				</thead>
+				
+				<body>
+				{% if comentarios %}
+					{% for com in comentarios %}
+						{%if com.gestor_aut != drp.gestor_consultor_drp %}
+							<tr style="font-size: 9px;">
+							<th scope="row" style="background: rgb(236, 239, 63); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">(<strong>{{com.fecha}}</strong>)
+								<p>{{com.campo}}
+								(<a href="{% url 'Borra-Rev-OC' com.pk  %}" class="link confirm-link" con-message="* * *  Confirma Eliminacion del Comentario? * * *"  data-message="Borra Comentario"><sa style="font-size:12px; color:green">&#128465</sa></a>)
+								</p>
+							</th>
+						{%else%}
+							<th scope="row" style="background: rgb(237, 149, 226); width: 20%;"><img src="/static/img/Pin.png" width="15" height="15">
+							<p>{{com.campo}}</p>
+							</th>
 	
-{%endblock%}
+						{%endif%}
 
+							<th scope="row" style="width: 500px";> {{com.comentario}}</th>
+							<th scope="row" style="width: 10; text-align: center;">
+							{%if com.gestor_aut != proceso.subproceso.gestor_C %}
+
+								{% if com.resuelto %}
+									&#9989
+								{%else%}
+									&#10067
+								{%endif%}
+							{%endif%}
+							<!-- Borra Comentario -->
+							</th>
+								
+							</tr>
+								{% if not forloop.last %}
+								{%endif%}
+					{%endfor%}
+				
+				{%else%}
+					<p> Sin  Observaciones</p>
+				{%endif%}
+				
+					<tbody>
+							
+			</table>
+			
+			<!-- Fin Log Comentarios -->
+			
+	</ul> 
+
+</div>  <!---- FIN Seccion  Block de Comentarios (Autorizador) --------->
+
+</div><!-------------------------------- Fin Bloque A -------------------------------->
+<!------------------------------------------------------------------------------------>
+
+
+
+<!---------------------------- DETALLE  SERVICIOS  ----------------------------------->
+<br/><br/><br/>
+<ul class='encabezado_SB'><h5><strong>Servicios Requeridos</strong></h5></ul>
+
+<hr>
+
+
+	<table class="lta">
+		<thead style="background: greenyellow; color:black">
+		<tr>
+		<th scope="col" style="width: 400px;">Nombre Servicio</th>
+		<th scope="col" style="width: 50%;">Objetivo</th>
+		<th scope="col" style="width: 300px;">Contacto</th>
+		<th scope="col" style="width: 300px;">Respaldo</th>
+		<th scope="col" style="width: 10px;">Cmt</th>
+					 
+		</tr>
+		</thead>
+
+		<body>
+		{% if servicios %}
+		{%for ser in servicios.all  %}
+		<tr>
+		<th scope="row">{{ser.nombre}}</th>
+		<th scope="row">{{ser.objetivo}}</th>
+		<th scope="row">{{ser.contacto}}</th>
+		<th scope="row">{{ser.contacto_bck}}</th>
+		<th><!-- Comentario de Revision ---------->
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Comentar Especificacion del Componente..."
+			data-id="{{ drp.id }}" # Pk del DRP
+			data-sec="D6"           
+			data-field="Revisar el Servicio : {{ser.nombre}}"
+			> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+		</th>
+		
+		</tr>
+			{% if not forloop.last %}
+			{%endif%}
+			{%endfor%}
+		{%else%}
+			Sin servicios definidos.
+		{%endif%}
+		<tbody>
+	</table>
+
+<br/>
+<hr>
+
+<!---------------------------- CONCLUSION ------------------------------------------------>
+<p><h5><strong>CONCLUSION</strong>
+			<!---------  Comentario de Revision ----->
+			<span class="comment-icon link"  data-message="Hacer un comentario general ..."
+			data-id="{{ drp.id }}"
+			data-sec="D6" 
+			data-field="Punto de Atencion ..: "
+			>
+			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+			</span>
+			<!---------  Fin Comentario de Revision ----->
+
+</h5>
+
+<form action="" method="post">
+{% csrf_token %}
+	<ul class="scr4">
+    <p>
+        <strong>
+            Marque <aa>(&#10004)</aa> &emsp;{{ form.aprobacion }}&emsp;
+            para dejar constancia de que la declaración de Servicios Críticos es conforme y queda autorizada.
+        </strong>
+        En caso de no autorizar, el formulario será devuelto al <strong>Gestor Consultor</strong> para su corrección.
+        En dicha situación, registre los comentarios correspondientes en el
+        <strong>Bloque de Revisión</strong>.
+    </p>
+</ul>
+
+ 
+	<br/>
+	<!---- Botones de salida ---- -->
+	<a href="{% url 'Indice-DRP' drp.pk %}"
+					class="link" data-message="DRP en Desarrollo / Actualizacion ...">
+		<aa class="button">... Volver sin Autorizar</aa></a>
+	<input type="submit" class="button"   value="Registrar" />
+
+</form>
+
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+<!-------- Nombre del programa --------->
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[drp_s6_auth]</aa>
+
+{%endblock%}
 
 

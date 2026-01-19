@@ -678,9 +678,130 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // =====================================================================================
 
+
+// ======================================================
+// Detalle de Modelo (GENÉRICO) — VERSION COMPLETA
+// ======================================================
+
+// ⚠️ Obligatorio: función global (onclick la usa directamente)
+window.abrirDetalleModelo = function(config) {
+
+    console.log("1️⃣ entrar abrirDetalleModelo");
+    console.log("2️⃣ config recibido =", config);
+    console.log("3️⃣ URL_DETALLE_MODELO =", window.URL_DETALLE_MODELO);
+
+    if (!window.URL_DETALLE_MODELO) {
+        console.error("❌ URL_DETALLE_MODELO NO DEFINIDA");
+        return;
+    }
+
+    fetch(window.URL_DETALLE_MODELO, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': obtenerCSRFToken()
+        },
+        body: JSON.stringify({
+            modelo: config.modelo,
+            id: config.id,
+            listaCampos: config.listaCampos
+        })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error("Respuesta HTTP inválida");
+        return response.json();
+    })
+    .then(data => {
+        const contenido = document.getElementById("detalle-contenido");
+        contenido.innerHTML = ""; // Limpiar
+
+        // === Título opcional ===
+        if (config.titulo) {
+                const tituloElem = document.createElement("div");
+                tituloElem.className = "detalle-titulo";
+                tituloElem.innerHTML = config.titulo; // ← AQUÍ
+                contenido.appendChild(tituloElem);
+            }
+
+
+        // === Campos ===
+        data.campos.forEach(item => {
+            const div = document.createElement("div");
+
+            if(item.lista){
+                // Para ManyToMany
+                div.textContent = `${item.label}: ${item.lista.join(", ")}`;
+            } else {
+                div.textContent = `${item.label}: ${item.valor}`;
+            }
+
+            contenido.appendChild(div);
+        });
+
+        // === Mensaje final opcional ===
+        // if(config.mensajeFinal){
+        //    const mensajeElem = document.createElement("p");
+        //    mensajeElem.textContent = config.mensajeFinal;
+        //    contenido.appendChild(mensajeElem);
+        //}
+        if (config.mensajeFinal) {
+            const mensajeElem = document.createElement("div");
+            mensajeElem.className = "detalle-mensaje";
+            mensajeElem.innerHTML = config.mensajeFinal; // ← AQUÍ
+            contenido.appendChild(mensajeElem);
+        }
+
+
+        // === Mostrar modal ===
+        document.getElementById("modal-detalle-overlay").classList.remove("oculto");
+
+    })
+    .catch(err => {
+        console.error("❌ Error en abrirDetalleModelo:", err);
+        alert("No se pudo cargar el detalle del modelo");
+    });
+};
+
+// ======================================================
+// Cerrar modal
+// ======================================================
+window.cerrarDetalle = function() {
+    const overlay = document.getElementById('modal-detalle-overlay');
+    if(overlay){
+        overlay.classList.add('oculto');
+    }
+};
+
+// ======================================================
+// Click fuera del modal
+// ======================================================
+document.addEventListener('click', function(e){
+    const overlay = document.getElementById('modal-detalle-overlay');
+    const modal = document.querySelector('.detalle-modal');
+
+    if(!overlay || overlay.classList.contains('oculto')) return;
+    if(modal && !modal.contains(e.target)){
+        cerrarDetalle();
+    }
+});
+
+// ======================================================
+// CSRF helper
+// ======================================================
+function obtenerCSRFToken(){
+    const el = document.querySelector('[name=csrfmiddlewaretoken]');
+    return el ? el.value : '';
+}
+
+// ======================================================
+// FIN main.js
+// ======================================================
+
+
 // Semaforo de Riesgo
 // ===========================================================================================
 document.addEventListener("DOMContentLoaded", () => {
+    console.log("main js: Semaforo de Riesgo");
     // Se seleccionan todos los semáforos en la página
     document.querySelectorAll(".semaforo").forEach(sem => {
         // Se extraen los datos del semáforo
@@ -732,7 +853,185 @@ document.addEventListener("DOMContentLoaded", () => {
             sem.querySelector(".rojo").classList.add("on");
         }
     });
+
 });
+console.log("ANTES de abrirDetalleModelo");
+
+
 // ==========================================================================================
 
 
+
+/* --- Lógica de Pagina Principal  DEFCON 5 --- */
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logContainer = document.getElementById('live-logs-df5');
+    
+    if (logContainer) {
+        const messages = [
+            "Verificando integridad de nodos...",
+            "Protocolo BCP activo y en espera.",
+            "Sincronización con base de datos completa.",
+            "Escaneo de amenazas externas: 0 detectadas.",
+            "Estado del sistema: ÓPTIMO.",
+            "Enlace con centro de crisis verificado."
+        ];
+
+        function addLogEntry() {
+            const time = new Date().toLocaleTimeString();
+            const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+            const entry = document.createElement('div');
+            
+            entry.style.marginBottom = "5px";
+            entry.innerHTML = `<span style="color: #666;">[${time}]</span> > ${randomMsg}`;
+            
+            logContainer.prepend(entry);
+            
+            // Mantener solo los últimos 10 mensajes
+            if (logContainer.childNodes.length > 10) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        // Iniciar ciclo de logs cada 4 segundos
+        setInterval(addLogEntry, 4000);
+        addLogEntry(); // Primera entrada inmediata
+    }
+});
+
+
+/* --- Animación de consola DEFCON 5 --- */
+function initDefconLogs() {
+    const container = document.getElementById('live-logs-container');
+    if (!container) return;
+
+    const msgs = [
+        "Sincronizando nodos BCP...",
+        "Integridad de bases de datos: OK",
+        "Monitor de incidentes: Sin alertas",
+        "Protocolo de comunicación en espera",
+        "Estado del sistema: DEFCON 5"
+    ];
+
+    setInterval(() => {
+        const p = document.createElement('div');
+        const time = new Date().toLocaleTimeString();
+        p.innerHTML = `<span style="color:#00ff41">[${time}]</span> > ${msgs[Math.floor(Math.random()*msgs.length)]}`;
+        p.style.fontSize = "11px";
+        container.prepend(p);
+        if (container.childNodes.length > 6) container.lastChild.remove();
+    }, 4000);
+}
+
+// Ejecutar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', initDefconLogs);
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const consoleElem = document.getElementById('dashboard-console');
+    if (consoleElem) {
+        const logEntries = [
+            "SCANNING NETWORK NODES...",
+            "BCP PROTOCOL: STANDBY",
+            "DATA INTEGRITY: 100%",
+            "NO INCIDENTS DETECTED",
+            "SATELLITE LINK: STABLE"
+        ];
+
+        setInterval(() => {
+            const entry = document.createElement('div');
+            entry.innerHTML = `> ${logEntries[Math.floor(Math.random() * logEntries.length)]}`;
+            entry.style.color = "#00ff41";
+            entry.style.fontSize = "11px";
+            consoleElem.prepend(entry);
+            if (consoleElem.childNodes.length > 8) consoleElem.lastChild.remove();
+        }, 3000);
+    }
+});
+
+/* --- COMPLEMENTO: Consola de Dashboard DEFCON 5 --- */
+function startDashboardConsole() {
+    const consoleBox = document.getElementById('live-console-output');
+    if (!consoleBox) return; // Solo se ejecuta si estamos en la página principal
+
+    const techMessages = [
+        "VERIFICANDO INTEGRIDAD DE NODOS...",
+        "ENLACE SATELITAL: ESTABLE",
+        "SISTEMA BCP: MODO VIGILANCIA",
+        "SINCRONIZANDO DATOS RIA/BIA",
+        "STATUS: DEFCON 5 (PAZ TOTAL)"
+    ];
+
+    setInterval(() => {
+        const line = document.createElement('div');
+        line.style.color = "#00ff41";
+        line.style.fontSize = "11px";
+        line.style.marginBottom = "4px";
+        line.innerHTML = `> [${new Date().toLocaleTimeString()}] ${techMessages[Math.floor(Math.random()*techMessages.length)]}`;
+        consoleBox.prepend(line);
+        if (consoleBox.childNodes.length > 10) consoleBox.lastChild.remove();
+    }, 3500);
+}
+
+// Escuchador para iniciar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', startDashboardConsole);
+
+function startDashboardConsole() {
+    const consoleBox = document.getElementById('live-console-output');
+    if (!consoleBox) return;
+
+    const techMessages = [
+        "SINC NODOS BCP...",
+        "ENLACE SAT: OK",
+        "MODO VIGILANCIA",
+        "SYNC RIA/BIA OK",
+        "STATUS: DEFCON 5"
+    ];
+
+    setInterval(() => {
+        const line = document.createElement('div');
+        line.style.color = "#00ff41";
+        line.innerHTML = `> ${techMessages[Math.floor(Math.random()*techMessages.length)]}`;
+        consoleBox.prepend(line);
+        if (consoleBox.childNodes.length > 6) consoleBox.lastChild.remove();
+    }, 4000);
+}
+document.addEventListener('DOMContentLoaded', startDashboardConsole);
+
+
+function startDashboardConsole() {
+    const consoleBox = document.getElementById('live-console-output');
+    if (!consoleBox) return;
+
+    const messages = [
+        "SINC NODOS BCP...",
+        "ENLACE SATELITAL: OK",
+        "SINCRONIZANDO RIA/BIA",
+        "STATUS: DEFCON 5",
+        "SIN ANOMALÍAS DETECTADAS"
+    ];
+
+    setInterval(() => {
+        const line = document.createElement('div');
+        line.innerHTML = `> ${messages[Math.floor(Math.random()*messages.length)]}`;
+        consoleBox.prepend(line);
+        if (consoleBox.childNodes.length > 8) consoleBox.lastChild.remove();
+    }, 4000);
+}
+
+document.addEventListener('DOMContentLoaded', startDashboardConsole);
+
+function startDashboardConsole() {
+    const consoleBox = document.getElementById('live-console-output');
+    if (!consoleBox) return;
+
+    const messages = ["SYNC NODOS...", "ENLACE OK", "STATUS: D5", "BIA UPDATED", "NO ALERTS"];
+
+    setInterval(() => {
+        const line = document.createElement('div');
+        line.innerHTML = `> ${messages[Math.floor(Math.random()*messages.length)]}`;
+        consoleBox.prepend(line);
+        if (consoleBox.childNodes.length > 5) consoleBox.lastChild.remove();
+    }, 4000);
+}
+document.addEventListener('DOMContentLoaded', startDashboardConsole);

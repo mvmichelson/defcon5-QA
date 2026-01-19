@@ -1,0 +1,31 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<ul  class="fondo_img">
+
+<div class="flex-container" > 
+    <div class="flex-item">
+
+    </div>
+    <div class="flex-item">
+
+        <ul class='scr4' style="background: rgba(31, 92, 21, 0.634); 
+                    color:whitesmoke; text-align: center; margin:0%">
+
+        <h2>Cambio obligatorio de clave</h2>
+
+        <h4>Por razones de seguridad, debe definir una nueva contraseña.</h4>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit" class="button">Cambiar contraseña</button>
+        </form>
+
+        </ul>
+
+    </div>
+</div>
+</ul>
+{% endblock %}

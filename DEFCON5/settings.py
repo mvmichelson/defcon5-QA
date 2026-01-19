@@ -50,6 +50,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'bcp.middleware.ForcePasswordChangeMiddleware',
+
 ]
 
 ROOT_URLCONF = 'DEFCON5.urls'
@@ -113,11 +116,11 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 TIME_ZONE = 'America/Santiago'
 USE_I18N = True
 USE_TZ = True
-USE_L10N = False
+USE_L10N = True
 DATE_FORMAT = "d/m/Y"
 
 STATIC_URL = '/static/'

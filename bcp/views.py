@@ -181,11 +181,11 @@ class Base_GenericPageView(TemplateView):
         #print('base_generic', defcon_est)
         return context
 
-@login_required
 def index(request):
     """
     Función de vista para la página inicio del sitio.
     """
+    print('>>>>> Index')
 
     #usr=request.user
     #if not usr.is_authenticated:
@@ -195,21 +195,25 @@ def index(request):
     #num_proc=Proceso.objects.all().count()
     #num_sproc=SubProceso.objects.all().count()
     #num_proced=Procedimientos.objects.all().count()
-   
+    nro_procesos=SubProceso_V.objects.all().count()
+    nro_proced=Procedimientos_V.objects.all().count()
+    nro_proced_act=Procedimientos_V.objects.filter(esta_activo=True).count()
+    nro_incidentes=Incidentes.objects.filter(estado=True).count()
+    print('---- nro_proced_act:', nro_proced_act, '/', nro_proced)
+
     # Numero de visitas a esta view, como está contado en la variable de sesión.
     #num_visits = request.session.get('num_visits', 0)
     #request.session['num_visits'] = num_visits + 1
-
     #defcon = get_object_or_404(Parametros_G , pk=1)
 
     # Renderiza la plantilla HTML index.html con los datos en la variable contexto
-    return render(request, 'index.html')
+    #return render(request, 'index.html')
 
-    #return render(
-    #    request,
-    #    'index.html',
-    #    context={'num_proc':num_proc,'num_sproc':num_sproc, 'num_proced':num_proced,'num_visits':num_visits,
-    #             'defcon':defcon})
+    return render(request, 'index.html', context={'nro_procesos':nro_procesos,
+                                                  'nro_proced':nro_proced, 
+                                                  'nro_proced_act':nro_proced_act,
+                                                  'nro_incidentes':nro_incidentes
+                                                  })
 
 
 def En_Construccion(request):
@@ -6660,7 +6664,8 @@ def Lista_Serv_Crtc(request, pk):
     lista_sc=drp.servicios_drp 
 
    
-    return render(request, 'bcp/drp/lista_sc.html', context={'lista_sc':lista_sc, 'drp':drp})
+    return render(request, 'bcp/drp/lista_sc.html',
+                  context={'lista_sc':lista_sc, 'drp':drp})
 
 
 #**************************************
@@ -6669,21 +6674,17 @@ def Lista_Serv_Crtc(request, pk):
 
 #@permission_required('Catalogo.can_mark_returned')
 @login_required
-def cr_drp_P5(request, pk, acc):
+#def cr_drp_P5(request, pk, acc):
+def cr_drp_P5(request, pk):
     """
     Ingresa Servicios Criticos para el DRP
     """
-    print('------ Crea Servicio Citico DRP -------')
-    print('Accion=',acc)
+    print('------ Crea Servicio Critico DRP -------')
+    #print('Accion=',acc)
     global cr_drp_P5_url_ant
 
     drp = get_object_or_404(Drp, pk = pk)
-
-   
-    #Asigna el formulario creado en Forrms
-    form=CreaProc_P5_Form()
-
-    
+  
     # If this is a POST request then process the Form data
     if request.method == 'POST':
 
@@ -6709,19 +6710,19 @@ def cr_drp_P5(request, pk, acc):
             #Crea contactos en Nomina de Contactos
             if contacto_drp:
                 contacto=Contactos_PC()
-                contacto.nombre=contacto_drp + '(' + nombre + ')'
+                contacto.nombre=contacto_drp + ' (' + nombre + ')'
                 contacto.save()
                 drp.contactos_drp.add(contacto)
 
             if contacto_bck_drp:
                 contacto2=Contactos_PC()
-                contacto2.nombre=contacto_bck_drp + '(' + nombre + ')'
+                contacto2.nombre=contacto_bck_drp + ' (' + nombre + ')'
                 contacto2.save()
                 drp.contactos_drp.add(contacto2)  
             
             # en caso de ser una revision cambia el status a autorizar.
-            if acc == 'revisa':
-                drp.status_6 = 'a'
+            #if acc == 'revisa':
+            #    drp.status_6 = 'a'
 
             #Adiciona el Servicio al Procedimiento
             servicio.save()
@@ -6737,10 +6738,11 @@ def cr_drp_P5(request, pk, acc):
             #proced.save()
             
                      
-            # redirect to a new URL:
-            
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
         
-            return HttpResponseRedirect(cr_drp_P5_url_ant)
+            #return HttpResponseRedirect(cr_drp_P5_url_ant)
             #return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
             #return HttpResponseRedirect(drp.get_absolute_url)
 
@@ -6753,9 +6755,138 @@ def cr_drp_P5(request, pk, acc):
     # If this is a GET (or any other method) create the default form.
     else:
 
+        form=CreaProc_P5_Form()
+
         cr_drp_P5_url_ant=request.META['HTTP_REFERER']
         print(url_ant)
-        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form, 'servicios':drp.servicios_drp})    
+        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form, 
+                                                                        'servicios':drp.servicios_drp})    
+
+
+
+#@permission_required('Catalogo.can_mark_returned')
+@login_required
+#def cr_drp_P5(request, pk, acc):
+def md_drp_P5(request, pk):
+    """
+    Modifica  Servicio Criticos para el DRP
+    pk:pk del Servicio
+    """
+    print('>>>>> Modifica Servicio Critico DRP -------')
+    #print('Accion=',acc)
+    global cr_drp_P5_url_ant
+
+    servicio = get_object_or_404(Servicios_PC, pk = pk)
+    contacto_actual=servicio.contacto
+    bck_actual=servicio.contacto_bck
+    nombre_actual=servicio.nombre
+
+    print('---- Servicio : ', nombre_actual)
+    print('---- contacto_actual :', contacto_actual)
+    print('---- bck actual', bck_actual)
+
+    #drp = get_object_or_404(Drp, pk = servicio.pk_padre)
+    #print("DRP : ", drp)
+
+
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = CreaProc_P5_Form(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+
+            #Crea el Registro del Proceso
+
+            servicio.pk_padre = pk
+            nombre = form.cleaned_data['nombre']
+            servicio.nombre = nombre
+            servicio.objetivo = form.cleaned_data['objetivo']
+            new_contacto = form.cleaned_data['contacto']
+            servicio.contacto = new_contacto
+            new_bck = form.cleaned_data['contacto_bck']
+            servicio.contacto_bck = new_bck
+
+            #Modifica contactos en Nomina de Contactos
+            if contacto_actual != new_contacto:  # Cambio contacto
+
+                # Se crea nuevo contacto
+                contacto_new=Contactos_PC()
+                contacto_new.nombre=new_contacto + ' (' + nombre + ')'
+                contacto_new.save()
+                print('---- Se crea nuevo contacto :', contacto_new.nombre)
+
+                # Se elimina contacto actual
+                #llave=contacto_actual+' ('+nombre_actual+')'
+                #print('---- Se elimina contacto antiguo ', llave)
+                #contacto_old=Contactos_PC.objects.filter(nombre==llave).all()
+                #if contacto_old:
+                #    contacto_old.delete()
+                #    print('---- Se elimino contacto antiguo ')
+
+
+            #Modifica respaldo contactos en Nomina de Contactos
+            if bck_actual  != new_bck :  # Cambio respaldo contacto
+
+                # Se crea nuevo bck contacto
+                contacto_new=Contactos_PC()
+                contacto_new.nombre=new_bck + ' (' + nombre + ')'
+                contacto_new.save()
+                print('---- Se crea nuevo bck contacto :', new_bck.nombre)
+
+                # Se elimina contacto actual
+                #contacto_old=get_object_or_404(Contactos_PC, nombre=bck_actual)
+                #contacto_old.delete()
+                #print('---- Se elimino bck contacto antiguo ')
+
+            
+            # en caso de ser una revision cambia el status a autorizar.
+            #if acc == 'revisa':
+            #    drp.status_6 = 'a'
+
+            #Adiciona el Servicio al Procedimiento
+            servicio.save()
+            #drp.save()
+
+            
+
+            #Marca la seccion como completa
+            #num = proced.sec_servicios
+            #num = num+1
+            #drp.sec_servicios = num
+            #proced.save()
+            
+                     
+            # Dirige la Salida 
+            next_url = request.GET.get('next', '/')
+            return redirect(next_url)
+        
+            #return HttpResponseRedirect(cr_drp_P5_url_ant)
+            #return HttpResponseRedirect(reverse('Indice-DRP', args=[str(drp.id)]))
+            #return HttpResponseRedirect(drp.get_absolute_url)
+
+        
+        else:
+            print(form.errors)
+            return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors}) 
+            
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+
+        form=CreaProc_P5_Form(initial={'nombre':servicio.nombre,
+                                       'objetivo':servicio.objetivo,
+                                       'contacto':servicio.contacto,
+                                       'contacto_bck':servicio.contacto_bck
+                                       })
+
+        #cr_drp_P5_url_ant=request.META['HTTP_REFERER']
+        #print(url_ant)
+        return render(request, 'bcp/proced_cont/prcd_crea_serP5.html', {'form': form,
+                                                                        'servicios':servicio})    
 
 
 #***************************************
@@ -6764,13 +6895,13 @@ def cr_drp_P5(request, pk, acc):
     
 #@permission_required('Catalogo.can_mark_returned')
 @login_required
-def br_drp_P5(request, pk, acc):
+#def br_drp_P5(request, pk, acc):
+def br_drp_P5(request, pk):
+
     """
     Borra Servicios Criticos para el DRP
     """
-    print('---- Borra Servicio Critico DRP --------')
-    print('pk=', pk)
-    url_ant=request.META['HTTP_REFERER']
+    print('>>>>> Borra Servicio Critico DRP --------')
     
     servicio_drp = get_object_or_404(Servicios_PC, pk = pk)
     drp = get_object_or_404(Drp, pk = servicio_drp.pk_padre)
@@ -6783,16 +6914,17 @@ def br_drp_P5(request, pk, acc):
     #num = num-1
     #proced.sec_servicios = num
     #proced.save()
-    if acc == 'revisa':
-        drp.status_6 = 'a'
+    #if acc == 'revisa':
+    #    drp.status_6 = 'a'
+    #
 
     #Borra Servicio                
     servicio_drp.delete()
     drp.save()
 
-    
-
-    return HttpResponseRedirect(url_ant)
+    # Dirige la Salida 
+    next_url = request.GET.get('next', '/')
+    return redirect(next_url)
 
 
 from .forms import CreaProc_P6_Form
@@ -7415,13 +7547,27 @@ def Aut_Drp(request, pk, sec):
                                                                  'componentes_disp':componentes_disp,
                                                                  'comentarios':comentarios})
         
-        if sec == 6:   # 6. Servicios Criticos                         
+        if sec == 6:   # 6. Servicios Criticos 
+            print('>>>>> Autorizacion Servicios Criticos')
+            # Selecciona Comentarios 
+            comentarios_drp=Log_Revision.objects.filter(drp=drp)
+            comentarios=[]
+            for com in comentarios_drp:
+                if com.seccion == "D6":
+                    comentarios.append(com)
+            print('---- Comentarios :', comentarios)
+
+            # Determina Servicios Criticos declarados
+            servicios=drp.servicios_drp
+
             return render(request, 'bcp/drp/drp_s6_auth.html',   {'form': form, 'drp':drp,
-                                                                  'servicios_asig':servicios_asig,
-                                                                  'servicios_disp':servicios_disp
+                                                                  'servicios':servicios,
+                                                                  'comentarios':comentarios
                                                                   })
         
-        if sec == 7:                            
+        if sec == 7:  
+
+
             return render(request, 'bcp/proced_cont/proced_auth.html',
                         {'form': form, 'proceso':proceso, 'proced':proced, 'servicios':servicios,
                         'contactos':contactos, 'pasos':pasos})
@@ -9306,7 +9452,6 @@ from collections import defaultdict
 #===============================================
 # Contadores de Procesos x variable estadistica 
 #===============================================
-@login_required
 def contar_procesos_por_tipo_nivel_impacto(incidente):
     """
     Contabilizacion estadistica de Procesos x Impacto y Nivel
@@ -9333,7 +9478,6 @@ def contar_procesos_por_tipo_nivel_impacto(incidente):
 
     return contador
 
-@login_required
 def contar_procesos_por_tipo_nivel_indicadores(incidente):
     """
     Contabilizacion estadistica de Procesos x Indicadores de Recuperacion
@@ -9362,7 +9506,6 @@ def contar_procesos_por_tipo_nivel_indicadores(incidente):
 
 
 from collections import defaultdict
-@login_required
 def contar_procesos_por_escenario(incidente):
     """
     Contabilización estadística de Procesos por Escenarios
@@ -9411,7 +9554,6 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 @csrf_exempt
-@login_required
 def toggle_procedimiento(request, procedimiento_id=None):
     """
     Switch de Activacion/Desactivacion del Procedimiento desde DashBoard del 
@@ -9577,7 +9719,6 @@ from django.apps import apps
 import json
 
 @csrf_exempt
-@login_required
 def toggle_field(request, app_label, model_name, object_id):
     """
     Endpoint genérico para cambiar el valor de cualquier campo booleano
@@ -10620,8 +10761,195 @@ def Crea_Nivel_Impacto(request, pk):
 #***********************************************  7. Proposito General ***********************************************************************
 #*********************************************************************************************************************************************
 
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from django.core.mail import send_mail
+from django.shortcuts import render
+from django.conf import settings
 
+from bcp.models import Gestor
+from bcp.services.seguridad import generar_clave_temporal
+def olvido_clave(request):
+    """
+    Flujo 'Olvidó su clave':
+    - Usuario NO autenticado
+    - Genera clave temporal
+    - Envía correo
+    - Fuerza cambio de clave en el próximo login
+    """
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+
+        try:
+            user = User.objects.get(username=username, is_active=True)
+            Gestor.objects.get(user_gestor=user)
+        except (User.DoesNotExist, Gestor.DoesNotExist):
+            return render(
+                request,
+                'auth/olvido_clave.html',
+                {'error': 'Usuario no válido o no registrado'}
+            )
+
+        # 1️⃣ Generar clave temporal
+        clave_temporal = generar_clave_temporal()
+        print('CLAVE TEMPORAL : ', clave_temporal)
+
+        # 2️⃣ Asignar nueva clave
+        user.set_password(clave_temporal)
+        user.save()
+
+        # 3️⃣ Forzar cambio de clave en el próximo login
+        gestor = Gestor.objects.get(user_gestor=user)
+        gestor.must_change_password = True
+        gestor.save()
+
+        # 4️⃣ Enviar correo
+        print('Envia Correo')
+        #send_mail(
+        #    subject='DEFCON – Restablecimiento de clave',
+        #    message=(
+        #        f'Estimado/a {user.first_name},\n\n'
+        #        f'Su nueva clave temporal es:\n\n'
+        #        f'   {clave_temporal}\n\n'
+        #        f'Deberá cambiarla obligatoriamente al iniciar sesión.\n\n'
+        #        f'Saludos,\n'
+        #        f'Equipo DEFCON'
+        #    ),
+        #    from_email=settings.DEFAULT_FROM_EMAIL,
+        #    recipient_list=[user.email],
+        #    fail_silently=False
+        #)
+
+        return render(request, 'auth/olvido_clave_ok.html')
+
+    # GET
+    return render(request, 'auth/olvido_clave.html')
+
+#******************
+#Reseteo de Clave *
+#******************
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.shortcuts import get_object_or_404, redirect
+from bcp.models import Gestor
+from bcp.services.seguridad import resetear_clave_gestor
+
+@login_required
+@permission_required('auth.change_user')
+def reset_clave_gestor(request, gestor_id):
+    gestor = get_object_or_404(Gestor, id=gestor_id)
+    resetear_clave_gestor(gestor)
+    return redirect('lista_gestores')
+
+
+#******************
+#Cambio de Clave  *
+#******************
+
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+
+@login_required
+def cambiar_clave(request):
+    """
+    Cambia la Clave del Usuario
+    """
     
+    gestor = get_object_or_404(Gestor, user_gestor=request.user)
+
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            gestor.must_change_password = False
+            gestor.save()
+
+            update_session_auth_hash(request, user)
+            return redirect('index')
+    else:
+        form = PasswordChangeForm(request.user)
+        form = PasswordChangeForm(
+                                        request.user,
+                                        label_suffix='',
+                                    )
+        form.fields['old_password'].label = 'Clave actual'
+        form.fields['new_password1'].label = 'Nueva clave'
+        form.fields['new_password2'].label = 'Confirmar nueva clave'
+
+
+    return render(request, 'auth/cambiar_clave.html', {'form': form})
+
+
+# ***********************************
+# Despliegue de cuadro informativo
+# ***********************************
+
+import json
+from django.apps import apps
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+
+@csrf_exempt
+def api_detalle_modelo(request):
+
+    try:
+        data = json.loads(request.body)
+
+        modelo_nombre = data['modelo']
+        obj_id = data['id']
+        lista_campos = data['listaCampos']
+
+        Modelo = apps.get_model('bcp', modelo_nombre) if modelo_nombre != 'User' else User
+        obj = Modelo.objects.get(pk=obj_id)
+
+        if modelo_nombre == 'User' and request.user.id != obj.id:
+            raise PermissionDenied
+
+        resultado = []
+
+        for label, path in lista_campos.items():
+
+            partes = path.split('.')
+            actual = obj
+
+            # Resolver path completo
+            for parte in partes:
+                actual = getattr(actual, parte, None)
+                if actual is None:
+                    break
+
+            if actual is None:
+                resultado.append({'label': label, 'valor': ''})
+                continue
+
+            # MANY TO MANY (groups)
+            if hasattr(actual, 'all'):
+                resultado.append({
+                    'label': label,
+                    'lista': [str(x) for x in actual.all()]
+                })
+            else:
+                resultado.append({
+                    'label': label,
+                    'valor': str(actual)
+                })
+
+        return JsonResponse({'campos': resultado})
+
+    except PermissionDenied:
+        return JsonResponse({'error': 'No autorizado'}, status=403)
+
+    except Exception as e:
+        return JsonResponse(
+            {'error': f'Excepción interna: {str(e)}'},
+            status=500
+        )
+
+
 #*****************************
 #Manda correo de Notificacion*
 #*****************************

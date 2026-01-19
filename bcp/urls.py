@@ -7,12 +7,16 @@ from django.urls import re_path as url
 from django.urls import path
 
 from . import views
+# from bcp import views
+
 
 from django.contrib import admin
 
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import RedirectView
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
 
@@ -64,9 +68,26 @@ urlpatterns = [
     path("auditoria-integridad/reparar/", views.reparar_integridad, name="reparar_integridad"),
 
 
+    # Administracion de la Clave de Usuario
+    path('gestor/<int:gestor_id>/reset-clave/', views.reset_clave_gestor, name='reset_clave_gestor'),
+    path('cambiar-clave/', views.cambiar_clave, name='cambiar_clave'),
+
+    path('auth/olvido-clave/', views.olvido_clave, name='olvido_clave'),
+
+    # Logout de Django
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
 
 ]
+
+
+# Proposito General
+# -----------------
+urlpatterns += [
+    # Despliegue de cuadro con datos en pantalla 
+    path('api/detalle-modelo/', views.api_detalle_modelo, name='api_detalle_modelo'),
+]
+
 
 # Creacion y Aprobacion de Procesos
 # ---------------------------------
@@ -273,10 +294,16 @@ urlpatterns += [
     #path('drp/<int:pk>/<int:accion>/asigna_cmp/', views.Asigna_CMP, name='Asigna-CMP'),
     path('drp/<int:pk>/asigna_cmp/', views.asigna_componentes, name='Asigna-CMP'),
 
-    
+    # Servicios Criticos
     path('drp/<int:pk>/listaServCrtc/', views.Lista_Serv_Crtc, name='Lista-SC'),
-    path('drp/<int:pk>/<int:acc>/crea_p5_drp/', views.cr_drp_P5, name='crea-P5-DRP'),
-    path('drp/<int:pk>/<int:acc>/', views.br_drp_P5, name='borra-P5-DRP'),
+    #path('drp/<int:pk>/<int:acc>/crea_p5_drp/', views.cr_drp_P5, name='crea-P5-DRP'),
+    path('drp/<int:pk>/crea_p5_drp/', views.cr_drp_P5, name='crea-P5-DRP'),
+    path('drp/<int:pk>/modi_p5_drp/', views.md_drp_P5, name='mod-P5-DRP'),
+    #path('drp/<int:pk>/<int:acc>/', views.br_drp_P5, name='borra-P5-DRP'),
+    path('drp/<int:pk>/', views.br_drp_P5, name='borra-P5-DRP'), 
+
+
+    # Pasos DRP
     path('drp/<int:pk>/listaPasos/', views.Lista_Pasos_Drp, name='Lista-Pasos-DRP'),
     path('drp/<int:pk>/crea_p7_drp/', views.cr_drp_P7, name='crea-P7-DRP'),
     path('drp/<int:pk>/borra_p7_drp/', views.br_drp_P7, name='borra-P7-DRP'),

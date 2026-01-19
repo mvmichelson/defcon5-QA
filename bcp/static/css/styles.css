@@ -69,13 +69,26 @@ Opcion */
 	border: 1px solid black;
 }
 
-.encabezado_B {
+.encabezado_B {         /* Titulo principal de Formularios y Despliegues*/
 	text-align: center;
 	padding: 5px;
-	border: 1px solid black;
+	border: 2px solid black;
 	border-radius: 5px;
     border: 2px solid green;
+    color: var(--accent-green);
+    font-size: 1.5rem; 
 }
+
+.encabezado_SB {        /* Titulo secundario de Formularios y Despliegues */
+	text-align: center;
+	padding: 0px;
+	border: 2px solid green;
+	border-radius: 5px;
+    color: var(--accent-green); 
+    /*color: white;*/
+
+}
+
 
 .encabezado_N {
 	background:black; /* Negro*/
@@ -83,12 +96,6 @@ Opcion */
 	padding: 10px;
 }
 
-.encabezado_SB {
-	text-align: center;
-	padding: 0px;
-	border: 2px solid green;
-	border-radius: 5px;
-}
 
 .encabezado_C {
 	background:rgba(255, 0, 0, 0.8); /*Color Rojo tomate*/
@@ -122,13 +129,45 @@ Opcion */
 }
 */
 
+/* --- Bloque de Sesión: Delgado, a la derecha y con nombre Neón --- */
 .sesion {
-	height:0;
-	text-align: right;
-	padding: 0;
-	background: rgba(0, 128, 0, 0.3);
-	height: 100%;
+    background-color: var(--petroleo-oscuro) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    margin: 0 !important;
+    padding: 4px 20px !important; /* Padding mínimo para que la línea sea delgada */
+    list-style: none !important;
+    text-align: right !important; /* Alineación a la derecha */
+    width: 100% !important;
+    white-space: nowrap !important;
 }
+
+.sesion li {
+    display: inline !important; /* Para que todo fluya como texto natural */
+    font-size: 13px !important; /* Tamaño de fuente estándar original */
+}
+
+/* El nombre del usuario con brillo neón sutil */
+.sesion strong {
+    color: var(--accent-green) !important;
+    text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+    font-weight: bold;
+    text-transform: none !important; /* Respeta minúsculas/mayúsculas originales */
+}
+
+/* El texto "Hola" y "Logout" en su formato original */
+.sesion aa {
+    color: #94a3b8 !important;
+    text-transform: none !important; /* EVITA LAS MAYÚSCULAS FORZADAS */
+    font-size: 13px !important;
+    text-decoration: none !important;
+}
+
+.sesion a {
+    text-decoration: none !important;
+    margin-left: 10px;
+}
+
+
 
 .FondoP {
 	background: rgba(0, 128, 0, 0.3);
@@ -167,10 +206,10 @@ Opcion */
 
 a {
 	margin-top:50px;
-	color:white;
 	height:20px;
 	width:20px;
 	padding:5px;
+    color:black;
 }
 
 aa {
@@ -181,11 +220,13 @@ aa {
 	padding:0px;
 }
 
+/* Para iconos de opciones */
 ab {	
 	margin-top:5px;
-	font-family: sans-serif;
+    font-family: sans-serif;
     font-size: 3rem;
-	color:green;
+    color:green;
+
 }
 
 bl {
@@ -293,13 +334,21 @@ tm {
 }
 
 .scr4 {
-  background: rgba(222, 220, 220, 0.5);  
+  background: whitesmoke;  
   width: 100%;
   height: auth;
   border: 1px solid black;
   padding:5px;
   border-radius: 10px;
 }
+.scr4 input.form-control,
+.scr4 input[type="password"],
+.scr4 input[type="text"],
+.scr4 input[type="email"] {
+    color: #000 !important;
+    background-color: #fff !important;
+}
+
 
 /* Cuadros */
 
@@ -365,7 +414,7 @@ td {
     width: 270px !important;
     height: 17.2em;
 }
-
+ 
 textarea{
     display:block;
     width:450px;
@@ -382,6 +431,16 @@ textarea{
    }
 }
 
+.blink_20 {
+    animation: blinker 2.5s linear infinite;
+    /*color: red;*/
+    /*font-family: sans-serif;*/
+}
+@keyframes blinker {
+            50% {
+                opacity: 0;
+   }
+}
 
 
 /* ----- BOX DE ENTRADAS DE DATOS (Widgets)  ------ */
@@ -1034,4 +1093,171 @@ Indicadores de nivel
     background-color: red; /* Luz roja */
 }
 
+
+/* Cuadro informativo de datos de modelo */
+/* ===================================== */
+
+.detalle-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.detalle-modal {
+    background-color: #055a1dd4;
+    color: whitesmoke;
+    min-width: 400px;
+    max-width: 600px;
+    padding: 20px;
+    border-radius: 10px;
+
+    display: flex;              /* ← CAMBIO */
+    flex-direction: column;     /* ← CLAVE */
+    gap: 0;                     /* ← evita auto-separaciones */
+}
+
+/* Separadores reales */
+.detalle-separador {
+    height: 2px;
+    background-color: white;
+    margin: 12px 0;
+    flex-shrink: 0;
+    position: relative;
+}
+
+/* 🔒 Anti :empty */
+.detalle-separador::before {
+    content: "";
+    display: block;
+}
+
+
+.detalle-titulo {
+    font-weight: bold;
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+.detalle-contenido {
+    font-size: 1.2rem;
+}
+
+.detalle-nn {
+    margin-left: 33%;
+    font-style: italic;
+}
+
+.detalle-footer {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.detalle-mensaje {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: whitesmoke;
+    font-style: italic;
+}
+
+.oculto {
+    display: none;
+}
+
+/* ================================================================================= */
+
+/* ===========================================================
+   SISTEMA DEFCON-5: DISEÑO COMPACTO Y COLORES ORIGINALES
+   =========================================================== */
+
+:root {
+    --bg-main: #05070a;
+    --accent-green: #00ff41; /* Verde neón para elementos DEFCON */
+    --petroleo-oscuro: #0a1f1d; /* Color original que mencionas */
+    --border-dim: rgba(0, 255, 65, 0.2);
+}
+
+/* --- RESTAURACIÓN DE LA BASE --- */
+body { background-color: var(--bg-main) !important; }
+
+/* Mantenemos tus colores de verde petróleo original */
+.encabezado { 
+    background-color: var(--petroleo-oscuro) !important; 
+    border-bottom: 2px solid var(--accent-green) !important;
+}
+
+.sidebar-nav { 
+    background-color: var(--petroleo-oscuro) !important; 
+    border-right: 1px solid #1f2937 !important;
+}
+
+/* --- DASHBOARD COMPACTO (AJUSTADO PARA UNA VISTA) --- */
+.defcon-hero {
+    background: radial-gradient(circle at center, #0d1a10 0%, #05070a 100%);
+    border: 2px solid var(--accent-green);
+    padding: 10px 20px; /* Reducimos padding interno */
+    margin-top: 5px;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+    /* Altura calculada para que NO se salga de la pantalla */
+    height: calc(100vh - 110px); 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+/* Radar más pequeño para ahorrar espacio vertical */
+.radar-main {
+    width: 200px; /* Reducido para asegurar visibilidad total */
+    height: 200px;
+    border: 1px solid var(--border-dim);
+    border-radius: 50%;
+    margin: 5px auto;
+    position: relative;
+    background: url('https://i.imgur.com/vHqY7jD.png') no-repeat center;
+    background-size: 65%;
+}
+
+.radar-main::after {
+    content: ""; 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, var(--accent-green) 0%, transparent 40%);
+    animation: radar-sweep 4s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes radar-sweep { 
+    from { transform: rotate(0deg); } 
+    to { transform: rotate(360deg); } 
+}
+
+/* Tarjetas laterales más delgadas */
+.tech-stat-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid var(--accent-green);
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+
+.console-output {
+    height: 100px; /* Reducido de 150px */
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: var(--accent-green);
+    overflow: hidden;
+}
+
+.btn-danger-defcon {
+    background: rgba(255, 0, 0, 0.1);
+    border: 2px solid #ff4d4d;
+    padding: 2px;
+    font-weight: bold;
+    color: #ff4d4d;
+    text-transform: uppercase;F
+    font-size: 11px;
+}
 

@@ -137,11 +137,67 @@
 <!-----------------------------  NIVEL SUPERIOR ----------------------------------------->
 <!--------------------------------------------------------------------------------------->
 
+
+<!------ MENU DE OPCIONES ---------------->
+<!---------------------------------------->
   <div class="container-fluid">
      <div class="row">
       <div class="col-sm-2">
       
 
+      <!--- Define la barra de Menu de opciones -->
+      <!--- ====================================-->
+      {% block sidebar %}
+      <nav class="sidebar-nav" style="width: 180px; font-size: 2rem;">
+          <div class="menu-title">MENU</div>
+
+          <ul class="menu-list inline">
+              <li><a href="{% url 'index' %}" class="menu-link">
+                  <img src="/static/img/principal.jfif" class="icon" alt="Principal"> Principal
+                  <!-- <span class="icon">&#8680;</span> Principal -->
+              </a></li>
+              <li><a href="{% url 'Mapeo' %}" class="menu-link">
+                  <img src="/static/img/metodologia.png" class="icon" alt="Metodología"> Metodología
+              </a></li>
+          </ul>
+
+
+          <div class="menu-section menu-title"><strong>0.- Gestión de Crisis</strong></div>
+          <ul class="menu-list inline">
+              <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link" >
+                <img src="/static/img/dashboard.png" class="icon" alt="Metodología"> Dashboard Panel&nbsp;de&nbsp;Control
+              </a></li>
+              <li><a href="{% url 'Define-Plan-Pruebas-A' %}" class="menu-link">
+                <img src="/static/img/Autorizar.png" class="icon" alt="Metodologia" style="background-color: white;"> Plan&nbsp;de Pruebas
+              </a></li>
+              <li><a href="{% url 'Lista-Proced' %}" class="menu-link">
+                <img src="/static/img/Evaluacion.jpg" class="icon" alt="Metodología">Mis&nbsp;Procedimientos de&nbsp;Contingencia
+              </a></li>
+
+            </ul>
+
+          <div class="menu-section menu-title"><strong>1.- Gestión de Contingencia</strong></div>
+          <div class="menu-section menu-title">1.1.- Mapeo</div>
+          <ul class="menu-list inline">
+              <li><a href="{% url 'Lista-Procesos' %}" class="menu-link"><span class="icon">&#10146;</span> Definición&nbsp;Procesos</a></li>
+              <li><a href="{% url 'Lista-Evaluaciones' %}" class="menu-link"><span class="icon">&#10146;</span> Análisis&nbsp;Impacto (RIA&nbsp;/&nbsp;BIA)</a></li>
+              <li><a href="{% url 'Lista-Recursos' %}" class="menu-link"><span class="icon">&#10146;</span> Servicios&nbsp;Criticos Escenarios&nbsp;Riesgo</a></li>
+              <!-- <li><a href="{% url 'Lista-Escenarios' %}" class="menu-link"><span class="icon">&#10146;</span> Escenarios Riesgo</a></li> -->
+          </ul>
+
+          <div class="menu-section menu-title" >1.2.- Procedimientos Contingencia</div>
+          <ul class="menu-list inline">
+              <li><a href="{% url 'Lista-Proced' 0 %}" class="menu-link"><span class="icon">&#10146;</span> Procedimientos Negocio&nbsp;(BCP)</a></li>
+              <li><a href="{% url 'Lista-DRP' %}" class="menu-link"><span class="icon">&#10146;</span>Procedimientos TI&nbsp;(DRP)</a></li>
+          </ul>
+
+          <div class="menu-section menu-title"><strong>3.- Configuración</strong></div>
+          <ul class="menu-list inline">
+              <li><a href="{% url 'menu-conf' %}" class="menu-link"><span class="icon">&#9965;</span> Configuración</a></li>
+          </ul>
+      </nav>
+      {% endblock %}
+      <!--- Fin Define la barra de Menu de opciones -->
 
       </div>
         <div class="col-sm-10 ">

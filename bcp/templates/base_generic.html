@@ -38,6 +38,10 @@
 
 <!--- nueva ----------------------------------------------------------------->
 <!-- Estaticos locales del Sistema -->
+ <script> 
+  window.URL_DETALLE_MODELO = "{% url 'api_detalle_modelo' %}";
+</script>
+
   <script src="/static/js/main.js" defer></script>
 
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -57,12 +61,13 @@
 
 <div class="flex-container" style="height: 40px; width: 100%;">
   <div class="flex-text" style="text-align: left; width: 50%;">
-    <a href="{% url 'Declara-Incidente' %}" style="font-size: 30px;"
+    
+    <a href="{% url 'Declara-Incidente' %}" style="font-size: 30px; color: black;"
     class="link " data-message="***   D E C L A R A &nbsp;&nbsp;I N C I D E N T E   ***" >&nbsp;&#128222</a>
   </div>
 
   <div class="flex-text" style="text-align: right; width:100%;">
-    <strong><ab>defcon-5/bcp</ab></strong>
+    <strong><ab>defcon5 </ab></strong>
   </div>
 
 
@@ -73,17 +78,69 @@
 
 <!--despliega la opcion Login o Logout dependiendo del estado de la sesion -->
 {% block sesion %}
-  <ul class="sesion">
-  {% if user.is_authenticated %}
+<ul class="sesion">
+{% if user.is_authenticated %}
       
-      <li><aa>Hola </aa><strong>{{ user.get_full_name }}</strong><a href="{% url 'logout'%}?next={{request.path}}"><strong><aa>\ Logout</aa></strong>&nbsp;&nbsp;</a></li>              
-              
+<li>
+    <aa>Hola</aa>
+    <strong>{{ user.get_full_name }}</strong>
+
+    {% if user.gestor %}
+      <!--====================== Icono Datos Modelo ======================-->
+      {% with gestor=user.gestor %}
+        {% comment %} Pasamos los datos seguros al JS {% endcomment %}
+          <script id="gestor_data_{{ user.id }}" type="application/json">
+          {
+              "modelo": "Gestor",
+              "id": "{{ gestor.id }}",
+              "titulo": "<strong>Mis Datos de Gestor</strong><ul class='encabezado_D'></ul>",   
+              "mensajeFinal": "<ul class='encabezado_D'></ul>",  
+              "listaCampos": { 
+                  "Nombre............. ": "user_gestor.first_name",
+                  "Apellido........... ": "apellido",
+                  "Usuario.............": "user_gestor.username",
+                  "Cargo...............": "cargo",
+                  "Área................": "area",
+                  "Teléfono trabajo....": "fono_t",
+                  "Teléfono celular....": "fono_c",
+                  "Grupos..............": "user_gestor.groups"
+              }
+          }
+          </script>
+
+        <span style="cursor:pointer; margin-left:8px; font-size:1.3rem;"
+              title="Ver mis datos"
+              onclick="abrirDetalleModelo(JSON.parse(document.getElementById('gestor_data_{{ user.id }}').textContent))">
+               <!-- &#129333 --> 
+                <img src="/static/img/usuario.png" width="20" height="20">
+        </span>
+      {% endwith %}
+      <!--====================== Fin Icono Datos Modelo ======================-->
+
+
+
+    {% endif %}
+
+    <a href="{% url 'logout' %}?next={{ request.path|urlencode }}">
+        <strong><aa>\ Logout</aa></strong>
+    </a>
+</li>
+    
+
   {% else %}
       <li><a href="{% url 'login'%}?next={{request.path}}"><aa>&#128477<strong>\ Login</aa></strong>&nbsp;&nbsp;</a></li>
   {% endif %}
   </ul>
 {% endblock %}
 
+
+<!--------------------------------------------------------------------------------------->
+<!-----------------------------  NIVEL SUPERIOR ----------------------------------------->
+<!--------------------------------------------------------------------------------------->
+
+
+<!------ MENU DE OPCIONES ---------------->
+<!---------------------------------------->
   <div class="container-fluid">
      <div class="row">
       <div class="col-sm-2">
@@ -93,7 +150,7 @@
       <!--- ====================================-->
       {% block sidebar %}
       <nav class="sidebar-nav" style="width: 180px; font-size: 2rem;">
-          <div class="menu-title">MENU</div>
+          <div class="menu-title" style="color: var(--accent-green);">MENU</div>
 
           <ul class="menu-list inline">
               <li><a href="{% url 'index' %}" class="menu-link">
@@ -106,7 +163,7 @@
           </ul>
 
 
-          <div class="menu-section menu-title"><strong>0.- Gestión de Crisis</strong></div>
+          <div class="menu-section menu-title" style="color: var(--accent-green);"><strong>Gestion de Crisis</strong></div>
           <ul class="menu-list inline">
               <li><a href="{% url 'Lista-Incidentes' %}" class="menu-link" >
                 <img src="/static/img/dashboard.png" class="icon" alt="Metodología"> Dashboard Panel&nbsp;de&nbsp;Control
@@ -120,8 +177,8 @@
 
             </ul>
 
-          <div class="menu-section menu-title"><strong>1.- Gestión de Contingencia</strong></div>
-          <div class="menu-section menu-title">1.1.- Mapeo</div>
+          <div class="menu-section menu-title" style="color: var(--accent-green);"><strong>Gestión de Contingencia</strong></div>
+          <div class="menu-section menu-title">Mapeo</div>
           <ul class="menu-list inline">
               <li><a href="{% url 'Lista-Procesos' %}" class="menu-link"><span class="icon">&#10146;</span> Definición&nbsp;Procesos</a></li>
               <li><a href="{% url 'Lista-Evaluaciones' %}" class="menu-link"><span class="icon">&#10146;</span> Análisis&nbsp;Impacto (RIA&nbsp;/&nbsp;BIA)</a></li>
@@ -129,13 +186,13 @@
               <!-- <li><a href="{% url 'Lista-Escenarios' %}" class="menu-link"><span class="icon">&#10146;</span> Escenarios Riesgo</a></li> -->
           </ul>
 
-          <div class="menu-section menu-title" >1.2.- Procedimientos Contingencia</div>
+          <div class="menu-section menu-title" >Procedimientos Contingencia</div>
           <ul class="menu-list inline">
               <li><a href="{% url 'Lista-Proced' 0 %}" class="menu-link"><span class="icon">&#10146;</span> Procedimientos Negocio&nbsp;(BCP)</a></li>
               <li><a href="{% url 'Lista-DRP' %}" class="menu-link"><span class="icon">&#10146;</span>Procedimientos TI&nbsp;(DRP)</a></li>
           </ul>
 
-          <div class="menu-section menu-title"><strong>3.- Configuración</strong></div>
+          <div class="menu-section menu-title" style="color: var(--accent-green);"><strong>Configuración</strong></div>
           <ul class="menu-list inline">
               <li><a href="{% url 'menu-conf' %}" class="menu-link"><span class="icon">&#9965;</span> Configuración</a></li>
           </ul>
@@ -153,7 +210,7 @@
 
   </div>
 
-  	<!----- CSS para Scripts ----------------------------------->
+  <!----- Modales CSS para Scripts ----------------------------------->
 	<!---------------------------------------------------------->
 		<!-- Caja de Comentario -->
 
@@ -177,6 +234,27 @@
 			</div>
 		</div>
 		
+<!-- ================= MODAL DETALLE MODELO ================= -->
+<div id="modal-detalle-overlay" class="detalle-overlay oculto">
+    <div class="detalle-modal" style="width: 100px;">
+
+        <div id="detalle-titulo" class="detalle-titulo"></div>
+
+        <div class="detalle-separador"></div>
+
+        <div id="detalle-contenido" class="detalle-contenido"></div>
+
+        <div class="detalle-separador"></div>
+
+        <div id="detalle-mensaje" class="detalle-mensaje"></div>
+
+        <div class="detalle-footer">
+            <button onclick="cerrarDetalle()" class="button">Cerrar</button>
+        </div>
+
+    </div>
+</div>
+<!-- ======================================================== -->
 
 	<!--------- Fin CSS para Scripts ------------------------->
 

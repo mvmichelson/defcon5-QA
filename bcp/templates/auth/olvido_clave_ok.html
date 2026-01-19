@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<ul  class="fondo_img">
+
+    <div class="flex-container" > 
+    <div class="flex-item">
+
+    </div>
+    <div class="flex-item">
+
+        <ul class='scr4' style="background: rgba(31, 92, 21, 0.634); 
+                    color:whitesmoke; text-align: center; margin:0%">
+            <h2>Clave temporal enviada</h2>
+
+            <h5>
+            Si el usuario ingresado existe, se ha enviado una
+            <strong>clave temporal</strong> al correo registrado.
+            </h5>
+
+            <h5>
+            Con esa clave podrá iniciar sesión y el sistema
+            le solicitará cambiarla inmediatamente.
+            </h5>
+
+            <br>
+
+            <a href="{% url 'login' %}">
+                Volver al login
+            </a>
+
+        </ul>
+
+
+    </div>
+    </div>
+</ul>
+{% endblock %}
