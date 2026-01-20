@@ -2,17 +2,21 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Recuperar datos desde respaldo (ZIP)</h2>
+    <ul  class="encabezado_B"><h2 class="mb-4">Recuperar datos desde respaldo (ZIP)</h2></ul>
 
     <!-- Formulario -->
     <form method="post" enctype="multipart/form-data" class="mb-4">
         {% csrf_token %}
-        <div class="mb-3">
+       
+        <div class="mb-3 encabezado_B">
             <label for="zipfile" class="form-label">Seleccione archivo ZIP:</label>
             <input type="file" name="zipfile" id="zipfile" class="form-control" required>
         </div>
-        <br/><br/><br/><br/><br/>
-        <button type="submit" class="btn btn-primary">Recuperar</button>
+        <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+        <hr>
+        <ul class="encabezado_SB">
+        <button type="submit" class="btn btn-primary button">Recuperar</button>
+        </ul>
     </form>
 
     <!-- Resultados -->

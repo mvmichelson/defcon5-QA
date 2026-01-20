@@ -11139,7 +11139,7 @@ def reset(request):
 
     # Modelos a Reiniciar
     modelos = [
-        Proceso, SubProceso, SubProceso_V, Incidentes,
+        Proceso, SubProceso, SubProceso_V,
         Procedimientos, Contactos_PC, Servicios_PC, Pasos_PC,
         Procedimientos_V, Contactos_PC_V, Servicios_PC_V, Pasos_PC_V,
         Impactos_Asig, Indicadores_Asig, Impactos_Asig_v, Indicadores_Asig_v 
@@ -11353,7 +11353,6 @@ from django.core import serializers
 from django.core.exceptions import FieldDoesNotExist
 from django.contrib.auth.models import User, Group
 @login_required
-@login_required
 def recuperar_json_zip(request):
     """
     Vista para restaurar datos desde un archivo ZIP de respaldo.
@@ -11363,192 +11362,110 @@ def recuperar_json_zip(request):
     """
     # --- FK_MAP: adapta/añade según tu modelo (usa los nombres tal como aparecen en apps.get_model("bcp", name)) ---
     FK_MAP = {
-    # =============================
-    # Usuarios y Grupos
-    # =============================
-    "Grupos.grupo": Group,
-    "Gestor.user_gestor": User,
-    "Gestor.area": "Area",
-    "Gestor.cod_area": "Cod_Area",
+        # Usuarios y Grupos (ejemplo: campo en modelo bcp que referencia a User/Group)
+        "Grupos.grupo": Group,
+        "Gestor.user_gestor": User,
+        "Gestor.area": "Area",
+        "Gestor.cod_area": "Cod_Area",
 
-    # =============================
-    # Recursos y Tipos
-    # =============================
-    "Recursos.tipo": "Tipo_RR",
-    "Nivel_Impacto.tipo": "Tipo_Impacto",
-    "Indicadores_BIA.tipo": "Tipo_Indicador",
+        # Recursos y Tipos
+        "Recursos.tipo": "Tipo_RR",
+        "Nivel_Impacto.tipo": "Tipo_Impacto",
+        "Indicadores_BIA.tipo": "Tipo_Indicador",
+        "Impactos_Asig.impacto": "Tipo_Impacto",
+        "Impactos_Asig_v.impacto": "Tipo_Impacto",
+        "Impactos_Asig.nivel": "Nivel_Impacto",
+        "Impactos_Asig_v.nivel": "Nivel_Impacto",
+        "Indicadores_Asig.indicador": "Tipo_Indicador",
+        "Indicadores_Asig_v.indicador": "Tipo_Indicador",
+        "Indicadores_Asig.nivel": "Indicadores_BIA",
+        "Indicadores_Asig_v.nivel": "Indicadores_BIA",
 
-    "Impactos_Asig.impacto": "Tipo_Impacto",
-    "Impactos_Asig_v.impacto": "Tipo_Impacto",
-    "Impactos_Asig.nivel": "Nivel_Impacto",
-    "Impactos_Asig_v.nivel": "Nivel_Impacto",
+        # Procedimientos (FKs directas y backups)
+        "Procedimientos.tipo": "Tipo_Proc",
+        "Procedimientos_V.tipo": "Tipo_Proc",
+        "Procedimientos.escenarios": "Escenarios",
+        "Procedimientos_V.escenarios": "Escenarios",
+        "Procedimientos.resp_proceso": "Gestor",
+        "Procedimientos_V.resp_proceso": "Gestor",
+        "Procedimientos.bck_resp": "Gestor",
+        "Procedimientos_V.bck_resp": "Gestor",
+        "Procedimientos.gestor_ejecutor": "Gestor",
+        "Procedimientos_V.gestor_ejecutor": "Gestor",
+        "Procedimientos.bck_ejecutor": "Gestor",
+        "Procedimientos_V.bck_ejecutor": "Gestor",
+        "Procedimientos.enlace_c_crisis": "Gestor",
+        "Procedimientos_V.enlace_c_crisis": "Gestor",
+        "Procedimientos.bck_enlace": "Gestor",
+        "Procedimientos_V.bck_enlace": "Gestor",
+        "Procedimientos.gestor_consultor": "Gestor",
+        "Procedimientos_V.gestor_consultor": "Gestor",
 
-    "Indicadores_Asig.indicador": "Tipo_Indicador",
-    "Indicadores_Asig_v.indicador": "Tipo_Indicador",
-    "Indicadores_Asig.nivel": "Indicadores_BIA",
-    "Indicadores_Asig_v.nivel": "Indicadores_BIA",
+        # Componentes
+        "Componentes.tipo_act": "Tipo_Componente",
 
-    # =============================
-    # Procedimientos
-    # =============================
-    "Procedimientos.tipo": "Tipo_Proc",
-    "Procedimientos_V.tipo": "Tipo_Proc",
+        # Logs
+        "LogAut.gestor_aprobador": "Gestor",
+        "Log_Revision.proceso": "Proceso",
+        "Log_Revision.procedimiento": "Procedimientos",
+        "Log_Revision.drp": "Drp",
+        "Log_Revision.gestor_aut": "Gestor",
 
-    "Procedimientos.escenarios": "Escenarios",
-    "Procedimientos_V.escenarios": "Escenarios",
+        # Control de cambios
+        "Control_Cambios.proceso": "SubProceso_V",
+        "Control_Cambios.procedimiento": "Procedimientos_V",
+        "Control_Cambios.gestor_aut": "Gestor",
 
-    "Procedimientos.resp_proceso": "Gestor",
-    "Procedimientos_V.resp_proceso": "Gestor",
-    "Procedimientos.bck_resp": "Gestor",
-    "Procedimientos_V.bck_resp": "Gestor",
-    "Procedimientos.gestor_ejecutor": "Gestor",
-    "Procedimientos_V.gestor_ejecutor": "Gestor",
-    "Procedimientos.bck_ejecutor": "Gestor",
-    "Procedimientos_V.bck_ejecutor": "Gestor",
-    "Procedimientos.enlace_c_crisis": "Gestor",
-    "Procedimientos_V.enlace_c_crisis": "Gestor",
-    "Procedimientos.bck_enlace": "Gestor",
-    "Procedimientos_V.bck_enlace": "Gestor",
-    "Procedimientos.gestor_consultor": "Gestor",
-    "Procedimientos_V.gestor_consultor": "Gestor",
+        # Pasos PC
+        "Pasos_PC.ejecutor": "Gestor",
+        "Pasos_PC_V.ejecutor": "Gestor",
 
-    # =============================
-    # Componentes
-    # =============================
-    "Componentes.tipo_act": "Tipo_Componente",
+        # DRP
+        "Drp.resp_drp": "Gestor",
+        "Drp.bck_resp_drp": "Gestor",
+        "Drp.gestor_ejecutor_drp": "Gestor",
+        "Drp.bck_ejecutor_drp": "Gestor",
+        "Drp.enlace_c_crisis_drp": "Gestor",
+        "Drp.bck_enlace_drp": "Gestor",
+        "Drp.gestor_consultor_drp": "Gestor",
+        "Drp.tipo_Site": "Tipo_Site",
+        "Drp.disposicion_componentes": "Tipo_Disp",
 
-    # =============================
-    # Logs
-    # =============================
-    "LogAut.gestor_aprobador": "Gestor",
-    "Log_Revision.proceso": "Proceso",
-    "Log_Revision.procedimiento": "Procedimientos",
-    "Log_Revision.drp": "Drp",
-    "Log_Revision.gestor_aut": "Gestor",
+        # SubProcesos
+        "SubProceso.gestor_R": "Gestor",
+        "SubProceso_V.gestor_R": "Gestor",
+        "SubProceso.gestor_A": "Gestor",
+        "SubProceso_V.gestor_A": "Gestor",
+        "SubProceso.gestor_C": "Gestor",
+        "SubProceso_V.gestor_C": "Gestor",
+        "SubProceso.gestor_I": "Gestor",
+        "SubProceso_V.gestor_I": "Gestor",
 
-    "Control_Cambios.proceso": "SubProceso_V",
-    "Control_Cambios.procedimiento": "Procedimientos_V",
-    "Control_Cambios.gestor_aut": "Gestor",
-
-    # =============================
-    # Pasos PC
-    # =============================
-    "Pasos_PC.ejecutor": "Gestor",
-    "Pasos_PC_V.ejecutor": "Gestor",
-
-    # =============================
-    # DRP
-    # =============================
-    "Drp.resp_drp": "Gestor",
-    "Drp.bck_resp_drp": "Gestor",
-    "Drp.gestor_ejecutor_drp": "Gestor",
-    "Drp.bck_ejecutor_drp": "Gestor",
-    "Drp.enlace_c_crisis_drp": "Gestor",
-    "Drp.bck_enlace_drp": "Gestor",
-    "Drp.gestor_consultor_drp": "Gestor",
-    "Drp.tipo_Site": "Tipo_Site",
-    "Drp.disposicion_componentes": "Tipo_Disp",
-
-    # =============================
-    # SubProcesos / Procesos
-    # =============================
-    "SubProceso.gestor_R": "Gestor",
-    "SubProceso_V.gestor_R": "Gestor",
-    "SubProceso.gestor_A": "Gestor",
-    "SubProceso_V.gestor_A": "Gestor",
-    "SubProceso.gestor_C": "Gestor",
-    "SubProceso_V.gestor_C": "Gestor",
-    "SubProceso.gestor_I": "Gestor",
-    "SubProceso_V.gestor_I": "Gestor",
-
-    "Proceso.subproceso": "SubProceso",
-    "Proceso.subproceso_v": "SubProceso_V",
-
-    # =============================
-    # PRUEBAS DE CONTINGENCIA (CRÍTICO)
-    # =============================
-    "PruebaContingencia.procedimiento": "Procedimientos",
-    "PruebaContingencia.responsable": "Gestor",
-
-    "CasoPrueba.prueba": "PruebaContingencia",
-    "CasoPrueba_V.prueba": "PruebaContingencia_V",
-
-    "EjecucionPrueba.incidente": "Incidentes",
-    "EjecucionPrueba.prueba": "PruebaContingencia_V",
-    "EjecucionPrueba.checklist": "CheckList",
-
-    "EjecucionCasoPrueba.ejecucion": "EjecucionPrueba",
-    "EjecucionCasoPrueba.caso": "CasoPrueba_V",
-}
-
-
+        # Procesos (OneToOne)
+        "Proceso.subproceso": "SubProceso",
+        "Proceso.subproceso_v": "SubProceso_V",
+    }
 
 
     # Orden sugerido para borrado y lectura
     ORDEN_MODELOS = [
-    "Group",
-    "User",
-
-    "Area",
-    "Cod_Area",
-    "Grupos",
-    "Tipo_RR",
-    "Tipo_Indicador",
-    "Tipo_Impacto",
-    "Tipo_Impacto_P",
-    "Nivel_Impacto",
-    "Nivel_Impacto_P",
-    "Tipo_Proc",
-    "Tipo_Site",
-    "Tipo_Disp",
-    "Tipo_Componente",
-
-    "Gestor",
-    "Recursos",
-    "Escenarios",
-    "Amenazas",
-    "Estrategias",
-    "Parametros_G",
-    "Indicadores_BIA",
-
-    "Drp",
-    "Proceso",
-    "SubProceso",
-    "SubProceso_V",
-
-    "Impactos_Asig",
-    "Impactos_Asig_v",
-    "Indicadores_Asig",
-    "Indicadores_Asig_v",
-
-    "Procedimientos",
-    "Procedimientos_V",
-
-    "Servicios_PC",
-    "Servicios_PC_V",
-    "Pasos_PC",
-    "Pasos_PC_V",
-    "Contactos_PC",
-    "Contactos_PC_V",
-
-    "Componentes",
-    "LBC",
-
-    "LogAut",
-    "Log_Revision",
-    "Control_Cambios",
-
-    "Incidentes",
-    "CheckList",
-
-    "PruebaContingencia",
-    "PruebaContingencia_V",
-    "CasoPrueba",
-    "CasoPrueba_V",
-    "EjecucionPrueba",
-    "EjecucionCasoPrueba",
+        # agregar Django Group y User al inicio para sobrescribirlos primero
+        "Group", "User",
+        # luego los modelos de la app bcp (como en tu original)
+        "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador",
+        "Tipo_Impacto", "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P",
+        "Tipo_Proc", "Tipo_Site", "Tipo_Disp", "Tipo_Componente",
+        "Gestor", "Recursos", "Escenarios", "Amenazas", "Estrategias", "Parametros_G",
+        "Indicadores_BIA", "Drp", "Proceso", "SubProceso", "SubProceso_V",
+        "Impactos_Asig", "Impactos_Asig_v", "Indicadores_Asig", "Indicadores_Asig_v",
+        "Procedimientos", "Procedimientos_V",
+        "Servicios_PC", "Servicios_PC_V",
+        "Pasos_PC", "Pasos_PC_V",
+        "Contactos_PC", "Contactos_PC_V",
+        "Componentes", "LBC",
+        "LogAut", "Log_Revision", "Control_Cambios",
+        "Incidentes",
     ]
-
 
     log = []
     id_map = {}  # 'ModelName.PK' -> instancia creada
@@ -11987,6 +11904,7 @@ def recuperar_json_zip(request):
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
 
 # ===============================================================================================
+
 
 import io
 import json
