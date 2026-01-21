@@ -109,6 +109,7 @@ from queue import Full
 from django.shortcuts import render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 # Modelos del Sistema.
 
@@ -8785,17 +8786,15 @@ def Declara_Inc(request):
             print('----- Formato valido')
             
             incidente=Incidentes()
-            
-            incidente.save()
-            
 
             # Define codigo del incidente
             #==============================
-
             # Rescata correlativo de Incidente. 
             parametro = get_object_or_404(Parametros_G, nombre = 'FOLIO INCIDENTES')
 
-            f_i = incidente.fecha.strftime('%Y%m')
+            #f_i = incidente.fecha.strftime('%Y%m')
+            f_i = timezone.now().strftime('%Y%m')
+
             n=parametro.valor_2
 
             # Compone la parte numerica del codigo a un largo fijo 

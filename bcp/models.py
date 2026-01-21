@@ -528,7 +528,7 @@ class Incidentes(models.Model):
 
     codigo = models.CharField(max_length= 100, blank=False)
     fecha=models.DateField(auto_now_add=True)
-    fecha_creacion = models.DateTimeField(auto_now_add=False)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     # Identificacion de quien registra el incidente
     nombre_r  = models.CharField(max_length= 25, blank=True)
