@@ -1633,3 +1633,97 @@ body { background-color: var(--bg-main) !important; }
     top: 0;
 }
 
+/*==================*/
+/* ======================================================
+   Radar container con cuadrícula
+   ====================================================== */
+.radar-main {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: auto;
+
+    /* Cuadrícula + círculos concéntricos */
+    background:
+        repeating-radial-gradient(
+            circle at center,
+            rgba(0,255,120,0.18) 0,
+            rgba(0,255,120,0.18) 1px,
+            transparent 1px,
+            transparent 44px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            rgba(0,255,120,0.12),
+            rgba(0,255,120,0.12) 1px,
+            transparent 1px,
+            transparent 44px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(0,255,120,0.12),
+            rgba(0,255,120,0.12) 1px,
+            transparent 1px,
+            transparent 44px
+        );
+}
+
+/* ======================================================
+   Barrido animado
+   ====================================================== */
+.radar-sweep {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(
+        from 0deg,
+        rgba(0,255,120,0.45),
+        rgba(0,255,120,0.0) 65%
+    );
+    animation: radar-rotate 3.5s linear infinite;
+}
+
+/* ======================================================
+   Centro / mira
+   ====================================================== */
+.radar-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--accent-green);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.4;
+}
+
+.radar-center::before,
+.radar-center::after {
+    content: "";
+    position: absolute;
+    background: var(--accent-green);
+}
+
+.radar-center::before {
+    width: 100%;
+    height: 1px;
+    top: 50%;
+}
+
+.radar-center::after {
+    width: 1px;
+    height: 100%;
+    left: 50%;
+}
+
+/* ======================================================
+   Animación
+   ====================================================== */
+@keyframes radar-rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
