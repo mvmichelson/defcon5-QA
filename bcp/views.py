@@ -200,6 +200,10 @@ def index(request):
     nro_proced=Procedimientos_V.objects.all().count()
     nro_proced_act=Procedimientos_V.objects.filter(esta_activo=True).count()
     nro_incidentes=Incidentes.objects.filter(estado=True).count()
+    incidentes_activos = False
+    if nro_incidentes > 0:
+        incidentes_activos=True
+    
     print('---- nro_proced_act:', nro_proced_act, '/', nro_proced)
 
     # Numero de visitas a esta view, como está contado en la variable de sesión.
@@ -213,7 +217,8 @@ def index(request):
     return render(request, 'index.html', context={'nro_procesos':nro_procesos,
                                                   'nro_proced':nro_proced, 
                                                   'nro_proced_act':nro_proced_act,
-                                                  'nro_incidentes':nro_incidentes
+                                                  'nro_incidentes':nro_incidentes,
+                                                  'incidentes_activos':incidentes_activos
                                                   })
 
 

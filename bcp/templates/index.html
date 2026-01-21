@@ -12,9 +12,9 @@
     <div class="row">
         <div class="col-md-12 text-center">
             <h3 style="color: var(--accent-green); font-family: 'Courier New'; margin: 0; text-shadow: 0 0 10px var(--accent-green);">
-                defcon5 : BCP/DRP
+               <strong>defcon5 : BCP/DRP</strong> 
             </h3>
-            <p style="letter-spacing: 5px; font-size: 10px; color: #4ade80; margin: 0;">MONITOREO DE CONTINUIDAD</p>
+            <p style="letter-spacing: 5px; font-size: 10px; color: #4ade80; margin: 0;">AUTOMATED RESILIENCE. DRIVING CONTINUITY</p>
         </div>
     </div>
 
@@ -25,8 +25,12 @@
                 <div style="font-size: 16px; color: white; font-weight: bold;">{{nro_procesos}}</div>
             </div>
             <div class="tech-stat-card">
-                <small style="color: var(--accent-green); font-size: 9px;">NRO. INCIDENTES ABIERTOS</small>
-                <div style="font-size: 16px; color: white; font-weight: bold;">{{nro_incidentes}}</div>
+                <small style="color: var(--accent-green); font-size: 9px;">INCIDENTES ABIERTOS</small>
+                {% if not incidentes_activos %}
+                    <div style="font-size: 16px; color: white; font-weight: bold;">{{nro_incidentes}}</div>
+                {%else%}
+                    <div class="blink"  style="font-size: 16px; color: red; font-weight: bold;">{{nro_incidentes}}</div>
+                {%endif%}
             </div>
             <div class="tech-stat-card">
                 <small style="color: var(--accent-green); font-size: 9px;">PROCEDIMIENTOS DE CONTINGENCIA ACTIVOS</small>
@@ -34,13 +38,17 @@
             </div>
         </div>
 
+        
         <div class="col-md-6 text-center">
-            <div class="radar-main">
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.3;">
-                    <i class="fa fa-crosshairs fa-2x" style="color: var(--accent-green);"></i>
-                </div>
+            <div class="radar-main" style="position: relative;">
+                
+                <!-- Centro del radar (reemplazo de fa-crosshairs) -->
+                <div class="radar-center"></div>
+
             </div>
-            <p style="color: white; font-size: 10px; letter-spacing: 2px; margin: 0;">SCANNING NODES...</p>
+            <p style="color: white; font-size: 10px; letter-spacing: 2px; margin: 0;">
+                SCANNING NODES...
+            </p>
         </div>
 
         <div class="col-md-3">

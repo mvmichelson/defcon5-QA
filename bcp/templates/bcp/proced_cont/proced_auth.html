@@ -313,30 +313,44 @@
 
 		   <body>
 		   {% if servicios %}
-		    {%for ser in servicios.all  %}
-		    <tr>
-			<th scope="row">{{ser.nombre}}</th>
-			<th scope="row">{{ser.objetivo}}</th>
-			<th scope="row">{{ser.contacto}}</th>
-			<th scope="row">{{ser.contacto_bck}}</th>
-			<th><!-- Comentario de Revision ---------->
-			<!---------  Comentario de Revision ----->
-			<span class="comment-icon link"  data-message="Comentar..."
-			data-id="{{ proced.id }}"
-			data-sec="P" 
-			data-field="Revisar Servicio Critico: {{ser.nombre}} en 5. Servicios Requeridos :"
-			>
-			&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
-			</span>
-			<!---------  Fin Comentario de Revision ----->
-			</th>
-			
-		    </tr>
-       		    {% if not forloop.last %}
-        	    {%endif%}
-      		    {%endfor%}
+				{%for ser in servicios.all  %}
+				<tr>
+				<th scope="row">{{ser.nombre}}</th>
+				<th scope="row">{{ser.objetivo}}</th>
+				<th scope="row">{{ser.contacto}}</th>
+				<th scope="row">{{ser.contacto_bck}}</th>
+				<th><!-- Comentario de Revision ---------->
+				<!---------  Comentario de Revision ----->
+				<span class="comment-icon link"  data-message="Comentar..."
+				data-id="{{ proced.id }}"
+				data-sec="P" 
+				data-field="Revisar Servicio Critico: {{ser.nombre}} en 5. Servicios Requeridos :"
+				>
+				&emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+				</span>
+				<!---------  Fin Comentario de Revision ----->
+				</th>
+				
+				</tr>
+					{% if not forloop.last %}
+					{%endif%}
+					{%endfor%}
 		   {%else%}
-		     Sin servicios definidos.
+		    <tr>
+			<div class="" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+				<span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+				No se han definido Servicios Requeridos para este Procedimiento.
+				<!---------  Comentario de Revision ----->
+				<span class="comment-icon link"  data-message="Comentar Especificacion del Parametro ..."
+				data-id="{{ proced.id }}" # Pk del DRP
+				data-sec="P"           
+				data-field="Revisar ausencia de Servicios Requeridos"
+				> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+				</span>
+				<!---------  Fin Comentario de Revision ----->
+
+            </div>
+			</tr>
 		   {%endif%}
 		   <tbody>
 		</table>
@@ -414,7 +428,21 @@
         	    {%endif%}
       		    {%endfor%}
 		   {%else%}
-		     Sin servicios definidos.
+				<tr>
+			<div class="" style="padding: 8px 12px; font-style: italic; color: #555; background-color: yellow; border: 1px dashed #ccc; width: 95%;">
+				<span style="font-size: 15px; color: #002b5c;">&#8505;</span>
+				No se han definido Contactos para este Procedimiento.
+				<!---------  Comentario de Revision ----->
+				<span class="comment-icon link"  data-message="Comentar Especificacion del Parametro ..."
+				data-id="{{ proced.id }}" # Pk del DRP
+				data-sec="P"           
+				data-field="Revisar ausencia de Contactos para el Procedimiento"
+				> &emsp;<img src="/static/img/Comentario_1.png" width="15" height="15">
+				</span>
+				<!---------  Fin Comentario de Revision ----->
+
+            </div>
+			</tr>
 		   {%endif%}
 		   </tbody>
 		</table>

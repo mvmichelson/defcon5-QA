@@ -1595,3 +1595,41 @@ body { background-color: var(--bg-main) !important; }
     .manual-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; }
     .no-print { display: none !important; }
 }
+
+
+/* RADAR EN PAGINA PRINCIPAL*/
+/* =========================*/
+
+.radar-center {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--accent-green);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.5;
+}
+
+.radar-center::before,
+.radar-center::after {
+    content: "";
+    position: absolute;
+    background: var(--accent-green);
+}
+
+.radar-center::before {
+    width: 100%;
+    height: 1px;
+    top: 50%;
+    left: 0;
+}
+
+.radar-center::after {
+    height: 100%;
+    width: 1px;
+    left: 50%;
+    top: 0;
+}
+
