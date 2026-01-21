@@ -1035,3 +1035,49 @@ function startDashboardConsole() {
     }, 4000);
 }
 document.addEventListener('DOMContentLoaded', startDashboardConsole);
+
+// main.js
+
+/**
+ * Prepara el documento para impresión y dispara el diálogo.
+ * Intenta establecer el título de la página temporalmente para que el 
+ * nombre del archivo PDF sea descriptivo.
+ */
+function generarPDF(codigo, nombre) {
+    // Guardamos el título original
+    const originalTitle = document.title;
+    
+    // Limpiamos caracteres extraños del nombre para el archivo
+    const nombreLimpio = nombre.replace(/[/\\?%*:|"<>]/g, '-');
+    
+    // Cambiamos el título del documento (el navegador lo usa como nombre de archivo)
+    document.title = `PC_${codigo}_${nombreLimpio}`;
+    
+    // Ejecutamos la impresión
+    window.print();
+    
+    // Restauramos el título original después de un breve delay
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 1000);
+}
+
+// main.js - Gestión de exportación a PDF
+function generarPDF(codigo, nombre) {
+    // Guardamos el título original de la pestaña
+    const originalTitle = document.title;
+    
+    // Limpiamos el nombre de caracteres no permitidos en archivos
+    const nombreLimpio = nombre.replace(/[/\\?%*:|"<>]/g, '-');
+    
+    // Cambiamos el título temporalmente (el navegador lo usa como nombre del PDF)
+    document.title = `PC_${codigo}_${nombreLimpio}`;
+    
+    // Disparamos el diálogo de impresión
+    window.print();
+    
+    // Restauramos el título original tras 1 segundo
+    setTimeout(() => {
+        document.title = originalTitle;
+    }, 1000);
+}

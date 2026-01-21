@@ -221,11 +221,45 @@ aa {
 }
 
 /* Para iconos de opciones */
+
+ver {	/* Ver Detalle */
+	margin-top:0px;
+    padding:0%; 
+    font-family: sans-serif;
+    font-size: 1.6rem;
+    color:var(--accent-green);
+
+}
+
+bor {	/* Borrar */
+	margin-top:0px;
+    padding:0%; 
+    font-family: sans-serif;
+    font-size: 1.3rem;
+    color: red;
+    font-weight: bold;
+
+}
+
+raci {	/* Definicion RACI */
+	margin-top:0px;
+    padding:0%; 
+    font-family: sans-serif;
+    font-size: 1.3rem;
+    color: red;
+    font-weight: bold;
+
+}
+
+
+
+
 ab {	
 	margin-top:5px;
     font-family: sans-serif;
     font-size: 3rem;
     color:green;
+    padding:5px;
 
 }
 
@@ -276,6 +310,18 @@ ii {
 tm {
 	font-family: sans-serif;
     font-size: 1.0rem;	
+}
+
+/* Despliegue de campos en bloque */
+
+cam-nom {
+	font-family: sans-serif;
+    padding: 5px 10px;
+    text-align: right;
+    font-size: 1.0rem;
+    font-weight: bold;
+    border: 1px solid black ;
+
 }
 
 
@@ -1257,7 +1303,295 @@ body { background-color: var(--bg-main) !important; }
     padding: 2px;
     font-weight: bold;
     color: #ff4d4d;
-    text-transform: uppercase;F
+    text-transform: uppercase;
     font-size: 11px;
 }
 
+/* Contenedor de Documento tipo Hoja A4 */
+.document-sheet {
+    background-color: white;
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 40px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    color: #333;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Títulos de Sección Estilo Manual */
+.section-header {
+    border-left: 5px solid #1f4e79;
+    background-color: #f8fafc;
+    padding: 10px 15px;
+    margin: 30px 0 15px 0;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1f4e79;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Tabla de Pasos del Procedimiento (Punto 6) */
+.table-procedure {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.table-procedure th {
+    background-color: #1f4e79 !important;
+    color: white !important;
+    padding: 12px;
+    text-align: left;
+}
+
+.table-procedure td {
+    padding: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+}
+
+.step-number {
+    background: #1f4e79;
+    color: white;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+/* Badge para estados */
+.badge-status {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    background-color: #e2e8f0;
+}
+
+/* ==========================================================================
+   VERSION FINAL AJUSTADA: MANUAL DE PROCEDIMIENTOS (ALTA LEGIBILIDAD)
+   ========================================================================== */
+
+.manual-container {
+    background-color: #fdfdfd !important;
+    color: #1a202c !important;
+    padding: 40px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 1150px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    /* Aumento de tamaño de letra general */
+    font-size: 1.1rem !important; 
+    line-height: 1.6;
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* Destaque del Escenario (Rectángulo) */
+.escenario-box {
+    border: 2px solid #1f4e79;
+    background-color: #f0f7ff;
+    padding: 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    display: inline-block;
+    width: 100%;
+}
+
+.escenario-box strong {
+    color: #1f4e79;
+    font-size: 1.2rem;
+}
+
+/* Títulos de Sección (Barras Azules) */
+.sec-title {
+    background: #1f4e79 !important;
+    color: #ffffff !important;
+    padding: 12px 18px;
+    margin: 35px 0 15px 0;
+    font-size: 1.3rem; /* Más grande */
+    font-weight: bold;
+    border-radius: 4px;
+    width: 100%;
+}
+
+/* Tablas con cabeceras Gris Claro y Letra Negra (Legibilidad total) */
+.table-manual {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    background-color: white !important;
+}
+
+.table-manual th {
+    background-color: #d1d5db !important; /* Gris medio/claro sólido */
+    color: #000000 !important;           /* Letra negra obligatoria */
+    font-size: 1rem;
+    padding: 14px;
+    border: 1px solid #9ca3af;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.table-manual td {
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    color: #1a202c !important;
+    font-size: 1.05rem;
+}
+
+/* Círculo de Pasos en rojo */
+.step-circle {
+    background: #cc0000;
+    color: white !important;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    margin: auto;
+}
+
+/* Forzar colores de tus etiquetas custom */
+.manual-container aa, .manual-container sa {
+    color: #1e40af !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   CONFIGURACIÓN PARA EXPORTAR A PDF (IMPRESIÓN)
+   ========================================================================== */
+
+@media print {
+    /* Ocultar sidebar, navegación, botones y cualquier otro elemento del sistema */
+    body * {
+        visibility: hidden;
+    }
+
+    /* Mostrar solo el contenedor del manual y sus hijos */
+    .manual-container, .manual-container * {
+        visibility: visible;
+    }
+
+    /* Posicionar el manual al inicio de la página impresa */
+    .manual-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        box-shadow: none !important; /* Quitar sombra en PDF */
+    }
+
+    /* Ocultar el botón de impresión y volver dentro del PDF */
+    .no-print {
+        display: none !important;
+    }
+
+    /* Evitar que las tablas se corten feo entre páginas */
+    table { page-break-inside: auto; }
+    tr    { page-break-inside: avoid; page-break-after: auto; }
+    thead { display: table-header-group; }
+}
+
+/* Estilo para el botón flotante de PDF (Opcional) */
+.btn-pdf {
+    background-color: #cc0000;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+/* ==========================================================================
+   VERSION FINAL: MANUAL DE PROCEDIMIENTOS (ALTA LEGIBILIDAD + PDF)
+   ========================================================================== */
+
+.manual-container {
+    background-color: #fdfdfd !important;
+    color: #1a202c !important;
+    padding: 40px;
+    border-radius: 8px;
+    margin: 20px auto;
+    max-width: 1150px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-size: 1.1rem !important; /* Letra más grande para ergonomía */
+    line-height: 1.6;
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+/* Rectángulo destacado para el Escenario */
+.escenario-box {
+    border: 2px solid #1f4e79;
+    background-color: #f0f7ff;
+    padding: 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    width: 100%;
+}
+
+.sec-title {
+    background: #1f4e79 !important;
+    color: #ffffff !important;
+    padding: 12px 18px;
+    margin: 35px 0 15px 0;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.table-manual {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+    background-color: white !important;
+}
+
+/* Cabeceras Gris Claro con Texto Negro */
+.table-manual th {
+    background-color: #d1d5db !important; 
+    color: #000000 !important;
+    font-size: 1rem;
+    padding: 14px;
+    border: 1px solid #9ca3af;
+    text-align: left;
+}
+
+.table-manual td {
+    padding: 12px 15px;
+    border: 1px solid #d1d5db;
+    color: #1a202c !important;
+}
+
+.step-circle {
+    background: #cc0000;
+    color: white !important;
+    border-radius: 50%;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; margin: auto;
+}
+
+/* Configuración específica para Impresión / PDF */
+@media print {
+    body * { visibility: hidden; }
+    .manual-container, .manual-container * { visibility: visible; }
+    .manual-container { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none !important; }
+    .no-print { display: none !important; }
+}

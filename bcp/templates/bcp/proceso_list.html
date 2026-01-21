@@ -27,7 +27,7 @@ defcon={{defcon_est}}
 
 	<!---- Opcion 1 ----->
 	<div class="flex-item" style="width: 33%;">
-	<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1);">
+	<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1); border: 3px solid  var(--accent-green);">
 		<img src="/static/img/procesos.png" width="30" height="30"></img>
 		<a href="{% url 'Lista-Procesos' %}"><strong><sa>Definicion de Procesos</sa></strong></a>
 	</ul>
@@ -56,7 +56,7 @@ defcon={{defcon_est}}
 	</div><!------ Fin Menu Encabezado ---------------------------------->
 
 	{%block lista%}
-	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 535px">  
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 535px; border: 2px solid  var(--accent-green);">  
                          
 	{% if lista_procesos %}<!---- Si hay Procesos --------->
 
@@ -86,11 +86,11 @@ defcon={{defcon_est}}
 								{%if request.user.pk == proceso.subproceso.gestor_C.user_pk %}
 
 									<a href="{% url 'asigna-raci' proceso.pk 'Mapeo de Procesos'  %}"
-									class="link blink " data-message="Define ciclo de Autorizaciones RACI ..."><rr><strong>&#8476</strong></rr></a>
+									class="link blink " data-message="Define ciclo de Autorizaciones RACI ..."><raci>&#8476</raci></a>
 
 								{%else%}
 
-									.<yy class="link" data-message="En asignacion de Autorizaciones RACI...({{proceso.subproceso.gestor_C}})">&#8476</yy>..
+									.<raci class="link" data-message="En asignacion de Autorizaciones RACI por {{proceso.subproceso.gestor_C}}">&#8476</raci>..
 
 								{%endif%} <!------ fin usuario sesion = Gestor Consultor-->
 
@@ -185,7 +185,7 @@ defcon={{defcon_est}}
 				
 				{% if proceso.nro_hijos == 0 and proceso.pk_padre != 0 %}<!--- Si el Proceso no tiene hijos --> 
 					<a href="{% url 'borra-procesos' proceso.pk %}"
-					class="link confirm-link" con-message="* * *  Confirma Eliminacion del Proceso ? * * *" data-message="Elimina Proceso"><strong><rr>&#128465</rr></strong></a>
+					class="link confirm-link" con-message="* * *  Confirma Eliminacion del Proceso ? * * *" data-message="Elimina Proceso"><bor>&#128465</bor></a>
 				{%endif%}
 
 			{% endif %}
@@ -199,8 +199,8 @@ defcon={{defcon_est}}
 				<!Opcion Muestra>
 				<!==============>
 					<a href="{% url 'Detalle-Proceso' proceso.pk %}"
-					class="link " data-message="Muestra detalle del Proceso ..."><ab>&#128065</ab></a> 
-
+					class="link " data-message="Muestra detalle del Proceso ..."><ver>&#128065</ver></a>  
+ 
 				<!--Opcion Borra -->
 				<!--============ -->
 				{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}<!-- Si usuario es Consultor --> 
@@ -209,7 +209,7 @@ defcon={{defcon_est}}
 
 							{% if proceso.subproceso.status == 'C' and proceso.subproceso.fase_status == 'M' %}
 								<a href="{% url 'borra-procesos' proceso.pk %}" 
-									class="link confirm-link" con-message="* * *  Confirma Eliminacion del Sub-Proceso ? * * *" data-message="Elimina el Proceso ..."><strong><rr>&#128465</rr></strong></a>
+									class="link confirm-link" con-message="* * *  Confirma Eliminacion del Sub-Proceso ? * * *" data-message="Elimina el Proceso ..."><bor>&#128465</bor></a>
 							{%else%}
 								&ensp;&ensp;	
 							{%endif%}

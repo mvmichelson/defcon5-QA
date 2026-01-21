@@ -35,7 +35,7 @@
 		
 		<!---- Opcion 3 ----->
 		<div class="flex-item" style="width: 34%;">
-			<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1); ">
+			<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1); border: 3px solid  var(--accent-green);">
 				<img src="/static/img/Escenarios.png" width="30" height="30"></img>
 				<a href="{% url 'Lista-Recursos' %}"><strong><sa>Servicios Cr. &  Escenarios de Riesgo</sa></strong></a>		</ul>
 			</ul>
@@ -56,7 +56,7 @@
 	<!--------------------------------------------------------------------->
 
 	{%block lista%}
-	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 535px;">  
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 535px;border: 2px solid  var(--accent-green);">  
                          
 		{% if lista_procesos %}
 
@@ -218,7 +218,7 @@
 				<!Si el Proceso no se encuentra  en aprobacion en fases anteriores>
 
 				<!Opcion para ver detalle del Proceso>
-			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><bb class="link" data-message="Detalle del Proceso ...">&#128065</bb></a>
+			   	<a href="{% url 'Detalle-Proceso' proceso.pk %}"><ver class="link" data-message="Detalle del Proceso ...">&#128065</ver></a>
 
 				<span class="proceso-nombre" style="
 				margin-top:5px;
@@ -292,6 +292,7 @@
 		
 
 	<!--------- Fin CSS para Scripts ------------------------->
+<p style="font-size: 8px; color:green">[map_activos__list]</p>
 
 
 {%endblock%}

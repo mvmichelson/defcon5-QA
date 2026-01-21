@@ -34,7 +34,7 @@
 	
 		<!---- Opcion 2 ----->
 		<div class="flex-item" style="width: 33%;">
-			<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1); ">
+			<ul class="encabezado_B"  style="background: rgba(0, 128, 0, 0.1);  border: 3px solid  var(--accent-green);">
 				<img src="/static/img/Evaluacion_Riesgo.png" width="30" height="30"></img>
 				<a href="{% url 'Lista-Evaluaciones' %}"><strong><sa>Analisis Impactos (BIA&nbsp;/&nbsp;RIA)</sa></strong></a>		</ul>
 		</div><!---- Fin  Opcion 2 ----->
@@ -57,7 +57,7 @@
 		{% endblock %}
 
 	{%block lista%}
-	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 535px">  
+	<ul class="BarraScroll" style="background: rgba(0, 128, 0, 0.1); height: 535px ; border: 2px solid  var(--accent-green);">  
                          
 		{% if lista_procesos %}
 
@@ -211,7 +211,7 @@
 
 					<!Opcion para ver detalle del Proceso>
 					<a href="{% url 'Detalle-Proceso' proceso.pk %}" class="link " data-message="Detalle del Proceso">
-						<bb>&#128065</bb></a>
+						<ver>&#128065</ver></a>  
 
 						<!-- Despliega nombre del Proceso y Semaforo  -->
 						<!-- ======================================== -->

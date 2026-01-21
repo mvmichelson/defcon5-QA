@@ -135,7 +135,7 @@ from django.contrib.auth.decorators import permission_required
 #from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 
-from .utils import substring
+from .utils import substring, extraer_desde_char, resta_string
 
 
 
@@ -859,7 +859,11 @@ def Asigna_Raci(request, pk, etapa):
     print('Etapa:',etapa)
     model = Proceso
     proc_raci=get_object_or_404(Proceso, pk = pk)
+    ruta_p=proc_raci.path
     
+    nom_proc=extraer_desde_char(ruta_p,'/')
+    ruta=resta_string(ruta_p,nom_proc)
+    print('---- nombre proceso :', nom_proc)
     #form = AsignaRaciForm()
     
         
@@ -946,7 +950,11 @@ def Asigna_Raci(request, pk, etapa):
                                         }
                              )
                                         
-        return render(request, 'bcp/raci_asigna.html', {'form': form, 'proc_raci':proc_raci, 'etapa':etapa})
+        return render(request, 'bcp/raci_asigna.html', {'form': form,
+                                                        'proc_raci':proc_raci,
+                                                        'ruta':ruta,
+                                                        'n_proceso':nom_proc,
+                                                        'etapa':etapa})
 
 
 #*********************************
@@ -5664,6 +5672,11 @@ def detalle_procedimiento_v(request, pk):
     proceso = get_object_or_404(Proceso, pk=proced_v.pk_padre)
 
     c_cambio=Control_Cambios.objects.filter(procedimiento=proced_v)
+    n_proc=proceso.nombre
+    ruta=resta_string(proceso.path,n_proc)
+    consultor=proced_v.gestor_consultor
+    print('---- Ruta: ', ruta)
+
 
     # Selecciona las Pruebas y Casos por cada una
     tests = PruebaContingencia_V.objects.filter(procedimiento=proced_v)
@@ -5679,7 +5692,9 @@ def detalle_procedimiento_v(request, pk):
 
     return render(request, 'bcp/proced_cont/proced_detalle_v.html', {'proced':proced_v,
                                                                      'proceso':proceso,
+                                                                     'ruta':ruta,
                                                                      'lista_prbas':lista_prbas,
+                                                                     'consultor':consultor,
                                                                      'c_cambio':c_cambio})
 
 
