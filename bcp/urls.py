@@ -210,6 +210,10 @@ urlpatterns += [
     path('incidentes/<int:pk>/ejec_prba', views.Ejec_Prba, name='Ejec-Prba'),
     path('incidentes/<int:pk>/ejec_caso', views.Ejec_Caso, name='Ejec-Caso'),
 
+    # Reportes
+    path('incidentes/reportes/<int:pk>/', views.reporte_contingencia, name='reporte-incidente'),
+
+
 ]
 
 #  Procedimientos de Recuperacion

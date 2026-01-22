@@ -88,8 +88,15 @@
 # 6. Maestros
 # Administracion de Riesgo/Impacto 
 
+#7. Administracion de Incidentes
+# ==============================
+# Declara Incidente
+# Plan de Pruebas
+# Switchs de Activacion / Desactivacion
+# Reportes de Incidentes
 
-# 7. Proposito General
+
+# 8. Proposito General
 #=======================
 
 # Manda correo de Notificacion
@@ -8760,7 +8767,7 @@ def detalle_drp(request, pk):
 
 
 #*********************************************************************************************************************************************
-#***********************************************  7. Administracion de Incidente  ************************************************************
+#***********************************************  7. Administracion de Incidentes  ************************************************************
 #*********************************************************************************************************************************************
 
 
@@ -8909,6 +8916,9 @@ def Declara_Inc(request):
                                                             'amenazas_disponibles':amenazas_disponibles })
 
 
+# ==================================
+# Plan de Pruebas
+# =================================
 from .forms import Plan_Pruebas_A_Form
 #@permission_required('Catalogo.can_mark_returned')
 @login_required
@@ -9567,6 +9577,11 @@ def contar_procesos_por_servicio(incidente):
     return dict(contador)  # Convertir defaultdict en un diccionario normal
 
 # ---- Fin Contadores ---------------------------------------------------
+
+
+# =====================================
+# Switchs de Activacion / Desactivacion
+# =====================================
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -10341,7 +10356,58 @@ def Ejec_Caso(request, pk):
                                 'form':form})
 
 
+# ===================================
+# Reportes de Incidentes
+# ===================================
 
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Sum
+
+from .models import (
+    Incidentes, EjecucionPrueba, Indicadores_Asig_v, 
+    EjecucionCasoPrueba, Impactos_Asig_v  # Recuperado explícitamente
+)
+
+# Versión 35 | Lógica de recuperación de datos por jerarquía de modelos
+def reporte_contingencia(request, pk):
+    # Obtenemos el incidente (que es el disparador del reporte)
+    incidente = get_object_or_404(Incidentes, pk=pk)
+    
+    # Buscamos la EJECUCIÓN MAESTRA vinculada a este incidente
+    # Usamos filter().first() por si hay varias, tomar la última
+    ejecucion_maestra = EjecucionPrueba.objects.filter(incidente=incidente).select_related(
+        'prueba__procedimiento__subproceso', 'prueba__responsable'
+    ).order_by('-fecha_real').first()
+    
+    context = {'incidente': incidente}
+
+    if ejecucion_maestra:
+        subproceso = ejecucion_maestra.prueba.procedimiento.subproceso
+        
+        # OBTENEMOS LOS DATOS QUE NO SALÍAN:
+        # Filtramos los casos ejecutados usando la FK directa a ejecucion_maestra
+        pruebas_aplicadas = EjecucionCasoPrueba.objects.filter(
+            ejecucion=ejecucion_maestra
+        ).select_related('caso')
+
+        # Buscamos el RTO en el BIA del subproceso
+        rto_meta = Indicadores_Asig_v.objects.filter(
+            pk_proc=subproceso.pk_padre, 
+            indicador__nombre__icontains='RTO'
+        ).first()
+
+        context.update({
+            'ejecucion_maestra': ejecucion_maestra,
+            'subproceso': subproceso,
+            'pruebas_aplicadas': pruebas_aplicadas,
+            'rto_meta': rto_meta,
+        })
+
+    template = 'bcp/reportes/reporte_formal.html' if 'formal' in request.GET else 'bcp/reportes/dashboard_ejecucion.html'
+    return render(request, template, context)
+
+
+    
 #*********************************************** Fin Administracion del Incidente *********************************************************
    
 #*********************************************************************************************************************************************
@@ -10777,7 +10843,7 @@ def Crea_Nivel_Impacto(request, pk):
 
 
 #*********************************************************************************************************************************************
-#***********************************************  7. Proposito General ***********************************************************************
+#***********************************************  8. Proposito General ***********************************************************************
 #*********************************************************************************************************************************************
 
 from django.contrib.auth.models import User
@@ -11225,7 +11291,7 @@ def reset(request):
     
         form = Reset()
                                  
-        return render(request, 'reset.html', {'form': form})
+        return render(request, 'bcp/conf/reset.html', {'form': form})
 
 
 ### Codigo temporal para cargar usuarios y grupos a produccion

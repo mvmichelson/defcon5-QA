@@ -1,0 +1,48 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<div class="no-print text-center py-3 bg-light border-bottom">
+    <button onclick="window.print()" class="btn btn-dark">IMPRIMIR DOCUMENTO</button>
+</div>
+
+<div class="manual-container" style="background: white; border: 1px solid #ccc; max-width: 900px; margin: 20px auto; padding: 50px;">
+    
+    <div class="text-center mb-5">
+        <h2 style="border-bottom: 2px solid #333; display: inline-block; padding-bottom: 10px;">REPORTE TÉCNICO DE CONTINUIDAD</h2>
+        <p class="mt-2">Incidente Referencia: <strong>{{ incidente.nro_incidente }}</strong></p>
+    </div>
+
+    <h4 class="bg-light p-2">1. DATOS DEL SUBPROCESO</h4>
+    <div class="p-3 mb-4">
+        <p><strong>Nombre del Proceso:</strong> {{ subproceso.nombre }}</p>
+        <p><strong>Meta de Recuperación (RTO):</strong> {{ rto_meta.nivel.valor }} minutos</p>
+        <p><strong>Evaluación General:</strong> {{ detalle_ejecucion.evaluacion_final }}</p>
+    </div>
+
+    <h4 class="bg-light p-2">2. MATRIZ DE RESULTADOS</h4>
+    <table class="table-manual w-100 mb-5">
+        <thead>
+            <tr style="background: #eee;">
+                <th style="padding: 10px; border: 1px solid #ddd;">Caso de Prueba</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for paso in resultados_pasos %}
+            <tr>
+                <td style="padding: 10px; border: 1px solid #ddd;">{{ paso.caso.descripcion }}</td>
+                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
+                    <strong>{{ paso.resultado|upper }}</strong>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 100px;">
+        <div class="d-flex justify-content-around text-center">
+            <div style="border-top: 1px solid #000; width: 200px; padding-top: 5px;">Firma Responsable</div>
+            <div style="border-top: 1px solid #000; width: 200px; padding-top: 5px;">V°B° Auditoría</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

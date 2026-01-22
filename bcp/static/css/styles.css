@@ -1727,3 +1727,33 @@ body { background-color: var(--bg-main) !important; }
     to   { transform: rotate(360deg); }
 }
 
+/* =========================================*/
+/* --- Estilos para Reporte y Dashboard --- */
+/* =========================================*/
+.report-container { padding: 20px; color: #333; }
+.card-report { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.text-danger { color: #dc3545; }
+.text-success { color: #28a745; }
+
+/* Simulación de Hoja A4 para el Reporte Formal */
+.documento-a4 {
+    background: white;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    padding: 25mm;
+    color: black !important;
+}
+
+/* Configuración de Impresión */
+@media print {
+    .no-print, .sidebar, .navbar { display: none !important; }
+    body { background: white !important; padding: 0; margin: 0; }
+    .documento-a4 {
+        box-shadow: none;
+        margin: 0;
+        width: 100%;
+        padding: 0;
+    }
+    .card-report { border: 1px solid #eee; box-shadow: none; }
+}

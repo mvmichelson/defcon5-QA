@@ -15,25 +15,23 @@
 
 <!----------------- fin ENCABEZADOS ------------------>
 	
-	{%block lista%}
-	<ul class="BarraScroll" style="height: 300px;">  
-                         
-		{% if lista_incidentes %}
-			
-			{% for incid in lista_incidentes %}
-				<p> 
-				<!**********************>
-				<!* Despliega Opciones *>
-				<!**********************>
-			
+	<ul class="BarraScroll" style="height: 300px; background-color: black;">  
 
-				<! Incluir condicion para que solo los integrantes del Comite de Crisis puedan operar>
-				
-				<!Opcion Reporte Perfil>
-	
-
-			
-				<a href="{% url 'Perfil-Incidente' incid.inc.pk %}" >
+		<table class="ita">
+        <thead>
+            <tr>
+                <th>Dashboard</th>
+                <th>Actualizacion</th>
+                <th>Codigo</th>
+				<th>Descripcion</th>
+                <th>Reportes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for incid in lista_incidentes %}
+            <tr>
+                <td><!---- Dashboard ------>
+					<a href="{% url 'Perfil-Incidente' incid.inc.pk %}" >
 					{% if incid.inc.estado == True %}<aa class="blink">{%else%} <aa> {%endif%}
 					
 						{% if incid.inc.test %}
@@ -49,8 +47,10 @@
 
 					</aa>
 				</a>
-				                        
-			   	<!Opcion Modifica>
+				</td>
+
+                <td><!---- Actualizacion/Eliminacion ----->
+				<!Opcion Modifica>
 				{% if incid.inc.test %}
 					<a href="{% url 'Modi-Plan-Pruebas' incid.inc.pk %}"
 					class="link" data-message="Actualiza Reporte de Incidente"><rr><bb>&#128222</bb></rr></a>
@@ -66,25 +66,25 @@
 					class="link confirm-link" data-message="Borra Reporte de Incidente" 
 					con-message="Confirma Eliminacion del Reporte de Incidente ...?"><rr>&#128465</rr></a>
 				{%endif%}
-			   	                        
 
-				<!*****************************************>
-				<!* Despliega codigo y nombre del Proceso *>
-				<!*****************************************>
-			 	 <aa>  &emsp;{{incid.inc.codigo}}</aa>
-				 <aa>  &emsp; /:
-				 <aa>  {{incid.inc.descripcion}}</aa>
-			
-				</p>
-      		 	
-			{% endfor %}
+				</td>
+                <td>{{incid.inc.codigo}}</td>
+                <td>{{incid.inc.descripcion}}</td>
 
-		{% else %}
-      			<p>No hay Incidentes Reportados</p>
-    		{% endif %}
+				<td><!------ Reportes -------->
+					<a href="{% url 'En-Construccion' %}"
+					class="link" data-message="Dashboard Reporte de Incidente">
+					<img src="/static/img/Reporte_Pruebas.png" width="20" height="20">
+					</a>
+				</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4" style="text-align:center; font-style:italic; padding: 20px;">*** No se han declarado Incidentes ***</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </ul>               
 		
-	</ul>
-	{%endblock%}
 
 	<!----- CSS para Scripts ----------------------------------->
 	<!---------------------------------------------------------->

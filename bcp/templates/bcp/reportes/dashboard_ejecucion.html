@@ -1,0 +1,55 @@
+{% extends "base_generic.html" %}
+{% block content %}
+<div class="col-sm-10">
+    <div class="card-report">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="sec-title">INFORME DE PRUEBAS: {{ incidente.nro_incidente }}</h2>
+            <a href="?formal=1" class="btn-pdf">MODO ACTA FORMAL</a>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><strong>SUBPROCESO:</strong> {{ subproceso.nombre }}</p>
+                <p><strong>RESPONSABLE:</strong> {{ ejecucion_maestra.prueba.responsable.get_full_name }}</p>
+            </div>
+            <div class="col-md-6 text-right">
+                <p><strong>EVALUACIÓN:</strong> <span class="badge badge-dark">{{ ejecucion_maestra.evaluacion_final }}</span></p>
+                <p><strong>RTO META:</strong> {{ rto_meta.nivel.valor|default:"--" }} min</p>
+            </div>
+        </div>
+
+        <h4 class="sec-title">ANÁLISIS DE RESULTADOS</h4>
+        <div class="escenario-box mb-4">
+            <p><strong>Resultados Obtenidos:</strong> {{ ejecucion_maestra.resultados_obtenidos }}</p>
+            <hr>
+            <p><strong>Lecciones Aprendidas:</strong> {{ ejecucion_maestra.lecciones_aprendidas }}</p>
+        </div>
+
+        <h4 class="sec-title">DETALLE DE PRUEBAS APLICADAS</h4>
+        <table class="table-manual w-100">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">PRUEBA / CASO</th>
+                    <th style="width: 15%; text-align: center;">RESULTADO</th>
+                    <th style="width: 35%;">OBSERVACIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in pruebas_aplicadas %}
+                <tr>
+                    <td>{{ p.caso.descripcion }}</td>
+                    <td class="text-center">
+                        <strong class="{% if p.resultado == 'Exitosa' %}text-success{% else %}text-danger{% endif %}">
+                            {{ p.resultado|upper }}
+                        </strong>
+                    </td>
+                    <td><small>{{ p.observaciones|default:"-" }}</small></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="text-center">No se encontraron registros de pruebas aplicadas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
