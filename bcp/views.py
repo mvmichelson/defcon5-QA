@@ -3728,16 +3728,22 @@ from .forms import CreaProc_B_Form
 @login_required
 def cr_prcd_b(request, pk):
 
+    print('>>>> Crea Procedimiento B')
     proced = get_object_or_404(Procedimientos, pk = pk)
     proceso= get_object_or_404(Proceso, pk = proced.pk_padre)
     escenarios=proceso.subproceso.escenarios
-   
+    
+    ruta=resta_string(proceso.path, proceso.nombre)
+    print('---- ruta: ', ruta)
+
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
+
+
         
-    print('nombre proceso=', proceso.nombre)
-    print('nombre procedimiento=', proced.nombre)
+    print('---- nombre proceso=', proceso.nombre)
+    print('---- nombre procedimiento=', proced.nombre)
 
     print('Crea parte B')
     
@@ -3908,7 +3914,8 @@ def cr_prcd_b(request, pk):
                                                                       'escenarios':escenarios,
                                                                       'servicios':servicios,
                                                                       'contactos':contactos,
-                                                                      'pasos':pasos})
+                                                                      'pasos':pasos,
+                                                                      'ruta':ruta})
 
 
 #*************************************************************
@@ -4630,6 +4637,7 @@ def Aut_Proced_C(request, pk):
     proced = get_object_or_404(Procedimientos, pk = pk)
     proceso= get_object_or_404(Proceso, pk = proced.pk_padre)
 
+    sproceso_v = proceso.subproceso_v  # Para establecer relacion del PC con su Proceso asociado
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
@@ -4717,9 +4725,9 @@ def Aut_Proced_C(request, pk):
                     if not existe:    # Verifica si el PC Vigente existe
                             print('> Procedimiento NO Existe pc=', existe)
 
-                            #===================================
-                            # Crea Nuevo Procedimiento Vigente /
-                            #===================================
+                            #==========================================
+                            # **** Crea Nuevo Procedimiento Vigente ***
+                            #==========================================
 
                             proced_v = Procedimientos_V()
                             print('>  PC vigente  no existe. Crea version inicial del PC vigente.')
@@ -4730,6 +4738,7 @@ def Aut_Proced_C(request, pk):
                             proced_v.fecha_c = datetime.date.today()
                             proced_v.pk_padre = proced.pk_padre
                             proced_v.codigo   = proced.codigo
+                            proced_v.subproceso = sproceso_v
 
                             #Asigna Identificacion del Procedimiento
                             proced_v.nombre = proced.nombre
@@ -4850,6 +4859,8 @@ def Aut_Proced_C(request, pk):
                             version=int(proced_v.version)+1 # Incrementa version
                             proced_v.version = version      # asigna version 
                             detalle_log="Cambios autorizados a version "+str(version)+" : "
+
+                            proced_v.subproceso = sproceso_v
 
                             hay_cambios=False
 
@@ -9378,14 +9389,90 @@ def Modifica_Inc(request, pk):
 @login_required
 def Perfil_Inc(request, pk):
 
+    print('>>>>> Perfil del Incidente (Dashboard)')
 
     incidente = get_object_or_404(Incidentes, pk = pk)
-    print('incidente=', incidente.nombre_r)
+    print('---- Informa incidente : ', incidente.nombre_r)
 
 
     procesos_inc = incidente.procesos_i
     #escenarios_inc=incidente.escenarios_i
 
+    # Escenarios asociados al incidente
+    # =================================
+    escenarios_inc = [] 
+    print('---- Escenarios:')
+    for esc in incidente.escenarios_i.all():
+        print('-------  Escenarios:', esc.titulo)
+        escenarios_inc.append(esc.titulo)
+
+    # PC asociados al incidente
+    # =========================
+
+    procedimientos_inc=[]
+    cont_procedimientos=0
+    cont_proced_act=0
+    cont_proced_ina=0
+    cont_proced_con=0
+    cont_proced_no_con=0
+    for proc in procesos_inc.all():
+        for proced in proc.procedimientos_contingencia_v.all():
+            if proced.escenarios.titulo in escenarios_inc:
+                procedimientos_inc.append(proced)
+                cont_procedimientos += 1
+                if proced.esta_activo:
+                    cont_proced_act += 1
+                    if proced.esta_confirmado:
+                        cont_proced_con += 1
+                    else:
+                        cont_proced_no_con += 1
+                else:
+                    cont_proced_ina += 1
+
+                
+
+
+    P100_activos_vs_totales = (cont_proced_act / cont_procedimientos * 100) if cont_procedimientos else 0
+    P100_inactivos_vs_totales = 100 - P100_activos_vs_totales
+
+    P100_confirm_vs_activos = (cont_proced_con / cont_proced_act * 100) if cont_proced_act else 0
+    P100_no_confirm_vs_activos = 100 - P100_confirm_vs_activos
+
+
+    print('----- Total procedimientos : ', cont_procedimientos)
+    print('----- Total proced. Activos : ', cont_proced_act)
+    print('----- Total proced. Confirmados : ', cont_proced_con)
+
+    data_1 = {
+        "Activos": float(P100_activos_vs_totales or 0),
+        "Inactivos": float(P100_inactivos_vs_totales or 0),
+    }
+
+    colors_1 = {
+        "Activos": "#2ecc71",
+        "Inactivos": "#e74c3c",
+    }
+
+    data_2 = {
+        "Confirmados": float(P100_confirm_vs_activos or 0),
+        "No Confirmados": float(P100_no_confirm_vs_activos or 0),
+    }
+
+    colors_2 = {
+        "Confirmados": "#2ecc71",
+        "No Confirmados": "#e74c3c",
+    }
+
+    #context.update({
+    #    "chart_data_1": data_1,
+    #    "chart_colors_1": colors_1,
+    #    "chart_data_1": data_2,
+    #    "chart_colors_1": colors_2,
+    #})
+
+
+    # Escenarios asociados al incidente
+    # =================================
     escenarios_inc = [] 
     for esc in incidente.escenarios_i.all():
         print('-- Escenarios:', esc.titulo)
@@ -9473,8 +9560,24 @@ def Perfil_Inc(request, pk):
                                                           'estadistica_impactos':estadistica_impactos,
                                                           'estadistica_indicadores':estadistica_indicadores,
                                                           'estadistica_escenarios':estadistica_escenarios,
-                                                          'estadistica_recursos':estadistica_recursos
+                                                          'estadistica_recursos':estadistica_recursos,
+                                                          'cont_procedimientos':cont_procedimientos,
+                                                          'cont_proced_act':cont_proced_act,
+                                                          'cont_proced_ina':cont_proced_ina,
+                                                          'cont_proced_con':cont_proced_con,
+                                                          'cont_proced_no_con':cont_proced_no_con,
+                                                          'P100_activos_vs_totales':P100_activos_vs_totales,
+                                                          'P100_inactivos_vs_totales':P100_inactivos_vs_totales,
+                                                          'P100_confirm_vs_activos':P100_confirm_vs_activos,
+                                                          'P100_no_confirm_vs_activos':P100_no_confirm_vs_activos,
+                                                          "chart_data_1": data_1,
+                                                          "chart_colors_1":colors_1,
+                                                          "chart_data_2": data_2,
+                                                          "chart_colors_2": colors_2
                                                           })
+
+
+
 
 from collections import defaultdict
 
@@ -10357,7 +10460,7 @@ def Ejec_Caso(request, pk):
 
 
 # ===================================
-# Reportes de Incidentes
+# Dashboard y Reportes de Pruebas
 # ===================================
 
 from django.shortcuts import render, get_object_or_404
@@ -10367,41 +10470,173 @@ from .models import (
     Incidentes, EjecucionPrueba, Indicadores_Asig_v, 
     EjecucionCasoPrueba, Impactos_Asig_v  # Recuperado explícitamente
 )
+#import json
+from django.shortcuts import render
+
 
 # Versión 35 | Lógica de recuperación de datos por jerarquía de modelos
-def reporte_contingencia(request, pk):
+def reporte_prueba(request, pk):
+
+    print('>>>>> DASHBOARD Y REPORTE DE PRUEBAS')
+
     # Obtenemos el incidente (que es el disparador del reporte)
     incidente = get_object_or_404(Incidentes, pk=pk)
+    print('---- incidente :', incidente.codigo, 'descripcion :', incidente.descripcion)
     
-    # Buscamos la EJECUCIÓN MAESTRA vinculada a este incidente
-    # Usamos filter().first() por si hay varias, tomar la última
-    ejecucion_maestra = EjecucionPrueba.objects.filter(incidente=incidente).select_related(
-        'prueba__procedimiento__subproceso', 'prueba__responsable'
-    ).order_by('-fecha_real').first()
-    
-    context = {'incidente': incidente}
 
-    if ejecucion_maestra:
-        subproceso = ejecucion_maestra.prueba.procedimiento.subproceso
+    # Procesos asociados
+    # ==================
+    procesos=incidente.procesos_i.all()
+    n_procesos=procesos.count()
+    print('---- Nro.de Procesos : ', n_procesos)
+
+    context=({'incidente':incidente,
+              'procesos':procesos,
+              'n_procesos':n_procesos})
+    
+
+    # Escenarios asociados
+    # ====================
+    escenarios_del_incidente=incidente.escenarios_i.all()
+    n_escenarios=escenarios_del_incidente.count()
+    context.update({'escenarios':escenarios_del_incidente,
+             'n_escenarios':n_escenarios})
+    print('---- Nro. de Escenarios : ', n_escenarios)
+
+    # PC asociados
+    # ============
+    lista_proced = []
+    cont_pc=0
+    cont_pc_activos=0
+    cont_pc_confirm=0
+
+    # Obtiene los PCs asociados a cada proceso
+    for proc in procesos.all():
         
-        # OBTENEMOS LOS DATOS QUE NO SALÍAN:
-        # Filtramos los casos ejecutados usando la FK directa a ejecucion_maestra
-        pruebas_aplicadas = EjecucionCasoPrueba.objects.filter(
-            ejecucion=ejecucion_maestra
-        ).select_related('caso')
+        PC = Procedimientos_V.objects.filter(subproceso=proc)
 
-        # Buscamos el RTO en el BIA del subproceso
-        rto_meta = Indicadores_Asig_v.objects.filter(
-            pk_proc=subproceso.pk_padre, 
-            indicador__nombre__icontains='RTO'
-        ).first()
+        print('------ Proceso :', proc.nombre)
+        # Selecciona los PC asociados a los Escenarios del Incidente
+        for proced in PC:
 
-        context.update({
-            'ejecucion_maestra': ejecucion_maestra,
-            'subproceso': subproceso,
-            'pruebas_aplicadas': pruebas_aplicadas,
-            'rto_meta': rto_meta,
+            if proced.escenarios in escenarios_del_incidente:
+            # Si el PC esta asociado a algun escenario del Incidente
+                cont_pc += 1
+                if proced.esta_activo == True:
+                    cont_pc_activos += 1
+                if proced.esta_confirmado == True:
+                    cont_pc_confirm  += 1
+
+                lista_proced.append(PC)
+                print('------- PC : ', proced.nombre,'-', proced.escenarios.titulo)
+
+
+    print('---- Totales:')
+    print('---- Nro. PCs :', cont_pc)
+    print('---- Nro. PC Activos : ', cont_pc_activos)
+    print('---- Nro. PC confirmados : ', cont_pc_confirm)
+    print('---- Lista de PC : ', lista_proced)
+
+    context.update({
+            'lista_proced': lista_proced,
+            'cont_pc': cont_pc,
+            'cont_pc_activos':cont_pc_activos,
+            'cont_pc_confirm':cont_pc_confirm,
         })
+
+
+    # Pruebas 
+    # =================================================
+    print('---- PRUEBAS')
+    ejecucion_prbas = EjecucionPrueba.objects.filter(incidente=incidente)
+    cont_pruebas=ejecucion_prbas.count()
+    
+    prbas_exitosas = ejecucion_prbas.filter(evaluacion_final='Exitosa')
+    cont_prbas_exitosas = prbas_exitosas.count()
+
+    prbas_parciales = ejecucion_prbas.filter(evaluacion_final='Parcial')
+    cont_prbas_parciales = prbas_parciales.count()
+
+    prbas_fallidas = ejecucion_prbas.filter(evaluacion_final='Fallidas')
+    cont_prbas_fallidas = prbas_fallidas.count()
+
+    prbas_en_ejecucion = ejecucion_prbas.filter(evaluacion_final='En Ejecucion')
+    cont_prbas_en_ejecucion = prbas_en_ejecucion.count()
+
+    print('---- Nro. Pruebas', cont_pruebas)
+    print('---- Nro. P. exitosas', cont_prbas_exitosas)
+    print('---- Nro. P. parciales', cont_prbas_parciales)
+    print('---- Nro. P. fallidas', cont_prbas_fallidas)
+    print('---- Nro. P. en ejecucion', cont_prbas_en_ejecucion)
+
+    #P100_prbas_exitosas  = cont_prbas_exitosas/cont_pruebas*100
+    P100_prbas_exitosas  = 0.35*100
+    #P100_prbas_parciales = cont_prbas_parciales/cont_pruebas*100
+    P100_prbas_parciales = 0.15*100
+    #P100_prbas_fallidas   = cont_prbas_fallidas/cont_pruebas*100
+    P100_prbas_fallidas   = 0.10*100
+    #P100_prbas_en_ejecucion = cont_prbas_en_ejecucion/cont_pruebas*100
+    P100_prbas_en_ejecucion = 0.40*100
+
+    print('% Pruebas Exitosas : ', P100_prbas_exitosas)
+    print('% Pruebas Parciales : ', P100_prbas_parciales)
+    print('% Pruebas Fallidas  : ', P100_prbas_fallidas)
+    print('% Pruebas En Ejecucion : ', P100_prbas_en_ejecucion)
+
+
+    context.update({
+            'ejecucion_prbas':ejecucion_prbas,
+            'cont_pruebas': cont_pruebas,
+            'prbas_exitosas':prbas_exitosas,
+            'cont_prbas_exitosas':cont_prbas_exitosas,
+            'prbas_parciales':prbas_parciales,
+            'cont_prbas_parciales':cont_prbas_parciales,
+            'prbas_fallidas':prbas_fallidas,
+            'cont_prbas_fallidas':cont_prbas_fallidas,
+            'prbas_en_ejecucion':prbas_en_ejecucion,
+            'cont_prbas_en_ejecucion':cont_prbas_en_ejecucion,
+
+            'P100_prbas_exitosas':P100_prbas_exitosas,
+            'P100_prbas_parciales':P100_prbas_parciales,
+            'P100_prbas_fallidas':P100_prbas_fallidas,
+            'P100_prbas_en_ejecucion':P100_prbas_en_ejecucion
+
+        })
+    
+    # Prepara grafico
+    # ===============
+
+    # Ejemplo de datos obtenidos por tus Queries
+    import json
+
+    data = {
+        "Exitosas": float(P100_prbas_exitosas or 0),
+        "Parciales": float(P100_prbas_parciales or 0),
+        "Fallidas": float(P100_prbas_fallidas or 0),
+        "En Ejecucion": float(P100_prbas_en_ejecucion or 0),
+    }
+
+    colors = {
+        "Exitosas": "#2ecc71",
+        "Parciales": "#f1c40f",
+        "Fallidas": "#e74c3c",
+        "En Ejecucion": "#3498db",
+    }
+
+    context.update({
+        "chart_data": data,
+        "chart_colors": colors,
+    })
+
+
+    print('---- Pruebas')
+    #.select_related(
+    #    'prueba__procedimiento__subproceso', 'prueba__responsable'
+    #).order_by('-fecha_real').first()
+    for prba in ejecucion_prbas:
+        print('----- Prueba :', prba.prueba.codigo, 'objetivo :', prba.prueba.objetivo)
+
+        
 
     template = 'bcp/reportes/reporte_formal.html' if 'formal' in request.GET else 'bcp/reportes/dashboard_ejecucion.html'
     return render(request, template, context)

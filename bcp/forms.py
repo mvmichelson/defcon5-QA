@@ -446,7 +446,7 @@ class CreaProc_B_Form(forms.Form):
     "Datos de Contexto del Procedimiento"
 
     #Identificacion del Procedimiento
-    nombre = forms.CharField(max_length= 100, label='Nombre :', widget=forms.Textarea(attrs={'rows':1, 'cols':100, 'class':'inbox_3'}))
+    nombre = forms.CharField(max_length= 50)
     #tipo = forms.ModelChoiceField(queryset=Tipo_Proc.objects.all())
 
     #Contexto

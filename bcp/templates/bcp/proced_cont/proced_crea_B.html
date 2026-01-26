@@ -7,24 +7,28 @@
 {% block content %}
 
 	{% block encabezado_detalle %}
-	<ul class="encabezado_A">
+	<ul class="encabezado_B">
         <h4><aa><strong>FORMULARIO DE ESPECIFICACION DE PROCEDIMIENTO DE CONTINGENCIA</strong></aa></h4>
     </ul>
 	{% endblock %}
 
-	
+	<form action="" method="post">
+	{% csrf_token %}
+
 	<!------------------------------------------- Bloque A -------------------------------->
 	<div class="flex-container">
 
 		<!-- Columna izq ------>
 		<div class="flex-item" style="width: 80%;">
 
-			<h5><strong>Proceso Asociado</strong></h5>
-			<ul class="scr4 BarraScroll" style="background: rgb(212, 230, 200);">
+			<ul class="encabezado_SB"><h5><strong>Proceso Matriz</strong></h5></ul>
+			<ul class="scr4 BarraScroll" style="background: rgb(212, 230, 200); height: 300px;">
 
 				<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
 				<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
+				<p><strong>Ruta ...:</strong>&emsp;{{ruta}}</p>
 				<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
+				<p><strong>Puntaje  .............:</strong>&emsp;{{proceso.subproceso.ranking}}</p>
 				<br/>
 
 				<h5><strong>Indicadores de Recuperacion</strong></h5>
@@ -115,78 +119,65 @@
 		</div><!--- Fin columna izq -->
 
 		<!--- Columna der -->
-		<div class="flex-item" style="width:200px; text-align: center;">
+		
+		<div class="flex-item">
+			<ul class="encabezado_SB"><h5><strong>Procedimiento de Contingencia  (PC)</strong></h5></ul>
 			
-			<bn>Puntaje: <ul class="scr4" style="background: rgb(212, 230, 200);"> {{proceso.subproceso.ranking}}</ul></bn>
-			<br/>
-			<img src="/static/img/manual_pc.webp" width="100" height="100"></a>
+
+				<!------------ Mensaje ---------------------------------------------->
+				<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
+				<h4><strong>1. Codigo del Proceso</strong></h4>
+				<p>
+					Defina un codigo o mnemonico que identifique el Procedimiento de 
+					Contingencia.     
+				</p>
+				<p>
+					
+				<p><strong>Codigo</strong></p>
+				<p style="width: 30px;">{{ form.nombre }}</p>
+
+				</div>
+				<!------------ Fin Mensaje ---------------------------------------------->
+
+		</ul>
 
 		</div><!--- Fin Columna der -->
 
 	</div> <!----------------------------------- Fin Bloque A ------------------------------>
 
-
+ 
 	<br/>
-	<ul class="encabezado_A" style="background: white;">
-		<aa>ESPECIFICACION DEL PROCEDIMIENTO DE CONTINGENCIA (PC)</aa>
-	</ul>
-  
-
-    <form action="" method="post">
-        {% csrf_token %}
-        
-	<br/>
-	<h5><strong>1. Ingrese datos de Identificacion del PC</strong></h5>
-	<ul class="scr4">
-	<p> Codigo del Procedimento..: {{ form.nombre }}</p>
-	<p> <!-- 1.2 Tipo..: {{form.tipo}}</p> -->
-	</ul>
-
-	<br/>
-	<ul class="scr4" style="background-color: white; line-break: normal;">
-
 	<!------------ Mensaje ---------------------------------------------->
 	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
 	<h4><strong>2. Escenario de Riesgo</strong></h4>
 	<p>
-		En esta sección se selecciona un determinado <strong>Escenario de Riesgo</strong>
-		 asociado al <strong>Proceso relacionado</strong>
-		que sera cubierto por este Procedimiento de Contingencia.    
+		Selecciona de la lista uno de los  <strong>Escenario de Riesgo</strong> del 
+		Proceso Matriz que sera cubierto por este Procedimiento de Contingencia.    
 	</p>
-	<p>
-		   
-	</p>
-
+	<p><strong>Escenarios de Riesgo</strong></p>
+	<p>{{form.escenarios}}</p>
 	</div>
 	<!------------ Fin Mensaje ---------------------------------------------->
-	<p>{{form.escenarios}}</p>
-	</ul>
 
 	<br/>
-	<ul class="scr4" style="background-color: white; line-break: normal;">
 
 	<!------------ Mensaje ---------------------------------------------->
 	<div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
 	<h4><strong>3. Estrategia de Recuperacion</strong></h4>
 	<p>
-		Esta sección detalla la estrategia especifica a aplicar para restaurar la 
-		continuidad operativa que implementara el Procedimiento de Contingencia.   
+		Describa la estrategia especifica que aplicara este Procedimiento de Contingencia.
+		   
 	</p>
 	<p>
 		Debe corresponder a una especificacion de la Estrategia General definida para 
 		cada Escenario de Riesgo.    
 	</p>
-
+	<p><strong>Especificacion Estrategia</strong></p>
+	<p>{{form.estrategia}}</p>
 	</div>
 	<!------------ Fin Mensaje ---------------------------------------------->
 
-	<p>{{form.estrategia}}</p>
-
-	</ul>
-
 <br/>
-<ul class="scr4" style="background-color: white; line-break: normal;">
-
 <!------------ Mensaje ---------------------------------------------->
 <div class="alert alert-info" role="alert" style="font-size: 1.2rem;">
 <h4><strong>4. Roles</strong></h4>
@@ -223,27 +214,67 @@
 	Opcionalmente a cada gestor asignado se le puede definir un <strong>Respaldo</strong> a quien acudir
 	en caso de ausencia o dificultad de contacto del titular.    
 </p>
+	<br/>
+	<ul class="scr4" style="color:black">
+		<div class="flex-container">
+
+			<div class="flex-item>">
+				<p><strong>Responsable</strong>
+				<!--====================== Icono Datos Modelo ======================-->
+					{% comment %} Pasamos los datos seguros al JS {% endcomment %}
+					<script id="gestor_data_{{ proced.id }}" type="application/json">
+					{
+						"modelo": "Procedimientos_V",
+						"id": "{{ procedimientos_v.id }}",
+						"titulo": "<strong>Responsable</strong>",   
+						"mensajeFinal": "Es el responsable de nivel táctico superior 
+											inmediato  (Gerente, Subgerente, Jefe de Area) del Proceso critico asociado 
+											al Procedimiento. Es quien, durante el ciclo de aprobacion autoriza el 
+											Procedimiento.",  
+						"listaCampos": { }
+					}
+					</script>
+
+					<span style="cursor:pointer; margin-left:8px; font-size:1.3rem;"
+						title="Ver mis datos"
+						onclick="abrirDetalleModelo(JSON.parse(document.getElementById('gestor_data_{{ proced.id }}').textContent))">
+						<!-- Icono --> 
+							<img src="/static/img/usuario.png" width="20" height="20">
+					</span>
+				<!--====================== Fin Icono Datos Modelo ======================-->
+
+				
+				
+				</p>
+				<p>{{form.resp_proceso}}</p>
+				<p><strong>Respaldo</strong></p> 
+				<p>{{form.bck_resp}}</p>
+				
+			</div>
+
+			<div class="flex-item">
+				<p><strong>Ejecutor</strong></p>
+				<p>{{form.gestor_ejecutor}}</p>
+				<p><strong>Respaldo</strong></p> 
+				<p>{{form.bck_ejecutor}}</p>
+				
+			</div> 
+
+			<div class="flex-item">
+				<p><strong>Enlace Comite Crisis</strong></p>
+				<p>{{form.enlace_c_crisis}}</p>
+				<p><strong>Respaldo</strong></p>
+				<p>{{form.bck_enlace}}</p>
+			</div> 
+
+		</div>
+	<br/>
+	</ul>
 
 </div>
 <!------------ Fin Mensaje ---------------------------------------------->
 
 
-	<ul class="scr4">
-		<div class="flex-container">
-			<div class="flex-item>" style="width: 50%; text-align: left;">
-				<p><bn>Responsable: {{form.resp_proceso}}</bn></p>
-				<p><bn>Ejecutor........: {{form.gestor_ejecutor}}</bn></p>
-				<p><bn>Enlace...........: {{form.enlace_c_crisis}}</bn></p>
-			</div>
-			<div class="flex-item" style="width: 60%; text-align: left;">
-				<p><bn>Respaldo: {{form.bck_resp}}</bn></p>
-				<p><bn>Respaldo: {{form.bck_ejecutor}}</bn></p>
-				<p><bn>Respaldo:&emsp;{{form.bck_enlace}}</bn></p>
-			</div> 
-		</div>
-	<br/>
-	</ul>
-	</ul>
 
 	<!---- Botones de Salida ----------->
 	<br/>

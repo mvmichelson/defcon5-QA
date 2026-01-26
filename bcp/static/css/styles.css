@@ -41,12 +41,12 @@ Opcion */
 /* Fondos de Imagen */
 /* ================ */
 
-.fondo_img {
+.fondo_mapa {
 
-	background: url("/static/img/presentacion_2.jpg")  100% 0 no-repeat fixed;
-    	color: white;
-    	height: 650px;
-    	padding: 100px 0 0 0;   
+	background: url("/static/img/mapa.avif")  100% 0 no-repeat fixed;
+    	/*color: white;
+    	height: 800px;
+    	/*padding: 100px 0 0 0; */   
 	
 }
 
@@ -219,6 +219,9 @@ aa {
 	color:green;
 	padding:0px;
 }
+
+
+
 
 /* Para iconos de opciones */
 
@@ -1757,3 +1760,38 @@ body { background-color: var(--bg-main) !important; }
     }
     .card-report { border: 1px solid #eee; box-shadow: none; }
 }
+
+/* Grafico de Torta */
+/* ================ */
+
+.chart-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.chart-canvas {
+    width: 20px;
+}
+
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+

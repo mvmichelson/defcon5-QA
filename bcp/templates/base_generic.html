@@ -47,6 +47,9 @@
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 
   <!-- Add additional CSS in static file-->
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 
   
 
@@ -111,7 +114,7 @@
         <span style="cursor:pointer; margin-left:8px; font-size:1.3rem;"
               title="Ver mis datos"
               onclick="abrirDetalleModelo(JSON.parse(document.getElementById('gestor_data_{{ user.id }}').textContent))">
-               <!-- &#129333 --> 
+               <!-- Icono --> 
                 <img src="/static/img/usuario.png" width="20" height="20">
         </span>
       {% endwith %}

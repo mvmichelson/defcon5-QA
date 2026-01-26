@@ -119,7 +119,7 @@ class AdminProcedimientos(admin.ModelAdmin):
 @admin.register(Procedimientos_V)
 class AdminProcedimientos_V(admin.ModelAdmin):
 
-    list_display = ('codigo','pk_padre', 'fecha_c', 'fecha_ult_mod', 'nombre', 'tipo', 'version',
+    list_display = ('codigo', 'nombre', 'pk_padre', 'fecha_c', 'fecha_ult_mod', 'nombre', 'tipo', 'version',
                     'estrategia', 'resp_proceso', 'bck_resp', 'gestor_ejecutor',
                     'bck_ejecutor', 'enlace_c_crisis', 'bck_enlace', 'archivo', 
                     'esta_activo','esta_confirmado')

@@ -1081,3 +1081,82 @@ function generarPDF(codigo, nombre) {
         document.title = originalTitle;
     }, 1000);
 }
+
+
+
+/* Grafico de Torta*/
+/* ================*/
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Tomar todos los bloques chart-wrapper
+    const wrappers = document.querySelectorAll(".chart-wrapper");
+
+    wrappers.forEach((wrapper, index) => {
+        const canvas = wrapper.querySelector("canvas");
+        const legendEl = wrapper.querySelector(".chart-legend");
+
+        // Leer los IDs de los scripts desde dataset
+        const dataEl = document.getElementById(wrapper.dataset.chartData);
+        const colorsEl = document.getElementById(wrapper.dataset.chartColors);
+
+        if (!canvas || !legendEl || !dataEl) {
+            console.warn(`Elementos requeridos no encontrados para el gráfico ${index + 1}`);
+            return;
+        }
+
+        const rawData = JSON.parse(dataEl.textContent);
+        const colorMap = colorsEl ? JSON.parse(colorsEl.textContent) : {};
+
+        const labels = [];
+        const values = [];
+        const bgColors = [];
+        let total = 0;
+
+        for (const [label, value] of Object.entries(rawData)) {
+            const num = Number(value);
+            if (!isNaN(num) && num > 0) {
+                labels.push(label);
+                values.push(num);
+                total += num;
+                bgColors.push(colorMap[label] || "#999999");
+            }
+        }
+
+        if (!values.length) {
+            console.warn(`No hay datos válidos para el gráfico ${index + 1}`);
+            return;
+        }
+
+        let finalValues = values;
+        if (Math.abs(total - 100) > 0.5) {
+            finalValues = values.map(v => +(v / total * 100).toFixed(2));
+        }
+
+        new Chart(canvas, {
+            type: "pie",
+            data: { labels, datasets: [{ data: finalValues, backgroundColor: bgColors, borderWidth: 1 }] },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed}%` } }
+                }
+            }
+        });
+
+        // Leyenda custom
+        legendEl.innerHTML = "";
+        labels.forEach((label, i) => {
+            const item = document.createElement("div");
+            item.className = "legend-item";
+            const colorDot = document.createElement("div");
+            colorDot.className = "legend-color";
+            colorDot.style.backgroundColor = bgColors[i];
+            const text = document.createElement("span");
+            text.textContent = label;
+            item.appendChild(colorDot);
+            item.appendChild(text);
+            legendEl.appendChild(item);
+        });
+    });
+});

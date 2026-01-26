@@ -15,69 +15,118 @@
 <meta name="inhibir-scroll-principal" content="true">
 
 
-	{% block enc_activo %}
 	<ul class="encabezado_B">
-		<p><img src="/static/img/dashboard.png" class="icon" width="70" height="50"></p>
+		<!-- <p><img src="/static/img/dashboard.png" class="icon" width="70" height="50"></p> -->
         <rr class="blink"><strong>PANEL DE CONTROL DE INCIDENTE :&nbsp;{{incidente.codigo}}
 		{%if incidente.test == True %}
 			(Prueba BCP/DRP)
 		{%endif%}
 		</strong></rr>
 	</ul>
-	{% endblock %}
 
 
 <!-- /******************************* Bloque 0 *************************************/ -->
 <div class="flex-container">
 
 	<!------------ Seccion 1 Reporte ---------->
-	<div class="flex-item" style="width: 100%; height: 300px;">
+	<div class="flex-item" style="width: 100%;">
 		<ul class="encabezado_SB" ><h5><strong>REPORTE</strong></h5></ul>
-		<ul class="BarraScroll" style="width: 100%; height: 300px;background-color: black; color:whitesmoke">
+		<ul class="BarraScroll" style="width: 100%; height: 400px;background-color: black; color:whitesmoke">
 			<br/>
-				<p><strong>Codigo...............:<strong>&emsp;{{incidente.codigo}}</p>
-				<p><strong>Fecha................:<strong>&emsp;{{incidente.fecha_creacion}}</p>
-				<p><strong>Reportado por...:<strong>&emsp;{{incidente.nombre_r}}</p>
-				<p><strong>Area/Gerencia...:<strong>&emsp;{{incidente.area_r}}</p>
+				<table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Codigo:</th>
+					<th style="border: 1px solid greenyellow ;">{{incidente.codigo}}</th>
+
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Fecha</th>
+					<th style="border: 1px solid greenyellow ;">{{incidente.fecha_creacion}}</th>
+
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Reportado por:</th>
+					<th style="border: 1px solid greenyellow ;">{{incidente.nombre_r}}</th>
+
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Reportado por:</th>
+					<th style="border: 1px solid greenyellow ;">{{incidente.area_r}}</th>
+
+				</tr>
 				<br/>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Descripcion:</th>
+					<th style="border: 1px solid greenyellow ;">{{incidente.descripcion}}</th>
+
+				</tr>
+		</table>
+
+
+		<br/>
+		
+		<h5><strong>Amenazas reportadas:</strong></h5>
+		
+		<table class="lta">
+			<thead>
+				<tr>
+				<th scope="col">Titulo</th>
+				<th scope="col">Descripcion</th>
+		
+				</tr> 
+			</thead>
+		
+			<tbody>
+				{%for amn in amenazas.all %}
+			<tr>
+				<th scope="row"><bb style="font-size: 10px;">{{amn.titulo}}</bb></th>
+					<th scope="row"><bb style="font-size: 10px;">{{amn.descripcion}}</bb></th>
 				
-				<h5><strong>Descripcion:</strong></h5>
-				<ul>{{incidente.descripcion}}</ul>
-				<br/>
-				
-				<h5><strong>Amenazas reportadas:</strong></h5>
-				
-				<table class="lta">
-					<thead>
-						<tr>
-						<th scope="col">Titulo</th>
-						<th scope="col">Descripcion</th>
-				
-						</tr> 
-					</thead>
-				
-					<tbody>
-					   {%for amn in amenazas.all %}
-					<tr>
-						<th scope="row"><bb style="font-size: 10px;">{{amn.titulo}}</bb></th>
-						  <th scope="row"><bb style="font-size: 10px;">{{amn.descripcion}}</bb></th>
-					  
-					</tr>
-						{% if not forloop.last %}
-						{%endif%}
-					  {%endfor%}
-					</tbody>
-				
-					</table>
+			</tr>
+				{% if not forloop.last %}
+				{%endif%}
+				{%endfor%}
+			</tbody>
+		
+			</table>
 				
 	
 		</ul>
+
+		<!--- Activa / Desactiva el Incidente -->
+		<br/>
+		<table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;
+					width: 100px; height: 80px;"
+					>
+						<!----Switch Activa/Desactiva -->
+						<label class="switch switch-large">
+						<input type="checkbox"
+								class="toggle-switch"
+								data-app="bcp"
+								data-model="incidentes"
+								data-id="{{incidente.id}}"
+								data-field="estado"
+								data-confirm-On="Confirma Activacion del Incidente?."
+								data-confirm-Off="Confirma Desactivacion del Incidente?"
+								{% if incidente.estado %}checked{% endif %}>
+						<span class="slider"></span>
+						</label>
+						<!----Fin Switch Activa/Desactiva -->
+
+					</th>
+					<th style="border: 1px solid greenyellow; font-size: 1.5rem;">Activa / Desactiva Incidente</th>
+
+				</tr>
+		</table><!--- Fin Activa / Desactiva el Incidente -->
+
 	
 		</div><!------------ Fin Seccion 1 Reporte  ---------->
 	
 
 	<!------------ Seccion 2 Lista del Comite de Crisis ---------->
-	<div class="flex-item" style="width: 100%;">
+	<div class="flex-item" style="width: 50%;">
 	<ul class="encabezado_SB" ><h5><strong>COMITE DE CRISIS</strong></h5></ul>
 	<table class="lta">
 		<thead>
@@ -107,6 +156,75 @@
 	
 	<br/>
 
+	<!--Grafico 1 ------->
+	<br/><br/>
+	<!--- Grafico Activados  vs No Activados ---------------->
+		<ul class="encabezado_SB" ><h5><strong>Procedimientos Activados vs No Activados</strong></h5></ul>
+		
+		<div class="flex-container">
+		<div class="flex-item" style="width: 50%;">
+			<div class="chart-wrapper" data-chart-data="chart-data-1" data-chart-colors="chart-colors-1">
+				<div class="chart-canvas" style="width: 120px; height: 120px;">
+						<canvas id="pieChart-1"></canvas>
+				</div>
+				<div class="chart-legend"></div>
+			</div>
+		</div>
+		<div class="flex-item" style="width: 50%;">
+			<table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Nro. Procedimientos:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_procedimientos}}</th>
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Activados</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_proced_act}}</th>
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">No Activados</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_proced_ina}}</th>
+				</tr>
+				
+			</table>
+		</div>
+		</div>
+
+		<br/><br/>
+		<!--- Grafico de Confirmados vs No Confirmados ---------------------------->
+		<ul class="encabezado_SB" ><h5><strong>Procedimientos Activos Confirmados vs No Confirmados</strong></h5></ul>
+		<div class="flex-container">
+			<div class="flex-item">
+			<div class="chart-wrapper" data-chart-data="chart-data-2" data-chart-colors="chart-colors-2">
+				<div class="chart-canvas" style="width: 120px; height: 120px;">
+					<canvas id="pieChart-2"></canvas>
+				</div>
+				<div class="chart-legend"></div>
+			</div>
+			</div>
+			<div class="flex-item">
+			<table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Activados:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_proced_act}}</th>
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Confirmados</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_proced_con}}</th>
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">No Confirmados</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_proced_no_con}}</th>
+				</tr>
+				
+			</table>
+			</div>
+		</div>
+		{{ chart_data_1|json_script:"chart-data-1" }}
+		{{ chart_colors_1|json_script:"chart-colors-1" }}
+		{{ chart_data_2|json_script:"chart-data-2" }}
+		{{ chart_colors_2|json_script:"chart-colors-2" }}
+
+
 
 	</div><!------------ Fin Seccion 2 Lista del Comite de Crisis ---------->
 
@@ -115,7 +233,7 @@
 
 
 
-<br/><br/><br/><br/><br/>
+<br/><br/>
 <ul class="encabezado_SB"><h5><strong>ALCANCE DEL INCIDENTE</strong></h5></ul>
 <br/>
 
@@ -129,8 +247,21 @@
 	<br/>
 	<ul class="scr4" style="background-color: black; color:whitesmoke; font-size: 1.2rem;">
 		<br/>
-		<p><strong>Numero de Procesos Alcanzados :&ensp;{{n_procesos}}</strong></p>
-		<p><strong>Puntaje Promedio ...........:&ensp;{{puntaje_x |floatformat:2}}</strong></p>
+		
+		<table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Nro de Procesos Alcanzados:</th>
+					<th style="border: 1px solid greenyellow ;">{{n_procesos}}</th>
+
+				</tr>
+				<tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Puntaje Promedio:</th>
+					<th style="border: 1px solid greenyellow ;">{{puntaje_x |floatformat:2}}</th>
+
+				</tr>
+		</table>
+	
+	
 	</ul>
 
 		
@@ -379,59 +510,46 @@
 </ul>
 <br/>
 
-<div class="flex-container" style="width: 100%;">
-	<div class="flex-item" style="text-align: right; width:50%;">
-		<!----Switch Activa/Desactiva -->
-		<label class="switch switch-large">
-		<input type="checkbox"
-				class="toggle-switch"
-				data-app="bcp"
-				data-model="incidentes"
-				data-id="{{incidente.id}}"
-				data-field="estado"
-				data-confirm-On="Confirma Activacion del Incidente?."
-				data-confirm-Off="Confirma Desactivacion del Incidente?"
-				{% if incidente.estado %}checked{% endif %}>
-		<span class="slider"></span>
-		</label>
-		<!----Fin Switch Activa/Desactiva -->
 
-	</div>
-	<div class="flex-item" style="text-align: left; width: 50%;">
-		<bn style="font-size: 1.8rem;">: Activa/Desactiva el Incidente</bn> 
-	</div>
-</div>
+<br/>
 
+{% if incidente.test %}
+	<!----- Link  Dashboard de Pruebas-->
+	<a href="{% url 'dashboard-prueba'  incidente.pk %}"
+	class="link" data-message="Dashboard Reporte de Incidente" style="padding:5px;">
+	<aa class="button" style="background-color:red; color:white">DASHBOARD EJECUCION DE PRUEBAS</aa>
+	</a>
+{%endif%}
 <br/><br/>
 
 
 
-	<!----- CSS para Scripts ----------------------------------->
-	<!---------------------------------------------------------->
-		<!-- Caja de Comentario -->
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
 
-		<div id="comment-box" class="hidden" style="font-size: 13px;">
-			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
-			<h5><strong>Comentario de Revision:</strong></h5>
-			<textarea id="comment-text" rows="5" cols="30"></textarea>
-			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
-			<button id="close-comment">Cerrar</button>
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
 		</div>
-		
-		<!-- Globo de cómic -->
-		<div id="comicBalloon"></div>
+	</div>
+	
 
-		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
-		<div id="confirmation-dialog" class="hidden">
-			<div class="dialog-content">
-				<p id="confirmation-message"></p>
-				<button id="confirm-yes">Sí</button>
-				<button id="confirm-no">No</button>
-			</div>
-		</div>
-		
-
-	<!--------- Fin CSS para Scripts ------------------------->
+<!--------- Fin CSS para Scripts ------------------------->
 
 <br/>
 <p style="font-size: 8px;">[perfil_inc]</p>

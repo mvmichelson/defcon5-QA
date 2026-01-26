@@ -1,55 +1,121 @@
 {% extends "base_generic.html" %}
 {% block content %}
-<div class="col-sm-10">
-    <div class="card-report">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2 class="sec-title">INFORME DE PRUEBAS: {{ incidente.nro_incidente }}</h2>
-            <a href="?formal=1" class="btn-pdf">MODO ACTA FORMAL</a>
+<div class="">
+    <ul class="encabezado_B">
+        <strong>DASHBOARD DE EJECUCION DE PRUEBAS</strong>
+	</ul>
+	<ul class='encabezado_SB'>
+	INCIDENTE DE PRUEBA: {{incidente.codigo}} - {{incidente.descripcion}}
+	</ul>
+
+    <!----------- Bloque Superior : Datos globales -->
+    <div class="flex-container">
+        <!-- Seccion Totales de Resultados Pruebas-->
+        <div class="flex-item" style="width: 50%; text-align: center;">
+            <ul class="encabezado_SB"><strong><h5>Resultados de Pruebas</h5></strong></ul>
+
+                <!--- Grafico ---------->
+                <div class="chart-wrapper" data-chart-data="chart-data" data-chart-colors="chart-colors">
+					<div class="chart-canvas" style="width: 150px; height: 150px;">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+					<div class="chart-legend"></div>
+				</div>
+
+                <!-- Inyección de datos desde Django -->
+                {{ chart_data|json_script:"chart-data" }}
+                {{ chart_colors|json_script:"chart-colors" }}
+                <!--- Fin Grafico -------->
+                <br/>
+
+                <table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left;">Nro de Pruebas:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_pruebas}}</th>
+                    <th style="border: 1px solid greenyellow ;">100%</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ; text-align: left;">Nro de Pruebas Exitosas:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_prbas_exitosas}}</th>
+                    <th style="border: 1px solid greenyellow ;">{{P100_prbas_exitosas}} %</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow; text-align: left; color:yellow;">Nro de Pruebas Parciales:</th>
+					<th style="border: 1px solid greenyellow ; color:yellow;">{{cont_prbas_parciales}}</th>
+                    <th style="border: 1px solid greenyellow ; color:yellow;">{{P100_prbas_parciales}} %</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ; text-align: left; color:red;">Nro de Pruebas Fallidas:</th>
+					<th style="border: 1px solid greenyellow ; color:red;">{{cont_prbas_fallidas}}</th>
+                    <th style="border: 1px solid greenyellow ; color:red;">{{P100_prbas_fallidas}} %</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow;text-align: left; color:rgb(18, 167, 231);">Nro de Pruebas en Ejecucion:</th>
+					<th style="border: 1px solid greenyellow ; color:rgb(18, 167, 231);">{{cont_prbas_en_ejecucion}}</th>
+                    <th style="border: 1px solid greenyellow ; color:rgb(18, 167, 231);">{{P100_prbas_en_ejecucion}} %</th>
+				</tr>
+                </table>
+            
+
+        </div>
+        <!-- Seccion Totales de Alcance (Generales)-->
+        <div class="flex-item" style="width: 50%;">
+            <ul class="encabezado_SB"><strong><h5>Alcance</h5></strong></ul>
+            <table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ;">Nro de Procesos Criticos:</th>
+					<th style="border: 1px solid greenyellow ;">{{n_procesos}}</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ;">Nro de Escenarios de Riesgo:</th>
+					<th style="border: 1px solid greenyellow ;">{{n_escenarios}}</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ;">Nro de Pruebas:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_pruebas}}</th>
+				</tr>
+
+
+
+            </table>
+
+            <!----- Estado del Incidente -->
+            <br/>
+            <ul class="encabezado_SB"><strong><h5>Estado del Incidente de Prueba</h5></strong></ul>
+            <table>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ;">Nro de Procedimientos:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_pc}}</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ;">Nro. PC Activados por C.C.:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_pc_activos}}</th>
+				</tr>
+                <tr style="color:greenyellow; background-color: black; ">
+					<th style="border: 1px solid greenyellow ;">Nro. PC Confirmados:</th>
+					<th style="border: 1px solid greenyellow ;">{{cont_pc_confirm}}</th>
+				</tr>
+
+            </table>
+
+            <br/> <br/> <br/>
+            
+
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <p><strong>SUBPROCESO:</strong> {{ subproceso.nombre }}</p>
-                <p><strong>RESPONSABLE:</strong> {{ ejecucion_maestra.prueba.responsable.get_full_name }}</p>
-            </div>
-            <div class="col-md-6 text-right">
-                <p><strong>EVALUACIÓN:</strong> <span class="badge badge-dark">{{ ejecucion_maestra.evaluacion_final }}</span></p>
-                <p><strong>RTO META:</strong> {{ rto_meta.nivel.valor|default:"--" }} min</p>
-            </div>
-        </div>
+        </div><!--------- Fin Bloque ------->
+        <br/><br/>
+        <!------- Botones de Salida ------------>
+            <a href="?formal=1" ><rr class="button" style="background-color: red; color:white">
+                <img src="/static/img/baja_pdf.png" width="40" height="40"></img>
+                REPORTE FINAL PDF</rr></a>
+            <a href="{% url 'Perfil-Incidente' incidente.pk %}" ><rr class="button" style="background-color: red; color:white">
+            DASHBOARD DE EJECUCION</rr></a>
 
-        <h4 class="sec-title">ANÁLISIS DE RESULTADOS</h4>
-        <div class="escenario-box mb-4">
-            <p><strong>Resultados Obtenidos:</strong> {{ ejecucion_maestra.resultados_obtenidos }}</p>
-            <hr>
-            <p><strong>Lecciones Aprendidas:</strong> {{ ejecucion_maestra.lecciones_aprendidas }}</p>
-        </div>
+    </div><!----------- Fin Bloque Superior : Datos globales -->
 
-        <h4 class="sec-title">DETALLE DE PRUEBAS APLICADAS</h4>
-        <table class="table-manual w-100">
-            <thead>
-                <tr>
-                    <th style="width: 50%;">PRUEBA / CASO</th>
-                    <th style="width: 15%; text-align: center;">RESULTADO</th>
-                    <th style="width: 35%;">OBSERVACIONES</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in pruebas_aplicadas %}
-                <tr>
-                    <td>{{ p.caso.descripcion }}</td>
-                    <td class="text-center">
-                        <strong class="{% if p.resultado == 'Exitosa' %}text-success{% else %}text-danger{% endif %}">
-                            {{ p.resultado|upper }}
-                        </strong>
-                    </td>
-                    <td><small>{{ p.observaciones|default:"-" }}</small></td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="3" class="text-center">No se encontraron registros de pruebas aplicadas.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+
+<br/><br/><br/><br/><br/><br/>
+
+
 {% endblock %}

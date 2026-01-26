@@ -24,7 +24,6 @@
                 <th>Actualizacion</th>
                 <th>Codigo</th>
 				<th>Descripcion</th>
-                <th>Reportes</th>
             </tr>
         </thead>
         <tbody>
@@ -71,12 +70,6 @@
                 <td>{{incid.inc.codigo}}</td>
                 <td>{{incid.inc.descripcion}}</td>
 
-				<td><!------ Reportes -------->
-					<a href="{% url 'En-Construccion' %}"
-					class="link" data-message="Dashboard Reporte de Incidente">
-					<img src="/static/img/Reporte_Pruebas.png" width="20" height="20">
-					</a>
-				</td>
             </tr>
             {% empty %}
             <tr><td colspan="4" style="text-align:center; font-style:italic; padding: 20px;">*** No se han declarado Incidentes ***</td></tr>

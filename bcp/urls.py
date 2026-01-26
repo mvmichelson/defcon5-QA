@@ -211,7 +211,7 @@ urlpatterns += [
     path('incidentes/<int:pk>/ejec_caso', views.Ejec_Caso, name='Ejec-Caso'),
 
     # Reportes
-    path('incidentes/reportes/<int:pk>/', views.reporte_contingencia, name='reporte-incidente'),
+    path('incidentes/reportes/<int:pk>/', views.reporte_prueba, name='dashboard-prueba'),
 
 
 ]
