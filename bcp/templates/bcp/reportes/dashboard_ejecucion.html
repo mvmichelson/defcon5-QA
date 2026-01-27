@@ -38,21 +38,33 @@
 					<th style="border: 1px solid greenyellow ; text-align: left;">Nro de Pruebas Exitosas:</th>
 					<th style="border: 1px solid greenyellow ;">{{cont_prbas_exitosas}}</th>
                     <th style="border: 1px solid greenyellow ;">{{P100_prbas_exitosas}} %</th>
+                    <th style="border: 1px solid greenyellow ;">
+                        <a href="{% url 'Lista-Prba-Eval' incidente.pk 'Exitosa'  %}"><aa style="color:greenyellow">></aa></a> 
+                    </th>
 				</tr>
                 <tr style="color:greenyellow; background-color: black; ">
 					<th style="border: 1px solid greenyellow; text-align: left; color:yellow;">Nro de Pruebas Parciales:</th>
 					<th style="border: 1px solid greenyellow ; color:yellow;">{{cont_prbas_parciales}}</th>
                     <th style="border: 1px solid greenyellow ; color:yellow;">{{P100_prbas_parciales}} %</th>
+                    <th style="border: 1px solid greenyellow ;">
+                        <a href="{% url 'Lista-Prba-Eval' incidente.pk 'Parcial'  %}"><aa style="color:greenyellow">></aa></a> 
+                    </th>
 				</tr>
                 <tr style="color:greenyellow; background-color: black; ">
 					<th style="border: 1px solid greenyellow ; text-align: left; color:red;">Nro de Pruebas Fallidas:</th>
 					<th style="border: 1px solid greenyellow ; color:red;">{{cont_prbas_fallidas}}</th>
                     <th style="border: 1px solid greenyellow ; color:red;">{{P100_prbas_fallidas}} %</th>
+                    <th style="border: 1px solid greenyellow ;">
+                        <a href="{% url 'Lista-Prba-Eval' incidente.pk 'Fallida'  %}"><aa style="color:greenyellow">></aa></a> 
+                    </th>
 				</tr>
                 <tr style="color:greenyellow; background-color: black; ">
 					<th style="border: 1px solid greenyellow;text-align: left; color:rgb(18, 167, 231);">Nro de Pruebas en Ejecucion:</th>
 					<th style="border: 1px solid greenyellow ; color:rgb(18, 167, 231);">{{cont_prbas_en_ejecucion}}</th>
                     <th style="border: 1px solid greenyellow ; color:rgb(18, 167, 231);">{{P100_prbas_en_ejecucion}} %</th>
+                    <th style="border: 1px solid greenyellow ;">
+                        <a href="{% url 'Lista-Prba-Eval' incidente.pk 'En Ejecucion'  %}"><aa style="color:greenyellow">></aa></a> 
+                    </th>
 				</tr>
                 </table>
             
@@ -84,7 +96,7 @@
             <ul class="encabezado_SB"><strong><h5>Estado del Incidente de Prueba</h5></strong></ul>
             <table>
                 <tr style="color:greenyellow; background-color: black; ">
-					<th style="border: 1px solid greenyellow ;">Nro de Procedimientos:</th>
+					<th style="border: 1px solid greenyellow ;">Nro de Procedimientos (PC):</th>
 					<th style="border: 1px solid greenyellow ;">{{cont_pc}}</th>
 				</tr>
                 <tr style="color:greenyellow; background-color: black; ">
@@ -115,7 +127,35 @@
     </div><!----------- Fin Bloque Superior : Datos globales -->
 
 
-<br/><br/><br/><br/><br/><br/>
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
+
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
+		</div>
+	</div>
+	
+
+<!--------- Fin CSS para Scripts ------------------------->
+
+<br/><br/><br/>
+<aa style="font-size: 8px;">[dashboard_ejecucion]</aa>
 
 
 {% endblock %}

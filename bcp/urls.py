@@ -212,6 +212,7 @@ urlpatterns += [
 
     # Reportes
     path('incidentes/reportes/<int:pk>/', views.reporte_prueba, name='dashboard-prueba'),
+    path('incidentes/reportes/<int:pk>/<str:eval>/', views.Lista_Prbas_x_Eval, name='Lista-Prba-Eval'),
 
 
 ]

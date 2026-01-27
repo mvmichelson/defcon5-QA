@@ -1,0 +1,70 @@
+<!Programa HTML>
+<!Lista las Ejecuciones de Prueba segun (filtrada por ) Evaluacion>
+<!Programado por Marco A. Villalobos M>
+<!===============================================>
+
+{% extends "base_generic.html" %}
+{% block content %}
+
+<div class="sec-title">7. PROTOCOLO DE PRUEBAS</div>
+    {% for ejec in lista_ejec_prbas %}
+    <div style="border:1px solid #9ca3af; margin-bottom:20px; border-radius:6px; background: white;">
+        <div style="background:#d1d5db; padding:10px 15px; border-bottom:1px solid #9ca3af; color: black; font-weight: bold;">
+            PRUEBA: {{ ejec.prueba.codigo }} 
+        </div>
+        <div style="padding:15px;">
+			<table>
+				<tr>
+					<th style="background:#d1d5db;">Objetivo:</th>
+					<th>{{ ejec.prueba.objetivo}}</th>
+				</tr>
+				<tr>
+					<th style="background:#d1d5db;">Alcance:</th>
+					<th>{{ ejec.prueba.alcance }}</th>
+				</tr>
+				<tr>
+					<th style="background:#d1d5db;">Criterios de Exito:</th>
+					<th>{{ ejec.prueba.criterios_exito }}</th>
+				</tr>
+				<tr>
+					<th style="background:#d1d5db;">Revisor:</th>
+					<th>{{ ejec.prueba.responsable }}</th>
+				</tr>
+
+            </table>
+            <div style="margin-top:15px;">
+                <h4 style="margin-bottom: 5px; color: #1f4e79; font-size: 1.1rem; font-weight: bold;">Casos:</h4>
+                {% if prba.casos %}
+                <table class="table-manual" style="border: 1px solid #d1d5db;">
+                    <thead>
+                        <tr>
+                            <th style="background:#e5e7eb !important;">Cód. Caso</th>
+                            <th style="background:#e5e7eb !important;">Descripción</th>
+                            <th style="background:#e5e7eb !important;">Resultado Esperado</th>
+							<th style="background:#e5e7eb !important;">Prioridad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for caso in ejec.casos %}
+                        <tr>
+                            <td>{{ caso.codigo }}</td>
+                            <td>{{ caso.descripcion }}</td>
+                            <td>{{ caso.resultado_esperado }}</td>
+							<td>{{ caso.prioridad }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div style="background:#fff5f5; color:#c53030; padding:10px; border: 1px dashed #feb2b2;">
+                  <strong> ⚠ *** No se han definidos Casos de Prueba *** (Contacte al Gestor Consultor de este Procedimiento: [{{consultor}}])</strong> 
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p style="text-align:center; font-style:italic;">*** No hay protocolos de prueba registrados ***</p>
+    {% endfor %}
+
+{%endblock%}

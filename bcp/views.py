@@ -9145,7 +9145,7 @@ def Modif_Plan_Pruebas(request, pk):
 
         else:
 
-            print('Form invalido', form.errors)
+            print('Form invalido', form.errors) 
             #return render(request, 'bcp/mensajes/mensajes_error_Form.html', {'form':form.errors})
 
 
@@ -10195,6 +10195,37 @@ def Lista_Ejec_Prbas(request, pk):
                     'checklist':checklist,
                     'proc':proc})
 
+@login_required
+def Lista_Prbas_x_Eval(request, pk, eval):
+    """
+    Lista las Ejecuciones de Pruebas de un incidente segun Evaluacion
+    pk: pk del incidente
+    eval:   Existosas
+            Parciales
+            Fallidas
+            En Ejecucion 
+    """
+
+    incidente =get_object_or_404(Incidentes, pk=pk)
+    # Selecciona las Ejecuciones de Prueba del Incidente
+    lista_ejec_prbas_incidente=EjecucionPrueba.objects.filter(incidente=incidente)
+    lista_ejec_prbas_eval=lista_ejec_prbas_incidente.filter(evaluacion_final=eval)
+
+
+    lista_ejec_prbas=[]
+    for ejec_p in lista_ejec_prbas_eval:
+        ejec_casos=EjecucionCasoPrueba.objects.filter(ejecucion=ejec_p)
+        ejec={'prueba':ejec_p,'casos':ejec_casos}
+        lista_ejec_prbas.append(ejec)
+
+    # Selecciona las Ejecuciones de Prueba del Incidente de acuerdo a Evaluacion
+    
+    print('Lista de Ejecucion de Pruebas =', lista_ejec_prbas)
+ 
+    return render(request,'bcp/inc_mgm/prbasxeval_list.html',
+                    context={'lista_ejec_prbas':lista_ejec_prbas,
+                             'incidente':incidente
+                             })
 
 
 from .forms import EjecucionPruebasForm
@@ -10224,7 +10255,7 @@ def Lista_Ejec_Casos(request, pk):
          
         
             # Rescata datos del formulario
-            # ----------------------------
+            # ============================
             descripcion_ejecucion=form.cleaned_data['descripcion_ejecucion']
             incidentes=form.cleaned_data['incidentes']
             resultados_obtenidos=form.cleaned_data['resultados_obtenidos']
@@ -10233,23 +10264,23 @@ def Lista_Ejec_Casos(request, pk):
             archivo=form.cleaned_data['evidencia_general']
 
             # Validaciones de contexto
-            # ------------------------
+            # ========================
+
             # ----------------------------------------------------------------------
             # Valida si la conclusion de la Prueba Exitosa o Fallida es coherente
             # con la evaluacion de casos de Alta prioridad. No se puede concluir
             # si hay casos de prioridad Alta no concluidos como Exitosa o Fallida.
             # ---------------------------------------------------------------------- 
             evaluacion_final_ok=True
-            if evaluacion_final=='Exitosa' or evaluacion_final=='Parcial' or evaluacion_final=='Fallida':
+            if evaluacion_final !='En Ejecucion':
                 print('---- Entra a validacion con Evaluacion =', evaluacion_final)
                 
                 for caso in lista_ejec_casos:
                     prioridad=caso.caso.prioridad #Identifica prioridad del caso de prueba
                     print('---- prioridad caso =', prioridad)
                     if prioridad=='Alta':
-                        if caso.resultado != 'Exitosa' or caso.resultado!='Fallida':
+                        if  caso.resultado == 'No Aplica' or caso.resultado == 'En Proceso' :
                             evaluacion_final_ok=False
-                            
             
 
             # Graba Registro en la BD
@@ -10276,6 +10307,7 @@ def Lista_Ejec_Casos(request, pk):
             # ----------------------------
             if evaluacion_final_ok:
                 ejec_prueba.evaluacion_final = evaluacion_final
+
             else:
                 ejec_prueba.save() # Mantiene datos preliminares (excepto la evaluacion)
                 return HttpResponseRedirect(reverse('error-sesion-mgm', args=[5000] ))
@@ -10414,19 +10446,41 @@ def Ejec_Caso(request, pk):
 
             # Valida  Evaluacion Final
             # ----------------------------
+            esta_ok = True
             print('---- Valida resultado=', resultado)
-            if  resultado == 'No Aplica' and caso_ejec.caso.prioridad == 'Alta':
-                caso_ejec.save() # Mantiene datos preliminares (excepto la evaluacion)
-                return HttpResponseRedirect(reverse('error-sesion-mgm', args=[5001] ))
+            if  resultado == 'No Aplica':
+                print('------- valida con resultado=', resultado)
+
+                # El caso no debe ser de Prioridad Alta
+                if caso_ejec.caso.prioridad == 'Alta':
+                    esta_ok=False
+                    caso_ejec.save() # Mantiene datos preliminares (excepto la evaluacion)
+                    return HttpResponseRedirect(reverse('error-sesion-mgm', args=[5001] ))
+            
             elif resultado == 'Exitosa':
-                if  archivo is False or archivo == None:
+                print('------- valida con resultado=', resultado)
+
+                # Debe tener archivo adjunto
+                print('------- archivo : ', archivo, 'en BD : ', caso_ejec.evidencia )
+                if not archivo and not caso_ejec.evidencia :
+                    esta_ok=False
+                    print('----- No hay archivo adjunto')    
                     caso_ejec.save() # Mantiene datos preliminares (excepto la evaluacion)
                     return HttpResponseRedirect(reverse('error-sesion-mgm', args=[5002] ))
-            elif resultado == 'Fallida' and len(observaciones)<=3:
-                caso_ejec.save() # Mantiene datos preliminares (excepto la evaluacion)
-                return HttpResponseRedirect(reverse('error-sesion-mgm', args=[5003] ))
+            
 
-            else:
+            elif resultado == 'Fallida':
+                print('------- valida con resultado=', resultado)
+                
+                # Debe tener Observaciones. 
+                if  len(observaciones)<=3:
+                # Valida que si que se redacte un minimo de observaciones.
+                    esta_ok=False 
+                    caso_ejec.save() # Mantiene datos preliminares (excepto la evaluacion)
+                    return HttpResponseRedirect(reverse('error-sesion-mgm', args=[5003] ))
+
+
+            if esta_ok:
                 caso_ejec.resultado=resultado
 
 

@@ -42,17 +42,12 @@
 	
 <!---- Lista de Checklist  --------- -->
 <br/>
-<h4><strog><bl>LISTA DE PRUEBAS</bl></strog></h4>
-	<ul class="BarraScroll" style="height: 250px; padding: 0px;">	
-
-	
-    <table class="ita" style="width: 100%; border-collapse: collapse;
-	padding: 5px;
-    border-collapse: collapse;
-    
+<h5><strog><bl>Pruebas Asociadas al Incidente :</bl></strog></h4>
+    <table class="ita" style="width: 100%; 
+	padding: 0px;
     letter-spacing: 2px;
     font-family: sans-serif;
-    font-size: 1.1rem;">
+    font-size: 1rem;">
 
       <!-- Encabezado superior -->
 		<!-- Encabezado de columnas -->
@@ -111,11 +106,11 @@
 							Pendiente...
 						{%endif%}
 					</td>
-					<td>
-						{%if ejec.evaluacion_final %}
-							{{ejec.evaluacion_final}}
+					<td style="text-align: center;">
+						{%if ejec.evaluacion_final == 'Fallida' %}
+							<rr>{{ejec.evaluacion_final}}</rr>
 						{%else%}
-							Pendiente...
+							<p>{{ejec.evaluacion_final}}</p>
 						{%endif%}
 					</td>
 					
@@ -137,7 +132,6 @@
 		<br/>
 		<br/>
 		
-	</ul>
 <!-- Fin Lista de Checklist ----------->
 
 <!----- CSS para Scripts ----------------------------------->
