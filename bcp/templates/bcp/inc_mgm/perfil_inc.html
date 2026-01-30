@@ -425,13 +425,13 @@
 <ul class="encabezado_SB"><h5><strong>MATRIZ DE CONTINGENCIAS</strong></h5></ul>
 
 <ul class="BarraScroll" style="height: 350px; background-color : black; color:whitesmoke">
-<table class="lta">
+<table class="Ita">
 	<thead>
 		<tr> <!--- Encabezado ------>
 			<th scope="col" style="background: green; width: 300px; height: 30px; padding: 3px; font-size: 20px;">PROCESO</th>
-			<th scope="col" style="background: green; width: 200px; height: 30px; padding: 3px; font-size: 20px; text-align: center;">RTO</th>
+			<th scope="col" style="background: green; width: 50px; height: 30px; padding: 3px; font-size: 20px; text-align: center;">RTO</th>
 
-			<th scope="col" style="background: black;"></th>
+			<!-- <th scope="col" style="background: black; width: 4px;"></th> -->
 
 			<!-- Despliega Columnas con Escenarios -->
 			{% for escenario, _ in estadistica_escenarios.items %}
@@ -447,14 +447,14 @@
 		{% for proc in procesos.all %}
 		<tr>
 			<td scope="row" style="width: 300px; padding: 1px  5px;">
-				<a href="{% url 'Detalle-Proceso-V2'  proc.pk %}" style="color:green">{{proc.path}}</a></td>
+				<a href="{% url 'Detalle-Proceso-V2'  proc.pk %}" style="color:green"><strong>{{proc.path}}</strong></a></td>
 			{%for ind in proc.indicador_subp.all %} <!-- Busca indicador RTO -->
 				{%if ind.indicador.nombre == 'RTO' %}
-					<td scope="row" style="width: 200px; padding: 1px  5px; color:black">{{ind.nivel.nivel}}: {{ind.nivel.definicion}}</td>
+					<td scope="row" style="width: 100px; padding: 1px  5px; color:black">{{ind.nivel.nivel}}: {{ind.nivel.definicion}}</td>
 				{%endif%}
 			{%endfor%}
 
-			<td scope="row" style="background: black;"></td>
+			<!-- <td scope="row" style="background: black; width: 4px;"></td> -->
 			
 			{% for escenario, _ in estadistica_escenarios.items %}
 
@@ -467,7 +467,7 @@
 											
 							<!--- Si el escenario es igual al escenario del Procedimiento -->
 							{% if escenario == prc.escenarios.titulo %}
-								{{prc.nombre}}
+								<sa>{{prc.nombre}}</sa>  
 								<a href="{% url 'det-proced-v' prc.pk %}" 
 								class="link" 
 								data-message="Ver Procedimiento: {{ prc.nombre }}">
