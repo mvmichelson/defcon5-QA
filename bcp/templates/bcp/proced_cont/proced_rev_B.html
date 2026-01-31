@@ -6,9 +6,13 @@
 {% extends "base_generic.html" %}
 {% block content %}
 
-<ul class="encabezado_A">
-<aa><strong>REVISION DE PROCEDIMIENTO DE CONTINGENCIA :  {{proceso.path}} </strong></aa>
+<ul class="encabezado_B">
+	<p><aa><strong>FORMULARIO DE REVISION DE PROCEDIMIENTO DE CONTINGENCIA (PC)</aa>
 </ul>
+<ul class='encabezado_SB'>
+<p><aa>PROCESO&emsp;:&emsp;{{proceso.path}} </strong></aa>
+</ul>
+
 
 <form action="" method="post">
 {% csrf_token %}
@@ -20,18 +24,108 @@
 <div class="flex-item" style="width: 55%;">
 
 
-<ul class="scr4" style="text-align: center; font-size: 13px; background: rgb(212, 230, 200);">
-		<h5><strong>Proceso </strong></h5>
-	</ul>
-<ul class="scr4" style="background: rgb(212, 230, 200);">
-<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
-<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
-<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
-</ul>
+<ul class="encabezado_SB"><h5><strong>Proceso Matriz</strong></h5></ul>
+
+<ul class="scr4 BarraScroll" style="background: rgb(212, 230, 200); height: 300px;">
+
+				<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
+				<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
+				<p><strong>Ruta ...:</strong>&emsp;{{ruta}}</p>
+				<p><strong>Descripcion...........:</strong></p>
+				<ul>{{proceso.objetivo |linebreaksbr}}</ul><br>
+				<p><strong>Puntaje  .............:</strong>&emsp;{{proceso.subproceso.ranking}}</p>
+				<br/>
+
+				<h5><strong>Indicadores de Recuperacion</strong></h5>
+
+					<table class="lta">
+						<thead class="encabezado_C" style="background: blue; color: white;">
+						<tr>
+								<th scope="col">Indicador</th>
+								<th scope="col">Nivel Asignado</th>
+								<th scope="col">Descripcion</th>
+						</tr>
+						</thead>
+			
+						<tbody>
+						
+						{% for ind in proceso.subproceso.indicador_subp.all %}
+			
+						<tr>
+							<th scope="row"><bb style="font-size: 10px;">{{ind.indicador.nombre}}</bb></th>
+							<th scope="row"><aa style="font-size: 10px;">{{ind.nivel.nivel}}</aa></th>
+							<th scope="row"><aa style="font-size: 10px;">{{ind.nivel.definicion}}</aa></th>
+						</tr>
+			
+						{%endfor%}
+			
+							
+						</tbody>
+			
+					</table>
+				<br/>
+
+				<h5><strong>Servicios Criticos</strong></h5>
+
+					<table class="lta">
+						<thead class="encabezado_C" style="background: rgb(255, 230, 0); color: white;">
+						<tr style="color:black">
+								<th scope="col">Tipo</th>
+								<th scope="col">Nombre</th>
+								<th scope="col">Descripcion</th>
+						</tr>
+						</thead>
+			
+						<tbody>
+						
+						{% for rec in proceso.subproceso.recursos.all %}
+			
+						<tr>
+							<th scope="row"><bb style="font-size: 10px;">{{rec.tipo}}</bb></th>
+							<th scope="row"><aa style="font-size: 10px;">{{rec.nombre}}</aa></th>
+							<th scope="row"><aa style="font-size: 10px;">{{rec.descripcion}}</aa></th>
+						</tr>
+			
+						{%endfor%}
+			
+							
+						</tbody>
+			
+					</table>
+				<br/>
+			
+
+				<h6><strong>Escenarios de Riesgo</strong></h6>
+					<table class="lta">
+					<thead class = 'encabezado_C'>
+					<tr>
+						<th scope="col">Escenario</th>
+						<th scope="col">Descripcion</th>
+						
+					</tr>
+					</thead>
+
+					<tbody>
+					{%for esc in escenarios.all  %}
+					<tr>
+						<th scope="row"><bb style="font-size: 10px;">{{esc.titulo}}<bb></th>
+						<th scope="row"><bb style="font-size: 10px;">{{esc.descripcion}}<bb></th>
+						
+					</tr>
+						{% if not forloop.last %}
+						{%endif%}
+						{%endfor%}
+					<tbody>
+					</table>
+
+
+
+			</ul>
 
 <br/>
 <bn>Revise los comentarios y observaciones realizadas por el Gestor Responsable 
-	del Proceso de Negocio en el <strong>Block de Comentarios</strong>. Realice los cambios y marque en 
+	del Proceso de Negocio en el <strong>Block de Comentarios</strong>. Realice los cambios
+	 y marque en 
 	(&#10067) en el comentario asociado. 
 </bn>
 
@@ -39,7 +133,7 @@
 
 <!---------- Seccion Block de Comentarios --------------->
 <div class="flex-item" style="width: 70%;">
-	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+	<ul class="encabezado_SB" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px; color:black">
 		<strong>Block de Comentarios de Revision</strong>
 	</ul>
 
@@ -105,9 +199,10 @@
 		</ul>
         
 
+	<!------ Escenarios de Riesgo -------------------------------------------------------->
 	<br/>
-	<ul class="scr4" style="background-color: white; line-break: normal;">
 	<!------------ Mensaje ---------------------------------------------->
+
 	<div class="alert alert-info" role="alert" style="font-size: 1.2rem; background-color: bisque;">
 	<h4><strong>2. Escenario de Riesgo</strong></h4>
 	<p>
@@ -118,16 +213,13 @@
 	<p>
 		   
 	</p>
-
+	<br>
+	<p>{{form.escenarios}}</p>
 	</div>
 	<!------------ Fin Mensaje ---------------------------------------------->
-	<p>{{form.escenarios}}</p>
-	</ul>
 
-
+	<!---------------- Estrategia de Recuperacion ----------------------------------------->
 	<br/>
-	<ul class="scr4" style="background-color: white; line-break: normal;">
-
 	<!------------ Mensaje ---------------------------------------------->
 	<div class="alert alert-info" role="alert" style="font-size: 1.2rem; background-color: bisque;">
 	<h4><strong>3. Estrategia de Recuperacion</strong></h4>
@@ -139,16 +231,14 @@
 		Debe corresponder a una especificacion de la Estrategia General definida para 
 		cada Escenario de Riesgo.    
 	</p>
+	<br>
+	<p>{{form.estrategia}}</p>
 
 	</div>
 	<!------------ Fin Mensaje ---------------------------------------------->
 
-	<p>{{form.estrategia}}</p>
-
-	</ul>
-
+<!---------------------- Asignacion de Roles ----------------------------------------->
 <br/>
-<ul class="scr4" style="background-color: white; line-break: normal;">
 
 <!------------ Mensaje ---------------------------------------------->
 <div class="alert alert-info" role="alert" style="font-size: 1.2rem; background-color: bisque;">
@@ -187,62 +277,73 @@
 	en caso de ausencia o dificultad de contacto del titular.    
 </p>
 
-</div>
-<!------------ Fin Mensaje ---------------------------------------------->
 
-
-	<ul class="scr4">
+	<ul class="scr4" style="color:black">
 		<div class="flex-container">
-			<div class="flex-item>" style="width: 50%; text-align: left;">
-				<p><bn>Responsable: {{form.resp_proceso}}</bn></p>
-				<p><bn>Ejecutor........: {{form.gestor_ejecutor}}</bn></p>
-				<p><bn>Enlace...........: {{form.enlace_c_crisis}}</bn></p>
+ 
+			<div class="flex-item>">
+				<p><strong>Responsable</strong></p>
+				<p>{{form.resp_proceso}}</p>
+				<p><strong>Respaldo</strong></p> 
+				<p>{{form.bck_resp}}</p>
+				
 			</div>
-			<div class="flex-item" style="width: 60%; text-align: left;">
-				<p><bn>Respaldo: {{form.bck_resp}}</bn></p>
-				<p><bn>Respaldo: {{form.bck_ejecutor}}</bn></p>
-				<p><bn>Respaldo:&emsp;{{form.bck_enlace}}</bn></p>
+
+			<div class="flex-item">
+				<p><strong>Ejecutor</strong></p>
+				<p>{{form.gestor_ejecutor}}</p>
+				<p><strong>Respaldo</strong></p> 
+				<p>{{form.bck_ejecutor}}</p>
+				
 			</div> 
+
+			<div class="flex-item">
+				<p><strong>Enlace Comite Crisis</strong></p>
+				<p>{{form.enlace_c_crisis}}</p>
+				<p><strong>Respaldo</strong></p>
+				<p>{{form.bck_enlace}}</p>
+			</div> 
+
 		</div>
 	<br/>
 	</ul>
-	</ul>
+
+</div>
+<!------------ Fin Mensaje ---------------------------------------------->
+
 	
-	
-	
-	
-	<!---- Botones de salida ---- -->
-	<a href="{% url 'Lista-Proced' 1  %} " onclick="event.stopPropagation();"><aa class="button">Volver ...</aa></a>
-    <input type="submit" class="button" value="Siguiente ..." />
-    </form>
+<!---- Botones de salida ---- -->
+<a href="{% url 'Lista-Proced' 1  %} " onclick="event.stopPropagation();"><aa class="button">Volver ...</aa></a>
+<input type="submit" class="button" value="Siguiente ..." />
+</form>
 
 
-	<!----- CSS para Scripts ----------------------------------->
-	<!---------------------------------------------------------->
-		<!-- Caja de Comentario -->
+<!----- CSS para Scripts ----------------------------------->
+<!---------------------------------------------------------->
+	<!-- Caja de Comentario -->
 
-		<div id="comment-box" class="hidden" style="font-size: 13px;">
-			<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
-			<h5><strong>Comentario de Revision:</strong></h5>
-			<textarea id="comment-text" rows="5" cols="30"></textarea>
-			<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
-			<button id="close-comment">Cerrar</button>
+	<div id="comment-box" class="hidden" style="font-size: 13px;">
+		<p style="text-align: center;"><img src="/static/img/Pin.png" width="50" height="50"></p>
+		<h5><strong>Comentario de Revision:</strong></h5>
+		<textarea id="comment-text" rows="5" cols="30"></textarea>
+		<button id="save-comment">Guardar</button> <!-- Cambiado de "Enviar Comentario" a "Guardar" -->
+		<button id="close-comment">Cerrar</button>
+	</div>
+	
+	<!-- Globo de cómic -->
+	<div id="comicBalloon"></div>
+
+	<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
+	<div id="confirmation-dialog" class="hidden">
+		<div class="dialog-content">
+			<p id="confirmation-message"></p>
+			<button id="confirm-yes">Sí</button>
+			<button id="confirm-no">No</button>
 		</div>
-		
-		<!-- Globo de cómic -->
-		<div id="comicBalloon"></div>
+	</div>
+	
 
-		<!-- Contenedor del cuadro de confirmación de Eliminacion  -->
-		<div id="confirmation-dialog" class="hidden">
-			<div class="dialog-content">
-				<p id="confirmation-message"></p>
-				<button id="confirm-yes">Sí</button>
-				<button id="confirm-no">No</button>
-			</div>
-		</div>
-		
-
-	<!--------- Fin CSS para Scripts ------------------------->
+<!--------- Fin CSS para Scripts ------------------------->
 
 <!-------- Nombre del programa --------->
 <br/><br/><br/><br/>

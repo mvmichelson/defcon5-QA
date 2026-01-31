@@ -5465,6 +5465,7 @@ def Revisa_Proced_B(request, pk):
     proced = get_object_or_404(Procedimientos, pk = pk)
     proceso= get_object_or_404(Proceso, pk = proced.pk_padre)
     escenarios=proceso.subproceso.escenarios
+    ruta=resta_string(proceso.path, proceso.nombre)
     
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
@@ -5567,7 +5568,8 @@ def Revisa_Proced_B(request, pk):
                                                                      'contactos':contactos,
                                                                      'pasos':pasos,
                                                                      'pruebas':pruebas,
-                                                                     'comentarios':comentarios_pc
+                                                                     'comentarios':comentarios_pc,
+                                                                     'ruta':ruta
                                                                      })
 
 
@@ -5591,6 +5593,7 @@ def cr_prcd_list(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
+    ruta=resta_string(proceso.path, proceso.nombre)
 
     # rescata las Pruebas asociadas al procedimiento
     pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
@@ -5613,7 +5616,9 @@ def cr_prcd_list(request, pk):
                                                                   'contactos':contactos,
                                                                   'pasos':pasos,
                                                                   'pruebas':pruebas,
-                                                                  'rto':rto})
+                                                                  'rto':rto,
+                                                                  'ruta':ruta
+                                                                  })
 
 @login_required
 def rev_prcd_list(request, pk):
@@ -5631,6 +5636,7 @@ def rev_prcd_list(request, pk):
     servicios = proced.servicios_pc
     contactos = proced.contactos_pc
     pasos = proced.pasos
+    ruta=resta_string(proceso.path, proceso.nombre)
 
     # rescata las Pruebas asociadas al procedimiento
     pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
@@ -5656,7 +5662,9 @@ def rev_prcd_list(request, pk):
                                                                   'pasos':pasos,
                                                                   'pruebas':pruebas,
                                                                   'comentarios':comentarios_pc,
-                                                                  'rto':rto})
+                                                                  'rto':rto,
+                                                                  'ruta':ruta
+                                                                  })
 
 #******************************************************
 # 1.10 Muestra datos (detalle) del Procedimiento(PC)  *

@@ -22,12 +22,15 @@
 		<div class="flex-item" style="width: 80%;">
 
 			<ul class="encabezado_SB"><h5><strong>Proceso Matriz</strong></h5></ul>
+
 			<ul class="scr4 BarraScroll" style="background: rgb(212, 230, 200); height: 300px;">
 
 				<p><strong>Codigo...................:</strong>&emsp;{{proceso.proceso}}
 				<p><strong>Nombre Proceso...:</strong>&emsp;{{proceso.nombre}}</p>
 				<p><strong>Ruta ...:</strong>&emsp;{{ruta}}</p>
-				<p><strong>Descripcion...........:</strong>&emsp;{{proceso.objetivo}}</p>
+				<p><strong>Descripcion...........:</strong></p>
+				<ul>{{proceso.objetivo|linebreaksbr}}</ul>
+				<br>
 				<p><strong>Puntaje  .............:</strong>&emsp;{{proceso.subproceso.ranking}}</p>
 				<br/>
 
@@ -217,35 +220,9 @@
 	<br/>
 	<ul class="scr4" style="color:black">
 		<div class="flex-container">
-
+ 
 			<div class="flex-item>">
-				<p><strong>Responsable</strong>
-				<!--====================== Icono Datos Modelo ======================-->
-					{% comment %} Pasamos los datos seguros al JS {% endcomment %}
-					<script id="gestor_data_{{ proced.id }}" type="application/json">
-					{
-						"modelo": "Procedimientos_V",
-						"id": "{{ procedimientos_v.id }}",
-						"titulo": "<strong>Responsable</strong>",   
-						"mensajeFinal": "Es el responsable de nivel táctico superior 
-											inmediato  (Gerente, Subgerente, Jefe de Area) del Proceso critico asociado 
-											al Procedimiento. Es quien, durante el ciclo de aprobacion autoriza el 
-											Procedimiento.",  
-						"listaCampos": { }
-					}
-					</script>
-
-					<span style="cursor:pointer; margin-left:8px; font-size:1.3rem;"
-						title="Ver mis datos"
-						onclick="abrirDetalleModelo(JSON.parse(document.getElementById('gestor_data_{{ proced.id }}').textContent))">
-						<!-- Icono --> 
-							<img src="/static/img/usuario.png" width="20" height="20">
-					</span>
-				<!--====================== Fin Icono Datos Modelo ======================-->
-
-				
-				
-				</p>
+				<p><strong>Responsable</strong></p>
 				<p>{{form.resp_proceso}}</p>
 				<p><strong>Respaldo</strong></p> 
 				<p>{{form.bck_resp}}</p>

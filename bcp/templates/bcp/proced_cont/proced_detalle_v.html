@@ -16,6 +16,7 @@
             <img src="/static/img/sello_aprobado.webp" width="130">
             <p style="margin:5px 0 0 0; font-weight: bold;">VERSIÓN: {{proced.version}}</p>
             <p style="margin:0; color:#6b7280;">Fecha Aut: {{proced.fecha_c}}</p>
+            <p style="margin:0; color:#6b7280;">Autorizdo por: {{proced.resp_proceso}}</p>
         </div>
     </div>
 
@@ -55,8 +56,12 @@
 					<th style="background:#d1d5db;">Fecha de Autorizacion:</th>
 					<th>{{proced.fecha_c}}</th>
 				</tr>
+            </table>
+            <br/>
+            <p><strong>Roles:</strong></p> 
+            <table>
 				<tr>
-					<th style="background:#d1d5db;">Autorizado por Gestor Responsable:</th>
+					<th style="background:#d1d5db;">Gestor Responsable:</th>
 					<th>{{proced.resp_proceso}}</th>
 				</tr>
 				<tr>
