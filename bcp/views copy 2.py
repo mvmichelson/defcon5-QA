@@ -11734,326 +11734,638 @@ from django.db.models import AutoField
 from django.core import serializers
 from django.core.exceptions import FieldDoesNotExist
 from django.contrib.auth.models import User, Group
-from django.db import connection # Importante para desactivar checks
-
-from collections import defaultdict
-import os, json, zipfile, tempfile
-
-
-
-from django.db import connection
-from django.apps import apps
-from django.contrib.auth.models import User, Group
-from django.core.exceptions import FieldDoesNotExist
-from django.db.models import AutoField
-from collections import defaultdict
-import os, json, zipfile, tempfile
-
 @login_required
 def recuperar_json_zip(request):
     """
-    Version: 5
     Vista para restaurar datos desde un archivo ZIP de respaldo.
-    - Triple pasada con resolución de modelos Global/App.
-    - Desactivación de constraints para permitir FKs temporales.
-    - Mantenimiento estricto de estructura de comentarios.
+    - Triple pasada: 1) crear objetos (preservando PKs), 2) asignar FKs/M2M,
+      3) reintentos para relaciones pendientes.
+    - Log detallado y resumen de pendientes.
     """
-    
-    # Función auxiliar para obtener el modelo correcto sin importar si es Auth o BCP
-    def obtener_modelo(nombre_modelo):
-        if nombre_modelo == "User": return User
-        if nombre_modelo == "Group": return Group
-        return apps.get_model("bcp", nombre_modelo)
-
-    # --- FK_MAP: adapta/añade según tu modelo ---
+    # --- FK_MAP: adapta/añade según tu modelo (usa los nombres tal como aparecen en apps.get_model("bcp", name)) ---
     FK_MAP = {
-        # =============================
-        # Usuarios y Grupos
-        # =============================
-        "Grupos.grupo": Group,
-        "Gestor.user_gestor": User,
-        "Gestor.area": "Area",
-        "Gestor.cod_area": "Cod_Area",
+    # =============================
+    # Usuarios y Grupos
+    # =============================
+    "Grupos.grupo": Group,
+    "Gestor.user_gestor": User,
+    "Gestor.area": "Area",
+    "Gestor.cod_area": "Cod_Area",
 
-        # =============================
-        # Recursos y Tipos
-        # =============================
-        "Recursos.tipo": "Tipo_RR",
-        "Nivel_Impacto.tipo": "Tipo_Impacto",
-        "Indicadores_BIA.tipo": "Tipo_Indicador",
+    # =============================
+    # Recursos y Tipos
+    # =============================
+    "Recursos.tipo": "Tipo_RR",
+    "Nivel_Impacto.tipo": "Tipo_Impacto",
+    "Indicadores_BIA.tipo": "Tipo_Indicador",
 
-        "Impactos_Asig.impacto": "Tipo_Impacto",
-        "Impactos_Asig_v.impacto": "Tipo_Impacto",
-        "Impactos_Asig.nivel": "Nivel_Impacto",
-        "Impactos_Asig_v.nivel": "Nivel_Impacto",
+    "Impactos_Asig.impacto": "Tipo_Impacto",
+    "Impactos_Asig_v.impacto": "Tipo_Impacto",
+    "Impactos_Asig.nivel": "Nivel_Impacto",
+    "Impactos_Asig_v.nivel": "Nivel_Impacto",
 
-        "Indicadores_Asig.indicador": "Tipo_Indicador",
-        "Indicadores_Asig_v.indicador": "Tipo_Indicador",
-        "Indicadores_Asig.nivel": "Indicadores_BIA",
-        "Indicadores_Asig_v.nivel": "Indicadores_BIA",
+    "Indicadores_Asig.indicador": "Tipo_Indicador",
+    "Indicadores_Asig_v.indicador": "Tipo_Indicador",
+    "Indicadores_Asig.nivel": "Indicadores_BIA",
+    "Indicadores_Asig_v.nivel": "Indicadores_BIA",
 
-        # =============================
-        # Procedimientos
-        # =============================
-        "Procedimientos.tipo": "Tipo_Proc",
-        "Procedimientos_V.tipo": "Tipo_Proc",
+    # =============================
+    # Procedimientos
+    # =============================
+    "Procedimientos.tipo": "Tipo_Proc",
+    "Procedimientos_V.tipo": "Tipo_Proc",
 
-        "Procedimientos.escenarios": "Escenarios",
-        "Procedimientos_V.escenarios": "Escenarios",
+    "Procedimientos.escenarios": "Escenarios",
+    "Procedimientos_V.escenarios": "Escenarios",
 
-        "Procedimientos.resp_proceso": "Gestor",
-        "Procedimientos_V.resp_proceso": "Gestor",
-        "Procedimientos.bck_resp": "Gestor",
-        "Procedimientos_V.bck_resp": "Gestor",
-        "Procedimientos.gestor_ejecutor": "Gestor",
-        "Procedimientos_V.gestor_ejecutor": "Gestor",
-        "Procedimientos.bck_ejecutor": "Gestor",
-        "Procedimientos_V.bck_ejecutor": "Gestor",
-        "Procedimientos.enlace_c_crisis": "Gestor",
-        "Procedimientos_V.enlace_c_crisis": "Gestor",
-        "Procedimientos.bck_enlace": "Gestor",
-        "Procedimientos_V.bck_enlace": "Gestor",
-        "Procedimientos.gestor_consultor": "Gestor",
-        "Procedimientos_V.gestor_consultor": "Gestor",
+    "Procedimientos.resp_proceso": "Gestor",
+    "Procedimientos_V.resp_proceso": "Gestor",
+    "Procedimientos.bck_resp": "Gestor",
+    "Procedimientos_V.bck_resp": "Gestor",
+    "Procedimientos.gestor_ejecutor": "Gestor",
+    "Procedimientos_V.gestor_ejecutor": "Gestor",
+    "Procedimientos.bck_ejecutor": "Gestor",
+    "Procedimientos_V.bck_ejecutor": "Gestor",
+    "Procedimientos.enlace_c_crisis": "Gestor",
+    "Procedimientos_V.enlace_c_crisis": "Gestor",
+    "Procedimientos.bck_enlace": "Gestor",
+    "Procedimientos_V.bck_enlace": "Gestor",
+    "Procedimientos.gestor_consultor": "Gestor",
+    "Procedimientos_V.gestor_consultor": "Gestor",
 
-        # =============================
-        # Componentes
-        # =============================
-        "Componentes.tipo_act": "Tipo_Componente",
+    # =============================
+    # Componentes
+    # =============================
+    "Componentes.tipo_act": "Tipo_Componente",
 
-        # =============================
-        # Logs
-        # =============================
-        "LogAut.gestor_aprobador": "Gestor",
-        "Log_Revision.proceso": "Proceso",
-        "Log_Revision.procedimiento": "Procedimientos",
-        "Log_Revision.drp": "Drp",
-        "Log_Revision.gestor_aut": "Gestor",
+    # =============================
+    # Logs
+    # =============================
+    "LogAut.gestor_aprobador": "Gestor",
+    "Log_Revision.proceso": "Proceso",
+    "Log_Revision.procedimiento": "Procedimientos",
+    "Log_Revision.drp": "Drp",
+    "Log_Revision.gestor_aut": "Gestor",
 
-        "Control_Cambios.proceso": "SubProceso_V",
-        "Control_Cambios.procedimiento": "Procedimientos_V",
-        "Control_Cambios.gestor_aut": "Gestor",
+    "Control_Cambios.proceso": "SubProceso_V",
+    "Control_Cambios.procedimiento": "Procedimientos_V",
+    "Control_Cambios.gestor_aut": "Gestor",
 
-        # =============================
-        # Pasos PC
-        # =============================
-        "Pasos_PC.ejecutor": "Gestor",
-        "Pasos_PC_V.ejecutor": "Gestor",
+    # =============================
+    # Pasos PC
+    # =============================
+    "Pasos_PC.ejecutor": "Gestor",
+    "Pasos_PC_V.ejecutor": "Gestor",
 
-        # =============================
-        # DRP
-        # =============================
-        "Drp.resp_drp": "Gestor",
-        "Drp.bck_resp_drp": "Gestor",
-        "Drp.gestor_ejecutor_drp": "Gestor",
-        "Drp.bck_ejecutor_drp": "Gestor",
-        "Drp.enlace_c_crisis_drp": "Gestor",
-        "Drp.bck_enlace_drp": "Gestor",
-        "Drp.gestor_consultor_drp": "Gestor",
-        "Drp.tipo_Site": "Tipo_Site",
-        "Drp.disposicion_componentes": "Tipo_Disp",
+    # =============================
+    # DRP
+    # =============================
+    "Drp.resp_drp": "Gestor",
+    "Drp.bck_resp_drp": "Gestor",
+    "Drp.gestor_ejecutor_drp": "Gestor",
+    "Drp.bck_ejecutor_drp": "Gestor",
+    "Drp.enlace_c_crisis_drp": "Gestor",
+    "Drp.bck_enlace_drp": "Gestor",
+    "Drp.gestor_consultor_drp": "Gestor",
+    "Drp.tipo_Site": "Tipo_Site",
+    "Drp.disposicion_componentes": "Tipo_Disp",
 
-        # =============================
-        # SubProcesos / Procesos
-        # =============================
-        "SubProceso.gestor_R": "Gestor",
-        "SubProceso_V.gestor_R": "Gestor",
-        "SubProceso.gestor_A": "Gestor",
-        "SubProceso_V.gestor_A": "Gestor",
-        "SubProceso.gestor_C": "Gestor",
-        "SubProceso_V.gestor_C": "Gestor",
-        "SubProceso.gestor_I": "Gestor",
-        "SubProceso_V.gestor_I": "Gestor",
+    # =============================
+    # SubProcesos / Procesos
+    # =============================
+    "SubProceso.gestor_R": "Gestor",
+    "SubProceso_V.gestor_R": "Gestor",
+    "SubProceso.gestor_A": "Gestor",
+    "SubProceso_V.gestor_A": "Gestor",
+    "SubProceso.gestor_C": "Gestor",
+    "SubProceso_V.gestor_C": "Gestor",
+    "SubProceso.gestor_I": "Gestor",
+    "SubProceso_V.gestor_I": "Gestor",
 
-        "Proceso.subproceso": "SubProceso",
-        "Proceso.subproceso_v": "SubProceso_V",
+    "Proceso.subproceso": "SubProceso",
+    "Proceso.subproceso_v": "SubProceso_V",
 
-        # =============================
-        # PRUEBAS DE CONTINGENCIA 
-        # =============================
-        # PruebaContingencia
-        "PruebaContingencia.procedimiento": "Procedimientos",
-        "PruebaContingencia.responsable": "Gestor",
+    # =============================
+    # PRUEBAS DE CONTINGENCIA (CRÍTICO)
+    # =============================
+    "PruebaContingencia.procedimiento": "Procedimientos",
+    "PruebaContingencia.responsable": "Gestor",
 
-        # PruebaContingencia_V
-        "PruebaContingencia_V.procedimiento": "Procedimientos_V",
-        "PruebaContingencia_V.responsable": "Gestor",
+    "CasoPrueba.prueba": "PruebaContingencia",
+    "CasoPrueba_V.prueba": "PruebaContingencia_V",
 
-        # CasoPrueba
-        "CasoPrueba.prueba": "PruebaContingencia",
+    "EjecucionPrueba.incidente": "Incidentes",
+    "EjecucionPrueba.prueba": "PruebaContingencia_V",
+    "EjecucionPrueba.checklist": "CheckList",
 
-        # CasoPrueba_V
-        "CasoPrueba_V.prueba": "PruebaContingencia_V",
+    "EjecucionCasoPrueba.ejecucion": "EjecucionPrueba",
+    "EjecucionCasoPrueba.caso": "CasoPrueba_V",
+}
 
-        # EjecucionPrueba
-        "EjecucionPrueba.incidente": "Incidentes",
-        "EjecucionPrueba.prueba": "PruebaContingencia_V",
-        "EjecucionPrueba.checklist": "CheckList",
 
-        # EjecucionCasoPrueba
-        "EjecucionCasoPrueba.ejecucion": "EjecucionPrueba",
-        "EjecucionCasoPrueba.caso": "CasoPrueba_V",
 
-        # =============================
-        # CHECKLIST / PASOS
-        # =============================
 
-        # Checklist
-        "Checklist.incidente": "Incidentes",
-        "Checklist.procedimiento": "Procedimientos_V",
-
-        # Check_Pasos
-        "Check_Pasos.checklist": "CheckList",
-        "Check_Pasos.paso": "Pasos_PC_V",
-    }
-
+    # Orden sugerido para borrado y lectura
     ORDEN_MODELOS = [
-        "Group", "User", "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador", "Tipo_Impacto",
-        "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P", "Tipo_Proc", "Tipo_Site", "Tipo_Disp",
-        "Tipo_Componente", "Gestor", "Recursos", "Escenarios", "Amenazas", "Estrategias", "Parametros_G",
-        "Indicadores_BIA", "Drp", "Proceso", "SubProceso", "SubProceso_V", "Impactos_Asig", "Impactos_Asig_v",
-        "Indicadores_Asig", "Indicadores_Asig_v", "Procedimientos", "Procedimientos_V", "Servicios_PC",
-        "Servicios_PC_V", "Pasos_PC", "Pasos_PC_V", "Contactos_PC", "Contactos_PC_V", "Componentes", "LBC",
-        "LogAut", "Log_Revision", "Control_Cambios", "Incidentes", "CheckList", 'Check_Pasos',
-        "PruebaContingencia", "PruebaContingencia_V", "CasoPrueba", "CasoPrueba_V", "EjecucionPrueba",
-        "EjecucionCasoPrueba",
+    "Group",
+    "User",
+
+    "Area",
+    "Cod_Area",
+    "Grupos",
+    "Tipo_RR",
+    "Tipo_Indicador",
+    "Tipo_Impacto",
+    "Tipo_Impacto_P",
+    "Nivel_Impacto",
+    "Nivel_Impacto_P",
+    "Tipo_Proc",
+    "Tipo_Site",
+    "Tipo_Disp",
+    "Tipo_Componente",
+
+    "Gestor",
+    "Recursos",
+    "Escenarios",
+    "Amenazas",
+    "Estrategias",
+    "Parametros_G",
+    "Indicadores_BIA",
+
+    "Drp",
+    "Proceso",
+    "SubProceso",
+    "SubProceso_V",
+
+    "Impactos_Asig",
+    "Impactos_Asig_v",
+    "Indicadores_Asig",
+    "Indicadores_Asig_v",
+
+    "Procedimientos",
+    "Procedimientos_V",
+
+    "Servicios_PC",
+    "Servicios_PC_V",
+    "Pasos_PC",
+    "Pasos_PC_V",
+    "Contactos_PC",
+    "Contactos_PC_V",
+
+    "Componentes",
+    "LBC",
+
+    "LogAut",
+    "Log_Revision",
+    "Control_Cambios",
+
+    "Incidentes",
+    "CheckList",
+
+    "PruebaContingencia",
+    "PruebaContingencia_V",
+    "CasoPrueba",
+    "CasoPrueba_V",
+    "EjecucionPrueba",
+    "EjecucionCasoPrueba",
     ]
 
-    log, id_map, data_map = [], {}, {}
+
+    log = []
+    id_map = {}  # 'ModelName.PK' -> instancia creada
+    data_map = {}  # 'ModelName' -> lista de records cargados desde JSON
+
+    def safe_str(obj):
+        try:
+            return str(obj)
+        except Exception:
+            return f"{obj.__class__.__name__}({getattr(obj, 'pk', '?')})"
 
     if request.method == "POST" and request.FILES.get("zipfile"):
         zip_file = request.FILES["zipfile"]
+
+        # Extraer ZIP en tempdir
         with tempfile.TemporaryDirectory() as tmpdirname:
             zip_path = os.path.join(tmpdirname, "upload.zip")
             with open(zip_path, "wb") as f:
-                for chunk in zip_file.chunks(): f.write(chunk)
+                for chunk in zip_file.chunks():
+                    f.write(chunk)
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(tmpdirname)
 
+            # --- Cargar todos los JSON primero (sin tocar DB aún) ---
             for model_name in ORDEN_MODELOS:
                 file_path = os.path.join(tmpdirname, f"{model_name}.json")
-                if os.path.exists(file_path):
-                    try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            data_map[model_name] = json.load(f)
-                    except Exception as e: log.append(f"[ERROR] {model_name}: lectura fallida: {e}")
+                if not os.path.exists(file_path):
+                    log.append(f"[SKIP] {model_name}: no encontrado en ZIP.")
+                    continue
+                try:
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                    data_map[model_name] = data
+                except Exception as e:
+                    log.append(f"[ERROR] {model_name}: fallo al leer JSON: {e}")
+                    data_map[model_name] = []
 
-            # Borrado seguro
+            # --- BORRAR datos existentes (en ORDEN_MODELOS) ---
+            # Borrar Django Group/User si existen y luego modelos bcp en el orden indicado.
             for model_name in ORDEN_MODELOS:
                 try:
-                    model = obtener_modelo(model_name)
-                    model.objects.all().delete()
-                except Exception: pass
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
+                except LookupError:
+                    log.append(f"[WARN] Modelo {model_name} no existe en la app.")
+                    continue
+                try:
+                    deleted, _ = model.objects.all().delete()
+                    log.append(f"[DELETE] {model_name}: eliminados {deleted}")
+                except Exception as e:
+                    log.append(f"[ERROR] {model_name}: error al eliminar: {e}")
 
-            # --- PRIMERA PASADA: Creación ---
+            # ----------------------------------------------------------------------------
+            # --- PRIMERA PASADA: crear placeholders (preservando PKs), sin FKs ni M2M ---
+            # ----------------------------------------------------------------------------
+
             created_counts = defaultdict(int)
             create_errors = defaultdict(int)
-            
-            with connection.constraint_checks_disabled():
-                for model_name in ORDEN_MODELOS:
-                    data = data_map.get(model_name, [])
-                    try: model = obtener_modelo(model_name)
-                    except Exception: continue
-
-                    for record in data:
-                        pk, fields = record.get("pk"), record.get("fields", {})
-                        try:
-                            obj = model(pk=pk)
-                            for field, value in fields.items():
-                                if value is None: continue
-                                try:
-                                    fmeta = model._meta.get_field(field)
-                                    if getattr(fmeta, 'many_to_many', False): continue
-                                    if getattr(fmeta, 'is_relation', False):
-                                        setattr(obj, f"{fmeta.name}_id", value)
-                                    else: setattr(obj, field, value)
-                                except Exception: pass
-                            obj.save(force_insert=True)
-                            
-                            # Fechas
-                            date_fields = [f.name for f in model._meta.get_fields() if f.get_internal_type() in ("DateTimeField", "DateField")]
-                            update_data = {f: fields[f] for f in date_fields if f in fields}
-                            if update_data: model.objects.filter(pk=obj.pk).update(**update_data)
-
-                            id_map[f"{model_name}.{pk}"] = obj
-                            created_counts[model_name] += 1
-                        except Exception as e:
-                            create_errors[model_name] += 1
-                            log.append(f"[ERROR] {model_name}: pk={pk} :: {e}")
-
-            # --- SEGUNDA PASADA: Relaciones ---
-            fk_unresolved = []
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
-                try: model = obtener_modelo(model_name)
-                except Exception: continue
+                if not data:
+                    continue
+
+                # resolver clase de modelo
+                try:
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
+                except LookupError:
+                    log.append(f"[WARN] Modelo {model_name} no existe en bcp; se omite creación.")
+                    continue
 
                 for record in data:
-                    pk, fields, m2m_fields = record.get("pk"), record.get("fields", {}), record.get("m2m", {})
-                    obj = id_map.get(f"{model_name}.{pk}")
-                    if not obj: continue
+                    pk = record.get("pk")
+                    fields = record.get("fields", {})
+                    try:
+                        # crear instancia con PK original (sin relaciones)
+                        obj = model(pk=pk)
+                        # asignar SOLO campos no-relacionales y no-M2M
+                        for field, value in fields.items():
+                            if value is None:
+                                continue
+                            try:
+                                fmeta = model._meta.get_field(field)
+                                if getattr(fmeta, 'many_to_many', False) or getattr(fmeta, 'is_relation', False):
+                                    continue
+                                setattr(obj, field, value)
+                            except FieldDoesNotExist:
+                                try:
+                                    setattr(obj, field, value)
+                                except Exception:
+                                    pass
+                            except Exception:
+                                pass
 
+                        # guardar preservando pk
+                        try:
+                            obj.save(force_insert=True)
+                        except Exception:
+                            obj.save()
+
+                        # --- Forzar fechas originales (evita que auto_now/auto_now_add las reemplace) ---
+                        date_fields = [
+                            f.name for f in model._meta.get_fields()
+                            if f.get_internal_type() in ("DateTimeField", "DateField")
+                        ]
+                        update_data = {f: fields[f] for f in date_fields if f in fields}
+                        if update_data:
+                            model.objects.filter(pk=obj.pk).update(**update_data)
+
+                        id_map[f"{model_name}.{pk}"] = obj
+                        created_counts[model_name] += 1
+                    except Exception as e:
+                        create_errors[model_name] += 1
+                        log.append(f"[ERROR] {model_name}: no pudo crear pk={pk} :: {e}")
+
+
+            # Fin Primera pasada -------------------
+
+            # registrar creación por modelo
+            for model_name in ORDEN_MODELOS:
+                if created_counts.get(model_name, 0) or create_errors.get(model_name, 0):
+                    log.append(f"[CREATED] {model_name}: placeholders creados {created_counts.get(model_name,0)}, errores {create_errors.get(model_name,0)}")
+
+
+            # -------------------------------------------------------------------
+            # --- SEGUNDA PASADA: intentar asignar FKs y M2M (primer intento) ---
+            # -------------------------------------------------------------------
+
+            fk_unresolved = []   # lista de tuples para reintentos: (model_name, pk, field, target_model_name_or_type, target_pk)
+            m2m_unresolved = []  # tuples: (model_name, pk, field, missing_ids, present_ids)
+            fk_errors_count = defaultdict(int)
+            m2m_errors_count = defaultdict(int)
+
+            for model_name in ORDEN_MODELOS:
+                data = data_map.get(model_name, [])
+                if not data:
+                    continue
+
+                try:
+                    if model_name == "User":
+                        model = User
+                    elif model_name == "Group":
+                        model = Group
+                    else:
+                        model = apps.get_model("bcp", model_name)
+                except LookupError:
+                    continue
+
+                for record in data:
+                    pk = record.get("pk")
+                    fields = record.get("fields", {})
+                    m2m_fields = record.get("m2m", {})
+                    obj = id_map.get(f"{model_name}.{pk}")
+                    if not obj:
+                        log.append(f"[ERROR] {model_name}: placeholder pk={pk} no encontrado en id_map")
+                        continue
+
+                    # FKs (según FK_MAP preferentemente, fallback genérico)
                     for field, value in fields.items():
-                        if value is None: continue
+                        if value is None:
+                            continue
                         key = f"{model_name}.{field}"
+                        # intentar obtener metadatos del campo
                         try:
                             fmeta = model._meta.get_field(field)
-                            if not getattr(fmeta, 'is_relation', False) or getattr(fmeta, 'many_to_many', False): continue
-                            
-                            target = FK_MAP.get(key)
-                            if not target:
+                        except FieldDoesNotExist:
+                            fmeta = None
+
+                        # si es M2M, la manejamos más abajo
+                        if fmeta and getattr(fmeta, 'many_to_many', False):
+                            continue
+                        # si no es campo relacional y no está en FK_MAP, saltar
+                        if fmeta and not getattr(fmeta, 'is_relation', False) and key not in FK_MAP:
+                            continue
+
+                        # decidir target (FK_MAP tiene prioridad)
+                        if key in FK_MAP:
+                            target = FK_MAP[key]
+                        else:
+                            # fallback: deducir target por la metadata del campo
+                            if fmeta and getattr(fmeta, 'is_relation', False):
                                 rel = fmeta.remote_field
                                 target = rel.model.__name__ if hasattr(rel.model, '__name__') else rel.model
+                            else:
+                                # no es relacion conocida -> ignorar
+                                continue
 
-                            target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
-                            res = id_map.get(f"{target_name}.{value}") or obtener_modelo(target_name).objects.filter(pk=value).first()
-                            
-                            if res:
-                                setattr(obj, field, res)
+                        # resolver target value (usar id_map preferente)
+                        resolved = None
+                        try:
+                            if target == User:
+                                resolved = User.objects.filter(pk=value).first()
+                            elif target == Group:
+                                resolved = Group.objects.filter(pk=value).first()
+                            else:
+                                # target may be a string with model name defined in FK_MAP or a model class
+                                target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
+                                if target_name:
+                                    resolved = id_map.get(f"{target_name}.{value}") or apps.get_model("bcp", target_name).objects.filter(pk=value).first()
+                                else:
+                                    resolved = None
+                        except Exception:
+                            resolved = None
+
+                        if not resolved:
+                            # marcar para reintento
+                            fk_unresolved.append((model_name, pk, field, target, value))
+                            fk_errors_count[model_name] += 1
+                            log.append(f"[FK-MISS] {model_name}.{field}: {safe_str(obj)} esperaba {getattr(target, '__name__', target)}({value}) → no encontrado")
+                        else:
+                            # asignar y guardar inmediatamente
+                            try:
+                                setattr(obj, field, resolved)
                                 obj.save()
-                            else: fk_unresolved.append((model_name, pk, field, target_name, value))
-                        except Exception: pass
+                            except Exception as e:
+                                fk_errors_count[model_name] += 1
+                                log.append(f"[FK-ERROR] {model_name}.{field}: {safe_str(obj)} -> {getattr(target,'__name__',target)}({value}) :: {e}")
 
+                    # M2M: tratar con .set()
                     for field, ids in m2m_fields.items():
                         try:
                             fmeta = model._meta.get_field(field)
-                            rel_mod = fmeta.related_model
-                            # Determinar el nombre del modelo destino para M2M
-                            rel_name = rel_mod.__name__
-                            objs = [id_map.get(f"{rel_name}.{r_pk}") or rel_mod.objects.filter(pk=r_pk).first() for r_pk in ids]
-                            getattr(obj, field).set([o for o in objs if o])
-                        except Exception: pass
+                            related_model = fmeta.related_model
+                        except Exception as e:
+                            m2m_unresolved.append((model_name, pk, field, ids, []))
+                            m2m_errors_count[model_name] += len(ids)
+                            log.append(f"[M2M-ERROR] {model_name}.{field}: {safe_str(obj)} -> no se pudo determinar modelo relacionado :: {e}")
+                            continue
 
-            # --- TERCERA PASADA: Reintentos ---
-            for _ in range(3):
-                if not fk_unresolved: break
-                still_pending = []
-                for (m_n, pk, f_n, t_n, val) in fk_unresolved:
-                    try:
-                        res = id_map.get(f"{t_n}.{val}") or obtener_modelo(t_n).objects.filter(pk=val).first()
-                        if res:
-                            obj = id_map.get(f"{m_n}.{pk}")
-                            setattr(obj, f_n, res)
+                        present = []
+                        missing = []
+                        for rel_pk in ids:
+                            rel_obj = id_map.get(f"{related_model.__name__}.{rel_pk}") or related_model.objects.filter(pk=rel_pk).first()
+                            if rel_obj:
+                                present.append(rel_obj)
+                            else:
+                                missing.append(rel_pk)
+
+                        try:
+                            # asignar los presentes (puede ser lista vacía)
+                            getattr(obj, field).set(present)
                             obj.save()
-                        else: still_pending.append((m_n, pk, f_n, t_n, val))
-                    except Exception: still_pending.append((m_n, pk, f_n, t_n, val))
-                fk_unresolved = still_pending
+                            if missing:
+                                m2m_unresolved.append((model_name, pk, field, missing, [o.pk for o in present]))
+                                m2m_errors_count[model_name] += len(missing)
+                                log.append(f"[M2M-MISS] {model_name}.{field}: {safe_str(obj)} → faltaron {len(missing)} ({missing})")
+                        except Exception as e:
+                            m2m_unresolved.append((model_name, pk, field, ids, []))
+                            m2m_errors_count[model_name] += len(ids)
+                            log.append(f"[M2M-ERROR] {model_name}.{field}: {safe_str(obj)} :: {e}")
 
-            log.append("[INFO] Restauración finalizada.")
+            # --- TERCERA PASADA: reintentar FKs y M2M pendientes hasta max_attempts ---
+            max_attempts = 6
+            attempt = 0
+            resolved_any = True
+            fk_pending = fk_unresolved[:]
+            m2m_pending = m2m_unresolved[:]
 
-        # PostgreSQL Secuencias
+            while attempt < max_attempts and (fk_pending or m2m_pending) and resolved_any:
+                attempt += 1
+                resolved_any = False
+                new_fk_pending = []
+                # reintentar FKs
+                for (model_name, pk, field, target, value) in fk_pending:
+                    try:
+                        obj = id_map.get(f"{model_name}.{pk}")
+                        if not obj:
+                            new_fk_pending.append((model_name, pk, field, target, value))
+                            continue
+
+                        resolved = None
+                        if target == User:
+                            resolved = User.objects.filter(pk=value).first()
+                        elif target == Group:
+                            resolved = Group.objects.filter(pk=value).first()
+                        else:
+                            target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
+                            if target_name:
+                                resolved = id_map.get(f"{target_name}.{value}") or apps.get_model("bcp", target_name).objects.filter(pk=value).first()
+
+                        if not resolved:
+                            new_fk_pending.append((model_name, pk, field, target, value))
+                            continue
+
+                        # asignar y guardar
+                        setattr(obj, field, resolved)
+                        obj.save()
+                        resolved_any = True
+                        log.append(f"[FK-RETRY-OK] {model_name}.{field}: {safe_str(obj)} <- {getattr(resolved,'pk', '?')}")
+                    except Exception as e:
+                        new_fk_pending.append((model_name, pk, field, target, value))
+                        log.append(f"[FK-RETRY-ERR] {model_name}.{field}: pk={pk} :: {e}")
+
+                fk_pending = new_fk_pending
+
+                # reintentar M2M
+                new_m2m_pending = []
+                for (model_name, pk, field, missing_ids, present_ids) in m2m_pending:
+                    try:
+                        obj = id_map.get(f"{model_name}.{pk}")
+                        if not obj:
+                            new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                            continue
+                        model = apps.get_model("bcp", model_name)
+                        fmeta = model._meta.get_field(field)
+                        related_model = fmeta.related_model
+
+                        # intentar resolver missings
+                        newly_found = []
+                        still_missing = []
+                        for rel_pk in missing_ids:
+                            rel_obj = id_map.get(f"{related_model.__name__}.{rel_pk}") or related_model.objects.filter(pk=rel_pk).first()
+                            if rel_obj:
+                                newly_found.append(rel_obj)
+                            else:
+                                still_missing.append(rel_pk)
+
+                        # recuperar los presentes (siempre reconsigue)
+                        already = [ id_map.get(f"{related_model.__name__}.{rid}") or related_model.objects.filter(pk=rid).first() for rid in present_ids ]
+                        already = [o for o in (already or []) if o]
+
+                        all_to_set = already + newly_found
+                        try:
+                            getattr(obj, field).set(all_to_set)
+                            obj.save()
+                            if still_missing:
+                                new_m2m_pending.append((model_name, pk, field, still_missing, [o.pk for o in all_to_set]))
+                                log.append(f"[M2M-RETRY-PARTIAL] {model_name}.{field}: {safe_str(obj)} → aún faltan {len(still_missing)} ({still_missing})")
+                            else:
+                                resolved_any = True
+                                log.append(f"[M2M-RETRY-OK] {model_name}.{field}: {safe_str(obj)} <- {len(all_to_set)} items")
+                        except Exception as e:
+                            new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                            log.append(f"[M2M-RETRY-ERR] {model_name}.{field}: {safe_str(obj)} :: {e}")
+
+                    except Exception as e:
+                        new_m2m_pending.append((model_name, pk, field, missing_ids, present_ids))
+                        log.append(f"[M2M-RETRY-ERR] {model_name}.{field}: pk={pk} :: {e}")
+
+                m2m_pending = new_m2m_pending
+
+            # --- RESÚMENES FINALES por modelo (OK / pendientes) ---
+            for model_name in ORDEN_MODELOS:
+                total = len(data_map.get(model_name, []))
+                fk_errs = sum(1 for t in fk_pending if t[0] == model_name)
+                m2m_errs = sum(len(t[3]) for t in m2m_pending if t[0] == model_name)
+                if total > 0:
+                    if fk_errs == 0 and m2m_errs == 0:
+                        log.append(f"[OK] {model_name}: importados {total} (FK errores=0, M2M errores=0)")
+                    else:
+                        log.append(f"[OK] {model_name}: importados {total} (FK errores={fk_errs}, M2M errores={m2m_errs})")
+
+            # Detalle final de pendientes (por registro)
+            if fk_pending:
+                for model_name, pk, field, target, value in fk_pending:
+                    log.append(f"[PENDIENTE-FK] {model_name}.{field}: pk={pk} esperaba {getattr(target,'__name__',target)}({value})")
+            if m2m_pending:
+                for model_name, pk, field, missing_ids, present in m2m_pending:
+                    log.append(f"[PENDIENTE-M2M] {model_name}.{field}: pk={pk} faltan {len(missing_ids)} ({missing_ids})")
+
+        # fin temporarydir
+
+        # --- AJUSTE FINAL DE FECHAS (para preservar valores originales) ---
+        for model_name, records in data_map.items():
+            if not records:
+                continue
+            try:
+                if model_name == "User":
+                    model = User
+                elif model_name == "Group":
+                    model = Group
+                else:
+                    model = apps.get_model("bcp", model_name)
+            except LookupError:
+                continue
+
+            date_fields = [
+                f.name for f in model._meta.get_fields()
+                if f.get_internal_type() in ("DateTimeField", "DateField")
+            ]
+            if not date_fields:
+                continue
+
+            for record in records:
+                pk = record.get("pk")
+                fields = record.get("fields", {})
+                update_data = {f: fields[f] for f in date_fields if f in fields}
+                if update_data:
+                    try:
+                        model.objects.filter(pk=pk).update(**update_data)
+                    except Exception as e:
+                        log.append(f"[DATE-ERROR] {model_name}: pk={pk} no pudo actualizar fechas :: {e}")
+
+        # --- Ajustar secuencias de todas las tablas restauradas ---
         if connection.vendor == "postgresql":
             with connection.cursor() as cursor:
                 for model_name in ORDEN_MODELOS:
                     try:
-                        model = obtener_modelo(model_name)
-                        if isinstance(model._meta.pk, AutoField):
-                            cursor.execute(f"SELECT setval(pg_get_serial_sequence('{model._meta.db_table}', '{model._meta.pk.name}'), COALESCE(MAX({model._meta.pk.name}), 1)) FROM {model._meta.db_table};")
-                    except Exception: pass
+                        if model_name == "User":
+                            model = User
+                        elif model_name == "Group":
+                            model = Group
+                        else:
+                            model = apps.get_model("bcp", model_name)
+                    except LookupError:
+                        continue
+
+                    pk_field = model._meta.pk
+                    if not isinstance(pk_field, AutoField):
+                        continue
+
+                    table = model._meta.db_table
+                    pk_name = pk_field.name
+                    seq_name = f"{table}_{pk_name}_seq"
+
+                    try:
+                        # setval: ajustar la secuencia al MAX(pk) + 1
+                        cursor.execute(
+                            f"SELECT setval('{seq_name}', COALESCE((SELECT MAX({pk_name}) FROM {table}), 0) + 1, false);"
+                        )
+                        log.append(f"[SEQ-RESET] {model_name}: secuencia {seq_name} ajustada correctamente.")
+                    except Exception as e:
+                        log.append(f"[SEQ-ERROR] {model_name}: no se pudo ajustar secuencia {seq_name} :: {e}")
 
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
-    return render(request, "bcp/conf/recuperar_form.html", {"log": None})
 
+    # GET -> formulario
+    return render(request, "bcp/conf/recuperar_form.html", {"log": None})
 
 # ===============================================================================================
 
