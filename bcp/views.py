@@ -11746,15 +11746,16 @@ from django.apps import apps
 from django.contrib.auth.models import User, Group
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import AutoField
+from django.shortcuts import render
 from collections import defaultdict
 import os, json, zipfile, tempfile
 
 def recuperar_json_zip(request):
     """
-    Version: 7 (Heroku-Safe)
-    - Reordenamiento estricto de ORDEN_MODELOS para PostgreSQL.
-    - Manejo de dependencias SubProceso -> Proceso -> Logs.
-    - Mantiene estructura de comentarios FK_MAP.
+    Version: 8 (Final con Auditoría)
+    - Reordenamiento estricto para PostgreSQL.
+    - Lógica de Creación/Actualización (Evita Unique Constraints).
+    - Reporte comparativo de registros (ZIP vs DB).
     """
     
     def obtener_modelo(nombre_modelo):
@@ -11762,7 +11763,6 @@ def recuperar_json_zip(request):
         if nombre_modelo == "Group": return Group
         return apps.get_model("bcp", nombre_modelo)
 
-    # --- FK_MAP: (Comentarios preservados íntegramente) ---
     FK_MAP = {
         # =============================
         # Usuarios y Grupos
@@ -11771,33 +11771,27 @@ def recuperar_json_zip(request):
         "Gestor.user_gestor": User,
         "Gestor.area": "Area",
         "Gestor.cod_area": "Cod_Area",
-
         # =============================
         # Recursos y Tipos
         # =============================
         "Recursos.tipo": "Tipo_RR",
         "Nivel_Impacto.tipo": "Tipo_Impacto",
         "Indicadores_BIA.tipo": "Tipo_Indicador",
-
         "Impactos_Asig.impacto": "Tipo_Impacto",
         "Impactos_Asig_v.impacto": "Tipo_Impacto",
         "Impactos_Asig.nivel": "Nivel_Impacto",
         "Impactos_Asig_v.nivel": "Nivel_Impacto",
-
         "Indicadores_Asig.indicador": "Tipo_Indicador",
         "Indicadores_Asig_v.indicador": "Tipo_Indicador",
         "Indicadores_Asig.nivel": "Indicadores_BIA",
         "Indicadores_Asig_v.nivel": "Indicadores_BIA",
-
         # =============================
         # Procedimientos
         # =============================
         "Procedimientos.tipo": "Tipo_Proc",
         "Procedimientos_V.tipo": "Tipo_Proc",
-
         "Procedimientos.escenarios": "Escenarios",
         "Procedimientos_V.escenarios": "Escenarios",
-
         "Procedimientos.resp_proceso": "Gestor",
         "Procedimientos_V.resp_proceso": "Gestor",
         "Procedimientos.bck_resp": "Gestor",
@@ -11812,12 +11806,10 @@ def recuperar_json_zip(request):
         "Procedimientos_V.bck_enlace": "Gestor",
         "Procedimientos.gestor_consultor": "Gestor",
         "Procedimientos_V.gestor_consultor": "Gestor",
-
         # =============================
         # Componentes
         # =============================
         "Componentes.tipo_act": "Tipo_Componente",
-
         # =============================
         # Logs
         # =============================
@@ -11826,17 +11818,14 @@ def recuperar_json_zip(request):
         "Log_Revision.procedimiento": "Procedimientos",
         "Log_Revision.drp": "Drp",
         "Log_Revision.gestor_aut": "Gestor",
-
         "Control_Cambios.proceso": "SubProceso_V",
         "Control_Cambios.procedimiento": "Procedimientos_V",
         "Control_Cambios.gestor_aut": "Gestor",
-
         # =============================
         # Pasos PC
         # =============================
         "Pasos_PC.ejecutor": "Gestor",
         "Pasos_PC_V.ejecutor": "Gestor",
-
         # =============================
         # DRP
         # =============================
@@ -11849,7 +11838,6 @@ def recuperar_json_zip(request):
         "Drp.gestor_consultor_drp": "Gestor",
         "Drp.tipo_Site": "Tipo_Site",
         "Drp.disposicion_componentes": "Tipo_Disp",
-
         # =============================
         # SubProcesos / Procesos
         # =============================
@@ -11861,50 +11849,31 @@ def recuperar_json_zip(request):
         "SubProceso_V.gestor_C": "Gestor",
         "SubProceso.gestor_I": "Gestor",
         "SubProceso_V.gestor_I": "Gestor",
-
         "Proceso.subproceso": "SubProceso",
         "Proceso.subproceso_v": "SubProceso_V",
-
         # =============================
         # PRUEBAS DE CONTINGENCIA 
         # =============================
-        # PruebaContingencia
         "PruebaContingencia.procedimiento": "Procedimientos",
         "PruebaContingencia.responsable": "Gestor",
-
-        # PruebaContingencia_V
         "PruebaContingencia_V.procedimiento": "Procedimientos_V",
         "PruebaContingencia_V.responsable": "Gestor",
-
-        # CasoPrueba
         "CasoPrueba.prueba": "PruebaContingencia",
-
-        # CasoPrueba_V
         "CasoPrueba_V.prueba": "PruebaContingencia_V",
-
-        # EjecucionPrueba
         "EjecucionPrueba.incidente": "Incidentes",
         "EjecucionPrueba.prueba": "PruebaContingencia_V",
         "EjecucionPrueba.checklist": "CheckList",
-
-        # EjecucionCasoPrueba
         "EjecucionCasoPrueba.ejecucion": "EjecucionPrueba",
         "EjecucionCasoPrueba.caso": "CasoPrueba_V",
-
         # =============================
         # CHECKLIST / PASOS
         # =============================
-
-        # Checklist
         "Checklist.incidente": "Incidentes",
         "Checklist.procedimiento": "Procedimientos_V",
-
-        # Check_Pasos
         "Check_Pasos.checklist": "CheckList",
         "Check_Pasos.paso": "Pasos_PC_V",
     }
 
-    # CAMBIO CRÍTICO: El orden ahora garantiza que SubProceso exista antes que Proceso
     ORDEN_MODELOS = [
         "Group", "User", "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador", "Tipo_Impacto",
         "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P", "Tipo_Proc", "Tipo_Site", "Tipo_Disp",
@@ -11915,10 +11884,11 @@ def recuperar_json_zip(request):
         "Pasos_PC_V", "Contactos_PC", "Contactos_PC_V", "Componentes", "LBC", "Incidentes", 
         "CheckList", "Check_Pasos", "PruebaContingencia", "PruebaContingencia_V", 
         "CasoPrueba", "CasoPrueba_V", "EjecucionPrueba", "EjecucionCasoPrueba",
-        "LogAut", "Log_Revision", "Control_Cambios", # Los logs al final, dependen de casi todo
+        "LogAut", "Log_Revision", "Control_Cambios",
     ]
 
     log, id_map, data_map = [], {}, {}
+    stats = {m: {"esperados": 0, "creados": 0} for m in ORDEN_MODELOS}
 
     if request.method == "POST" and request.FILES.get("zipfile"):
         zip_file = request.FILES["zipfile"]
@@ -11926,6 +11896,7 @@ def recuperar_json_zip(request):
             zip_path = os.path.join(tmpdirname, "upload.zip")
             with open(zip_path, "wb") as f:
                 for chunk in zip_file.chunks(): f.write(chunk)
+            
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(tmpdirname)
 
@@ -11933,16 +11904,17 @@ def recuperar_json_zip(request):
                 file_path = os.path.join(tmpdirname, f"{model_name}.json")
                 if os.path.exists(file_path):
                     with open(file_path, "r", encoding="utf-8") as f:
-                        data_map[model_name] = json.load(f)
+                        data = json.load(f)
+                        data_map[model_name] = data
+                        stats[model_name]["esperados"] = len(data)
 
-            # Borrado en reversa para no violar FKs al eliminar
+            # Borrado en reversa
             for model_name in reversed(ORDEN_MODELOS):
                 try:
-                    model = obtener_modelo(model_name)
-                    model.objects.all().delete()
+                    obtener_modelo(model_name).objects.all().delete()
                 except Exception: pass
 
-            # --- PASADA 1: Creación de Objetos ---
+            # PASADA 1: Creación y Auditoría
             with connection.constraint_checks_disabled():
                 for model_name in ORDEN_MODELOS:
                     data = data_map.get(model_name, [])
@@ -11952,43 +11924,37 @@ def recuperar_json_zip(request):
                     for record in data:
                         pk, fields = record.get("pk"), record.get("fields", {})
                         try:
-                            # Update or Create
                             obj = model.objects.filter(pk=pk).first() or model(pk=pk)
-                            
                             for field, value in fields.items():
                                 if value is None: continue
                                 try:
                                     fmeta = model._meta.get_field(field)
                                     if getattr(fmeta, 'many_to_many', False): continue
-                                    # Asignación por ID directa para PostgreSQL
                                     if getattr(fmeta, 'is_relation', False):
                                         setattr(obj, f"{fmeta.name}_id", value)
-                                    else:
-                                        setattr(obj, field, value)
+                                    else: setattr(obj, field, value)
                                 except Exception: pass
-                            
                             obj.save()
                             
-                            # Fechas originales
+                            # Fechas
                             date_fields = [f.name for f in model._meta.get_fields() if f.get_internal_type() in ("DateTimeField", "DateField")]
                             update_dates = {f: fields[f] for f in date_fields if f in fields}
                             if update_dates: model.objects.filter(pk=obj.pk).update(**update_dates)
 
                             id_map[f"{model_name}.{pk}"] = obj
+                            stats[model_name]["creados"] += 1
                         except Exception as e:
-                            log.append(f"[ERROR] {model_name}: pk={pk} :: {e}")
+                            log.append(f"[ERROR] {model_name} pk={pk}: {e}")
 
-            # --- PASADA 2: M2M y Refuerzo de Relaciones ---
+            # PASADA 2: M2M
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
                 try: model = obtener_modelo(model_name)
                 except Exception: continue
-
                 for record in data:
                     pk, m2m_fields = record.get("pk"), record.get("m2m", {})
                     obj = id_map.get(f"{model_name}.{pk}")
                     if not obj: continue
-
                     for field, ids in m2m_fields.items():
                         try:
                             fmeta = model._meta.get_field(field)
@@ -11997,7 +11963,12 @@ def recuperar_json_zip(request):
                             getattr(obj, field).set([o for o in objs if o])
                         except Exception: pass
 
-            log.append("[INFO] Restauración finalizada correctamente.")
+            # REPORTE FINAL DE AUDITORÍA
+            log.append("--- REPORTE DE AUDITORÍA DE RESTAURACIÓN ---")
+            for m, s in stats.items():
+                if s["esperados"] > 0:
+                    status = "✅ OK" if s["esperados"] == s["creados"] else "❌ ERROR"
+                    log.append(f"{status} | {m.ljust(20)} | Esperados: {s['esperados']} | Creados: {s['creados']}")
 
         # PostgreSQL: Secuencias
         if connection.vendor == "postgresql":
@@ -12011,6 +11982,7 @@ def recuperar_json_zip(request):
 
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
+
 
 # ===============================================================================================
 
