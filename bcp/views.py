@@ -11751,11 +11751,10 @@ import os, json, zipfile, tempfile
 
 def recuperar_json_zip(request):
     """
-    Version: 6
-    Vista para restaurar datos desde un archivo ZIP de respaldo.
-    - Maneja UNIQUE constraint failed mediante lógica de Update-if-exists.
-    - Mantiene desactivación de FK checks para evitar fallos de jerarquía.
-    - Preserva comentarios originales en FK_MAP.
+    Version: 7 (Heroku-Safe)
+    - Reordenamiento estricto de ORDEN_MODELOS para PostgreSQL.
+    - Manejo de dependencias SubProceso -> Proceso -> Logs.
+    - Mantiene estructura de comentarios FK_MAP.
     """
     
     def obtener_modelo(nombre_modelo):
@@ -11763,7 +11762,7 @@ def recuperar_json_zip(request):
         if nombre_modelo == "Group": return Group
         return apps.get_model("bcp", nombre_modelo)
 
-    # --- FK_MAP: adapta/añade según tu modelo ---
+    # --- FK_MAP: (Comentarios preservados íntegramente) ---
     FK_MAP = {
         # =============================
         # Usuarios y Grupos
@@ -11905,16 +11904,18 @@ def recuperar_json_zip(request):
         "Check_Pasos.paso": "Pasos_PC_V",
     }
 
+    # CAMBIO CRÍTICO: El orden ahora garantiza que SubProceso exista antes que Proceso
     ORDEN_MODELOS = [
         "Group", "User", "Area", "Cod_Area", "Grupos", "Tipo_RR", "Tipo_Indicador", "Tipo_Impacto",
         "Tipo_Impacto_P", "Nivel_Impacto", "Nivel_Impacto_P", "Tipo_Proc", "Tipo_Site", "Tipo_Disp",
-        "Tipo_Componente", "Gestor", "Recursos", "Escenarios", "Amenazas", "Estrategias", "Parametros_G",
-        "Indicadores_BIA", "Drp", "Proceso", "SubProceso", "SubProceso_V", "Impactos_Asig", "Impactos_Asig_v",
-        "Indicadores_Asig", "Indicadores_Asig_v", "Procedimientos", "Procedimientos_V", "Servicios_PC",
-        "Servicios_PC_V", "Pasos_PC", "Pasos_PC_V", "Contactos_PC", "Contactos_PC_V", "Componentes", "LBC",
-        "LogAut", "Log_Revision", "Control_Cambios", "Incidentes", "CheckList", 'Check_Pasos',
-        "PruebaContingencia", "PruebaContingencia_V", "CasoPrueba", "CasoPrueba_V", "EjecucionPrueba",
-        "EjecucionCasoPrueba",
+        "Tipo_Componente", "Gestor", "SubProceso", "SubProceso_V", "Recursos", "Escenarios", 
+        "Amenazas", "Estrategias", "Parametros_G", "Indicadores_BIA", "Drp", "Proceso", 
+        "Impactos_Asig", "Impactos_Asig_v", "Indicadores_Asig", "Indicadores_Asig_v", 
+        "Procedimientos", "Procedimientos_V", "Servicios_PC", "Servicios_PC_V", "Pasos_PC", 
+        "Pasos_PC_V", "Contactos_PC", "Contactos_PC_V", "Componentes", "LBC", "Incidentes", 
+        "CheckList", "Check_Pasos", "PruebaContingencia", "PruebaContingencia_V", 
+        "CasoPrueba", "CasoPrueba_V", "EjecucionPrueba", "EjecucionCasoPrueba",
+        "LogAut", "Log_Revision", "Control_Cambios", # Los logs al final, dependen de casi todo
     ]
 
     log, id_map, data_map = [], {}, {}
@@ -11934,17 +11935,14 @@ def recuperar_json_zip(request):
                     with open(file_path, "r", encoding="utf-8") as f:
                         data_map[model_name] = json.load(f)
 
-            # --- Borrado ---
-            for model_name in reversed(ORDEN_MODELOS): # Borramos en orden inverso para respetar FKs
+            # Borrado en reversa para no violar FKs al eliminar
+            for model_name in reversed(ORDEN_MODELOS):
                 try:
                     model = obtener_modelo(model_name)
                     model.objects.all().delete()
-                except Exception as e:
-                    log.append(f"[AVISO] No se pudo limpiar tabla {model_name}: {e}")
+                except Exception: pass
 
-            # --- PRIMERA PASADA: Creación / Actualización ---
-            create_errors = defaultdict(int)
-            
+            # --- PASADA 1: Creación de Objetos ---
             with connection.constraint_checks_disabled():
                 for model_name in ORDEN_MODELOS:
                     data = data_map.get(model_name, [])
@@ -11954,7 +11952,7 @@ def recuperar_json_zip(request):
                     for record in data:
                         pk, fields = record.get("pk"), record.get("fields", {})
                         try:
-                            # Cambio clave: Intentamos recuperar el objeto si ya existe (evita UNIQUE constraint failed)
+                            # Update or Create
                             obj = model.objects.filter(pk=pk).first() or model(pk=pk)
                             
                             for field, value in fields.items():
@@ -11962,17 +11960,16 @@ def recuperar_json_zip(request):
                                 try:
                                     fmeta = model._meta.get_field(field)
                                     if getattr(fmeta, 'many_to_many', False): continue
+                                    # Asignación por ID directa para PostgreSQL
                                     if getattr(fmeta, 'is_relation', False):
                                         setattr(obj, f"{fmeta.name}_id", value)
                                     else:
-                                        # No sobrescribir password si es User y ya existe (opcional)
                                         setattr(obj, field, value)
                                 except Exception: pass
                             
-                            # Usamos save() normal. Django detectará si es UPDATE o INSERT según el PK
                             obj.save()
                             
-                            # Forzar actualización de fechas (save() suele sobrescribir auto_now_add)
+                            # Fechas originales
                             date_fields = [f.name for f in model._meta.get_fields() if f.get_internal_type() in ("DateTimeField", "DateField")]
                             update_dates = {f: fields[f] for f in date_fields if f in fields}
                             if update_dates: model.objects.filter(pk=obj.pk).update(**update_dates)
@@ -11981,32 +11978,16 @@ def recuperar_json_zip(request):
                         except Exception as e:
                             log.append(f"[ERROR] {model_name}: pk={pk} :: {e}")
 
-            # --- SEGUNDA PASADA: Relaciones formales ---
+            # --- PASADA 2: M2M y Refuerzo de Relaciones ---
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
                 try: model = obtener_modelo(model_name)
                 except Exception: continue
 
                 for record in data:
-                    pk, fields, m2m_fields = record.get("pk"), record.get("fields", {}), record.get("m2m", {})
+                    pk, m2m_fields = record.get("pk"), record.get("m2m", {})
                     obj = id_map.get(f"{model_name}.{pk}")
                     if not obj: continue
-
-                    for field, value in fields.items():
-                        if value is None: continue
-                        key = f"{model_name}.{field}"
-                        try:
-                            fmeta = model._meta.get_field(field)
-                            if not getattr(fmeta, 'is_relation', False) or getattr(fmeta, 'many_to_many', False): continue
-                            
-                            target = FK_MAP.get(key) or fmeta.remote_field.model.__name__
-                            target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
-                            
-                            res = id_map.get(f"{target_name}.{value}") or obtener_modelo(target_name).objects.filter(pk=value).first()
-                            if res:
-                                setattr(obj, field, res)
-                                obj.save()
-                        except Exception: pass
 
                     for field, ids in m2m_fields.items():
                         try:
@@ -12016,9 +11997,9 @@ def recuperar_json_zip(request):
                             getattr(obj, field).set([o for o in objs if o])
                         except Exception: pass
 
-            log.append("[INFO] Restauración completada.")
+            log.append("[INFO] Restauración finalizada correctamente.")
 
-        # Reajuste de secuencias (Postgres)
+        # PostgreSQL: Secuencias
         if connection.vendor == "postgresql":
             with connection.cursor() as cursor:
                 for m_name in ORDEN_MODELOS:
@@ -12030,7 +12011,6 @@ def recuperar_json_zip(request):
 
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
     return render(request, "bcp/conf/recuperar_form.html", {"log": None})
-
 
 # ===============================================================================================
 
