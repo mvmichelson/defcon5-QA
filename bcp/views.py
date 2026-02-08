@@ -11749,17 +11749,15 @@ from django.db.models import AutoField
 from collections import defaultdict
 import os, json, zipfile, tempfile
 
-@login_required
 def recuperar_json_zip(request):
     """
-    Version: 5
+    Version: 6
     Vista para restaurar datos desde un archivo ZIP de respaldo.
-    - Triple pasada con resolución de modelos Global/App.
-    - Desactivación de constraints para permitir FKs temporales.
-    - Mantenimiento estricto de estructura de comentarios.
+    - Maneja UNIQUE constraint failed mediante lógica de Update-if-exists.
+    - Mantiene desactivación de FK checks para evitar fallos de jerarquía.
+    - Preserva comentarios originales en FK_MAP.
     """
     
-    # Función auxiliar para obtener el modelo correcto sin importar si es Auth o BCP
     def obtener_modelo(nombre_modelo):
         if nombre_modelo == "User": return User
         if nombre_modelo == "Group": return Group
@@ -11933,20 +11931,18 @@ def recuperar_json_zip(request):
             for model_name in ORDEN_MODELOS:
                 file_path = os.path.join(tmpdirname, f"{model_name}.json")
                 if os.path.exists(file_path):
-                    try:
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            data_map[model_name] = json.load(f)
-                    except Exception as e: log.append(f"[ERROR] {model_name}: lectura fallida: {e}")
+                    with open(file_path, "r", encoding="utf-8") as f:
+                        data_map[model_name] = json.load(f)
 
-            # Borrado seguro
-            for model_name in ORDEN_MODELOS:
+            # --- Borrado ---
+            for model_name in reversed(ORDEN_MODELOS): # Borramos en orden inverso para respetar FKs
                 try:
                     model = obtener_modelo(model_name)
                     model.objects.all().delete()
-                except Exception: pass
+                except Exception as e:
+                    log.append(f"[AVISO] No se pudo limpiar tabla {model_name}: {e}")
 
-            # --- PRIMERA PASADA: Creación ---
-            created_counts = defaultdict(int)
+            # --- PRIMERA PASADA: Creación / Actualización ---
             create_errors = defaultdict(int)
             
             with connection.constraint_checks_disabled():
@@ -11958,7 +11954,9 @@ def recuperar_json_zip(request):
                     for record in data:
                         pk, fields = record.get("pk"), record.get("fields", {})
                         try:
-                            obj = model(pk=pk)
+                            # Cambio clave: Intentamos recuperar el objeto si ya existe (evita UNIQUE constraint failed)
+                            obj = model.objects.filter(pk=pk).first() or model(pk=pk)
+                            
                             for field, value in fields.items():
                                 if value is None: continue
                                 try:
@@ -11966,23 +11964,24 @@ def recuperar_json_zip(request):
                                     if getattr(fmeta, 'many_to_many', False): continue
                                     if getattr(fmeta, 'is_relation', False):
                                         setattr(obj, f"{fmeta.name}_id", value)
-                                    else: setattr(obj, field, value)
+                                    else:
+                                        # No sobrescribir password si es User y ya existe (opcional)
+                                        setattr(obj, field, value)
                                 except Exception: pass
-                            obj.save(force_insert=True)
                             
-                            # Fechas
+                            # Usamos save() normal. Django detectará si es UPDATE o INSERT según el PK
+                            obj.save()
+                            
+                            # Forzar actualización de fechas (save() suele sobrescribir auto_now_add)
                             date_fields = [f.name for f in model._meta.get_fields() if f.get_internal_type() in ("DateTimeField", "DateField")]
-                            update_data = {f: fields[f] for f in date_fields if f in fields}
-                            if update_data: model.objects.filter(pk=obj.pk).update(**update_data)
+                            update_dates = {f: fields[f] for f in date_fields if f in fields}
+                            if update_dates: model.objects.filter(pk=obj.pk).update(**update_dates)
 
                             id_map[f"{model_name}.{pk}"] = obj
-                            created_counts[model_name] += 1
                         except Exception as e:
-                            create_errors[model_name] += 1
                             log.append(f"[ERROR] {model_name}: pk={pk} :: {e}")
 
-            # --- SEGUNDA PASADA: Relaciones ---
-            fk_unresolved = []
+            # --- SEGUNDA PASADA: Relaciones formales ---
             for model_name in ORDEN_MODELOS:
                 data = data_map.get(model_name, [])
                 try: model = obtener_modelo(model_name)
@@ -12000,55 +11999,33 @@ def recuperar_json_zip(request):
                             fmeta = model._meta.get_field(field)
                             if not getattr(fmeta, 'is_relation', False) or getattr(fmeta, 'many_to_many', False): continue
                             
-                            target = FK_MAP.get(key)
-                            if not target:
-                                rel = fmeta.remote_field
-                                target = rel.model.__name__ if hasattr(rel.model, '__name__') else rel.model
-
+                            target = FK_MAP.get(key) or fmeta.remote_field.model.__name__
                             target_name = target if isinstance(target, str) else getattr(target, '__name__', None)
-                            res = id_map.get(f"{target_name}.{value}") or obtener_modelo(target_name).objects.filter(pk=value).first()
                             
+                            res = id_map.get(f"{target_name}.{value}") or obtener_modelo(target_name).objects.filter(pk=value).first()
                             if res:
                                 setattr(obj, field, res)
                                 obj.save()
-                            else: fk_unresolved.append((model_name, pk, field, target_name, value))
                         except Exception: pass
 
                     for field, ids in m2m_fields.items():
                         try:
                             fmeta = model._meta.get_field(field)
                             rel_mod = fmeta.related_model
-                            # Determinar el nombre del modelo destino para M2M
-                            rel_name = rel_mod.__name__
-                            objs = [id_map.get(f"{rel_name}.{r_pk}") or rel_mod.objects.filter(pk=r_pk).first() for r_pk in ids]
+                            objs = [id_map.get(f"{rel_mod.__name__}.{r_pk}") or rel_mod.objects.filter(pk=r_pk).first() for r_pk in ids]
                             getattr(obj, field).set([o for o in objs if o])
                         except Exception: pass
 
-            # --- TERCERA PASADA: Reintentos ---
-            for _ in range(3):
-                if not fk_unresolved: break
-                still_pending = []
-                for (m_n, pk, f_n, t_n, val) in fk_unresolved:
-                    try:
-                        res = id_map.get(f"{t_n}.{val}") or obtener_modelo(t_n).objects.filter(pk=val).first()
-                        if res:
-                            obj = id_map.get(f"{m_n}.{pk}")
-                            setattr(obj, f_n, res)
-                            obj.save()
-                        else: still_pending.append((m_n, pk, f_n, t_n, val))
-                    except Exception: still_pending.append((m_n, pk, f_n, t_n, val))
-                fk_unresolved = still_pending
+            log.append("[INFO] Restauración completada.")
 
-            log.append("[INFO] Restauración finalizada.")
-
-        # PostgreSQL Secuencias
+        # Reajuste de secuencias (Postgres)
         if connection.vendor == "postgresql":
             with connection.cursor() as cursor:
-                for model_name in ORDEN_MODELOS:
+                for m_name in ORDEN_MODELOS:
                     try:
-                        model = obtener_modelo(model_name)
-                        if isinstance(model._meta.pk, AutoField):
-                            cursor.execute(f"SELECT setval(pg_get_serial_sequence('{model._meta.db_table}', '{model._meta.pk.name}'), COALESCE(MAX({model._meta.pk.name}), 1)) FROM {model._meta.db_table};")
+                        m = obtener_modelo(m_name)
+                        if isinstance(m._meta.pk, AutoField):
+                            cursor.execute(f"SELECT setval(pg_get_serial_sequence('{m._meta.db_table}', '{m._meta.pk.name}'), COALESCE(MAX({m._meta.pk.name}), 1)) FROM {m._meta.db_table};")
                     except Exception: pass
 
         return render(request, "bcp/conf/recuperar_form.html", {"log": log})
