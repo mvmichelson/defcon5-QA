@@ -22,16 +22,16 @@ defcon={{defcon_est}}
 	{% if procedimientos_vigentes %}
 		<!---- Opcion 1 ----->
 		<div class="flex-item" style="width: 50%;">
-		<ul class="encabezado_B"  style="background: rgba(255, 153, 0, 0.1);">
+		<ul class="encabezado_B"  style="background: rgba(255, 153, 0, 0.1); border: 2px solid var(--accent-green);">
 			<img src="/static/img/manual_pc.webp" width="30" height="30">
-			<a href="{% url 'Lista-Proced' 0 %}"><strong><aa>APROBADOS VIGENTES</aa></strong></a>
+			<a href="{% url 'Lista-Proced' 0 %}"><strong><sa>Aprobados Vigentes</sa></strong></a>
 		</ul>
 		</div><!---- Fin  Opcion 1 ----->
 
 		<!---- Opcion 2 ----->
 		<div class="flex-item" style="width: 50%;">
 			<ul class="encabezado_B" >
-			<a href="{% url 'Lista-Proced' 1  %}"><aa>EN DESARROLLO / ACTUALIZACION</aa></a>		</ul>
+			<a href="{% url 'Lista-Proced' 1  %}"><aa>En Desarrollo / Actualizacion</aa></a>		</ul>
 		</div><!---- Fin  Opcion 2 ----->
 	
 	{%else%}
@@ -39,15 +39,15 @@ defcon={{defcon_est}}
 		<!---- Opcion 1 ----->
 		<div class="flex-item" style="width: 50%;">
 		<ul class="encabezado_B" >
-			<a href="{% url 'Lista-Proced' 0 %}"><aa>APROBADOS VIGENTES</aa></a>
+			<a href="{% url 'Lista-Proced' 0 %}"><aa>Aprobados Vigentes</aa></a>
 		</ul>
 		</div><!---- Fin  Opcion 1 ----->
 
 		<!---- Opcion 2 ----->
 		<div class="flex-item" style="width: 50%;">
-			<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.1);">
+			<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.1); border: 2px solid var(--accent-green);">
 			<img src="/static/img/manual_pc.webp" width="30" height="30">
-			<a href="{% url 'Lista-Proced' 1  %}"><strong><aa>EN DESARROLLO / ACTUALIZACION</aa></strong></a>
+			<a href="{% url 'Lista-Proced' 1  %}"><strong><sa>En Desarrollo / Actualizacion</sa></strong></a>
 		    </ul>
 		</div><!---- Fin  Opcion 2 ----->
 
@@ -56,7 +56,7 @@ defcon={{defcon_est}}
 	</div><!------ Fin Menu Encabezado ---------------------------------->
 
 
-<ul class="BarraScroll" style="height: 300px; background: rgba(255, 153, 0, 0.1)">  
+<ul class="BarraScroll" style="height: 300px; background: rgba(255, 153, 0, 0.1); border: 2px solid var(--accent-green);">  
                          
 {% if lista_procesos %}
 
@@ -283,9 +283,6 @@ defcon={{defcon_est}}
 	</ul>
 
 	<br/>
-	<ul class="encabezado_B" style="background: rgba(255, 153, 0, 0.9)">
-		<img src="/static/img/manual_pc.webp" width="20" height="20"></a>	</ul>
-
 	<!----- CSS para Scripts ----------------------------------->
 	<!---------------------------------------------------------->
 		<!-- Caja de Comentario -->
@@ -312,5 +309,6 @@ defcon={{defcon_est}}
 		
 
 	<!--------- Fin CSS para Scripts ------------------------->
-
+<br/><br/><br/><br/>
+<aa style="font-size: 8px;">[proced_list]</aa>
 {%endblock%}

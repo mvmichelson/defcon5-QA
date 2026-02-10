@@ -4704,10 +4704,30 @@ def Aut_Proced_C(request, pk):
                     proced.status='A'      # Aprobado por Gestor Ejecutor
                     print('status final=',proced.status)
 
+                    # Crea entrada para el Log de Autorizaciones
+                    # ==========================================
+                    log=Log_Revision()
+                    log.fecha=datetime.date.today()
+                    log.hora=datetime.time.now()
+                    log.procedimiento=proced
+                    log.campo="Aprobado"
+                    log.comentario="Autorizado por Gestor Ejecutor"
+                    log.gestor_aut=pk_usr_sesion
+
                 elif proced.status == 'A':
                     print('> aprobo A->R')
                     proced.status='R'      # Aprobado por Gestor Responsable de Procedimiento
                     print('status final=',proced.status)
+
+                    # Crea entrada para el Log de Autorizaciones
+                    # ==========================================
+                    log=Log_Revision()
+                    log.fecha=datetime.date.today()
+                    log.hora=datetime.time.now()
+                    log.procedimiento=proced
+                    log.campo="Aprobado"
+                    log.comentario="Autorizado por Gestor Responsable"
+                    log.gestor_aut=pk_usr_sesion
 
 
                     # Crea o Modifica Procedimiento  (SubProceso) Vigente
@@ -5405,6 +5425,16 @@ def Aut_Proced_C(request, pk):
 
                 print('> No aprobo C->A')
 
+                # Crea entrada para el Log de Autorizaciones
+                # ==========================================
+                log=Log_Revision()
+                log.fecha=datetime.date.today()
+                log.hora=datetime.time.now()
+                log.procedimiento=proced
+                log.campo="Revisar Comentarios"
+                log.comentario="Observado por Gestor"
+                log.gestor_aut=pk_usr_sesion
+
                 proced.status='x'
                 proced.sec_1_completa = False
                 proced.sec_2_completa = False
@@ -5677,8 +5707,11 @@ def detalle_procedimiento(request, pk ):
 
     proced = get_object_or_404(Procedimientos, pk = pk)
     proceso = get_object_or_404(Proceso, pk=proced.pk_padre)
+    log_aut=Log_Revision.objects.filter(procedimiento=proced)
+    n_proc=proceso.nombre
+    ruta=resta_string(proceso.path,n_proc)
 
-        # Selecciona las Pruebas y Casos por cada una
+    # Selecciona las Pruebas y Casos por cada una
     tests = PruebaContingencia.objects.filter(procedimiento=proced)
     lista_prbas=[]
     for prba in tests:
@@ -5690,7 +5723,9 @@ def detalle_procedimiento(request, pk ):
     print('---- Lista de Pruebas :', lista_prbas)
 
     return render(request, 'bcp/proced_cont/proced_detalle.html', {'proced':proced,
-                                                                   'lista_prbas':lista_prbas, 
+                                                                   'ruta':ruta,
+                                                                   'lista_prbas':lista_prbas,
+                                                                   'log_aut':log_aut, 
                                                                    'proceso':proceso})
 
 @login_required   
