@@ -802,13 +802,23 @@ function obtenerCSRFToken(){
 // ===========================================================================================
 document.addEventListener("DOMContentLoaded", () => {
     console.log("main js: Semaforo de Riesgo");
+    const semaforos = document.querySelectorAll(".semaforo");
+    console.log("Cantidad de semáforos encontrados:", semaforos.length);
+
     // Se seleccionan todos los semáforos en la página
     document.querySelectorAll(".semaforo").forEach(sem => {
+
+        // 👇 AGREGA ESTO
+        console.log("Dataset del semáforo:", sem.dataset);
+
         // Se extraen los datos del semáforo
-        const ranking = parseFloat(sem.dataset.ranking);  // Convertir a número flotante
-        const valorMax = parseFloat(sem.dataset.biaMax);  // Correcto: data-bia-max -> sem.dataset.biaMax
-        const tramo1 = parseFloat(sem.dataset["tramo-1"]);
-        const tramo2 = parseFloat(sem.dataset["tramo-2"]);
+        const ranking = parseFloat(sem.dataset.ranking.replace(",", "."));
+        const valorMax = parseFloat(sem.dataset.biaMax.replace(",", "."));
+        const tramo1 = parseFloat(sem.dataset["tramo-1"].replace(",", "."));
+        const tramo2 = parseFloat(sem.dataset["tramo-2"].replace(",", "."));
+
+
+        console.log("Valores leídos:", { ranking, valorMax, tramo1, tramo2 });
 
         // Si alguno de los valores es NaN, significa que no se ha definido correctamente
         if ([ranking, valorMax, tramo1, tramo2].some(v => isNaN(v))) {
@@ -835,6 +845,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Calculamos el ratio: ranking dividido por valorMax
         const ratio = ranking / valorMax;
+        console.log("main js: Ratio: ", ratio);
 
         // Limpiamos las luces antes de agregar la luz activa
         sem.querySelectorAll(".luz").forEach(l => l.classList.remove("on"));

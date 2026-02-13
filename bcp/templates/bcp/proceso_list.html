@@ -61,7 +61,6 @@ defcon={{defcon_est}}
 	{% if lista_procesos %}<!---- Si hay Procesos --------->
 
 		{% for proceso in lista_procesos.all %}
-				
 			<p>
 				
 			   <!**********************>
@@ -74,122 +73,123 @@ defcon={{defcon_est}}
 			  			   
 				{% if proceso.es_subproceso  %} 
 
-				{% if proceso.subproceso.fase_status == 'M' %}
-				<!---- Si esta en la Fase "M" (Definicion de Proceso)---->
+					{% if proceso.subproceso.fase_status == 'M' %}
+					<!---- Si esta en la Fase "M" (Definicion de Proceso)---->
 
-						{% if proceso.subproceso.status != 'R' %}
+							{% if proceso.subproceso.status != 'R' %}
 
-							{% if proceso.subproceso.status == 'C' %}
-							<!Asignacion de responsables RACI y envio a aprobacion>
-							<!====================================================>
- 
-								{%if request.user.pk == proceso.subproceso.gestor_C.user_pk %}
+								{% if proceso.subproceso.status == 'C' %}
+								<!Asignacion de responsables RACI y envio a aprobacion>
+								<!====================================================>
+	
+									{%if request.user.pk == proceso.subproceso.gestor_C.user_pk %}
 
-									<a href="{% url 'asigna-raci' proceso.pk 'Mapeo de Procesos'  %}"
-									class="link blink " data-message="Define ciclo de Autorizaciones RACI ..."><raci>&#8476</raci></a>
+										<a href="{% url 'asigna-raci' proceso.pk 'Mapeo de Procesos'  %}"
+										class="link blink " data-message="Define ciclo de Autorizaciones RACI ...">...<raci>&#8476</raci></a>
 
-								{%else%}
+									{%else%}
 
-									.<raci class="link" data-message="En asignacion de Autorizaciones RACI por {{proceso.subproceso.gestor_C}}">&#8476</raci>..
+										....<raci class="link" data-message="En asignacion de Autorizaciones RACI por {{proceso.subproceso.gestor_C}}">&#8476</raci>....
 
-								{%endif%} <!------ fin usuario sesion = Gestor Consultor-->
+									{%endif%} <!------ fin usuario sesion = Gestor Consultor-->
 
-							{%endif%}<!-------- Fin estado subproceso = C --------->
+								{%endif%}<!-------- Fin estado subproceso = C --------->
 
-						
-							{% if proceso.subproceso.status == 'A' %}
-							<!Proceso a Aprobacion x  Gestor [A]utorizador>
-							<!********************************************>
+							
+								{% if proceso.subproceso.status == 'A' %}
+								<!Proceso a Aprobacion x  Gestor [A]utorizador>
+								<!********************************************>
 
-								<!-- Si el usuario en sesion es Autorizador-->
-								{%if proceso.subproceso.gestor_A.user_pk == request.user.pk %}
-									<a class="link blink" data-message="Revisar Definicion  y Autorizar u Observar ..." 
+									<!-- Si el usuario en sesion es Autorizador-->
+									{%if proceso.subproceso.gestor_A.user_pk == request.user.pk %}
+										<a class="link blink" data-message="Revisar Definicion  y Autorizar u Observar ..." 
+										href="{% url 'auth_m-raci' proceso.pk  %}">
+										<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
+										</a>
+									{%else%}
+									<!--- Si no es el Autorizador -->
+									<a class="link " data-message="En Revision y Autorizacion por Gestor Autorizador ...({{proceso.subproceso.gestor_A}})">
+									<img src="/static/img/En_Revision.png" width="17" height="17"></img></a>
+									{%endif%} <!----- Fin si el usuario en sesion es Gestor Autorizador -->
+
+								{%endif%}<!---- Fin estado subproceso = A -------->
+
+								{%if proceso.subproceso.status == 'r' %}
+								<!Autorizacion x Gestor [R]esponsable>
+								<!===================================>
+
+									{%if proceso.subproceso.gestor_R.user_pk == request.user.pk %}
+									<!-- Si usuario en sesion es el Gestor Responsable -->
+									<a class="link blink" data-message="Revisar Definicion y Autorizar u Observar ..." 
 									href="{% url 'auth_m-raci' proceso.pk  %}">
 									<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
 									</a>
-								{%else%}
-								<!--- Si no es el Autorizador -->
-								<a class="link " data-message="En Revision y Autorizacion por Gestor Autorizador ...({{proceso.subproceso.gestor_A}})">
-								<img src="/static/img/En_Revision.png" width="17" height="17"></img></a>
-								{%endif%} <!----- Fin si el usuario en sesion es Gestor Autorizador -->
+									{%else%}
+									<!--- Si no es el Responsable -->
+									<a class="link " data-message="En Revision y Autorizacion por Gestor Responsable ...({{proceso.subproceso.gestor_R}})">
+										<img src="/static/img/En_Revision.png" width="17" height="17"></img></a>
+									{%endif%}
+									
+								{%endif%}<!--- Fin Estado subproceso "r" ------>
 
-							{%endif%}<!---- Fin estado subproceso = A -------->
-
-							{%if proceso.subproceso.status == 'r' %}
-							<!Autorizacion x Gestor [R]esponsable>
-							<!===================================>
-
-								{%if proceso.subproceso.gestor_R.user_pk == request.user.pk %}
-								<!-- Si usuario en sesion es el Gestor Responsable -->
-								<a class="link blink" data-message="Revisar Definicion y Autorizar u Observar ..." 
-								href="{% url 'auth_m-raci' proceso.pk  %}">
-								<img src="/static/img/En_Autorizacion.jpg" width="17" height="17"></img>
-								</a>
-								{%else%}
-								<!--- Si no es el Responsable -->
-								<a class="link " data-message="En Revision y Autorizacion por Gestor Responsable ...({{proceso.subproceso.gestor_R}})">
-									<img src="/static/img/En_Revision.png" width="17" height="17"></img></a>
-								{%endif%}
-								
-							{%endif%}<!--- Fin Estado subproceso "r" ------>
-
-							{%if proceso.subproceso.status == 'x' %}
-							<!Revision y correccion de observaciones x [C]onsultor>
-							<!======================================>
-								{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}
-								<!-- Si usuario sesion es Consultor -->
-									<a href="{% url 'proceso-revisa' proceso.pk %}"
-									class="link blink " data-message="Revisar Comentarios e implementar ...">
-									<img src="/static/img/Corregir.png" width="17" height="17"></img></a>
-									</a>
-								{%else%}
-								<!-- Si usuario sesion No es Consultor -->
-									<a class="link" data-message="En Correccion por Gestor Consultor ...({{proceso.subproceso.gestor_C}})">
+								{%if proceso.subproceso.status == 'x' %}
+								<!Revision y correccion de observaciones x [C]onsultor>
+								<!======================================>
+									{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}
+									<!-- Si usuario sesion es Consultor -->
+										<a href="{% url 'proceso-revisa' proceso.pk %}"
+										class="link blink " data-message="Revisar Comentarios e implementar ...">
 										<img src="/static/img/Corregir.png" width="17" height="17"></img></a>
-									</a>
-								{%endif%}
-								
-							{%endif%}<!--- Fin Estado subproceso "x" (Revision y Correccion) ------>
+										</a>
+									{%else%}
+									<!-- Si usuario sesion No es Consultor -->
+										<a class="link" data-message="En Correccion por Gestor Consultor ...({{proceso.subproceso.gestor_C}})">
+											<img src="/static/img/Corregir.png" width="17" height="17"></img></a>
+										</a>
+									{%endif%}
+									
+								{%endif%}<!--- Fin Estado subproceso "x" (Revision y Correccion) ------>
 
-					{%else%}<!---- Si el Subproceso esta aprobado (Estado = "R") -->
+						{%else%}<!---- Si el Subproceso esta aprobado (Estado = "R") -->
 
-						<aa class="link " data-message="Aprobado en Etapa de Definicion"
-						>..<strong>&#10004</strong>..</aa>&nbsp;
+							<aa class="link " data-message="Aprobado en Etapa de Definicion"
+							>..<strong>&#10004</strong>..</aa>&nbsp;
+						{%endif%}
+
+					{%else%}<!-- Si el Subproceso esta en Fase distinta a "M" -->
+
+						{% if proceso.subproceso.status == 'R' and proceso.subproceso.fase_status == 'E' %}
+							<!---************************************************************ -->
+							<!-- *** Proceso listo para definicion de Procedimientos (PC) *** -->
+							<!---************************************************************ -->
+
+								<a href="{% url 'actualiza-mapeo' proceso.pk %}"
+								class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Aprobado en Fase de Mapeo. Haga click si desea actualizar">..<strong>&#9989</strong>&nbsp;
+								</a>
+
+						{% else %}
+							<!Proceso ya salio de fase M. Solo Imprime el nombre>
+							<aa class="link " data-message="Aprobado en Etapa de Definicion"
+							>.<strong>..&#10004</strong>..</aa>&nbsp;
+						{%endif%}
 					{%endif%}
-
-				{%else%}<!-- Si el Subproceso esta en Fase distinta a "M" -->
-
-					{% if proceso.subproceso.status == 'R' and proceso.subproceso.fase_status == 'E' %}
-						<!---************************************************************ -->
-						<!-- *** Proceso listo para definicion de Procedimientos (PC) *** -->
-						<!---************************************************************ -->
-
-							<a href="{% url 'actualiza-mapeo' proceso.pk %}"
-							class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Aprobado en Fase de Mapeo. Haga click si desea actualizar">..<strong>&#9989</strong>&nbsp;
-							</a>
-
-					{% else %}
-						<!Proceso ya salio de fase M. Solo Imprime el nombre>
-						<aa class="link " data-message="Aprobado en Etapa de Definicion"
-						>.<strong>..&#10004</strong>..</aa>&nbsp;
-					{%endif%}
-				{%endif%}
 		
-			{% else %} <!---- No es Subproceso -------->
+				{% else %} <!---- No es Subproceso -------->
 
-				<!-- Creacion de Proceso/Subproceso -->
-				<!-- ============================== -->
-				<a href="{% url 'crea-procesos' proceso.pk %}"
-				class="link " data-message="Define un Subproceso ..."><sa>&#10010</sa></a>
-				
-				
-				{% if proceso.nro_hijos == 0 and proceso.pk_padre != 0 %}<!--- Si el Proceso no tiene hijos --> 
-					<a href="{% url 'borra-procesos' proceso.pk %}"
-					class="link confirm-link" con-message="* * *  Confirma Eliminacion del Proceso ? * * *" data-message="Elimina Proceso"><bor>&#128465</bor></a>
-				{%endif%}
+					<!-- Creacion de Proceso/Subproceso -->
+					<!-- ============================== -->
+					{% if  consultor  %} <!-- Solo si es Consultor ----->
+						<a href="{% url 'crea-procesos' proceso.pk %}"
+						class="link " data-message="Define un Subproceso ..."><sa>&#10010</sa></a>
+					
+						{% if proceso.nro_hijos == 0 and proceso.pk_padre != 0 %}<!--- Si el Proceso no tiene hijos --> 
+							<a href="{% url 'borra-procesos' proceso.pk %}"
+							class="link confirm-link" con-message="* * *  Confirma Eliminacion del Proceso ? * * *" data-message="Elimina Proceso"><bor>&#128465</bor></a>
+						{%endif%}
+					{%endif%}
 
-			{% endif %}
-			<!------------------------- Fin si es Subproceso ----------------------------------->
+				{% endif %}
+				<!------------------------- Fin si es Subproceso ----------------------------------->
                         
 			<!---- Otras Opciones ------->
 			{% if proceso.pk_padre > 0 %}<!------- Si tiene Padre ------>
@@ -198,30 +198,30 @@ defcon={{defcon_est}}
 				
 				<!Opcion Muestra>
 				<!==============>
+				{% if proceso.es_subproceso %}
 					<a href="{% url 'Detalle-Proceso' proceso.pk %}"
 					class="link " data-message="Muestra detalle del Proceso ..."><ver>&#128065</ver></a>  
- 
+				{%endif%}
 				<!--Opcion Borra -->
 				<!--============ -->
 				{%if  proceso.subproceso.gestor_C.user_pk == request.user.pk %}<!-- Si usuario es Consultor --> 
+					{% if proceso.es_subproceso %}<!---- Si es Subproceso ------->
 
-						{% if proceso.es_subproceso %}<!---- Si es Subproceso ------->
+						{% if proceso.subproceso.status == 'C' and proceso.subproceso.fase_status == 'M' %}
+							<a href="{% url 'borra-procesos' proceso.pk %}" 
+								class="link confirm-link" con-message="* * *  Confirma Eliminacion del Sub-Proceso ? * * *" data-message="Elimina el Proceso ..."><bor>&#128465</bor></a>
+						{%else%}
+							&ensp;&ensp;	
+						{%endif%}
 
-							{% if proceso.subproceso.status == 'C' and proceso.subproceso.fase_status == 'M' %}
-								<a href="{% url 'borra-procesos' proceso.pk %}" 
-									class="link confirm-link" con-message="* * *  Confirma Eliminacion del Sub-Proceso ? * * *" data-message="Elimina el Proceso ..."><bor>&#128465</bor></a>
-							{%else%}
-								&ensp;&ensp;	
-							{%endif%}
+					{%else%}<!--- Si no es Subproceso ----->
 
-						{%else%}<!--- Si no es Subproceso ----->
+							{% if proceso.nro_hijos == 0 %}<!--- Si el Proceso no tiene hijos -->
+								<a href="{% url 'borra-procesos' proceso.pk %}"
+								class="link confirm-link" con-message="* * *  Confirma Eliminacion del Proceso ? * * *" data-message="Elimina Proceso"><strong><rr>&#128465</rr></strong></a>
+							{%endif%}<!--- Fin Si el Proceso no tiene hijos -->
 
-								{% if proceso.nro_hijos == 0 %}<!--- Si el Proceso no tiene hijos -->
-									<a href="{% url 'borra-procesos' proceso.pk %}"
-									class="link confirm-link" con-message="* * *  Confirma Eliminacion del Proceso ? * * *" data-message="Elimina Proceso"><strong><rr>&#128465</rr></strong></a>
-								{%endif%}<!--- Fin Si el Proceso no tiene hijos -->
-
-						{%endif%}<!---- Fin si es Subproceso -------->
+					{%endif%}<!---- Fin si es Subproceso -------->
 
 				{%endif%}<!---- Fin si el usuario de sesion es Consultor ------> 
 
@@ -301,6 +301,6 @@ defcon={{defcon_est}}
 	<!--------- Fin CSS para Scripts ------------------------->
 
 <!--- Despliega el nombre del programa -->
-<p style="font-size: 8px; color:green">proceso_list</p>
+<p style="font-size: 8px; color:green">[proceso_list]</p>
 
 {%endblock%}

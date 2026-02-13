@@ -266,6 +266,11 @@ def Lista_Procesos(request):
     if not es_del_grupo([request.user, 'Autorizadores', 'Consultores']):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
     
+    # Verifica si el usuario es Consultor 
+    consultor=False
+    if  es_del_grupo([request.user, 'Consultores']):
+        consultor=True
+    
     #Determina tramos de criticidad del Proceso
     bia_bajo  = get_object_or_404(Parametros_G, nombre = 'BIA_BAJO')
     bia_medio = get_object_or_404(Parametros_G, nombre = 'BIA_MEDIO')
@@ -284,7 +289,8 @@ def Lista_Procesos(request):
                   context={'lista_procesos':lista_procesos,
                            'tramo_1':tramo_1, 
                            'tramo_2':tramo_2,
-                           'valor_max':valor_max})
+                           'valor_max':valor_max,
+                           'consultor':consultor})
  
 
 #********************************************
@@ -404,11 +410,12 @@ def Detalle_Proceso(request, pk):
     print('------- Detalle del Proceso -----------------')
     proceso=get_object_or_404(Proceso, pk=pk)
     print('proceso=', proceso.proceso)
+    ruta=resta_string(proceso.path,proceso.nombre)
     comentarios=Log_Revision.objects.filter(proceso=proceso)
     print('comentarios=', comentarios)
 
     return render(request, 'bcp/proceso_detail.html',
-                  context={'proceso':proceso, 'comentarios':comentarios})
+                  context={'proceso':proceso, 'comentarios':comentarios, 'ruta':ruta})
 
 @login_required
 def Detalle_Proceso_V(request, pk):
@@ -11559,7 +11566,8 @@ def reset(request):
         Proceso, SubProceso, SubProceso_V, Incidentes,
         Procedimientos, Contactos_PC, Servicios_PC, Pasos_PC,
         Procedimientos_V, Contactos_PC_V, Servicios_PC_V, Pasos_PC_V,
-        Impactos_Asig, Indicadores_Asig, Impactos_Asig_v, Indicadores_Asig_v 
+        Impactos_Asig, Indicadores_Asig, Impactos_Asig_v, Indicadores_Asig_v,
+        CheckList, Check_Pasos, EjecucionCasoPrueba, EjecucionPrueba 
     ]
 
     print('prepost')
