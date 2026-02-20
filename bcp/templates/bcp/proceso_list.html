@@ -159,20 +159,14 @@ defcon={{defcon_est}}
 							<!---************************************************************ -->
 							<!-- *** Proceso listo para definicion de Procedimientos (PC) *** -->
 							<!---************************************************************ -->
-
 								<a  class="link"  data-message="Aprobado en Fase de Mapeo." style="font-size: 13px;">
 									<strong>&#9989</strong>
 								{% if consultor %}
-								<a href="{% url 'actualiza-mapeo' proceso.pk %}"
-								class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Actualizar ">
-								<img src="/static/img/actualizar.png" width="15" height="15">
-								</a>
-								{% else %}
-								<a  class="link"  data-message="Aprobado en Fase de Mapeo.">..<strong>&#9989</strong>&nbsp;
-								
-								</a> 
+									<a href="{% url 'actualiza-mapeo' proceso.pk %}"
+									class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Actualizar ">
+									<img src="/static/img/actualizar.png" width="15" height="15">
+									</a>
 								{%endif%}
-
 						{% else %}
 							<!Proceso ya salio de fase M. Solo Imprime el nombre>
 							<aa class="link " data-message="Aprobado en Etapa de Definicion"
