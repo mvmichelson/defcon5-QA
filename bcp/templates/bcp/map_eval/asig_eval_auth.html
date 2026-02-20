@@ -25,30 +25,50 @@
 
   <!--------- Columna 1 --------------->
   <div class="flex-item" style="width: 45%;"> 
-	<ul class="scr4" style="text-align: center;"><strong>PROCESO</strong></ul>
+	<ul class="encabezado_SB"><strong>PROCESO</strong></ul>
 
-	<ul class="scr4">
+<br/>
+<bn>Revise los niveles de impacto y recuperacion propuestos para el proceso -<bn><strong>{{proceso.nombre}}</strong></bn>- 
+	y en caso de alguna observacion o comentario registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
+	adjunto. 
+</bn>
+<br><br><br>
+	<table>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">1.1</th>
+		<th style="border: 1px solid var(--accent-green);">Codigo interno:</th>
+		<th style="border: 1px solid var(--accent-green);">{{proceso.proceso}}</th>
+	</tr>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">1.2</th>
+		<th style="border: 1px solid var(--accent-green);">Ruta de Mapeo:</th>
+		<th style="border: 1px solid var(--accent-green);">{{ruta}}</th>
+	</tr>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">1.3</th>
+		<th style="border: 1px solid var(--accent-green);">Nombre:</th>
+		<th style="border: 1px solid var(--accent-green);">{{proceso.nombre}}</th>
+	</tr>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">1.4</th>
+		<th style="border: 1px solid var(--accent-green);">Descripcion:</th>
+		<th class="caja-texto" style="border: 1px solid var(--accent-green);">{{proceso.objetivo}}</th>
 		
-	  	<p><strong>Nombre........:</strong> {{ proceso.nombre }}</p>
-	  	<p><strong>Objetivo......:</strong> 
-			<ul class="caja-texto scr4">
-			{{ proceso.objetivo }}
-			</ul>
-		</p>
-		<br/>
+	</tr>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">1.5</th>
+		<th style="border: 1px solid var(--accent-green);">Puntaje:</th>
+		<th class="caja-texto" style="border: 1px solid var(--accent-green);">{{proceso.subproceso.ranking}}</th>
+	</tr>
+	</table>
+	<br>
 
-	</ul>
-	<br/>
-	<bn>Revise los niveles de impacto y recuperacion propuestos para el proceso -</bn> <strong>{{proceso.nombre}}</strong> <bn>- 
-		y en caso de alguna observacion o comentario registrelo en el posix <img src="/static/img/Comentario_1.png" width="15" height="15"> 
-		adjunto. 
-	</bn>
   </div><!--------- Columna 1 --------------->
 
 
 <!----- Seccion  Block de Comentarios (Autorizador) ---------->
 <div class="flex-text" style="width: 52%;">
-	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+	<ul class="encabezado_SB" style="background: rgb(236, 239, 63); font-size: 13px; color:black">
 		<strong>Block de Comentarios de Revision</strong>
 	</ul>
 
@@ -118,7 +138,7 @@
 	<!-- IMPACTOS ASIGNADOS ------------>
 	<br/>
 	<br/>
-	<ul class="scr4" style="text-align: center;"><strong>EVALUACION</strong></ul>
+	<ul class="encabezado_SB" style="text-align: center;"><strong>EVALUACION</strong></ul>
 	<h5><strong style="color:whitesmoke">Riesgos / Impactos</strong></h5>
 
 		<table class="lta" style="width: 100%;">

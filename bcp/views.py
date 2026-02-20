@@ -839,6 +839,9 @@ def Actualiza_Mapeo(request, pk):
     aut=usr_aut.user_gestor.first_name+' '+usr_aut.user_gestor.last_name
     print('usuario aprobador = usuario sesion =', usr_aut)
 
+    # Asigna a usuario de sesion como nuevo Gestor Consultor
+    proceso.subproceso.gestor_C=usr_aut
+    
     proceso.subproceso.status="C"
     proceso.subproceso.fase_status="M"
     proceso.subproceso.actualiza=True
@@ -993,6 +996,7 @@ def Autoriza_M(request, pk):
         if com.seccion == "M":
             comentarios_m.append(com)
             
+    ruta=resta_string(proc.path,proc.nombre)
 
     #Asigna al usuario de sesion como Autorizador
     print('asigna usuario sesion')
@@ -1125,6 +1129,7 @@ def Autoriza_M(request, pk):
         return render(request, 'bcp/proceso_auth.html', {'form': form,
                                                          'autorizador':aut, 
                                                          'proceso':proc,
+                                                         'ruta':ruta,
                                                          'comentarios':comentarios_m})
     
 
@@ -1143,6 +1148,8 @@ def Aut_Asig_BIA(request, pk):
         return HttpResponseRedirect(reverse('error-sesion-mgm', args=[301] ))
     
     proceso=get_object_or_404(Proceso, pk = pk)
+
+    ruta=resta_string(proceso.path, proceso.nombre)
 
     #Asigna al usuario de sesion como Autorizador
     print('asigna usuario sesion')
@@ -1285,6 +1292,7 @@ def Aut_Asig_BIA(request, pk):
         return render(request, 'bcp/map_eval/asig_eval_auth.html', {'form': form,
                                                                     'autorizador':aut,
                                                                     'proceso':proceso,
+                                                                    'ruta':ruta,
                                                                     'comentarios':comentarios_v})
     
 # OBSOLETO (BORRAR) 
@@ -2717,6 +2725,8 @@ def Revisa_Asig_BIA(request, pk):
     indicador_pc=proceso.subproceso.indicador_subp
     nro_indicador_pc=indicador_pc.count()
 
+    ruta=resta_string(proceso.path, proceso.nombre)
+
     #print('impactos_pc=', impactos_pc)
     #print(not impactos_pc)
 
@@ -2882,6 +2892,7 @@ def Revisa_Asig_BIA(request, pk):
         return render(request, 'bcp/map_eval/asigna_eval_rev.html', {'form': form,
                                                                      'proceso':proceso,
                                                                      'impactos':impactos_pc,
+                                                                     'ruta':ruta,
                                                                      'indicadores':indicador_pc,
                                                                      'total_imp':total_imp,
                                                                      'total_ind':total_ind,
@@ -3218,6 +3229,7 @@ def asigna_escenarios(request, pk):
     """
     proceso = get_object_or_404(Proceso, pk=pk)
     subproceso = proceso.subproceso
+    ruta=resta_string(proceso.path, proceso.nombre)
 
     if request.method == "POST":
 
@@ -3247,6 +3259,7 @@ def asigna_escenarios(request, pk):
         'form': EscenarioForm(),
         'proceso': proceso,
         'subproceso': subproceso,
+        'ruta':ruta,
         'escenarios_disponibles': escenarios_disponibles,
         'escenarios_asignados': escenarios_asignados,
     })
@@ -3279,6 +3292,8 @@ def Asigna_Imp_Ind(request, pk):
 
     indicador_pc=proceso.subproceso.indicador_subp
     nro_indicador_pc=indicador_pc.count()
+
+    ruta=resta_string(proceso.path, proceso.nombre)
 
     print('impactos_pc=', impactos_pc)
     print(not impactos_pc)
@@ -3346,6 +3361,7 @@ def Asigna_Imp_Ind(request, pk):
                                                              'indicadores':indicador_pc,
                                                              'total_imp':total_imp,
                                                              'total_ind':total_ind,
+                                                             'ruta':ruta,
                                                              'total_pro':total_pro})
 
 from .forms import Asig_Imp_Form 
@@ -3360,6 +3376,7 @@ def Asig_Imp(request, pk, status):
     riesgo=nub_impacto.impacto
     proceso=get_object_or_404(Proceso, pk=nub_impacto.pk_proc)
     opciones=Nivel_Impacto.objects.filter(tipo=riesgo)
+    ruta=resta_string(proceso.path, proceso.nombre)
     print('riesgo =', riesgo.nombre)
     print('opciones=', opciones)
 
@@ -3398,6 +3415,7 @@ def Asig_Imp(request, pk, status):
                                                                       'proceso':proceso,
                                                                       'opciones':opciones,
                                                                       'riesgo':riesgo,
+                                                                      'ruta':ruta,
                                                                       'form':form})
 
 from .forms import Asig_Ind_Form
@@ -5633,9 +5651,18 @@ def cr_prcd_list(request, pk):
     ruta=resta_string(proceso.path, proceso.nombre)
 
     # rescata las Pruebas asociadas al procedimiento
-    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+    # ================================================
+    pruebas_prcd=PruebaContingencia.objects.filter(procedimiento=proced)
 
-    # rescata el valor del rto para controlar el tiempo total de los pasos del PC
+    pruebas=[]
+    for prba in pruebas_prcd.all():
+        n_casos=CasoPrueba.objects.filter(prueba=prba).count()
+        reg={'prueba':prba, 'n_casos':n_casos}
+        pruebas.append(reg)
+
+
+    # Rescata el valor del rto para controlar el tiempo total de los pasos del PC
+    # ===========================================================================
     indicadores=proceso.subproceso.indicador_subp
     for ind in indicadores.all():
         print('ind nombre', ind.indicador.nombre)
@@ -5676,7 +5703,16 @@ def rev_prcd_list(request, pk):
     ruta=resta_string(proceso.path, proceso.nombre)
 
     # rescata las Pruebas asociadas al procedimiento
-    pruebas=PruebaContingencia.objects.filter(procedimiento=proced)
+    # ================================================
+    pruebas_prcd=PruebaContingencia.objects.filter(procedimiento=proced)
+
+    pruebas=[]
+    for prba in pruebas_prcd.all():
+        n_casos=CasoPrueba.objects.filter(prueba=prba).count()
+        reg={'prueba':prba, 'n_casos':n_casos}
+        pruebas.append(reg)
+
+
 
     comentarios_pc=Log_Revision.objects.filter(procedimiento=proced)
 

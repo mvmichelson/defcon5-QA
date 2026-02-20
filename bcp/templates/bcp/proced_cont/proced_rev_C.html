@@ -461,32 +461,35 @@
 
 		<tbody>
 		{% if pruebas %}
-		{%for test in pruebas.all  %}
+		{%for test in pruebas  %}
 		<tr >
 			<th scope="row">
 			<!----- Modifica Prueba ------------------->
-			<a href="{% url 'mod-P8' test.pk  %}?next={{ request.get_full_path|urlencode  }}"
+			<a href="{% url 'mod-P8' test.prueba.pk %}?next={{ request.get_full_path|urlencode  }}"
 			class="link" data-message="Modifica Prueba ..."
 			> <aa>&#128393</aa></a>
 			<!----- Borrar Prueba --------------------->
-			<a href="{% url 'borra-P8' test.pk %}?next={{ request.get_full_path|urlencode  }}"
+			<a href="{% url 'borra-P8' test.prueba.pk  %}?next={{ request.get_full_path|urlencode  }}"
 			class="link confirm-link" con-message="* * *  Confirma Eliminacion? * * *"  data-message="Elimina Prueba ..."
 			> <rr>&#128465</rr></a>
 
 			</th>
 
 		<th scope="row" style="text-align: center;" ><bb style="font-size: 10px;">{{test.codigo}}<bb></th>
-		<th scope="row"><bb style="font-size: 10px;">{{test.objetivo}}</th>
-		<th scope="row"><bb style="font-size: 10px;">{{test.alcance}}</th>
-		<th scope="row"><bb style="font-size: 10px;">{{test.criterios_exito}}</th>
-		<th scope="row"><bb style="font-size: 10px;">{{test.responsable}}</th>
-		<th scope="col">
+		<th scope="row"><bb style="font-size: 10px;">{{test.prueba.objetivo}}<bb></th>
+		<th scope="row"><bb style="font-size: 10px;">{{test.prueba.alcance}}<bb></th>
+		<th scope="row"><bb style="font-size: 10px;">{{test.prueba.criterios_exito}}<bb></th>
+		<th scope="row"><bb style="font-size: 10px;">{{test.prueba.responsable}}<bb></th>
+		<th scope="col" style="text-align: center;">
 			<!------- Define Caso de Prueba ---------->
-			<a href="{% url 'Crea-Caso-P8' test.pk 1  %}?next={{ request.get_full_path|urlencode  }}"
+			<a href="{% url 'Crea-Caso-P8' test.prueba.pk  0 %}?next={{ request.get_full_path|urlencode  }}"
 			class="link"  data-message="Casos de Prueba ...">
 			<strong><am style="color: yellow; font-size: 15px;">
 			<img src="/static/img/pc_2.png" width="25" height="25">		
 			</a>
+			<br> 
+			<p>({{test.n_casos}})</p>
+
 		</th>
 
 		</th>

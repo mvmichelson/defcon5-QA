@@ -162,8 +162,13 @@ class RevisaProcesoForm(forms.Form):
     a las definicion del Proceso
     """
 
-    nombre = forms.CharField(max_length= 50, widget=forms.Textarea(attrs={'rows':1, 'cols':50}))
-    objetivo = forms.CharField(max_length=500, label='Objetivo:',  help_text='Describir objetivo del Proceso.', widget=forms.Textarea(attrs={'rows':8, 'cols':70}))
+    nombre = forms.CharField(max_length= 50, widget=forms.Textarea(attrs={'rows':1,
+                                                                          'style': 'width: 60ch;'}))
+
+    objetivo = forms.CharField(max_length=500, label='Objetivo:',  help_text='Describir objetivo del Proceso.',
+                               widget=forms.Textarea(attrs={'class':'caja-texto',
+                                                            'rows': 4,
+                                                            'style': 'width: 60ch;'}))
 
     gestor_R = forms.ModelChoiceField(queryset=Gestor.objects.all(), empty_label=None, help_text='', label='Gestor Responsable ', required=False)
     gestor_A = forms.ModelChoiceField(queryset=Gestor.objects.all(), empty_label=None, help_text='', label='Gestor Autorizador ', required=False)
@@ -961,7 +966,7 @@ class Plan_Pruebas_A_Form(forms.Form):
         widget=forms.TextInput(attrs={
             "class": "form-control flatpickr-date",
             "placeholder": "Seleccione fecha",
-            "autocomplete": "off",
+            "autocomplete": "off", 
         }),
         input_formats=["%Y-%m-%d"],
         error_messages={

@@ -55,7 +55,7 @@
 				<th scope="row">{{prueba.alcance}}</th>
 				<th scope="row">{{prueba.criterios_exito}}</th>
 				<th scope="row">{{prueba.responsable}}</th>
-				<th scope="row">{{prueba.estado}}</th>
+				<th scope="row">{{prueba.estado}}</th> 
 	
 		    </tr>
 		   </tbody>
@@ -150,9 +150,9 @@
 <br/>
 
 {%if origen == 0 %}
-	<a href="{% url 'crea-proced-C' proc.pk %}"><bb class="button" >... Volver </bb></a>
+	<a href="{% url 'crea-proced-C' proc.pk %}"><bb class="button" >Listo</bb></a>
 {%else%}
-	<a href="{% url 'rev-proced-c' proc.pk %}"><bb class="button" >... Volver </bb></a>
+	<a href="{% url 'rev-proced-c' proc.pk %}"><bb class="button" >Listo</bb></a>
 {%endif%}
 <br/>
 <br/>

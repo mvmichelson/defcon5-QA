@@ -16,79 +16,75 @@
 	{% endblock %}
 
 
-			<!-----------  Encabezado Indicador --------------->
-			<table class="lta">
-				<thead class="encabezado_A" style="background: blue;">
-				<tr>
-					<th scope="col">Indicador</th>
-					<th scope="col">Descripcion</th>
-	
-				</tr>
-				</thead>
-			
-				<body>
-	
-					 <tr>
-						<th scope="row"><bb>{{indicador.nombre}}<bb></th>
-						<th scope="row"><bb>{{indicador.descripcion}}<bb></th>
+	<!-----------  Encabezado Indicador --------------->
 
-					 </tr>
-			
-				<tbody>
-				 
-			 </table>
-			<!-----------  Fin Tabla de Riesgo --------------->
-	
-		<br/>
-		<bn>En caso de la interrupcion total del proceso -<strong>{{proceso.nombre}}</strong>- ¿Que objetivo de {{indicador.nombre }}
-			debiera cumplir un Procedimiento de Contingencia ?. Considere las siguientes opciones:</bn>
-		<br/>
-		<h6><strong>OPCIONES</strong></h6>
+<h5><bn style="color:greenyellow">1. Identificacion del Indicador de Recuperacion</bn></h5>
+<table>
+<tr style="background-color: black; color: greenyellow">
+	<th style="border: 1px solid var(--accent-green);">Nombre Indicador:</th>
+	<th style="border: 1px solid var(--accent-green);">{{indicador.nombre}}</th>
+</tr>
+<tr style="background-color: black; color: greenyellow">
+	<th style="border: 1px solid var(--accent-green);">Descripcion:</th>
+	<th style="border: 1px solid var(--accent-green);">{{indicador.descripcion}}</th>
+</tr>
+</table>
 
-		<!-----------  Lista de Niveles  --------------->
-		<table class="lta">
-			<thead class="encabezado_A" style="background: grey;" >
+	<!-----------  Fin Tabla de Riesgo --------------->
+
+<br/>
+<h5><bn style="color:greenyellow">2. Evaluacion</bn></h5>
+<bn>En caso de la interrupcion total del proceso -<strong>{{proceso.nombre}}</strong>- ¿Que objetivo de {{indicador.nombre }}
+	debiera cumplir un Procedimiento de Contingencia ?. 
+	Considere la siguiente Tabla de valores:</bn>
+<br/><br/>	
+<h6 style="color:greenyellow"><strong>Tabla de Evaluacion: </strong></h6>
+
+<!-----------  Lista de Niveles  --------------->
+<table class="lta">
+	<thead class="encabezado_A" style="background: grey;" >
+	<tr>
+		<th scope="col">Nivel</th>
+		<th scope="col">Descripcion</th>
+		<th scope="col" style="width: 10%; text-align: center;">Puntaje</th>
+
+	</tr>
+	</thead>
+
+	<body>
+		{% if opciones %} <!--- impactos asociados al Proceso -->
+
+			{%for op in opciones %} 
 			<tr>
-				<th scope="col">Nivel</th>
-				<th scope="col">Descripcion</th>
-				<th scope="col" style="width: 10%; text-align: center;">Puntaje</th>
-
+			<th scope="row"><bb>{{op.nivel}}<bb></th>
+			<th scope="row"><bb>{{op.definicion}}<bb></th>
+			<th scope="row" style="width: 10%; text-align: center;"><bb>{{op.valor}}<bb></th>
 			</tr>
-			</thead>
+				{% if not forloop.last %}
+				{%endif%}
+			{%endfor%}
+	
+		{%else%}
+			<p> No hay Riesgos/Impactos definidos</p>
+		{%endif%}
+
+		<tbody>
 		
-			<body>
-			 {% if opciones %} <!--- impactos asociados al Proceso -->
+	</table>
+<!-----------  Fin Tabla de Niveles --------------->
+<br/>
+<!---- Asignacion ------------>
+<form action="" method="post">
+{% csrf_token %}
 		
-				 {%for op in opciones %} 
-				 <tr>
-					<th scope="row"><bb>{{op.nivel}}<bb></th>
-					<th scope="row"><bb>{{op.definicion}}<bb></th>
-					<th scope="row" style="width: 10%; text-align: center;"><bb>{{op.valor}}<bb></th>
-				 </tr>
-						{% if not forloop.last %}
-					 {%endif%}
-				   {%endfor%}
-			
-			 {%else%}
-				   <p> No hay Riesgos/Impactos definidos</p>
-			   {%endif%}
+<strong class="blink"  style="color:greenyellow" >Asignacion...;</strong>{{form.nivel}}			   
 		
-				<tbody>
-			 
-		 </table>
-		<!-----------  Fin Tabla de Niveles --------------->
-		<br/>
-		<!---- Asignacion ------------>
-    	<form action="" method="post">
-		{% csrf_token %}
-				
-		<strong>Asignacion...;</strong>{{form.nivel}}			   
-				
-		<br/>	
-		<br/>
-		<input type="submit" class="button"   value="Registrar y Salir" />
-		</form>
-		
+<br/>	
+<br/><br/>	
+<br/>
+<input type="submit" class="button"   value="Registrar y Salir" />
+</form>
+
 
 	 <!-- Globo de cómic -->
 	 <div id="comicBalloon"></div>

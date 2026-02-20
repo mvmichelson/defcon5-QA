@@ -16,78 +16,77 @@
 	{% endblock %}
 
 
-			<!-----------  Encabezado Riesgo --------------->
-			<table class="lta">
-				<thead style="background: yellow; color:black" >
-				<tr>
-					<th scope="col">RIESGO</th>
-					<th scope="col">DESCRIPCION</th>
-					<th scope="col" style="width: 10%; text-align: center;">PONDERACION</th>
-	
-				</tr>
-				</thead>
-			
-				<body>
-	
-					 <tr>
-						<th scope="row"><bb>{{riesgo.nombre}}<bb></th>
-						<th scope="row"><bb>{{riesgo.descripcion}}<bb></th>
-						<th scope="row" style="width: 10%; text-align: center;"><bb>{{riesgo.ponderacion}}<bb>%</th>
-	
-					 </tr>
-			
-				<tbody>
-				 
-			 </table>
-			<!-----------  Fin Tabla de Riesgo --------------->
-	
-		<br/>
-		<bn>En caso de la interrupcion total del proceso -</bn><strong><bn></bn>{{proceso.nombre}}</strong> <bn>- ¿ Que impacto {{riesgo.nombre }}
-			tendria en la operacion del negocio?. Considere las siguientes opciones:</bn>
-		</bn>
-		<h6><strong>OPCIONES</strong></h6>
+<!-----------  Encabezado Riesgo --------------->
 
-		<!-----------  Lista de Niveles  --------------->
-		<table class="lta">
-			<thead  style="background: grey;" >
+<h5><bn style="color:greenyellow">1. Identificacion del Riesgo</bn></h5>
+	<table>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">Nombre del Riesgo:</th>
+		<th style="border: 1px solid var(--accent-green);">{{riesgo.nombre}}</th>
+	</tr>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">Descripcion:</th>
+		<th style="border: 1px solid var(--accent-green);">{{riesgo.descripcion}}</th>
+	</tr>
+	<tr style="background-color: black; color: greenyellow">
+		<th style="border: 1px solid var(--accent-green);">Ponderacion:</th>
+		<th style="border: 1px solid var(--accent-green);">{{riesgo.ponderacion}} %</th>
+	</tr>
+
+</table>
+
+<!-----------  Fin Tabla de Riesgo --------------->
+
+<br><br>
+<h5><bn style="color:greenyellow">2. Evaluacion</bn></h5>
+<bn>En caso de la interrupcion total del Proceso en evaluacion - <strong>{{proceso.nombre}}</strong> <bn>-
+	 ¿ Que impacto de tipo {{riesgo.nombre }} tendria en la operacion del negocio?. 
+	 Considere la siguiente tabla de valores:</bn>
+</bn>
+<br>
+<br>
+<h6 style="color:greenyellow"><strong>Tabla de Evaluacion: </strong></h6>
+<!-----------  Lista de Niveles  --------------->
+<table class="lta">
+	<thead  style="background: grey;" >
+	<tr>
+		<th scope="col">NIVEL</th>
+		<th scope="col">DESCRIPCION</th>
+		<th scope="col" style="width: 10%; text-align: center;">PUNTAJE</th>
+
+	</tr>
+	</thead>
+
+	<body>
+		{% if opciones %} <!--- impactos asociados al Proceso -->
+
+			{%for op in opciones %} 
 			<tr>
-				<th scope="col">NIVEL</th>
-				<th scope="col">DESCRIPCION</th>
-				<th scope="col" style="width: 10%; text-align: center;">PUNTAJE</th>
-
+			<th scope="row"><bb>{{op.nombre}}<bb></th>
+			<th scope="row"><bb>{{op.descripcion}}<bb></th>
+			<th scope="row" style="width: 10%; text-align: center;"><bb>{{op.valor}}<bb></th>
 			</tr>
-			</thead>
+				{% if not forloop.last %}
+				{%endif%}
+			{%endfor%}
+	
+		{%else%}
+			<p> No hay Riesgos/Impactos definidos</p>
+		{%endif%}
+
+		<tbody>
 		
-			<body>
-			 {% if opciones %} <!--- impactos asociados al Proceso -->
-		
-				 {%for op in opciones %} 
-				 <tr>
-					<th scope="row"><bb>{{op.nombre}}<bb></th>
-					<th scope="row"><bb>{{op.descripcion}}<bb></th>
-					<th scope="row" style="width: 10%; text-align: center;"><bb>{{op.valor}}<bb></th>
-				 </tr>
-						{% if not forloop.last %}
-					 {%endif%}
-				   {%endfor%}
-			
-			 {%else%}
-				   <p> No hay Riesgos/Impactos definidos</p>
-			   {%endif%}
-		
-				<tbody>
-			 
-		 </table>
-		<!-----------  Fin Tabla de Niveles --------------->
-		<br/>
+	</table>
+<!-----------  Fin Tabla de Niveles --------------->
+		<br/><br/>
 		<!---- Asignacion ------------>
     	<form action="" method="post">
 		{% csrf_token %}
 				
-		<strong class="blink">Asignacion...:&ensp;</strong>{{form.nivel}}			   
+		<strong class="blink" style="color:greenyellow" >Asignacion...:&ensp;</strong>{{form.nivel}}			   
 				
-		<br/>	
-		<br/>
+			
+		<br/><br/><br/><br/>
 		<input type="submit" class="button" value="Registrar y Salir" />
 		</form>
 		

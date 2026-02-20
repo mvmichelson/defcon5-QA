@@ -25,22 +25,31 @@
 <!----- Seccion izq - Datos Proceso ---------->
 <div class="flex-item" style="width: 650px;"> 
 
-<ul class="scr4" style="text-align: center;background: white;">
-<strong>REVISION DATOS</strong>
-<!============================================>
-</ul>
+<ul class="encabezado_SB"><strong>DATOS PROCESO</strong></ul>
+<br/>
+	<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
+		. Realice las modificaciones solicitadas. <!-- y marquelo en el icono (&#10067). 
+		<!--Si desea dejar un comentario, utilice el icono 
+		(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p> -->
+		<p>Al registrar las modificaciones sera enviada al Gestor Autorizador para su revision.</p>  
+	</bn>
  
     <form action="" method="post">
         {% csrf_token %}
-	<ul class="scr4" style="height: 500px;">
-          
-    	<p><strong>Nombre..:</strong>&emsp; {{ form.nombre }}</p>
-	   <p><strong>Objetivo..:</strong>&emsp; {{ form.objetivo }}</p>
-	   <br/>
-	   <p><strong>Gestor [R]esponsable ..:</strong>&emsp; {{ form.gestor_R }}</p>
- 	   <p><strong>Gestor [A]utorizador ....:</strong>&emsp; {{ form.gestor_A }}</p>
-	   <p><strong>Persona [I]nteresada ....:</strong>&emsp; {{ form.gestor_I }}</p>
-	   <br/>
+	<br>
+	<h5><bn style="color:greenyellow">1. Identificacion</bn></h5>
+	<ul class="scr4" style="background-color: bisque;">
+    	<p><strong>Nombre</strong>{{ form.nombre }}</p>
+		<p><strong>Objetivo</strong>&emsp; <ul class="caja-texto">{{ form.objetivo }}</ul>
+		<br/>
+	</p></ul>
+	<h5><bn style="color:greenyellow">2. Roles RACI</bn></h5>
+	<ul class="scr4" style="background-color: bisque;">
+		<p><strong>Gestor [R]esponsable ..:</strong>&emsp; {{ form.gestor_R }}</p>
+		<p><strong>Gestor [A]utorizador ....:</strong>&emsp; {{ form.gestor_A }}</p>
+		<p><strong>Persona [I]nteresada ....:</strong>&emsp; {{ form.gestor_I }}</p>
+	</ul>
+		<br/>
 	
    
    
@@ -48,10 +57,10 @@
 
 <!----- Seccion der - Block de Comentarios ---------->
 <div class="flex-item" style="width: 47%;"> 
-	<ul class="scr4" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px;">
+	<ul class="encabezado_SB" style="text-align: center; background: rgb(236, 239, 63); font-size: 13px; color:black">
 		<strong>Block de Comentarios de Revision</strong>
 	</ul>
-	<ul class="BarraScroll" style="height: 300px; border-radius: 10px; border: 3px solid black; background: white;">
+	<ul class="BarraScroll" style="height: 360px; border-radius: 10px; border: 3px solid black; background: white;">
 		<!-- Log de Comentarios -->
 		<table class="lta"> 
 			<thead class="encabezado_C" style="text-align: center">
@@ -121,13 +130,7 @@
 		<!-- Fin Log Comentarios -->
 			
 	</ul>
-	<br/>
-	<bn><p>Revise las observaciones registradas en el <strong>Block de Comentarios</strong>  
-		. Realice las modificaciones solicitadas y marquelo en el icono (&#10067). 
-		Si desea dejar un comentario, utilice el icono 
-		(<img src="/static/img/Comentario_1.png" width="10" height="10"> ).</p>
-		<p>Al registrar las modificaciones sera enviada al Gestor Autorizador para su revision.</p>  
-	</bn>
+	
 
 	<br/>
 	<a href="{% url 'Lista-Procesos' %}" ><aa class="button">... Volver</aa></a>

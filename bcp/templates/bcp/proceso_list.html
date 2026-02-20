@@ -3,7 +3,6 @@
 <!Programado por Marco A. Villalobos M>
 <!===============================================>
 
-
 {%extends "base_generic.html"%}
 {% block extra_head %}
 <!-------- Refresca la pagina cada x segundos ---------->
@@ -11,8 +10,6 @@
 <!--------- Inhibe actualizacion del scroll principal -->
 <meta name="inhibir-scroll-principal" content="true">
 {% endblock %}
-
-
 
 defcon={{defcon_est}}
 
@@ -163,9 +160,16 @@ defcon={{defcon_est}}
 							<!-- *** Proceso listo para definicion de Procedimientos (PC) *** -->
 							<!---************************************************************ -->
 
+								{% if consultor %}
 								<a href="{% url 'actualiza-mapeo' proceso.pk %}"
-								class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Aprobado en Fase de Mapeo. Haga click si desea actualizar">..<strong>&#9989</strong>&nbsp;
+								class="link confirm-link" con-message="Confirma Inicio de Actualizacion ?. El Proceso iniciara un  nuevo ciclo de autorizacion" data-message="Actualizar ">
+								<img src="/static/img/actualizar.png" width="15" height="15">
 								</a>
+								{% else %}
+								<a  class="link"  data-message="Aprobado en Fase de Mapeo.">..<strong>&#9989</strong>&nbsp;
+								
+								</a> 
+								{%endif%}
 
 						{% else %}
 							<!Proceso ya salio de fase M. Solo Imprime el nombre>
